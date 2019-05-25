@@ -150,9 +150,13 @@ future_flags = sum(
 class CallFinder(object):
     def __init__(self, frame, stmts, tree):
         self.frame = frame
-        self.stmts = stmts
         self.tree = tree
-        call_instruction_index = self.get_call_instruction_index()
+        call_instruction_index = only(
+            i
+            for i, instruction in enumerate(
+                _call_instructions(self.compile_instructions()))
+            if instruction.offset == self.frame.f_lasti
+        )
 
         calls = [
             node
@@ -161,6 +165,9 @@ class CallFinder(object):
             if isinstance(node, ast.Call)
         ]
 
+        self.result = only(self.matching_calls(calls, call_instruction_index))
+
+    def matching_calls(self, calls, call_instruction_index):
         for i, call in enumerate(calls):
             with add_sentinel_kwargs(call):
                 ast.fix_missing_locations(call)
@@ -184,17 +191,7 @@ class CallFinder(object):
             )
 
             if new_instruction_index == call_instruction_index:
-                self.result = call
-                break
-
-    def get_call_instruction_index(self):
-        frame_offset_relative_to_stmt = self.frame.f_lasti
-        instruction_index = only(
-            i
-            for i, instruction in enumerate(_call_instructions(self.compile_instructions()))
-            if instruction.offset == frame_offset_relative_to_stmt
-        )
-        return instruction_index
+                yield call
 
     def compile_instructions(self):
         module_code = compile(self.tree, '<mod>', 'exec', dont_inherit=True)
