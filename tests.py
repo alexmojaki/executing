@@ -44,7 +44,7 @@ class TestStuff(unittest.TestCase):
             pass
 
     def test_comprehensions(self):
-        # Comprehensions can be separated if they have different names
+        # Comprehensions can be separated if they contain different names
         str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])
         # or are on different lines
         str([{tester(x) for x in [1]},
@@ -56,9 +56,38 @@ class TestStuff(unittest.TestCase):
             str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
     def test_lambda(self):
-        self.assertEqual((lambda x: (tester(x), tester(x)))(tester(3)), (3, 3))
+        self.assertEqual(
+            (lambda x: (tester(x), tester(x)))(tester(3)),
+            (3, 3),
+        )
         (lambda: (lambda: tester(1))())()
-        self.assertEqual((lambda: [tester(x) for x in tester([1, 2])])(), [1, 2])
+        self.assertEqual(
+            (lambda: [tester(x) for x in tester([1, 2])])(),
+            [1, 2],
+        )
+
+    def test_closures_and_nested_comprehensions(self):
+        x = 1
+        # @formatter:off
+        str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+
+        def foo():
+            y = 2
+            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+
+            def bar():
+                z = 3
+                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
+
+            bar()
+
+        foo()
+        # @formatter:on
 
     def test_indirect_call(self):
         dict(x=tester)['x'](tester)(3)
