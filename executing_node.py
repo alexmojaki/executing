@@ -87,22 +87,6 @@ def only(it):
 
 
 class FileInfo(object):
-    """
-    Contains metadata about a python source file:
-
-        - path: path to the file
-        - source: text contents of the file
-        - tree: AST parsed from the source
-        - asttokens(): ASTTokens object for getting the source of specific AST nodes
-        - nodes_by_lines: dictionary from line numbers
-            to a list of AST nodes at that line
-
-    Each node in the AST has an extra attribute 'parent'.
-
-    Users should not need to create instances of this class themselves.
-    This class should not be instantiated directly, rather use file_info for caching.
-    """
-
     def __init__(self, path):
         with open(path) as f:
             self.source = f.read()
@@ -138,8 +122,6 @@ class FileInfo(object):
 file_info = cache(FileInfo)
 
 sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
-
-special_code_names = ('<listcomp>', '<dictcomp>', '<setcomp>', '<lambda>', '<genexpr>')
 
 future_flags = sum(
     getattr(__future__, fname).compiler_flag
