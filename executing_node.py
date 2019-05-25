@@ -220,13 +220,6 @@ def get_node_bodies(node):
             yield field
 
 
-def get_containing_block(node):
-    while True:
-        node = node.parent
-        if isinstance(node, (ast.Module, ast.FunctionDef, ast.ClassDef)):
-            return node
-
-
 def _call_instructions(instructions):
     return [
         instruction
