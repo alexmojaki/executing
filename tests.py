@@ -1,3 +1,5 @@
+from __future__ import print_function, division
+
 import ast
 import inspect
 import unittest
@@ -96,6 +98,10 @@ class TestStuff(unittest.TestCase):
         gen2 = (tester(x) for x in tester([1, 2]))
 
         assert list(gen()) == list(gen2) == [1, 2]
+
+    def test_future_import(self):
+        print(1 / 2)
+        tester(4)
 
 
 def tester(arg, returns=None):

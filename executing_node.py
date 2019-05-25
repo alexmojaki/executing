@@ -1,3 +1,4 @@
+import __future__
 import ast
 import dis
 import inspect
@@ -144,9 +145,13 @@ class FileInfo(object):
 file_info = cache(FileInfo)
 
 sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
-sentinel_string = ast.Str(s=sentinel)
 
 special_code_names = ('<listcomp>', '<dictcomp>', '<setcomp>', '<lambda>', '<genexpr>')
+
+future_flags = sum(
+    getattr(__future__, fname).compiler_flag
+    for fname in __future__.all_feature_names
+)
 
 
 class CallFinder(object):
@@ -224,12 +229,13 @@ class CallFinder(object):
         stmt_index = body.index(stmts[0])
         expr = ast.Expr(
             value=ast.List(
-                elts=[sentinel_string],
+                elts=[ast.Str(s=sentinel)],
                 ctx=ast.Load(),
             ),
         )
         with tweak_list(body):
-            body[stmt_index] = expr
+            body.insert(stmt_index, expr)
+            ast.copy_location(expr, stmts[0])
             ast.fix_missing_locations(a_stmt.parent)
 
             parent_block = get_containing_block(a_stmt)
@@ -240,7 +246,7 @@ class CallFinder(object):
             else:
                 module = ast.Module(body=[parent_block])
                 extract = True
-            instructions = _stmt_instructions(module, extract=extract)
+            instructions = self._stmt_instructions(module, extract=extract)
 
             return only(
                 instruction
@@ -249,7 +255,19 @@ class CallFinder(object):
             ).offset
 
     def compile_instructions(self):
-        return _stmt_instructions(self.sandbox_module, matching_code=self.frame.f_code)
+        return self._stmt_instructions(self.sandbox_module, matching_code=self.frame.f_code)
+
+    def _stmt_instructions(self, module, matching_code=None, extract=True):
+        flags = self.frame.f_code.co_flags & future_flags
+        code = compile(module, '<mod>', 'exec', flags=flags, dont_inherit=True)
+        if extract:
+            stmt_code = only(
+                c
+                for c in code.co_consts
+                if inspect.iscode(c)
+            )
+            code = find_code(stmt_code, matching_code)
+        return list(get_instructions(code))
 
 
 lock = RLock()
@@ -268,7 +286,7 @@ def tweak_list(lst):
 if sys.version_info[:2] >= (3, 5):
     @contextmanager
     def add_sentinel_kwargs(call):
-        keyword = ast.keyword(arg=None, value=sentinel_string)
+        keyword = ast.keyword(arg=None, value=ast.Str(s=sentinel))
         with lock:
             with tweak_list(call.keywords):
                 call.keywords.append(keyword)
@@ -278,7 +296,7 @@ else:
     def add_sentinel_kwargs(call):
         with lock:
             original = call.kwargs
-            call.kwargs = sentinel_string
+            call.kwargs = ast.Str(s=sentinel)
             try:
                 yield
             finally:
@@ -296,18 +314,6 @@ def get_containing_block(node):
         node = node.parent
         if isinstance(node, (ast.Module, ast.FunctionDef, ast.ClassDef)):
             return node
-
-
-def _stmt_instructions(module, matching_code=None, extract=True):
-    code = compile(module, '<mod>', 'exec')
-    if extract:
-        stmt_code = only(
-            c
-            for c in code.co_consts
-            if inspect.iscode(c)
-        )
-        code = find_code(stmt_code, matching_code)
-    return list(get_instructions(code))
 
 
 def _call_instructions(instructions):
