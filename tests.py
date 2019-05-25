@@ -2,6 +2,7 @@ from __future__ import print_function, division
 
 import ast
 import inspect
+import time
 import unittest
 
 from executing_node import executing_node, only
@@ -64,7 +65,7 @@ class TestStuff(unittest.TestCase):
     def test_compound_statements(self):
         with self.assertRaises(TypeError):
             try:
-                for _ in tester([2]):
+                for _ in tester([1, 2, 3]):
                     while tester(0):
                         pass
                     else:
@@ -102,6 +103,17 @@ class TestStuff(unittest.TestCase):
     def test_future_import(self):
         print(1 / 2)
         tester(4)
+
+    def test_many_calls(self):
+        node = None
+        start = time.time()
+        for i in range(100000):
+            new_node = executing_node(inspect.currentframe())
+            if node is None:
+                node = new_node
+            else:
+                self.assertIs(node, new_node)
+        self.assertLess(time.time() - start, 1)
 
 
 def tester(arg, returns=None):

@@ -1,6 +1,7 @@
 import __future__
 import ast
 import dis
+import functools
 import inspect
 import sys
 from collections import defaultdict, namedtuple, Sized
@@ -16,15 +17,17 @@ if PY3:
 
     cache = lru_cache()
 else:
-    def cache(f):
-        """ Memoization decorator for a function taking a single argument """
+    def cache(func):
+        d = {}
 
-        class MemoDict(dict):
-            def __missing__(self, key):
-                ret = self[key] = f(key)
-                return ret
+        @functools.wraps(func)
+        def wrapper(*args):
+            if args in d:
+                return d[args]
+            result = d[args] = func(*args)
+            return result
 
-        return MemoDict().__getitem__
+        return wrapper
 
 try:
     # noinspection PyUnresolvedReferences
@@ -133,13 +136,13 @@ class FileInfo(object):
     def for_frame(frame):
         return file_info(frame.f_code.co_filename)
 
-    def _call_at(self, frame):
-        stmts = {
+    @cache
+    def statements_at(self, lineno):
+        return {
             statement_containing_node(node)
             for node in
-            self.nodes_by_line[frame.f_lineno]
+            self.nodes_by_line[lineno]
         }
-        return CallFinder(frame, stmts).result
 
 
 file_info = cache(FileInfo)
@@ -351,5 +354,18 @@ def statement_containing_node(node):
     return node
 
 
+def executing_statements(frame):
+    return FileInfo.for_frame(frame).statements_at(frame.f_lineno)
+
+
+_executing_cache = {}
+
+
 def executing_node(frame):
-    return FileInfo.for_frame(frame)._call_at(frame)
+    key = (frame.f_code, frame.f_lasti)
+    try:
+        return _executing_cache[key]
+    except KeyError:
+        stmts = executing_statements(frame)
+        result = _executing_cache[key] = CallFinder(frame, stmts).result
+        return result
