@@ -5,7 +5,6 @@ import sys
 from collections import defaultdict, namedtuple, Sized
 from contextlib import contextmanager
 from itertools import islice
-from types import CodeType
 
 PY3 = sys.version_info[0] == 3
 
@@ -288,8 +287,11 @@ def get_containing_block(node):
 def _stmt_instructions(module, matching_code=None, extract=True):
     code = compile(module, '<mod>', 'exec')
     if extract:
-        stmt_code = only([c for c in code.co_consts
-                          if isinstance(c, CodeType)])
+        stmt_code = only(
+            c
+            for c in code.co_consts
+            if inspect.iscode(c)
+        )
         code = find_code(stmt_code, matching_code)
     return list(get_instructions(code))
 
