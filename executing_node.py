@@ -169,20 +169,9 @@ class CallFinder(object):
         ]
 
         for i, call in enumerate(calls):
-            if sys.version_info[:2] >= (3, 5):
-                keyword = ast.keyword(arg=None, value=sentinel_string)
-                with tweak_list(call.keywords):
-                    call.keywords.append(keyword)
-                    ast.fix_missing_locations(call)
-                    instructions = self.compile_instructions()
-            else:
-                original = call.kwargs
-                call.kwargs = sentinel_string
-                try:
-                    ast.fix_missing_locations(call)
-                    instructions = self.compile_instructions()
-                finally:
-                    call.kwargs = original
+            with add_sentinel_kwargs(call):
+                ast.fix_missing_locations(call)
+                instructions = self.compile_instructions()
 
             indices = [
                 i
@@ -269,6 +258,24 @@ def tweak_list(lst):
         yield
     finally:
         lst[:] = original
+
+
+if sys.version_info[:2] >= (3, 5):
+    @contextmanager
+    def add_sentinel_kwargs(call):
+        keyword = ast.keyword(arg=None, value=sentinel_string)
+        with tweak_list(call.keywords):
+            call.keywords.append(keyword)
+            yield
+else:
+    @contextmanager
+    def add_sentinel_kwargs(call):
+        original = call.kwargs
+        call.kwargs = sentinel_string
+        try:
+            yield
+        finally:
+            call.kwargs = original
 
 
 def get_node_bodies(node):
