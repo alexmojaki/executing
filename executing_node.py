@@ -5,6 +5,7 @@ import sys
 from collections import defaultdict, namedtuple, Sized
 from contextlib import contextmanager
 from itertools import islice
+from threading import RLock
 
 PY3 = sys.version_info[0] == 3
 
@@ -251,31 +252,37 @@ class CallFinder(object):
         return _stmt_instructions(self.sandbox_module, matching_code=self.frame.f_code)
 
 
+lock = RLock()
+
+
 @contextmanager
 def tweak_list(lst):
-    original = lst[:]
-    try:
-        yield
-    finally:
-        lst[:] = original
+    with lock:
+        original = lst[:]
+        try:
+            yield
+        finally:
+            lst[:] = original
 
 
 if sys.version_info[:2] >= (3, 5):
     @contextmanager
     def add_sentinel_kwargs(call):
         keyword = ast.keyword(arg=None, value=sentinel_string)
-        with tweak_list(call.keywords):
-            call.keywords.append(keyword)
-            yield
+        with lock:
+            with tweak_list(call.keywords):
+                call.keywords.append(keyword)
+                yield
 else:
     @contextmanager
     def add_sentinel_kwargs(call):
-        original = call.kwargs
-        call.kwargs = sentinel_string
-        try:
-            yield
-        finally:
-            call.kwargs = original
+        with lock:
+            original = call.kwargs
+            call.kwargs = sentinel_string
+            try:
+                yield
+            finally:
+                call.kwargs = original
 
 
 def get_node_bodies(node):
