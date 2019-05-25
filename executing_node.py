@@ -121,11 +121,18 @@ class FileInfo(object):
 
     @cache
     def statements_at(self, lineno):
-        return {
+        stmts_set = {
             statement_containing_node(node)
             for node in
             self.nodes_by_line[lineno]
         }
+        a_stmt = list(stmts_set)[0]
+        body = only(
+            lst
+            for lst in get_node_bodies(a_stmt.parent)
+            if a_stmt in lst
+        )
+        return sorted(stmts_set, key=body.index)
 
 
 file_info = cache(FileInfo)
@@ -143,14 +150,8 @@ future_flags = sum(
 class CallFinder(object):
     def __init__(self, frame, stmts, tree):
         self.frame = frame
+        self.stmts = stmts
         self.tree = tree
-        a_stmt = self.a_stmt = list(stmts)[0]
-        body = self.body = only(
-            lst
-            for lst in get_node_bodies(a_stmt.parent)
-            if a_stmt in lst
-        )
-        stmts = self.stmts = sorted(stmts, key=body.index)
         call_instruction_index = self.get_call_instruction_index()
 
         calls = [
