@@ -7,6 +7,7 @@ import sys
 from collections import defaultdict, namedtuple, Sized
 from contextlib import contextmanager
 from itertools import islice
+from operator import attrgetter
 from threading import RLock
 
 PY3 = sys.version_info[0] == 3
@@ -66,40 +67,22 @@ except AttributeError:
             yield Instruction(offset, argval, opname)
 
 
-def only(it):
-    """
-    >>> only([7])
-    7
-    >>> only([1, 2])
-    Traceback (most recent call last):
-    ...
-    AssertionError: Expected one value, found 2
-    >>> only([])
-    Traceback (most recent call last):
-    ...
-    AssertionError: Expected one value, found 0
-    >>> from itertools import repeat
-    >>> only(repeat(5))
-    Traceback (most recent call last):
-    ...
-    AssertionError: Expected one value, found several
-    >>> only(repeat(5, 0))
-    Traceback (most recent call last):
-    ...
-    AssertionError: Expected one value, found 0
-    """
+class NotOneValueFound(Exception):
+    pass
 
+
+def only(it):
     if isinstance(it, Sized):
         if len(it) != 1:
-            raise AssertionError('Expected one value, found %s' % len(it))
+            raise NotOneValueFound('Expected one value, found %s' % len(it))
         # noinspection PyTypeChecker
         return list(it)[0]
 
     lst = tuple(islice(it, 2))
     if len(lst) == 0:
-        raise AssertionError('Expected one value, found 0')
+        raise NotOneValueFound('Expected one value, found 0')
     if len(lst) > 1:
-        raise AssertionError('Expected one value, found several')
+        raise NotOneValueFound('Expected one value, found several')
     return lst[0]
 
 
@@ -158,8 +141,9 @@ future_flags = sum(
 
 
 class CallFinder(object):
-    def __init__(self, frame, stmts):
+    def __init__(self, frame, stmts, tree):
         self.frame = frame
+        self.tree = tree
         a_stmt = self.a_stmt = list(stmts)[0]
         body = self.body = only(
             lst
@@ -167,7 +151,6 @@ class CallFinder(object):
             if a_stmt in lst
         )
         stmts = self.stmts = sorted(stmts, key=body.index)
-        self.sandbox_module = self.make_sandbox_module()
         call_instruction_index = self.get_call_instruction_index()
 
         calls = [
@@ -205,8 +188,6 @@ class CallFinder(object):
 
     def get_call_instruction_index(self):
         frame_offset_relative_to_stmt = self.frame.f_lasti
-        if self.frame.f_code.co_name not in special_code_names:
-            frame_offset_relative_to_stmt -= self.stmt_offset()
         instruction_index = only(
             i
             for i, instruction in enumerate(_call_instructions(self.compile_instructions()))
@@ -214,62 +195,9 @@ class CallFinder(object):
         )
         return instruction_index
 
-    def make_sandbox_module(self):
-        function = ast.FunctionDef(
-            name='<function>',
-            body=self.stmts,
-            args=ast.arguments(args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
-            decorator_list=[],
-        )
-        ast.copy_location(function, self.stmts[0])
-        return ast.Module(body=[function])
-
-    def stmt_offset(self):
-        body = self.body
-        stmts = self.stmts
-        a_stmt = self.a_stmt
-
-        stmt_index = body.index(stmts[0])
-        expr = ast.Expr(
-            value=ast.List(
-                elts=[ast.Str(s=sentinel)],
-                ctx=ast.Load(),
-            ),
-        )
-        with tweak_list(body):
-            body.insert(stmt_index, expr)
-            ast.copy_location(expr, stmts[0])
-            ast.fix_missing_locations(a_stmt.parent)
-
-            parent_block = get_containing_block(a_stmt)
-            if isinstance(parent_block, ast.Module):
-                assert self.frame.f_code.co_name == '<module>'
-                module = parent_block
-                extract = False
-            else:
-                module = ast.Module(body=[parent_block])
-                extract = True
-            instructions = self._stmt_instructions(module, extract=extract)
-
-            return only(
-                instruction
-                for instruction in instructions
-                if instruction.argval == sentinel
-            ).offset
-
     def compile_instructions(self):
-        return self._stmt_instructions(self.sandbox_module, matching_code=self.frame.f_code)
-
-    def _stmt_instructions(self, module, matching_code=None, extract=True):
-        flags = self.frame.f_code.co_flags & future_flags
-        code = compile(module, '<mod>', 'exec', flags=flags, dont_inherit=True)
-        if extract:
-            stmt_code = only(
-                c
-                for c in code.co_consts
-                if inspect.iscode(c)
-            )
-            code = find_code(stmt_code, matching_code)
+        module_code = compile(self.tree, '<mod>', 'exec', dont_inherit=True)
+        code = find_code(module_code, self.frame.f_code)
         return list(get_instructions(code))
 
 
@@ -328,23 +256,40 @@ def _call_instructions(instructions):
 
 
 def find_code(root_code, matching):
-    if matching is None or matching.co_name not in special_code_names:
-        return root_code
+    def matches(c):
+        return all(
+            f(c) == f(matching)
+            for f in [
+                attrgetter('co_firstlineno'),
+                attrgetter('co_name'),
+                code_names,
+            ]
+        )
 
     code_options = []
+    if matches(root_code):
+        code_options.append(root_code)
 
     def finder(code):
         for const in code.co_consts:
             if not inspect.iscode(const):
                 continue
-            matches = (const.co_firstlineno == matching.co_firstlineno and
-                       const.co_name == matching.co_name)
-            if matches:
+
+            if matches(const):
                 code_options.append(const)
             finder(const)
 
     finder(root_code)
     return only(code_options)
+
+
+def code_names(code):
+    return frozenset().union(
+        code.co_names,
+        code.co_varnames,
+        code.co_freevars,
+        code.co_cellvars,
+    )
 
 
 @cache
@@ -366,6 +311,7 @@ def executing_node(frame):
     try:
         return _executing_cache[key]
     except KeyError:
+        fi = FileInfo.for_frame(frame)
         stmts = executing_statements(frame)
-        result = _executing_cache[key] = CallFinder(frame, stmts).result
+        result = _executing_cache[key] = CallFinder(frame, stmts, fi.tree).result
         return result

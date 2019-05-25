@@ -5,7 +5,7 @@ import inspect
 import time
 import unittest
 
-from executing_node import executing_node, only
+from executing_node import executing_node, only, NotOneValueFound
 
 
 class TestStuff(unittest.TestCase):
@@ -43,20 +43,21 @@ class TestStuff(unittest.TestCase):
         def foo():
             pass
 
-    def test_list_comprehension(self):
-        str([tester(int(x)) for x in tester([1]) for _ in tester([2]) for __ in [3]])
-        # with self.assertRaises(AssertionError):
-        #     str([[[tester(int(x)) for x in tester([1])] for _ in tester([2])] for __ in [3]])
-        return str([(1, [
-            (2, [
-                tester(int(x)) for x in tester([1])])
-            for _ in tester([2])])
-                    for __ in [3]])
+    def test_comprehensions(self):
+        # Comprehensions can be separated if they have different names
+        str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])
+        # or are on different lines
+        str([{tester(x) for x in [1]},
+             {tester(x) for x in [1]}])
+        # or are of different types
+        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])
+        # but not if everything is the same
+        with self.assertRaises(NotOneValueFound):
+            str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
     def test_lambda(self):
         self.assertEqual((lambda x: (tester(x), tester(x)))(tester(3)), (3, 3))
-        with self.assertRaises(AssertionError):
-            (lambda: (lambda: tester(1))())()
+        (lambda: (lambda: tester(1))())()
         self.assertEqual((lambda: [tester(x) for x in tester([1, 2])])(), [1, 2])
 
     def test_indirect_call(self):
