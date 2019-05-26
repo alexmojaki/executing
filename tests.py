@@ -5,7 +5,7 @@ import inspect
 import time
 import unittest
 
-from executing_node import executing_node, only, NotOneValueFound
+from executing_node import Source, only, NotOneValueFound
 
 
 class TestStuff(unittest.TestCase):
@@ -138,7 +138,7 @@ class TestStuff(unittest.TestCase):
         node = None
         start = time.time()
         for i in range(100000):
-            new_node = executing_node(inspect.currentframe())
+            new_node = Source.executing_node(inspect.currentframe())
             if node is None:
                 node = new_node
             else:
@@ -148,7 +148,7 @@ class TestStuff(unittest.TestCase):
 
 def tester(arg, returns=None):
     frame = inspect.currentframe().f_back
-    call = executing_node(frame)
+    call = Source.executing_node(frame)
     result = eval(
         compile(ast.Expression(only(call.args)), '<>', 'eval'),
         frame.f_globals,

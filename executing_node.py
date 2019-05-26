@@ -1,8 +1,9 @@
-import __future__
 import ast
 import dis
 import functools
 import inspect
+import io
+import linecache
 import sys
 from collections import defaultdict, namedtuple, Sized
 from contextlib import contextmanager
@@ -15,9 +16,15 @@ PY3 = sys.version_info[0] == 3
 if PY3:
     # noinspection PyUnresolvedReferences
     from functools import lru_cache
+    # noinspection PyUnresolvedReferences
+    from tokenize import detect_encoding
 
     cache = lru_cache()
+    text_type = str
 else:
+    from lib2to3.pgen2.tokenize import detect_encoding
+
+
     def cache(func):
         d = {}
 
@@ -30,6 +37,8 @@ else:
 
         return wrapper
 
+
+    text_type = unicode
 try:
     # noinspection PyUnresolvedReferences
     get_instructions = dis.get_instructions
@@ -71,6 +80,26 @@ class NotOneValueFound(Exception):
     pass
 
 
+class SourceNotFoundException(Exception):
+    pass
+
+
+try:
+    # noinspection PyUnresolvedReferences
+    from IPython import get_ipython
+
+
+    def ipython_flags():
+        shell = get_ipython()
+        if shell:
+            return shell.compile.flags
+        else:
+            return 0
+except ImportError:
+    def ipython_flags():
+        return 0
+
+
 def only(it):
     if isinstance(it, Sized):
         if len(it) != 1:
@@ -86,25 +115,87 @@ def only(it):
     return lst[0]
 
 
-class FileInfo(object):
-    def __init__(self, path):
-        with open(path) as f:
-            self.source = f.read()
-        self.tree = ast.parse(self.source, filename=path)
+source_cache = {}
+_executing_cache = {}
+
+
+class Source(object):
+    def __init__(self, module_name, filename, text):
+        self.module_name = module_name
+        self.filename = filename
+        self.text = text
+        self.tree = ast.parse(text, filename=filename)
         self.nodes_by_line = defaultdict(list)
         for node in ast.walk(self.tree):
             for child in ast.iter_child_nodes(node):
                 child.parent = node
             if hasattr(node, 'lineno'):
                 self.nodes_by_line[node.lineno].append(node)
-        self.path = path
 
-    @staticmethod
-    def for_frame(frame):
-        return file_info(frame.f_code.co_filename)
+    @classmethod
+    def for_frame(cls, frame):
+        globs = frame.f_globals or {}
+        module_name = globs.get('__name__')
+        filename = frame.f_code.co_filename
+        cache_key = (module_name, filename)
+
+        try:
+            return source_cache[cache_key]
+        except KeyError:
+            pass
+
+        text = None
+
+        try:
+            text = globs['__loader__'].get_source(module_name)
+        except Exception:
+            pass
+
+        if text is None:
+            try:
+                text = ''.join(linecache.cache[filename][2])
+            except KeyError:
+                pass
+
+        if text is None:
+            try:
+                with open(filename, 'rb') as fp:
+                    text = fp.read()
+            except (IOError, OSError):
+                pass
+
+        if text is None:
+            raise SourceNotFoundException(
+                "Couldn't find source for %s - %s"
+                % (module_name, filename)
+            )
+
+        if isinstance(text, bytes):
+            encoding, _ = detect_encoding(io.BytesIO(text).readline)
+            text = text_type(text, encoding, 'replace')
+
+        text = source_cache[cache_key] = cls(module_name, filename, text)
+        return text
+
+    @classmethod
+    def executing_node(cls, frame):
+        key = (frame.f_code, frame.f_lasti)
+        try:
+            return _executing_cache[key]
+        except KeyError:
+            pass
+
+        tree = cls.for_frame(frame).tree
+        stmts = cls.executing_statements(frame)
+        result = _executing_cache[key] = CallFinder(frame, stmts, tree).result
+        return result
+
+    @classmethod
+    def executing_statements(cls, frame):
+        return cls.for_frame(frame)._statements_at(frame.f_lineno)
 
     @cache
-    def statements_at(self, lineno):
+    def _statements_at(self, lineno):
         stmts_set = {
             statement_containing_node(node)
             for node in
@@ -118,15 +209,22 @@ class FileInfo(object):
         )
         return sorted(stmts_set, key=body.index)
 
+    @cache
+    def asttokens(self):
+        """
+        Returns an ASTTokens object for getting the source of specific AST nodes.
 
-file_info = cache(FileInfo)
+        See http://asttokens.readthedocs.io/en/latest/api-index.html
+        """
+        from asttokens import ASTTokens
+        return ASTTokens(
+            self.text,
+            tree=self.tree,
+            filename=self.filename,
+        )
+
 
 sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
-
-future_flags = sum(
-    getattr(__future__, fname).compiler_flag
-    for fname in __future__.all_feature_names
-)
 
 
 class CallFinder(object):
@@ -176,7 +274,13 @@ class CallFinder(object):
                 yield call
 
     def compile_instructions(self):
-        module_code = compile(self.tree, '<mod>', 'exec', dont_inherit=True)
+        module_code = compile(
+            self.tree,
+            '<mod>',
+            'exec',
+            flags=ipython_flags(),
+            dont_inherit=True,
+        )
         code = find_code(module_code, self.frame.f_code)
         return list(get_instructions(code))
 
@@ -270,21 +374,3 @@ def statement_containing_node(node):
     while not isinstance(node, ast.stmt):
         node = node.parent
     return node
-
-
-def executing_statements(frame):
-    return FileInfo.for_frame(frame).statements_at(frame.f_lineno)
-
-
-_executing_cache = {}
-
-
-def executing_node(frame):
-    key = (frame.f_code, frame.f_lasti)
-    try:
-        return _executing_cache[key]
-    except KeyError:
-        fi = FileInfo.for_frame(frame)
-        stmts = executing_statements(frame)
-        result = _executing_cache[key] = CallFinder(frame, stmts, fi.tree).result
-        return result
