@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from itertools import islice
 from operator import attrgetter
 from threading import RLock
+from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 
 PY3 = sys.version_info[0] == 3
 
@@ -124,7 +125,17 @@ class Source(object):
         self.module_name = module_name
         self.filename = filename
         self.text = text
-        self.tree = ast.parse(text, filename=filename)
+
+        if PY3:
+            ast_text = text
+        else:
+            ast_text = ''.join([
+                '\n' if i < 2 and encoding_pattern.match(line)
+                else line
+                for i, line in enumerate(text.splitlines(True))
+            ])
+
+        self.tree = ast.parse(ast_text, filename=filename)
         self.nodes_by_line = defaultdict(list)
         for node in ast.walk(self.tree):
             for child in ast.iter_child_nodes(node):
