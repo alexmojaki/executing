@@ -192,10 +192,10 @@ class Source(object):
 
     @classmethod
     def executing_statements(cls, frame):
-        return cls.for_frame(frame)._statements_at(frame.f_lineno)
+        return cls.for_frame(frame).statements_at_line(frame.f_lineno)
 
     @cache
-    def _statements_at(self, lineno):
+    def statements_at_line(self, lineno):
         stmts_set = {
             statement_containing_node(node)
             for node in
