@@ -206,6 +206,51 @@ class TestStuff(unittest.TestCase):
             check(u'é', 'utf8')
             check(u'é', 'gbk', exception=SyntaxError)
 
+    def test_multiline_strings(self):
+        tester('a')
+        tester('''
+            ab''')
+        tester('''
+                    abc
+                    def
+                    '''
+               )
+        str([
+            tester(
+                '''
+                123
+                456
+                '''
+            ),
+            tester(
+                '''
+                345
+                456786
+                '''
+            ),
+        ])
+        tester(
+            [
+                '''
+                123
+                456
+                '''
+                '''
+                345
+                456786
+                '''
+                ,
+                '''
+                123
+                456
+                ''',
+                '''
+                345
+                456786
+                '''
+            ]
+        )
+
 
 class TestSourceLoader(object):
     def __init__(self, text):
