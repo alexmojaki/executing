@@ -116,10 +116,6 @@ def only(it):
     return lst[0]
 
 
-source_cache = {}
-_executing_cache = {}
-
-
 class Source(object):
     def __init__(self, module_name, filename, text):
         self.module_name = module_name
@@ -145,52 +141,13 @@ class Source(object):
 
     @classmethod
     def for_frame(cls, frame):
-        globs = frame.f_globals or {}
-        module_name = globs.get('__name__')
-        filename = frame.f_code.co_filename
-        cache_key = (module_name, filename)
-
-        try:
-            return source_cache[cache_key]
-        except KeyError:
-            pass
-
-        text = None
-
-        try:
-            text = globs['__loader__'].get_source(module_name)
-        except Exception:
-            pass
-
-        if text is None:
-            try:
-                text = ''.join(linecache.cache[filename][2])
-            except KeyError:
-                pass
-
-        if text is None:
-            try:
-                with open(filename, 'rb') as fp:
-                    text = fp.read()
-            except (IOError, OSError):
-                pass
-
-        if text is None:
-            raise SourceNotFoundException(
-                "Couldn't find source for %s - %s"
-                % (module_name, filename)
-            )
-
-        if isinstance(text, bytes):
-            encoding, _ = detect_encoding(io.BytesIO(text).readline)
-            text = text_type(text, encoding, 'replace')
-
-        text = source_cache[cache_key] = cls(module_name, filename, text)
-        return text
+        return SourceFinder(frame).result(cls)
 
     @classmethod
     def executing_node(cls, frame):
         key = (frame.f_code, frame.f_lasti)
+        _executing_cache = cls._class_local('__executing_cache', {})
+
         try:
             return _executing_cache[key]
         except KeyError:
@@ -199,6 +156,12 @@ class Source(object):
         tree = cls.for_frame(frame).tree
         stmts = cls.executing_statements(frame)
         result = _executing_cache[key] = CallFinder(frame, stmts, tree).result
+        return result
+
+    @classmethod
+    def _class_local(cls, name, default):
+        result = cls.__dict__.get(name, default)
+        setattr(cls, name, result)
         return result
 
     @classmethod
@@ -233,6 +196,126 @@ class Source(object):
             tree=self.tree,
             filename=self.filename,
         )
+
+
+class SourceFinder(object):
+    def __init__(self, frame):
+        self.frame = frame
+        self.globals = frame.f_globals or {}
+        self.module_name = self.globals.get('__name__')
+        self.__file__ = self.globals.get('__file__')
+
+    def result(self, source_cls):
+        cache_key = (self.module_name, self.__file__, self.frame.f_code.co_filename)
+        source_cache = source_cls._class_local('__source_cache', {})
+        try:
+            return source_cache[cache_key]
+        except KeyError:
+            pass
+
+        result = source_cache[cache_key] = source_cls(*self.find())
+        return result
+
+    def find(self):
+        all_filenames = {
+            f
+            for f in self.potential_filenames()
+            if f
+        }
+        valid_filenames = set()
+        source_to_filename = defaultdict(set)
+        for filename, source in set(self.potential_sources(all_filenames)):
+            if not source:
+                continue
+            source = self.decode_source(source)
+            valid_filenames.add(filename)
+            source_to_filename[source].add(filename)
+
+        source = only(self.matching_sources(source_to_filename))
+
+        # Pick the best nonempty set of filenames we have
+        for filenames in [
+            source_to_filename[source],
+            valid_filenames,
+            all_filenames,
+        ]:
+            filenames.discard(None)
+            if filenames:
+                break
+
+        # Prefer filenames available in linecache so that tracebacks work
+        filenames = [
+                        filename
+                        for filename in filenames
+                        if linecache.getlines(filename, self.globals)
+                    ] or filenames
+
+        # Pick an arbitrary filename from the set
+        if filenames:
+            filename = min(filenames)
+        else:
+            filename = None
+
+        return self.module_name, filename, source
+
+    def potential_filenames(self):
+        fake_module = type(inspect)('this_is_a_fake_module_name')
+        fake_module.__file__ = self.__file__
+        for func in [inspect.getsourcefile, inspect.getfile]:
+            for obj in [fake_module, self.frame]:
+                try:
+                    yield func(obj)
+                except Exception:
+                    pass
+
+    def potential_sources(self, filenames):
+        try:
+            yield None, self.globals['__loader__'].get_source(self.module_name)
+        except Exception:
+            pass
+
+        for filename in filenames:
+            yield filename, ''.join(linecache.getlines(filename, self.globals))
+
+            try:
+                with open(filename, 'rb') as fp:
+                    yield filename, fp.read()
+            except Exception:
+                pass
+
+    @staticmethod
+    def decode_source(source):
+        if isinstance(source, bytes):
+            encoding, _ = detect_encoding(io.BytesIO(source).readline)
+            source = source.decode(encoding)
+        return source
+
+    @staticmethod
+    def compilable_source(source):
+        if PY3:
+            return source
+        else:
+            return ''.join([
+                '\n' if i < 2 and encoding_pattern.match(line)
+                else line
+                for i, line in enumerate(source.splitlines(True))
+            ])
+
+    def matching_sources(self, sources):
+        for source in sources:
+            code = my_compile(self.compilable_source(source))
+            if find_codes(code, self.frame.f_code):
+                yield source
+
+
+def my_compile(source):
+    return compile(
+        source,
+        '<mod>',
+        'exec',
+        flags=ipython_flags(),
+        dont_inherit=True,
+    )
 
 
 sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
@@ -285,14 +368,8 @@ class CallFinder(object):
                 yield call
 
     def compile_instructions(self):
-        module_code = compile(
-            self.tree,
-            '<mod>',
-            'exec',
-            flags=ipython_flags(),
-            dont_inherit=True,
-        )
-        code = find_code(module_code, self.frame.f_code)
+        module_code = my_compile(self.tree)
+        code = only(find_codes(module_code, self.frame.f_code))
         return list(get_instructions(code))
 
 
@@ -343,7 +420,7 @@ def _call_instructions(instructions):
     ]
 
 
-def find_code(root_code, matching):
+def find_codes(root_code, matching):
     def matches(c):
         return all(
             f(c) == f(matching)
@@ -368,7 +445,7 @@ def find_code(root_code, matching):
             finder(const)
 
     finder(root_code)
-    return only(code_options)
+    return code_options
 
 
 def code_names(code):

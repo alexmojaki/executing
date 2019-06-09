@@ -3,10 +3,12 @@ from __future__ import print_function, division
 
 import ast
 import inspect
+import linecache
+import os
 import time
 import unittest
 
-from executing_node import Source, only, NotOneValueFound
+from executing_node import Source, only, NotOneValueFound, PY3, SourceFinder
 
 
 class TestStuff(unittest.TestCase):
@@ -145,6 +147,83 @@ class TestStuff(unittest.TestCase):
             else:
                 self.assertIs(node, new_node)
         self.assertLess(time.time() - start, 1)
+
+    def test_source_finder(self):
+        code_filename = '<code filename>'
+
+        def check(exception, filename=code_filename, **globs):
+            code = compile(test_file_text, code_filename, 'exec')
+            exec(code, globs)
+            frame = globs['frame']
+            setattr(Source, '__source_cache', {})
+            if exception:
+                with self.assertRaises(Exception):
+                    Source.for_frame(frame)
+            else:
+                source = Source.for_frame(frame)
+                self.assertEqual(source.text, test_file_text)
+                self.assertEqual(filename, source.filename)
+
+        check(True)
+
+        linecache.cache[code_filename] = (
+            len(test_file_text),
+            None,
+            [line + '\n' for line in test_file_text.splitlines()],
+            code_filename
+        )
+        check(False)
+
+        check(False, __file__=test_file_filename, filename=test_file_filename)
+        del linecache.cache[code_filename]
+        check(False, __file__=test_file_filename, filename=test_file_filename)
+        check(True, __file__=__file__)
+
+        check(True, __loader__=TestSourceLoader('x = 1'))
+        check(False, __loader__=TestSourceLoader(test_file_text))
+
+    def test_decode_source(self):
+        def check(source, encoding, exception=None, matches=True):
+            encoded = source.encode(encoding)
+            if exception:
+                with self.assertRaises(exception):
+                    SourceFinder.decode_source(encoded)
+            else:
+                decoded = SourceFinder.decode_source(encoded)
+                if matches:
+                    self.assertEqual(decoded, source)
+                else:
+                    self.assertNotEqual(decoded, source)
+
+        check(u'# coding=utf8\né', 'utf8')
+        check(u'# coding=gbk\né', 'gbk')
+
+        check(u'# coding=utf8\né', 'gbk', exception=UnicodeDecodeError)
+        check(u'# coding=gbk\né', 'utf8', matches=False)
+
+        # In Python 3 the default encoding is assumed to be UTF8
+        if PY3:
+            check(u'é', 'utf8')
+            check(u'é', 'gbk', exception=SyntaxError)
+
+
+class TestSourceLoader(object):
+    def __init__(self, text):
+        self.text = text
+
+    def get_source(self, *_args, **_kwargs):
+        return self.text
+
+
+test_file_filename = os.path.join(os.path.dirname(__file__), 'source_test_file.py')
+
+
+def read_file(filename):
+    with open(filename) as f:
+        return f.read()
+
+
+test_file_text = read_file(test_file_filename)
 
 
 def tester(arg, returns=None):
