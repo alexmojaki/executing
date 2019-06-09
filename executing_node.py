@@ -292,7 +292,10 @@ class SourceFinder(object):
     def matching_sources(self, sources):
         for source in sources:
             compilable_source = self.compilable_source(source)
-            code = my_compile(compilable_source, self.frame.f_code)
+            try:
+                code = my_compile(compilable_source, self.frame.f_code)
+            except SyntaxError:
+                continue
             if find_codes(code, self.frame.f_code):
                 yield source
 

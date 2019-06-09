@@ -150,11 +150,16 @@ class TestStuff(unittest.TestCase):
 
     def test_source_finder(self):
         code_filename = '<code filename>'
-        test_file_filename = os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__),
-                'source_test_file.py',
-            )
+        dir_name = os.path.abspath(
+            os.path.dirname(__file__),
+        )
+        test_file_filename = os.path.join(
+            dir_name,
+            'source_test_file.py',
+        )
+        not_code_filename = os.path.join(
+            dir_name,
+            'not_code.txt',
         )
 
         with open(test_file_filename) as f:
@@ -183,6 +188,7 @@ class TestStuff(unittest.TestCase):
         )
         check(False)
 
+        check(False, __file__=not_code_filename)
         check(False, __file__=test_file_filename, filename=test_file_filename)
         del linecache.cache[code_filename]
         check(False, __file__=test_file_filename, filename=test_file_filename)
