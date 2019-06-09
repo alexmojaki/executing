@@ -150,6 +150,15 @@ class TestStuff(unittest.TestCase):
 
     def test_source_finder(self):
         code_filename = '<code filename>'
+        test_file_filename = os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                'source_test_file.py',
+            )
+        )
+
+        with open(test_file_filename) as f:
+            test_file_text = f.read()
 
         def check(exception, filename=code_filename, **globs):
             code = compile(test_file_text, code_filename, 'exec')
@@ -258,22 +267,6 @@ class TestSourceLoader(object):
 
     def get_source(self, *_args, **_kwargs):
         return self.text
-
-
-test_file_filename = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        'source_test_file.py',
-    )
-)
-
-
-def read_file(filename):
-    with open(filename) as f:
-        return f.read()
-
-
-test_file_text = read_file(test_file_filename)
 
 
 def tester(arg, returns=None):
