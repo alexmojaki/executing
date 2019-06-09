@@ -1,3 +1,4 @@
+import __future__
 import ast
 import dis
 import functools
@@ -83,22 +84,6 @@ class NotOneValueFound(Exception):
 
 class SourceNotFoundException(Exception):
     pass
-
-
-try:
-    # noinspection PyUnresolvedReferences
-    from IPython import get_ipython
-
-
-    def ipython_flags():
-        shell = get_ipython()
-        if shell:
-            return shell.compile.flags
-        else:
-            return 0
-except ImportError:
-    def ipython_flags():
-        return 0
 
 
 def only(it):
@@ -227,7 +212,10 @@ class SourceFinder(object):
         for filename, source in set(self.potential_sources(all_filenames)):
             if not source:
                 continue
-            source = self.decode_source(source)
+            try:
+                source = self.decode_source(source)
+            except UnicodeDecodeError:
+                continue
             valid_filenames.add(filename)
             source_to_filename[source].add(filename)
 
@@ -303,17 +291,23 @@ class SourceFinder(object):
 
     def matching_sources(self, sources):
         for source in sources:
-            code = my_compile(self.compilable_source(source))
+            code = my_compile(self.compilable_source(source), self.frame.f_code)
             if find_codes(code, self.frame.f_code):
                 yield source
 
 
-def my_compile(source):
+future_flags = sum(
+    getattr(__future__, fname).compiler_flag
+    for fname in __future__.all_feature_names
+)
+
+
+def my_compile(source, matching_code):
     return compile(
         source,
         '<mod>',
         'exec',
-        flags=ipython_flags(),
+        flags=future_flags & matching_code.co_flags,
         dont_inherit=True,
     )
 
@@ -368,7 +362,7 @@ class CallFinder(object):
                 yield call
 
     def compile_instructions(self):
-        module_code = my_compile(self.tree)
+        module_code = my_compile(self.tree, self.frame.f_code)
         code = only(find_codes(module_code, self.frame.f_code))
         return list(get_instructions(code))
 

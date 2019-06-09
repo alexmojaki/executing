@@ -260,7 +260,12 @@ class TestSourceLoader(object):
         return self.text
 
 
-test_file_filename = os.path.join(os.path.dirname(__file__), 'source_test_file.py')
+test_file_filename = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        'source_test_file.py',
+    )
+)
 
 
 def read_file(filename):
