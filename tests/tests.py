@@ -166,7 +166,7 @@ class TestStuff(unittest.TestCase):
             test_file_text = f.read()
 
         def check(exception, filename=code_filename, **globs):
-            code = compile(test_file_text, code_filename, 'exec')
+            code = compile(test_file_text, filename, 'exec')
             exec(code, globs)
             frame = globs['frame']
             setattr(Source, '__source_cache', {})
@@ -179,6 +179,8 @@ class TestStuff(unittest.TestCase):
                 self.assertEqual(filename, source.filename)
 
         check(True)
+        check(True, filename=not_code_filename)
+        check(False, filename=test_file_filename)
 
         linecache.cache[code_filename] = (
             len(test_file_text),
@@ -187,15 +189,18 @@ class TestStuff(unittest.TestCase):
             code_filename
         )
         check(False)
-
-        check(False, __file__=not_code_filename)
-        check(False, __file__=test_file_filename, filename=test_file_filename)
-        del linecache.cache[code_filename]
-        check(False, __file__=test_file_filename, filename=test_file_filename)
-        check(True, __file__=__file__)
-
-        check(True, __loader__=TestSourceLoader('x = 1'))
+        check(False, __loader__=TestSourceLoader('x = 1'))
         check(False, __loader__=TestSourceLoader(test_file_text))
+        check(False, __loader__=TestSourceLoader(test_file_text), filename=not_code_filename)
+        check(False, __loader__=TestSourceLoader(test_file_text), filename=test_file_filename)
+        del linecache.cache[code_filename]
+        del linecache.cache[test_file_filename]
+        check(False, __loader__=TestSourceLoader(test_file_text))
+        check(False, __loader__=TestSourceLoader(test_file_text), filename=not_code_filename)
+        check(False, __loader__=TestSourceLoader(test_file_text), filename=test_file_filename)
+        check(True, __loader__=TestSourceLoader('x = 1'))
+        check(True, __loader__=TestSourceLoader('x = 1'), filename=not_code_filename)
+        check(False, __loader__=TestSourceLoader('x = 1'), filename=test_file_filename)
 
     def test_decode_source(self):
         def check(source, encoding, exception=None, matches=True):

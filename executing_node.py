@@ -247,14 +247,11 @@ class SourceFinder(object):
         return self.module_name, filename, source
 
     def potential_filenames(self):
-        fake_module = type(inspect)('this_is_a_fake_module_name')
-        fake_module.__file__ = self.__file__
         for func in [inspect.getsourcefile, inspect.getfile]:
-            for obj in [fake_module, self.frame]:
-                try:
-                    yield func(obj)
-                except Exception:
-                    pass
+            try:
+                yield func(self.frame)
+            except Exception:
+                pass
 
     def potential_sources(self, filenames):
         try:
