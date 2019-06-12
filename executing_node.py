@@ -188,10 +188,9 @@ class SourceFinder(object):
         self.frame = frame
         self.globals = frame.f_globals or {}
         self.module_name = self.globals.get('__name__')
-        self.__file__ = self.globals.get('__file__')
 
     def result(self, source_cls):
-        cache_key = (self.module_name, self.__file__, self.frame.f_code.co_filename)
+        cache_key = (self.module_name, self.frame.f_code.co_filename)
         source_cache = source_cls._class_local('__source_cache', {})
         try:
             return source_cache[cache_key]
