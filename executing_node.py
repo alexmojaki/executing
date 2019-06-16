@@ -102,9 +102,11 @@ def only(it):
 
 
 class Source(object):
-    def __init__(self, module_name, filename, text):
-        self.module_name = module_name
+    def __init__(self, filename, text):
         self.filename = filename
+
+        if not isinstance(text, text_type):
+            text = self.decode_source(text)
         self.text = text
 
         if PY3:
@@ -116,17 +118,40 @@ class Source(object):
                 for i, line in enumerate(text.splitlines(True))
             ])
 
-        self.tree = ast.parse(ast_text, filename=filename)
         self.nodes_by_line = defaultdict(list)
-        for node in ast.walk(self.tree):
-            for child in ast.iter_child_nodes(node):
-                child.parent = node
-            if hasattr(node, 'lineno'):
-                self.nodes_by_line[node.lineno].append(node)
+        self.tree = None
+
+        if text:
+            try:
+                self.tree = ast.parse(ast_text, filename=filename)
+            except SyntaxError:
+                pass
+            else:
+                for node in ast.walk(self.tree):
+                    for child in ast.iter_child_nodes(node):
+                        child.parent = node
+                    if hasattr(node, 'lineno'):
+                        self.nodes_by_line[node.lineno].append(node)
 
     @classmethod
     def for_frame(cls, frame):
-        return SourceFinder(frame).result(cls)
+        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})
+
+    @classmethod
+    def for_filename(cls, filename, module_globals=None):
+        source_cache = cls._class_local('__source_cache', {})
+        try:
+            return source_cache[filename]
+        except KeyError:
+            pass
+
+        lines = linecache.getlines(filename, module_globals)
+        result = source_cache[filename] = cls(filename, ''.join(lines))
+        return result
+
+    @classmethod
+    def lazycache(cls, frame):
+        linecache.lazycache(frame.f_code.co_filename, frame.f_globals)
 
     @classmethod
     def executing_node(cls, frame):
@@ -182,118 +207,12 @@ class Source(object):
             filename=self.filename,
         )
 
-
-class SourceFinder(object):
-    def __init__(self, frame):
-        self.frame = frame
-        self.globals = frame.f_globals or {}
-        self.module_name = self.globals.get('__name__')
-
-    def result(self, source_cls):
-        cache_key = (self.module_name, self.frame.f_code.co_filename)
-        source_cache = source_cls._class_local('__source_cache', {})
-        try:
-            return source_cache[cache_key]
-        except KeyError:
-            pass
-
-        result = source_cache[cache_key] = source_cls(*self.find())
-        return result
-
-    def find(self):
-        all_filenames = {
-            f
-            for f in self.potential_filenames()
-            if f
-        }
-        valid_filenames = set()
-        source_to_filename = defaultdict(set)
-        for filename, source in set(self.potential_sources(all_filenames)):
-            if not source:
-                continue
-            try:
-                source = self.decode_source(source)
-            except UnicodeDecodeError:
-                continue
-            valid_filenames.add(filename)
-            source_to_filename[source].add(filename)
-
-        source = only(self.matching_sources(source_to_filename))
-
-        # Pick the best nonempty set of filenames we have
-        for filenames in [
-            source_to_filename[source],
-            valid_filenames,
-            all_filenames,
-        ]:
-            filenames.discard(None)
-            if filenames:
-                break
-
-        # Prefer filenames available in linecache so that tracebacks work
-        filenames = [
-                        filename
-                        for filename in filenames
-                        if linecache.getlines(filename, self.globals)
-                    ] or filenames
-
-        # Pick an arbitrary filename from the set
-        if filenames:
-            filename = min(filenames)
-        else:
-            filename = None
-
-        return self.module_name, filename, source
-
-    def potential_filenames(self):
-        for func in [inspect.getsourcefile, inspect.getfile]:
-            try:
-                yield func(self.frame)
-            except Exception:
-                pass
-
-    def potential_sources(self, filenames):
-        try:
-            yield None, self.globals['__loader__'].get_source(self.module_name)
-        except Exception:
-            pass
-
-        for filename in filenames:
-            yield filename, ''.join(linecache.getlines(filename, self.globals))
-
-            try:
-                with open(filename, 'rb') as fp:
-                    yield filename, fp.read()
-            except Exception:
-                pass
-
     @staticmethod
     def decode_source(source):
         if isinstance(source, bytes):
             encoding, _ = detect_encoding(io.BytesIO(source).readline)
             source = source.decode(encoding)
         return source
-
-    @staticmethod
-    def compilable_source(source):
-        if PY3:
-            return source
-        else:
-            return ''.join([
-                '\n' if i < 2 and encoding_pattern.match(line)
-                else line
-                for i, line in enumerate(source.splitlines(True))
-            ])
-
-    def matching_sources(self, sources):
-        for source in sources:
-            compilable_source = self.compilable_source(source)
-            try:
-                code = my_compile(compilable_source, self.frame.f_code)
-            except SyntaxError:
-                continue
-            if find_codes(code, self.frame.f_code):
-                yield source
 
 
 future_flags = sum(

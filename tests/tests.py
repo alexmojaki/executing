@@ -3,12 +3,10 @@ from __future__ import print_function, division
 
 import ast
 import inspect
-import linecache
-import os
 import time
 import unittest
 
-from executing_node import Source, only, NotOneValueFound, PY3, SourceFinder
+from executing_node import Source, only, NotOneValueFound, PY3
 
 
 class TestStuff(unittest.TestCase):
@@ -148,68 +146,14 @@ class TestStuff(unittest.TestCase):
                 self.assertIs(node, new_node)
         self.assertLess(time.time() - start, 1)
 
-    def test_source_finder(self):
-        code_filename = '<code filename>'
-        dir_name = os.path.abspath(
-            os.path.dirname(__file__),
-        )
-        test_file_filename = os.path.join(
-            dir_name,
-            'source_test_file.py',
-        )
-        not_code_filename = os.path.join(
-            dir_name,
-            'not_code.txt',
-        )
-
-        with open(test_file_filename) as f:
-            test_file_text = f.read()
-
-        def check(exception, filename=code_filename, **globs):
-            code = compile(test_file_text, filename, 'exec')
-            exec(code, globs)
-            frame = globs['frame']
-            setattr(Source, '__source_cache', {})
-            if exception:
-                with self.assertRaises(Exception):
-                    Source.for_frame(frame)
-            else:
-                source = Source.for_frame(frame)
-                self.assertEqual(source.text, test_file_text)
-                self.assertEqual(filename, source.filename)
-
-        check(True)
-        check(True, filename=not_code_filename)
-        check(False, filename=test_file_filename)
-
-        linecache.cache[code_filename] = (
-            len(test_file_text),
-            None,
-            [line + '\n' for line in test_file_text.splitlines()],
-            code_filename
-        )
-        check(False)
-        check(False, __loader__=TestSourceLoader('x = 1'))
-        check(False, __loader__=TestSourceLoader(test_file_text))
-        check(False, __loader__=TestSourceLoader(test_file_text), filename=not_code_filename)
-        check(False, __loader__=TestSourceLoader(test_file_text), filename=test_file_filename)
-        del linecache.cache[code_filename]
-        del linecache.cache[test_file_filename]
-        check(False, __loader__=TestSourceLoader(test_file_text))
-        check(False, __loader__=TestSourceLoader(test_file_text), filename=not_code_filename)
-        check(False, __loader__=TestSourceLoader(test_file_text), filename=test_file_filename)
-        check(True, __loader__=TestSourceLoader('x = 1'))
-        check(True, __loader__=TestSourceLoader('x = 1'), filename=not_code_filename)
-        check(False, __loader__=TestSourceLoader('x = 1'), filename=test_file_filename)
-
     def test_decode_source(self):
         def check(source, encoding, exception=None, matches=True):
             encoded = source.encode(encoding)
             if exception:
                 with self.assertRaises(exception):
-                    SourceFinder.decode_source(encoded)
+                    Source.decode_source(encoded)
             else:
-                decoded = SourceFinder.decode_source(encoded)
+                decoded = Source.decode_source(encoded)
                 if matches:
                     self.assertEqual(decoded, source)
                 else:
@@ -270,14 +214,6 @@ class TestStuff(unittest.TestCase):
                 '''
             ]
         )
-
-
-class TestSourceLoader(object):
-    def __init__(self, text):
-        self.text = text
-
-    def get_source(self, *_args, **_kwargs):
-        return self.text
 
 
 def tester(arg, returns=None):
