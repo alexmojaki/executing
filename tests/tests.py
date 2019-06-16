@@ -215,6 +215,10 @@ class TestStuff(unittest.TestCase):
             ]
         )
 
+    def test_multiple_statements_on_one_line(self):
+        if tester(1): tester(2)
+        for _ in tester([1, 2]): tester(3)
+
     def assert_qualname(self, func, qn, check_actual_qualname=True):
         qualname = Source.for_filename(__file__).code_qualname(func.__code__)
         self.assertEqual(qn, qualname)

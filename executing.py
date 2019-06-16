@@ -9,9 +9,9 @@ import sys
 from collections import defaultdict, namedtuple, Sized
 from contextlib import contextmanager
 from itertools import islice
+from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 from operator import attrgetter
 from threading import RLock
-from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 
 PY3 = sys.version_info[0] == 3
 
@@ -173,7 +173,7 @@ class Source(object):
                 stmts = source.statements_at_line(frame.f_lineno)
                 try:
                     node = CallFinder(frame, stmts, source.tree).result
-                    stmts = [statement_containing_node(node)]
+                    stmts = {statement_containing_node(node)}
                 except Exception:
                     pass
             args = source, node, stmts
@@ -189,18 +189,11 @@ class Source(object):
 
     @cache
     def statements_at_line(self, lineno):
-        stmts_set = {
+        return {
             statement_containing_node(node)
             for node in
             self.nodes_by_line[lineno]
         }
-        a_stmt = list(stmts_set)[0]
-        body = only(
-            lst
-            for lst in get_node_bodies(a_stmt.parent)
-            if a_stmt in lst
-        )
-        return sorted(stmts_set, key=body.index)
 
     @cache
     def asttokens(self):
@@ -315,12 +308,12 @@ class CallFinder(object):
             if instruction.offset == self.frame.f_lasti
         )
 
-        calls = [
+        calls = {
             node
             for stmt in stmts
             for node in ast.walk(stmt)
             if isinstance(node, ast.Call)
-        ]
+        }
 
         self.result = only(self.matching_calls(calls, call_instruction_index))
 
