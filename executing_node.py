@@ -40,6 +40,7 @@ else:
         return wrapper
 
 
+    # noinspection PyUnresolvedReferences
     text_type = unicode
 try:
     # noinspection PyUnresolvedReferences
@@ -120,6 +121,7 @@ class Source(object):
 
         self.nodes_by_line = defaultdict(list)
         self.tree = None
+        self.qualnames = {}
 
         if text:
             try:
@@ -132,6 +134,10 @@ class Source(object):
                         child.parent = node
                     if hasattr(node, 'lineno'):
                         self.nodes_by_line[node.lineno].append(node)
+
+                visitor = QualnameVisitor()
+                visitor.visit(self.tree)
+                self.qualnames = visitor.qualnames
 
     @classmethod
     def for_frame(cls, frame):
@@ -213,6 +219,49 @@ class Source(object):
             encoding, _ = detect_encoding(io.BytesIO(source).readline)
             source = source.decode(encoding)
         return source
+
+    def code_qualname(self, code):
+        return self.qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
+
+
+class QualnameVisitor(ast.NodeVisitor):
+    def __init__(self):
+        super(QualnameVisitor, self).__init__()
+        self.stack = []
+        self.qualnames = {}
+
+    def visit_FunctionDef(self, node, name=None):
+        name = name or node.name
+        self.stack.append(name)
+        self.qualnames.setdefault((name, node.lineno), ".".join(self.stack))
+
+        self.stack.append('<locals>')
+        if isinstance(node, ast.Lambda):
+            children = [node.body]
+        else:
+            children = node.body
+        for child in children:
+            self.visit(child)
+        self.stack.pop()
+        self.stack.pop()
+
+        for field, child in ast.iter_fields(node):
+            if field == 'body':
+                continue
+            if isinstance(child, ast.AST):
+                self.visit(child)
+            elif isinstance(child, list):
+                for grandchild in child:
+                    if isinstance(grandchild, ast.AST):
+                        self.visit(grandchild)
+
+    def visit_Lambda(self, node):
+        self.visit_FunctionDef(node, '<lambda>')
+
+    def visit_ClassDef(self, node):
+        self.stack.append(node.name)
+        self.generic_visit(node)
+        self.stack.pop()
 
 
 future_flags = sum(

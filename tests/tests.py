@@ -215,6 +215,72 @@ class TestStuff(unittest.TestCase):
             ]
         )
 
+    def assert_qualname(self, func, qn, check_actual_qualname=True):
+        qualname = Source.for_filename(__file__).code_qualname(func.__code__)
+        self.assertEqual(qn, qualname)
+        if PY3 and check_actual_qualname:
+            self.assertEqual(qn, func.__qualname__)
+        self.assertTrue(qn.endswith(func.__name__))
+
+    def test_qualname(self):
+        self.assert_qualname(C.f, 'C.f')
+        self.assert_qualname(C.D.g, 'C.D.g')
+        self.assert_qualname(f, 'f')
+        self.assert_qualname(f(), 'f.<locals>.g')
+        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')
+        self.assert_qualname(lamb, '<lambda>')
+        foo = lambda_maker()
+        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')
+        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')
+        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')
+        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)
+
+
+class C(object):
+    @staticmethod
+    def f():
+        pass
+
+    class D(object):
+        @staticmethod
+        def g():
+            pass
+
+        @staticmethod
+        def h():
+            def i():
+                def j():
+                    pass
+
+                return j
+
+            return i()
+
+
+def f():
+    def g():
+        pass
+
+    return g
+
+
+def lambda_maker():
+    def assign(x):
+        def decorator(func):
+            func.x = x
+            return func
+
+        return decorator
+
+    @assign(lambda: 1)
+    def foo():
+        return lambda: lambda: 3
+
+    return foo
+
+
+lamb = lambda: 0
+
 
 def tester(arg, returns=None):
     frame = inspect.currentframe().f_back
@@ -233,8 +299,8 @@ def tester(arg, returns=None):
 assert tester([1, 2, 3]) == [1, 2, 3]
 
 
-def empty_decorator(f):
-    return f
+def empty_decorator(func):
+    return func
 
 
 def decorator_with_args(*_, **__):
