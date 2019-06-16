@@ -6,7 +6,7 @@ import inspect
 import time
 import unittest
 
-from executing_node import Source, only, NotOneValueFound, PY3
+from executing_node import Source, only, PY3
 
 
 class TestStuff(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestStuff(unittest.TestCase):
         # or are of different types
         str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])
         # but not if everything is the same
-        with self.assertRaises(NotOneValueFound):
+        with self.assertRaises(AttributeError):
             str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
     def test_lambda(self):
@@ -138,8 +138,8 @@ class TestStuff(unittest.TestCase):
     def test_many_calls(self):
         node = None
         start = time.time()
-        for i in range(100000):
-            new_node = Source.executing_node(inspect.currentframe())
+        for i in range(10000):
+            new_node = Source.executing(inspect.currentframe()).node
             if node is None:
                 node = new_node
             else:
@@ -284,7 +284,7 @@ lamb = lambda: 0
 
 def tester(arg, returns=None):
     frame = inspect.currentframe().f_back
-    call = Source.executing_node(frame)
+    call = Source.executing(frame).node
     result = eval(
         compile(ast.Expression(only(call.args)), '<>', 'eval'),
         frame.f_globals,

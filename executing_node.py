@@ -160,29 +160,32 @@ class Source(object):
         linecache.lazycache(frame.f_code.co_filename, frame.f_globals)
 
     @classmethod
-    def executing_node(cls, frame):
+    def executing(cls, frame):
         key = (frame.f_code, frame.f_lasti)
-        _executing_cache = cls._class_local('__executing_cache', {})
+        executing_cache = cls._class_local('__executing_cache', {})
 
         try:
-            return _executing_cache[key]
+            args = executing_cache[key]
         except KeyError:
-            pass
+            source = cls.for_frame(frame)
+            node = stmts = None
+            if source.tree:
+                stmts = source.statements_at_line(frame.f_lineno)
+                try:
+                    node = CallFinder(frame, stmts, source.tree).result
+                    stmts = [statement_containing_node(node)]
+                except Exception:
+                    pass
+            args = source, node, stmts
+            executing_cache[key] = args
 
-        tree = cls.for_frame(frame).tree
-        stmts = cls.executing_statements(frame)
-        result = _executing_cache[key] = CallFinder(frame, stmts, tree).result
-        return result
+        return Executing(frame, *args)
 
     @classmethod
     def _class_local(cls, name, default):
         result = cls.__dict__.get(name, default)
         setattr(cls, name, result)
         return result
-
-    @classmethod
-    def executing_statements(cls, frame):
-        return cls.for_frame(frame).statements_at_line(frame.f_lineno)
 
     @cache
     def statements_at_line(self, lineno):
@@ -221,7 +224,25 @@ class Source(object):
         return source
 
     def code_qualname(self, code):
+        assert code.co_filename == self.filename
         return self.qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
+
+
+class Executing(object):
+    def __init__(self, frame, source, node, stmts):
+        self.frame = frame
+        self.source = source
+        self.node = node
+        self.statements = stmts
+
+    def code_qualname(self):
+        return self.source.code_qualname(self.frame.f_code)
+
+    def text(self):
+        return self.source.asttokens().get_text(self.node)
+
+    def text_range(self):
+        return self.source.asttokens().get_text_range(self.node)
 
 
 class QualnameVisitor(ast.NodeVisitor):
