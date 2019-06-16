@@ -6,7 +6,7 @@ import inspect
 import time
 import unittest
 
-from executing_node import Source, only, PY3
+from executing import Source, only, PY3
 
 
 class TestStuff(unittest.TestCase):
