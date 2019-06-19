@@ -56,6 +56,11 @@ except AttributeError:
             return ord(c)
 
 
+    from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname
+
+    # Based on dis.disassemble from 2.7
+    # Left as similar as possible for easy diff
+
     def get_instructions(co):
         code = co.co_code
         n = len(code)
@@ -63,27 +68,23 @@ except AttributeError:
         extended_arg = 0
         while i < n:
             offset = i
-            op = to_int(code[i])
-            opname = dis.opname[op]
+            c = code[i]
+            op = to_int(c)
             argval = None
             i = i + 1
-            if op >= dis.HAVE_ARGUMENT:
+            if op >= HAVE_ARGUMENT:
                 oparg = to_int(code[i]) + to_int(code[i + 1]) * 256 + extended_arg
                 extended_arg = 0
                 i = i + 2
-                if op == dis.EXTENDED_ARG:
+                if op == EXTENDED_ARG:
                     extended_arg = oparg * 65536
 
-                if op in dis.hasconst:
+                if op in hasconst:
                     argval = co.co_consts[oparg]
-            yield Instruction(offset, argval, opname)
+            yield Instruction(offset, argval, opname[op])
 
 
 class NotOneValueFound(Exception):
-    pass
-
-
-class SourceNotFoundException(Exception):
     pass
 
 
@@ -113,6 +114,9 @@ class Source(object):
         if PY3:
             ast_text = text
         else:
+            # In python 2 it's a syntax error to parse unicode
+            # with an encoding declaration, so we remove it but
+            # leave empty lines in its place to keep line numbers the same
             ast_text = ''.join([
                 '\n' if i < 2 and encoding_pattern.match(line)
                 else line
@@ -157,7 +161,8 @@ class Source(object):
 
     @classmethod
     def lazycache(cls, frame):
-        linecache.lazycache(frame.f_code.co_filename, frame.f_globals)
+        if hasattr(linecache, 'lazycache'):
+            linecache.lazycache(frame.f_code.co_filename, frame.f_globals)
 
     @classmethod
     def executing(cls, frame):
@@ -173,9 +178,13 @@ class Source(object):
                 stmts = source.statements_at_line(frame.f_lineno)
                 try:
                     node = CallFinder(frame, stmts, source.tree).result
-                    stmts = {statement_containing_node(node)}
                 except Exception:
                     pass
+                else:
+                    new_stmts = {statement_containing_node(node)}
+                    assert new_stmts <= stmts
+                    stmts = new_stmts
+
             args = source, node, stmts
             executing_cache[key] = args
 
@@ -183,6 +192,11 @@ class Source(object):
 
     @classmethod
     def _class_local(cls, name, default):
+        """
+        Returns an attribute directly associated with this class
+        (as opposed to subclasses), setting default if necessary
+        """
+        # classes have a mappingproxy preventing us from using setdefault
         result = cls.__dict__.get(name, default)
         setattr(cls, name, result)
         return result
@@ -202,7 +216,7 @@ class Source(object):
 
         See http://asttokens.readthedocs.io/en/latest/api-index.html
         """
-        from asttokens import ASTTokens
+        from asttokens import ASTTokens  # must be installed separately
         return ASTTokens(
             self.text,
             tree=self.tree,
@@ -259,6 +273,9 @@ class QualnameVisitor(ast.NodeVisitor):
         self.stack.pop()
         self.stack.pop()
 
+        # Find lambdas in the function definition outside the body,
+        # e.g. decorators or default arguments
+        # Based on iter_child_nodes
         for field, child in ast.iter_fields(node):
             if field == 'body':
                 continue
@@ -284,10 +301,10 @@ future_flags = sum(
 )
 
 
-def my_compile(source, matching_code):
+def compile_similar_to(source, matching_code):
     return compile(
         source,
-        '<mod>',
+        matching_code.co_filename,
         'exec',
         flags=future_flags & matching_code.co_flags,
         dont_inherit=True,
@@ -344,7 +361,7 @@ class CallFinder(object):
                 yield call
 
     def compile_instructions(self):
-        module_code = my_compile(self.tree, self.frame.f_code)
+        module_code = compile_similar_to(self.tree, self.frame.f_code)
         code = only(find_codes(module_code, self.frame.f_code))
         return list(get_instructions(code))
 
@@ -380,12 +397,6 @@ else:
                 yield
             finally:
                 call.kwargs = original
-
-
-def get_node_bodies(node):
-    for name, field in ast.iter_fields(node):
-        if isinstance(field, list):
-            yield field
 
 
 def _call_instructions(instructions):
