@@ -1,3 +1,12 @@
+"""
+Get information about what a frame is currently doing. Typical usage:
+
+    import executing
+
+    node = executing.Source.executing(frame).node
+    # node will be an AST node or None
+"""
+
 import __future__
 import ast
 import dis
@@ -13,6 +22,8 @@ from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 from operator import attrgetter
 from threading import RLock
 
+__all__ = ["Source"]
+
 PY3 = sys.version_info[0] == 3
 
 if PY3:
@@ -21,7 +32,7 @@ if PY3:
     # noinspection PyUnresolvedReferences
     from tokenize import detect_encoding
 
-    cache = lru_cache()
+    cache = lru_cache(maxsize=None)
     text_type = str
 else:
     from lib2to3.pgen2.tokenize import detect_encoding
@@ -104,7 +115,33 @@ def only(it):
 
 
 class Source(object):
+    """
+    The source code of a single file and associated metadata.
+
+    The main method of interest is the classmethod `executing(frame)`.
+
+    If you want an instance of this class, don't construct it.
+    Ideally use the classmethod `for_frame(frame)`.
+    If you don't have a frame, use `for_filename(filename [, module_globals])`.
+    These methods cache instances by filename, so at most one instance exists per filename.
+
+    Attributes:
+        - filename
+        - text
+        - tree: AST parsed from text, or None if text is not valid Python
+            All nodes in the tree have an extra `parent` attribute
+
+    Other methods of interest:
+        - statements_at_line
+        - asttokens
+        - code_qualname
+    """
+
     def __init__(self, filename, text):
+        """
+        Don't call this constructor, see the class docstring.
+        """
+
         self.filename = filename
 
         if not isinstance(text, text_type):
@@ -123,9 +160,9 @@ class Source(object):
                 for i, line in enumerate(text.splitlines(True))
             ])
 
-        self.nodes_by_line = defaultdict(list)
+        self._nodes_by_line = defaultdict(list)
         self.tree = None
-        self.qualnames = {}
+        self._qualnames = {}
 
         if text:
             try:
@@ -137,14 +174,17 @@ class Source(object):
                     for child in ast.iter_child_nodes(node):
                         child.parent = node
                     if hasattr(node, 'lineno'):
-                        self.nodes_by_line[node.lineno].append(node)
+                        self._nodes_by_line[node.lineno].append(node)
 
                 visitor = QualnameVisitor()
                 visitor.visit(self.tree)
-                self.qualnames = visitor.qualnames
+                self._qualnames = visitor.qualnames
 
     @classmethod
     def for_frame(cls, frame):
+        """
+        Returns the `Source` object corresponding to the file the frame is executing in.
+        """
         return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})
 
     @classmethod
@@ -166,6 +206,10 @@ class Source(object):
 
     @classmethod
     def executing(cls, frame):
+        """
+        Returns an `Executing` object representing the operation
+        currently executing in the given frame.
+        """
         key = (frame.f_code, frame.f_lasti)
         executing_cache = cls._class_local('__executing_cache', {})
 
@@ -203,10 +247,22 @@ class Source(object):
 
     @cache
     def statements_at_line(self, lineno):
+        """
+        Returns the statement nodes overlapping the given line.
+
+        Returns at most one statement unless semicolons are present.
+
+        If the `text` attribute is not valid python, meaning
+        `tree` is None, returns an empty set.
+
+        Otherwise, `Source.for_frame(frame).statements_at_line(frame.f_lineno)`
+        should return at least one statement.
+        """
+
         return {
             statement_containing_node(node)
             for node in
-            self.nodes_by_line[lineno]
+            self._nodes_by_line[lineno]
         }
 
     @cache
@@ -231,11 +287,41 @@ class Source(object):
         return source
 
     def code_qualname(self, code):
+        """
+        Imitates the __qualname__ attribute of functions for code objects.
+        Given:
+
+            - A function `func`
+            - A frame `frame` for an execution of `func`, meaning:
+                `frame.f_code is func.__code__`
+
+        `Source.for_frame(frame).code_qualname(frame.f_code)`
+        will be equal to `func.__qualname__`*. Works for Python 2 as well,
+        where of course no `__qualname__` attribute exists.
+
+        Falls back to `code.co_name` if there is no appropriate qualname.
+
+        Based on https://github.com/wbolster/qualname
+
+        (* unless `func` is a lambda
+        nested inside another lambda on the same line, in which case
+        the outer lambda's qualname will be returned for the codes
+        of both lambdas)
+        """
         assert code.co_filename == self.filename
-        return self.qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
+        return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
 
 
 class Executing(object):
+    """
+    Information about the operation a frame is currently executing.
+
+    Generally you will just want `node`, which is the AST node being executed,
+    or None if it's unknown.
+    Currently `node` can only be an `ast.Call` object, other operations
+    will be supported in future.
+    """
+
     def __init__(self, frame, source, node, stmts):
         self.frame = frame
         self.source = source
