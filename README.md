@@ -1,5 +1,7 @@
 # executing
 
+[![Build Status](https://travis-ci.org/alexmojaki/executing.svg?branch=master)](https://travis-ci.org/alexmojaki/executing) [![Coverage Status](https://coveralls.io/repos/github/alexmojaki/executing/badge.svg?branch=master)](https://coveralls.io/github/alexmojaki/executing?branch=master) [![Supports Python versions 2.7 and 3.3+, including PyPy](https://img.shields.io/pypi/pyversions/executing.svg)](https://pypi.python.org/pypi/executing)
+
 This mini-package lets you get information about what a frame is currently doing, particularly the AST node being executed. Typical usage:
 
     import executing
