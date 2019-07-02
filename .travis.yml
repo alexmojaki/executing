@@ -13,11 +13,9 @@ python:
   - pypy3.5
 
 install:
-  - pip install tox-travis
-script:
-  - tox
   - pip install coveralls
-  - coverage run --source executing tests/tests.py
+script:
+  - coverage run --include=executing.py tests/tests.py
   - coverage report -m
 
 after_success:
