@@ -15,7 +15,7 @@ python:
 install:
   - pip install coveralls
 script:
-  - coverage run --include=executing.py tests/tests.py
+  - export PYTHONPATH=`pwd` coverage run --include=executing.py tests/tests.py
   - coverage report -m
 
 after_success:
