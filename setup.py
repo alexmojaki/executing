@@ -4,7 +4,7 @@ package = 'executing'
 
 
 setup(name=package,
-      version='0.1.2',
+      version='0.1.3',
       description='Get the currently executing AST node of a frame, and other information',
       url='https://github.com/alexmojaki/' + package,
       author='Alex Hall',
