@@ -59,14 +59,6 @@ try:
 except AttributeError:
     Instruction = namedtuple('Instruction', 'offset argval opname')
 
-
-    def to_int(c):
-        if isinstance(c, int):
-            return c
-        else:
-            return ord(c)
-
-
     from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname
 
     # Based on dis.disassemble from 2.7
@@ -80,11 +72,11 @@ except AttributeError:
         while i < n:
             offset = i
             c = code[i]
-            op = to_int(c)
+            op = ord(c)
             argval = None
             i = i + 1
             if op >= HAVE_ARGUMENT:
-                oparg = to_int(code[i]) + to_int(code[i + 1]) * 256 + extended_arg
+                oparg = ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg
                 extended_arg = 0
                 i = i + 2
                 if op == EXTENDED_ARG:
