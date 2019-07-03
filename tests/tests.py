@@ -3,6 +3,7 @@ from __future__ import print_function, division
 
 import ast
 import inspect
+import os
 import tempfile
 import time
 import unittest
@@ -257,6 +258,11 @@ class TestStuff(unittest.TestCase):
                 with self.assertRaises(NotOneValueFound):
                     only(gen)
 
+    def test_invalid_python(self):
+        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )
+        source = Source.for_filename(path)
+        self.assertIsNone(source.tree)
+
 
 class C(object):
     @staticmethod
@@ -306,6 +312,7 @@ lamb = lambda: 0
 
 def tester(arg, returns=None):
     frame = inspect.currentframe().f_back
+    Source.lazycache(frame)
     call = Source.executing(frame).node
     result = eval(
         compile(ast.Expression(only(call.args)), '<>', 'eval'),
