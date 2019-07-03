@@ -7,7 +7,7 @@ import tempfile
 import time
 import unittest
 
-from executing import Source, only, PY3
+from executing import Source, only, PY3, NotOneValueFound
 
 
 class TestStuff(unittest.TestCase):
@@ -247,6 +247,15 @@ class TestStuff(unittest.TestCase):
         with open(filename, 'w') as outfile:
             outfile.write(source)
         exec(code)
+
+    def test_only(self):
+        for n in range(5):
+            gen = (i for i in range(n))
+            if n == 1:
+                self.assertEqual(only(gen), 0)
+            else:
+                with self.assertRaises(NotOneValueFound):
+                    only(gen)
 
 
 class C(object):
