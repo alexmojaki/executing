@@ -3,6 +3,7 @@ from __future__ import print_function, division
 
 import ast
 import inspect
+import tempfile
 import time
 import unittest
 
@@ -238,6 +239,14 @@ class TestStuff(unittest.TestCase):
         self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')
         self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')
         self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)
+
+    def test_extended_arg(self):
+        source = 'tester(6); %s; tester(9)' % list(range(66000))
+        _, filename = tempfile.mkstemp()
+        code = compile(source, filename, 'exec')
+        with open(filename, 'w') as outfile:
+            outfile.write(source)
+        exec(code)
 
 
 class C(object):
