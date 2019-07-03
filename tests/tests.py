@@ -263,6 +263,15 @@ class TestStuff(unittest.TestCase):
         source = Source.for_filename(path)
         self.assertIsNone(source.tree)
 
+    def test_executing_methods(self):
+        frame = inspect.currentframe()
+        executing = Source.executing(frame)
+        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')
+        text = 'Source.executing(frame)'
+        self.assertEqual(executing.text(), text)
+        start, end = executing.text_range()
+        self.assertEqual(executing.source.text[start:end], text)
+
 
 class C(object):
     @staticmethod
