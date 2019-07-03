@@ -11,7 +11,7 @@ python:
   - pypy3.5
 
 install:
-  - pip install coveralls
+  - pip install coveralls asttokens
 script:
   - PYTHONPATH=`pwd` coverage run --include=executing.py tests/tests.py
   - coverage report -m

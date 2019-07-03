@@ -4,6 +4,7 @@ from __future__ import print_function, division
 import ast
 import inspect
 import os
+import sys
 import tempfile
 import time
 import unittest
@@ -267,10 +268,11 @@ class TestStuff(unittest.TestCase):
         frame = inspect.currentframe()
         executing = Source.executing(frame)
         self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')
-        text = 'Source.executing(frame)'
-        self.assertEqual(executing.text(), text)
-        start, end = executing.text_range()
-        self.assertEqual(executing.source.text[start:end], text)
+        if 'pypy' not in sys.version.lower():
+            text = 'Source.executing(frame)'
+            self.assertEqual(executing.text(), text)
+            start, end = executing.text_range()
+            self.assertEqual(executing.source.text[start:end], text)
 
 
 class C(object):
