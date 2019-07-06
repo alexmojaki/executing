@@ -56,6 +56,7 @@ class TestStuff(unittest.TestCase):
         # or are of different types
         str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])
         # but not if everything is the same
+        # noinspection PyTypeChecker
         with self.assertRaises((AttributeError, NotOneValueFound)):
             str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
@@ -379,6 +380,14 @@ class Tester(object):
 
     __neg__ = __pos__ = __invert__
 
+    def __lt__(self, other):
+        node = self.get_node(ast.Compare)
+        self.check(node.left, self)
+        self.check(node.comparators[0], other)
+        return self
+
+    __ne__ = __ge__ = __lt__
+
 
 tester = Tester()
 
@@ -392,6 +401,10 @@ assert tester * 3 is tester
 assert tester - 2 is tester
 assert tester + 1 is tester
 assert -tester is +tester is ~tester is tester
+assert (tester < 7) is tester
+assert (tester >= 78) is tester
+assert (tester != 79) is tester
+# assert (5 != tester != 6) is tester
 
 
 def empty_decorator(func):
