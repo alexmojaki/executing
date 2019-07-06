@@ -94,7 +94,7 @@ class TestStuff(unittest.TestCase):
         # @formatter:on
 
     def test_indirect_call(self):
-        dict(x=tester)['x'](tester)(3)
+        dict(x=tester)['x'](tester)(3, check_func=False)
 
     def test_compound_statements(self):
         with self.assertRaises(TypeError):
@@ -327,30 +327,57 @@ lamb = lambda: 0
 
 
 class Tester(object):
-    def check(self, typ, getter, value):
+    def get_node(self, typ):
         frame = inspect.currentframe().f_back.f_back
         Source.lazycache(frame)
         node = Source.executing(frame).node
         assert isinstance(node, typ), (node, typ)
-        child = getter(node)
+        return node
+
+    def check(self, node, value):
+        frame = inspect.currentframe().f_back.f_back
         result = eval(
-            compile(ast.Expression(child), frame.f_code.co_filename, 'eval'),
+            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),
             frame.f_globals,
             frame.f_locals,
         )
         assert result == value, (result, value)
-        return node
 
-    def __call__(self, arg, returns=None):
-        self.check(ast.Call, lambda call: only(call.args), arg)
+    def __call__(self, arg, returns=None, check_func=True):
+        call = self.get_node(ast.Call)
+        self.check(only(call.args), arg)
+        if check_func:
+            self.check(call.func, self)
         if returns is None:
             return arg
         return returns
 
     def __getattr__(self, item):
-        node = self.check(ast.Attribute, lambda a: a.value, self)
+        node = self.get_node(ast.Attribute)
+        self.check(node.value, self)
         assert node.attr == item
         return self
+
+    def __getitem__(self, item):
+        node = self.get_node(ast.Subscript)
+        self.check(node.value, self)
+        self.check(node.slice.value, item)
+        return self
+
+    def __add__(self, other):
+        node = self.get_node(ast.BinOp)
+        self.check(node.left, self)
+        self.check(node.right, other)
+        return self
+
+    __pow__ = __mul__ = __sub__ = __add__
+
+    def __invert__(self):
+        node = self.get_node(ast.UnaryOp)
+        self.check(node.operand, self)
+        return self
+
+    __neg__ = __pos__ = __invert__
 
 
 tester = Tester()
@@ -359,6 +386,12 @@ tester = Tester()
 assert tester([1, 2, 3]) == [1, 2, 3]
 
 assert tester.asd is tester
+assert tester[1 + 2] is tester
+assert tester ** 4 is tester
+assert tester * 3 is tester
+assert tester - 2 is tester
+assert tester + 1 is tester
+assert -tester is +tester is ~tester is tester
 
 
 def empty_decorator(func):

@@ -403,14 +403,14 @@ class NodeFinder(object):
 
         if op_name.startswith('CALL_'):
             typ = ast.Call
+        elif op_name == 'BINARY_SUBSCR':
+            typ = ast.Subscript
         elif op_name.startswith('BINARY_'):
             typ = ast.BinOp
         elif op_name.startswith('UNARY_'):
             typ = ast.UnaryOp
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD'):
             typ = ast.Attribute
-        elif op_name == 'BINARY_SUBSCR':
-            typ = ast.Subscript
         elif op_name == 'COMPARE_OP':
             typ = ast.Compare
         else:
