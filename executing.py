@@ -396,12 +396,32 @@ class NodeFinder(object):
         self.frame = frame
         self.tree = tree
 
+        b = frame.f_code.co_code[frame.f_lasti]
+        if not PY3:
+            b = ord(b)
+        op_name = dis.opname[b]
+
+        if op_name.startswith('CALL_'):
+            typ = ast.Call
+        elif op_name.startswith('BINARY_'):
+            typ = ast.BinOp
+        elif op_name.startswith('UNARY_'):
+            typ = ast.UnaryOp
+        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD'):
+            typ = ast.Attribute
+        elif op_name == 'BINARY_SUBSCR':
+            typ = ast.Subscript
+        elif op_name == 'COMPARE_OP':
+            typ = ast.Compare
+        else:
+            return
+
         with lock:
             exprs = {
                 node
                 for stmt in stmts
                 for node in ast.walk(stmt)
-                if isinstance(node, ast.Call)
+                if isinstance(node, typ)
                 if not (hasattr(node, "ctx") and not isinstance(node.ctx, ast.Load))
             }
 

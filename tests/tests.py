@@ -274,6 +274,11 @@ class TestStuff(unittest.TestCase):
             start, end = executing.text_range()
             self.assertEqual(executing.source.text[start:end], text)
 
+    def test_attr(self):
+        c = C()
+        c.x = c.y = tester
+        str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
+
 
 class C(object):
     @staticmethod
@@ -321,22 +326,39 @@ def lambda_maker():
 lamb = lambda: 0
 
 
-def tester(arg, returns=None):
-    frame = inspect.currentframe().f_back
-    Source.lazycache(frame)
-    call = Source.executing(frame).node
-    result = eval(
-        compile(ast.Expression(only(call.args)), '<>', 'eval'),
-        frame.f_globals,
-        frame.f_locals,
-    )
-    assert result == result, (result, arg)
-    if returns is None:
-        return arg
-    return returns
+class Tester(object):
+    def check(self, typ, getter, value):
+        frame = inspect.currentframe().f_back.f_back
+        Source.lazycache(frame)
+        node = Source.executing(frame).node
+        assert isinstance(node, typ), (node, typ)
+        child = getter(node)
+        result = eval(
+            compile(ast.Expression(child), frame.f_code.co_filename, 'eval'),
+            frame.f_globals,
+            frame.f_locals,
+        )
+        assert result == value, (result, value)
+        return node
+
+    def __call__(self, arg, returns=None):
+        self.check(ast.Call, lambda call: only(call.args), arg)
+        if returns is None:
+            return arg
+        return returns
+
+    def __getattr__(self, item):
+        node = self.check(ast.Attribute, lambda a: a.value, self)
+        assert node.attr == item
+        return self
+
+
+tester = Tester()
 
 
 assert tester([1, 2, 3]) == [1, 2, 3]
+
+assert tester.asd is tester
 
 
 def empty_decorator(func):
