@@ -56,7 +56,7 @@ class TestStuff(unittest.TestCase):
         # or are of different types
         str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])
         # but not if everything is the same
-        with self.assertRaises(AttributeError):
+        with self.assertRaises((AttributeError, NotOneValueFound)):
             str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
     def test_lambda(self):
@@ -243,7 +243,7 @@ class TestStuff(unittest.TestCase):
         self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)
 
     def test_extended_arg(self):
-        source = 'tester(6); %s; tester(9)' % list(range(66000))
+        source = 'tester(6)\n%s\ntester(9)' % list(range(66000))
         _, filename = tempfile.mkstemp()
         code = compile(source, filename, 'exec')
         with open(filename, 'w') as outfile:

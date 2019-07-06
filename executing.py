@@ -16,7 +16,6 @@ import io
 import linecache
 import sys
 from collections import defaultdict, namedtuple, Sized
-from contextlib import contextmanager
 from itertools import islice
 from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 from operator import attrgetter
@@ -213,9 +212,9 @@ class Source(object):
             if source.tree:
                 stmts = source.statements_at_line(frame.f_lineno)
                 try:
-                    node = CallFinder(frame, stmts, source.tree).result
+                    node = NodeFinder(frame, stmts, source.tree).result
                 except Exception:
-                    pass
+                    raise
                 else:
                     new_stmts = {statement_containing_node(node)}
                     assert new_stmts <= stmts
@@ -392,32 +391,38 @@ def compile_similar_to(source, matching_code):
 sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
 
 
-class CallFinder(object):
+class NodeFinder(object):
     def __init__(self, frame, stmts, tree):
         self.frame = frame
         self.tree = tree
-        call_instruction_index = only(
-            i
-            for i, instruction in enumerate(
-                _call_instructions(self.compile_instructions()))
-            if instruction.offset == self.frame.f_lasti
-        )
 
-        calls = {
-            node
-            for stmt in stmts
-            for node in ast.walk(stmt)
-            if isinstance(node, ast.Call)
-        }
+        with lock:
+            exprs = {
+                node
+                for stmt in stmts
+                for node in ast.walk(stmt)
+                if isinstance(node, ast.Call)
+                if not (hasattr(node, "ctx") and not isinstance(node.ctx, ast.Load))
+            }
 
-        self.result = only(self.matching_calls(calls, call_instruction_index))
+            self.result = only(list(self.matching_nodes(exprs)))
 
-    def matching_calls(self, calls, call_instruction_index):
-        for i, call in enumerate(calls):
-            with add_sentinel_kwargs(call):
-                ast.fix_missing_locations(call)
+    def matching_nodes(self, exprs):
+        for i, expr in enumerate(exprs):
+            setter = get_setter(expr)
+            replacement = ast.BinOp(
+                left=expr,
+                op=ast.Pow(),
+                right=ast.Str(s=sentinel),
+            )
+            ast.fix_missing_locations(replacement)
+            setter(replacement)
+            try:
                 instructions = self.compile_instructions()
-
+            except SyntaxError:
+                continue
+            finally:
+                setter(expr)
             indices = [
                 i
                 for i, instruction in enumerate(instructions)
@@ -425,18 +430,12 @@ class CallFinder(object):
             ]
             if not indices:
                 continue
-            arg_index = only(indices)
-            new_instruction = _call_instructions(instructions[arg_index:])[0]
+            arg_index = only(indices) - 1
+            while instructions[arg_index].opname == 'EXTENDED_ARG':
+                arg_index -= 1
 
-            call_instructions = _call_instructions(instructions)
-            new_instruction_index = only(
-                i
-                for i, instruction in enumerate(call_instructions)
-                if instruction is new_instruction
-            )
-
-            if new_instruction_index == call_instruction_index:
-                yield call
+            if instructions[arg_index].offset == self.frame.f_lasti:
+                yield expr
 
     def compile_instructions(self):
         module_code = compile_similar_to(self.tree, self.frame.f_code)
@@ -444,45 +443,21 @@ class CallFinder(object):
         return list(get_instructions(code))
 
 
+def get_setter(node):
+    parent = node.parent
+    for name, field in ast.iter_fields(parent):
+        if field is node:
+            return lambda new_node: setattr(parent, name, new_node)
+        elif isinstance(field, list):
+            for i, item in enumerate(field):
+                if item is node:
+                    def setter(new_node):
+                        field[i] = new_node
+
+                    return setter
+
+
 lock = RLock()
-
-
-@contextmanager
-def tweak_list(lst):
-    with lock:
-        original = lst[:]
-        try:
-            yield
-        finally:
-            lst[:] = original
-
-
-if sys.version_info[:2] >= (3, 5):
-    @contextmanager
-    def add_sentinel_kwargs(call):
-        keyword = ast.keyword(arg=None, value=ast.Str(s=sentinel))
-        with lock:
-            with tweak_list(call.keywords):
-                call.keywords.append(keyword)
-                yield
-else:
-    @contextmanager
-    def add_sentinel_kwargs(call):
-        with lock:
-            original = call.kwargs
-            call.kwargs = ast.Str(s=sentinel)
-            try:
-                yield
-            finally:
-                call.kwargs = original
-
-
-def _call_instructions(instructions):
-    return [
-        instruction
-        for instruction in instructions
-        if instruction.opname.startswith(('CALL_FUNCTION', 'CALL_METHOD'))
-    ]
 
 
 def find_codes(root_code, matching):
