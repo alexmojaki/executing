@@ -720,7 +720,7 @@
         ],
         [
             "BINARY_SUBSCR",
-            "Subscript(value=Name(id='tester', ctx=Load()), slice=Index(value=BinOp(left=Num(n=1), op=Add(), right=Num(n=2))), ctx=Load())"
+            "Subscript(value=Name(id='tester', ctx=Load()), slice=Index(value=Num(n=19)), ctx=Load())"
         ],
         [
             "BINARY_POWER",

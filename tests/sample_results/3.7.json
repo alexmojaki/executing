@@ -720,7 +720,7 @@
         ],
         [
             "BINARY_SUBSCR",
-            "tester[1 + 2]"
+            "tester[19]"
         ],
         [
             "BINARY_POWER",

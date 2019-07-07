@@ -403,7 +403,7 @@ class NodeFinder(object):
 
         if op_name.startswith('CALL_'):
             typ = ast.Call
-        elif op_name == 'BINARY_SUBSCR':
+        elif op_name.startswith(('BINARY_SUBSCR', 'SLICE+')):
             typ = ast.Subscript
         elif op_name.startswith('BINARY_'):
             typ = ast.BinOp

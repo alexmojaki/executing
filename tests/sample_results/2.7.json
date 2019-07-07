@@ -723,12 +723,8 @@
             "tester.asd"
         ], 
         [
-            "BINARY_ADD", 
-            "1 + 2"
-        ], 
-        [
             "BINARY_SUBSCR", 
-            "tester[1 + 2]"
+            "tester[19]"
         ], 
         [
             "BINARY_POWER", 
@@ -1185,6 +1181,10 @@
         [
             "LOAD_ATTR", 
             "executing.source.text"
+        ], 
+        [
+            "SLICE+3", 
+            "executing.source.text[start:end]"
         ], 
         [
             "LOAD_ATTR", 

@@ -723,12 +723,8 @@
             "tester.asd"
         ],
         [
-            "BINARY_ADD",
-            "1 + 2"
-        ],
-        [
             "BINARY_SUBSCR",
-            "tester[1 + 2]"
+            "tester[19]"
         ],
         [
             "BINARY_POWER",

@@ -136,7 +136,6 @@ class TestStuff(unittest.TestCase):
         assert list(gen()) == list(gen2) == [1, 2]
 
     def test_future_import(self):
-        print(1 / 2)
         tester(4)
 
     def test_many_calls(self):
@@ -416,7 +415,7 @@ tester = Tester()
 assert tester([1, 2, 3]) == [1, 2, 3]
 
 assert tester.asd is tester
-assert tester[1 + 2] is tester
+assert tester[19] is tester
 assert tester ** 4 is tester
 assert tester * 3 is tester
 assert tester - 2 is tester

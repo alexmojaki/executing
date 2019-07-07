@@ -298,8 +298,28 @@ class TestFiles(unittest.TestCase):
             file_result = result[filename]
             filename = os.path.join(samples_dir, filename)
             source = Source.for_filename(filename)
+
+            nodes = {}
+            for node in ast.walk(source.tree):
+                if isinstance(node, (
+                        ast.UnaryOp,
+                        ast.BinOp,
+                        ast.Subscript,
+                        ast.Attribute
+                )):
+                    nodes[node] = None
+
             code = compile(source.tree, source.filename, 'exec')
-            file_result += self.check_code(code)
+            file_result += self.check_code(code, nodes)
+
+            for node, value in nodes.items():
+                if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+                    continue
+
+                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Delete)):
+                    continue
+
+                self.assertIsNotNone(value, ast.dump(node))
 
         if os.getenv('FIX_EXECUTING_TESTS'):
             with open(result_filename, 'w') as outfile:
@@ -308,7 +328,7 @@ class TestFiles(unittest.TestCase):
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
 
-    def check_code(self, code):
+    def check_code(self, code, nodes):
         linestarts = dict(dis.findlinestarts(code))
         instructions = get_instructions(code)
         lineno = None
@@ -316,6 +336,7 @@ class TestFiles(unittest.TestCase):
             lineno = linestarts.get(inst.offset, lineno)
             if not inst.opname.startswith(
                     ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
+                     'SLICE+',
                             # 'COMPARE_OP',
                      )):
                 continue
@@ -325,6 +346,10 @@ class TestFiles(unittest.TestCase):
             frame.f_globals = globals()
             frame.f_lineno = lineno
             executing = Source.executing(frame)
+            node = executing.node
+            self.assertIsNone(nodes[node])
+            nodes[node] = (inst, frame.__dict__)
+
             if PYPY:
                 value = ast.dump(executing.node)
             else:
@@ -333,7 +358,7 @@ class TestFiles(unittest.TestCase):
 
         for const in code.co_consts:
             if isinstance(const, type(code)):
-                for x in self.check_code(const):
+                for x in self.check_code(const, nodes):
                     yield x
 
 
