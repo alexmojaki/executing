@@ -344,9 +344,9 @@ class Tester(object):
         )
         assert result == value, (result, value)
 
-    def __call__(self, arg, returns=None, check_func=True):
+    def __call__(self, arg, check_func=True, returns=None):
         call = self.get_node(ast.Call)
-        self.check(only(call.args), arg)
+        self.check(call.args[0], arg)
         if check_func:
             self.check(call.func, self)
         if returns is None:
@@ -405,6 +405,7 @@ assert (tester < 7) is tester
 assert (tester >= 78) is tester
 assert (tester != 79) is tester
 # assert (5 != tester != 6) is tester
+assert tester.foo(45, False) == 45
 
 
 def empty_decorator(func):
