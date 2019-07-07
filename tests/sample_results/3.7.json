@@ -760,10 +760,6 @@
         ],
         [
             "LOAD_METHOD",
-            "self.assertRaises"
-        ],
-        [
-            "LOAD_METHOD",
             "self.assertEqual"
         ],
         [

@@ -19,6 +19,686 @@
         [
             "LOAD_ATTR",
             "Attribute(value=Name(id='__future__', ctx=Load()), attr='all_feature_names', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='functools', ctx=Load()), attr='wraps', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='d', ctx=Load()), slice=Index(value=Name(id='args', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='co', ctx=Load()), attr='co_code', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=Name(id='i', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=Name(id='i', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))), ctx=Load())"
+        ],
+        [
+            "BINARY_MULTIPLY",
+            "BinOp(left=Call(func=Name(id='ord', ctx=Load()), args=[Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))), ctx=Load())], keywords=[]), op=Mult(), right=Num(n=256))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Call(func=Name(id='ord', ctx=Load()), args=[Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=Name(id='i', ctx=Load())), ctx=Load())], keywords=[]), op=Add(), right=BinOp(left=Call(func=Name(id='ord', ctx=Load()), args=[Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))), ctx=Load())], keywords=[]), op=Mult(), right=Num(n=256)))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Call(func=Name(id='ord', ctx=Load()), args=[Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=Name(id='i', ctx=Load())), ctx=Load())], keywords=[]), op=Add(), right=BinOp(left=Call(func=Name(id='ord', ctx=Load()), args=[Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))), ctx=Load())], keywords=[]), op=Mult(), right=Num(n=256))), op=Add(), right=Name(id='extended_arg', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=2))"
+        ],
+        [
+            "BINARY_MULTIPLY",
+            "BinOp(left=Name(id='oparg', ctx=Load()), op=Mult(), right=Num(n=65536))"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='co', ctx=Load()), attr='co_consts', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Name(id='co', ctx=Load()), attr='co_consts', ctx=Load()), slice=Index(value=Name(id='oparg', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='opname', ctx=Load()), slice=Index(value=Name(id='op', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "BINARY_MODULO",
+            "BinOp(left=Str(s='Expected one value, found %s'), op=Mod(), right=Call(func=Name(id='len', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[]))"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Call(func=Name(id='list', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[]), slice=Index(value=Num(n=0)), ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='lst', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='decode_source', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Str(s=''), attr='join', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='text', ctx=Load()), attr='splitlines', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='parse', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='walk', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='iter_child_nodes', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='lineno', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load()), slice=Index(value=Attribute(value=Name(id='node', ctx=Load()), attr='lineno', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load()), slice=Index(value=Attribute(value=Name(id='node', ctx=Load()), attr='lineno', ctx=Load())), ctx=Load()), attr='append', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='visitor', ctx=Load()), attr='visit', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='visitor', ctx=Load()), attr='qualnames', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='encoding_pattern', ctx=Load()), attr='match', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='cls', ctx=Load()), attr='for_filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='cls', ctx=Load()), attr='_class_local', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='source_cache', ctx=Load()), slice=Index(value=Name(id='filename', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='linecache', ctx=Load()), attr='getlines', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Str(s=''), attr='join', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='linecache', ctx=Load()), attr='lazycache', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_lasti', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='cls', ctx=Load()), attr='_class_local', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='executing_cache', ctx=Load()), slice=Index(value=Name(id='key', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='cls', ctx=Load()), attr='for_frame', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='statements_at_line', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_lineno', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Name(id='NodeFinder', ctx=Load()), args=[Name(id='frame', ctx=Load()), Name(id='stmts', ctx=Load()), Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())], keywords=[]), attr='result', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='cls', ctx=Load()), attr='__dict__', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='cls', ctx=Load()), attr='__dict__', ctx=Load()), attr='get', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load()), slice=Index(value=Name(id='lineno', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='text', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='filename', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='io', ctx=Load()), attr='BytesIO', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Attribute(value=Name(id='io', ctx=Load()), attr='BytesIO', ctx=Load()), args=[Name(id='source', ctx=Load())], keywords=[]), attr='readline', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='decode', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='_qualnames', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='_qualnames', ctx=Load()), attr='get', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_name', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_firstlineno', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_name', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='code_qualname', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load()), args=[], keywords=[]), attr='get_text', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='node', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load()), args=[], keywords=[]), attr='get_text_range', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='node', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Call(func=Name(id='super', ctx=Load()), args=[Name(id='QualnameVisitor', ctx=Load()), Name(id='self', ctx=Load())], keywords=[]), attr='__init__', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='name', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='qualnames', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='qualnames', ctx=Load()), attr='setdefault', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='lineno', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Str(s='.'), attr='join', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Lambda', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='body', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='body', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='iter_fields', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='AST', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='AST', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='visit_FunctionDef', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='name', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='generic_visit', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Name(id='getattr', ctx=Load()), args=[Name(id='__future__', ctx=Load()), Name(id='fname', ctx=Load())], keywords=[]), attr='compiler_flag', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='matching_code', ctx=Load()), attr='co_filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='matching_code', ctx=Load()), attr='co_flags', ctx=Load())"
+        ],
+        [
+            "BINARY_AND",
+            "BinOp(left=Name(id='future_flags', ctx=Load()), op=BitAnd(), right=Attribute(value=Name(id='matching_code', ctx=Load()), attr='co_flags', ctx=Load()))"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_lasti', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_code', ctx=Load()), slice=Index(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_lasti', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='dis', ctx=Load()), attr='opname', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Name(id='dis', ctx=Load()), attr='opname', ctx=Load()), slice=Index(value=Name(id='b', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Call', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Subscript', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='UnaryOp', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Attribute', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Compare', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='matching_nodes', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='walk', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='ctx', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Load', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Pow', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Str', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='fix_missing_locations', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='compile_instructions', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBTRACT",
+            "BinOp(left=Call(func=Name(id='only', ctx=Load()), args=[Name(id='indices', ctx=Load())], keywords=[]), op=Sub(), right=Num(n=1))"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='instructions', ctx=Load()), slice=Index(value=Name(id='arg_index', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Subscript(value=Name(id='instructions', ctx=Load()), slice=Index(value=Name(id='arg_index', ctx=Load())), ctx=Load()), attr='opname', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='instructions', ctx=Load()), slice=Index(value=Name(id='arg_index', ctx=Load())), ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Subscript(value=Name(id='instructions', ctx=Load()), slice=Index(value=Name(id='arg_index', ctx=Load())), ctx=Load()), attr='offset', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_lasti', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='instruction', ctx=Load()), attr='argval', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='parent', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='iter_fields', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='code_options', ctx=Load()), attr='append', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_consts', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='inspect', ctx=Load()), attr='iscode', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='code_options', ctx=Load()), attr='append', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Call(func=Name(id='frozenset', ctx=Load()), args=[], keywords=[]), attr='union', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_names', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_varnames', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_freevars', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='code', ctx=Load()), attr='co_cellvars', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='stmt', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='parent', ctx=Load())"
         ]
     ],
     "tests.py": [
@@ -77,6 +757,726 @@
         [
             "LOOKUP_METHOD",
             "Attribute(value=Name(id='unittest', ctx=Load()), attr='main', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Call(func=Name(id='dict', ctx=Load()), args=[], keywords=[keyword(arg='x', value=Name(id='tester', ctx=Load()))]), slice=Index(value=Str(s='x')), ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+        ],
+        [
+            "BINARY_TRUE_DIVIDE",
+            "BinOp(left=Num(n=1), op=Div(), right=Num(n=0))"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[])], keywords=[]), attr='node', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertIs', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertLess', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBTRACT",
+            "BinOp(left=Call(func=Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load()), args=[], keywords=[]), op=Sub(), right=Name(id='start', ctx=Load()))"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='encode', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='decode_source', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='decode_source', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertNotEqual', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load()), args=[Name(id='__file__', ctx=Load())], keywords=[]), attr='code_qualname', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='func', ctx=Load()), attr='__code__', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='func', ctx=Load()), attr='__qualname__', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertTrue', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='qn', ctx=Load()), attr='endswith', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='func', ctx=Load()), attr='__name__', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='C', ctx=Load()), attr='f', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load()), attr='g', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load()), attr='h', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='foo', ctx=Load()), attr='x', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ],
+        [
+            "BINARY_MODULO",
+            "BinOp(left=Str(s='tester(6)\\n%s\\ntester(9)'), op=Mod(), right=Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='range', ctx=Load()), args=[Num(n=66000)], keywords=[])], keywords=[]))"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='tempfile', ctx=Load()), attr='mkstemp', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='outfile', ctx=Load()), attr='write', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load()), attr='join', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load()), attr='dirname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertIsNone', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='executing', ctx=Load()), attr='code_qualname', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='sys', ctx=Load()), attr='version', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='sys', ctx=Load()), attr='version', ctx=Load()), attr='lower', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='executing', ctx=Load()), attr='text', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='executing', ctx=Load()), attr='text_range', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='executing', ctx=Load()), attr='source', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='executing', ctx=Load()), attr='source', ctx=Load()), attr='text', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Attribute(value=Name(id='executing', ctx=Load()), attr='source', ctx=Load()), attr='text', ctx=Load()), slice=Slice(lower=Name(id='start', ctx=Load()), upper=Name(id='end', ctx=Load()), step=None), ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load()), attr='x', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load()), attr='y', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load()), attr='x', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load()), attr='y', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load()), attr='asd', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load()), attr='qwe', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='for_frame', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='text', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='source', ctx=Load()), attr='filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='inst', ctx=Load()), attr='starts_line', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='inst', ctx=Load()), attr='starts_line', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='inst', ctx=Load()), attr='opname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Attribute(value=Name(id='inst', ctx=Load()), attr='opname', ctx=Load()), attr='startswith', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='inst', ctx=Load()), attr='offset', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='inst', ctx=Load()), attr='opname', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[]), attr='node', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[]), attr='f_back', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[]), attr='f_back', ctx=Load()), attr='f_back', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='lazycache', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[]), attr='node', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[]), attr='f_back', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[]), attr='f_back', ctx=Load()), attr='f_back', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Expression', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='frame', ctx=Load()), attr='f_locals', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Call', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='call', ctx=Load()), attr='args', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Name(id='call', ctx=Load()), attr='args', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='call', ctx=Load()), attr='func', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Attribute', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='value', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='attr', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Subscript', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='value', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='slice', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Attribute(value=Name(id='node', ctx=Load()), attr='slice', ctx=Load()), attr='value', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='left', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='right', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='UnaryOp', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='operand', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='Compare', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='left', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='node', ctx=Load()), attr='comparators', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Name(id='node', ctx=Load()), attr='comparators', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
         ]
     ]
 }
