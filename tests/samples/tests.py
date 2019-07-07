@@ -2,19 +2,14 @@
 from __future__ import print_function, division
 
 import ast
-import dis
 import inspect
-import json
 import os
 import sys
 import tempfile
 import time
 import unittest
-from collections import defaultdict
 
 from executing import Source, only, PY3, NotOneValueFound, get_instructions
-
-PYPY = 'pypy' in sys.version.lower()
 
 
 class TestStuff(unittest.TestCase):
@@ -286,48 +281,25 @@ class TestStuff(unittest.TestCase):
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
 
-class TestFiles(unittest.TestCase):
-    def test_files(self):
-        root_dir = os.path.dirname(__file__)
-        samples_dir = os.path.join(root_dir, 'samples')
-        result_filename = PYPY * 'pypy' + sys.version[:3] + '.json'
-        result_filename = os.path.join(root_dir, 'sample_results', result_filename)
-        result = defaultdict(list)
-
-        for filename in os.listdir(samples_dir):
-            file_result = result[filename]
-            filename = os.path.join(samples_dir, filename)
-            source = Source.for_filename(filename)
-            code = compile(source.tree, source.filename, 'exec')
-            linestarts = dict(dis.findlinestarts(code))
-            instructions = get_instructions(code)
-            lineno = None
-            for inst in instructions:
-                lineno = linestarts.get(inst.offset, lineno)
-                if not inst.opname.startswith(
-                        ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
-                                # 'COMPARE_OP',
-                         )):
-                    continue
-                frame = C()
-                frame.f_lasti = inst.offset
-                frame.f_code = code
-                frame.f_globals = globals()
-                frame.f_lineno = lineno
-                executing = Source.executing(frame)
-                if PYPY:
-                    value = ast.dump(executing.node)
-                else:
-                    value = executing.text()
-                file_result.append([inst.opname, value])
-
-        if os.getenv('FIX_EXECUTING_TESTS'):
-            with open(result_filename, 'w') as outfile:
-                json.dump(result, outfile, indent=4, sort_keys=True)
-        else:
-            with open(result_filename, 'r') as infile:
-                self.assertEqual(result, json.load(infile))
-
+class TestFile(unittest.TestCase):
+    def test_file(self):
+        source = Source.for_frame(inspect.currentframe())
+        code = compile(source.text, source.filename, 'exec')
+        instructions = get_instructions(code)
+        lineno = None
+        for inst in instructions:
+            if inst.starts_line is not None:
+                lineno = inst.starts_line
+            if not inst.opname.startswith(
+                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP')):
+                continue
+            frame = C()
+            frame.f_lasti = inst.offset
+            frame.f_code = code
+            frame.f_globals = globals()
+            frame.f_lineno = lineno
+            print(inst.opname)
+            assert Source.executing(frame).node is not None
 
 class C(object):
     @staticmethod
@@ -348,6 +320,7 @@ class C(object):
                 return j
 
             return i()
+TestFile().test_file()
 
 
 def f():
@@ -355,9 +328,6 @@ def f():
         pass
 
     return g
-
-
-# TestFiles().test_files()
 
 
 def lambda_maker():
@@ -451,7 +421,9 @@ assert tester ** 4 is tester
 assert tester * 3 is tester
 assert tester - 2 is tester
 assert tester + 1 is tester
-assert -tester is +tester is ~tester is tester
+assert -tester is tester
+assert +tester is tester
+assert ~tester is tester
 assert (tester < 7) is tester
 assert (tester >= 78) is tester
 assert (tester != 79) is tester

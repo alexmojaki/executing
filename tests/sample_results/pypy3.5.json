@@ -1,0 +1,82 @@
+{
+    "executing.py": [
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='sys', ctx=Load()), attr='version_info', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Attribute(value=Name(id='sys', ctx=Load()), attr='version_info', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='dis', ctx=Load()), attr='get_instructions', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='ast', ctx=Load()), attr='NodeVisitor', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='__future__', ctx=Load()), attr='all_feature_names', ctx=Load())"
+        ]
+    ],
+    "tests.py": [
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='unittest', ctx=Load()), attr='TestCase', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='unittest', ctx=Load()), attr='TestCase', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Call(func=Name(id='TestFile', ctx=Load()), args=[], keywords=[]), attr='test_file', ctx=Load())"
+        ],
+        [
+            "LOAD_ATTR",
+            "Attribute(value=Name(id='tester', ctx=Load()), attr='asd', ctx=Load())"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "Subscript(value=Name(id='tester', ctx=Load()), slice=Index(value=BinOp(left=Num(n=1), op=Add(), right=Num(n=2))), ctx=Load())"
+        ],
+        [
+            "BINARY_POWER",
+            "BinOp(left=Name(id='tester', ctx=Load()), op=Pow(), right=Num(n=4))"
+        ],
+        [
+            "BINARY_MULTIPLY",
+            "BinOp(left=Name(id='tester', ctx=Load()), op=Mult(), right=Num(n=3))"
+        ],
+        [
+            "BINARY_SUBTRACT",
+            "BinOp(left=Name(id='tester', ctx=Load()), op=Sub(), right=Num(n=2))"
+        ],
+        [
+            "BINARY_ADD",
+            "BinOp(left=Name(id='tester', ctx=Load()), op=Add(), right=Num(n=1))"
+        ],
+        [
+            "UNARY_NEGATIVE",
+            "UnaryOp(op=USub(), operand=Name(id='tester', ctx=Load()))"
+        ],
+        [
+            "UNARY_POSITIVE",
+            "UnaryOp(op=UAdd(), operand=Name(id='tester', ctx=Load()))"
+        ],
+        [
+            "UNARY_INVERT",
+            "UnaryOp(op=Invert(), operand=Name(id='tester', ctx=Load()))"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='tester', ctx=Load()), attr='foo', ctx=Load())"
+        ],
+        [
+            "LOOKUP_METHOD",
+            "Attribute(value=Name(id='unittest', ctx=Load()), attr='main', ctx=Load())"
+        ]
+    ]
+}

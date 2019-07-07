@@ -1,0 +1,86 @@
+{
+    "executing.py": [
+        [
+            "LOAD_ATTR",
+            "sys.version_info"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "sys.version_info[0]"
+        ],
+        [
+            "LOAD_ATTR",
+            "dis.get_instructions"
+        ],
+        [
+            "LOAD_ATTR",
+            "ast.NodeVisitor"
+        ],
+        [
+            "LOAD_ATTR",
+            "__future__.all_feature_names"
+        ]
+    ],
+    "tests.py": [
+        [
+            "LOAD_ATTR",
+            "unittest.TestCase"
+        ],
+        [
+            "LOAD_ATTR",
+            "unittest.TestCase"
+        ],
+        [
+            "LOAD_ATTR",
+            "TestFile().test_file"
+        ],
+        [
+            "LOAD_ATTR",
+            "tester.asd"
+        ],
+        [
+            "BINARY_ADD",
+            "1 + 2"
+        ],
+        [
+            "BINARY_SUBSCR",
+            "tester[1 + 2]"
+        ],
+        [
+            "BINARY_POWER",
+            "tester ** 4"
+        ],
+        [
+            "BINARY_MULTIPLY",
+            "tester * 3"
+        ],
+        [
+            "BINARY_SUBTRACT",
+            "tester - 2"
+        ],
+        [
+            "BINARY_ADD",
+            "tester + 1"
+        ],
+        [
+            "UNARY_NEGATIVE",
+            "-tester"
+        ],
+        [
+            "UNARY_POSITIVE",
+            "+tester"
+        ],
+        [
+            "UNARY_INVERT",
+            "~tester"
+        ],
+        [
+            "LOAD_ATTR",
+            "tester.foo"
+        ],
+        [
+            "LOAD_ATTR",
+            "unittest.main"
+        ]
+    ]
+}
