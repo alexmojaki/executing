@@ -299,27 +299,7 @@ class TestFiles(unittest.TestCase):
             filename = os.path.join(samples_dir, filename)
             source = Source.for_filename(filename)
             code = compile(source.tree, source.filename, 'exec')
-            linestarts = dict(dis.findlinestarts(code))
-            instructions = get_instructions(code)
-            lineno = None
-            for inst in instructions:
-                lineno = linestarts.get(inst.offset, lineno)
-                if not inst.opname.startswith(
-                        ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
-                                # 'COMPARE_OP',
-                         )):
-                    continue
-                frame = C()
-                frame.f_lasti = inst.offset
-                frame.f_code = code
-                frame.f_globals = globals()
-                frame.f_lineno = lineno
-                executing = Source.executing(frame)
-                if PYPY:
-                    value = ast.dump(executing.node)
-                else:
-                    value = executing.text()
-                file_result.append([inst.opname, value])
+            file_result += self.check_code(code)
 
         if os.getenv('FIX_EXECUTING_TESTS'):
             with open(result_filename, 'w') as outfile:
@@ -327,6 +307,34 @@ class TestFiles(unittest.TestCase):
         else:
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
+
+    def check_code(self, code):
+        linestarts = dict(dis.findlinestarts(code))
+        instructions = get_instructions(code)
+        lineno = None
+        for inst in instructions:
+            lineno = linestarts.get(inst.offset, lineno)
+            if not inst.opname.startswith(
+                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
+                            # 'COMPARE_OP',
+                     )):
+                continue
+            frame = C()
+            frame.f_lasti = inst.offset
+            frame.f_code = code
+            frame.f_globals = globals()
+            frame.f_lineno = lineno
+            executing = Source.executing(frame)
+            if PYPY:
+                value = ast.dump(executing.node)
+            else:
+                value = executing.text()
+            yield [inst.opname, value]
+
+        for const in code.co_consts:
+            if isinstance(const, type(code)):
+                for x in self.check_code(const):
+                    yield x
 
 
 class C(object):
