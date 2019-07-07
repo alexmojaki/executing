@@ -318,11 +318,17 @@ class TestFiles(unittest.TestCase):
                 if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
                     continue
 
-                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Delete)):
+                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
                     continue
 
                 if isinstance(node, ast.Compare) and len(node.ops) > 1:
                     continue
+
+                try:
+                    ast.literal_eval(node)
+                    continue
+                except ValueError:
+                    pass
 
                 self.assertIsNotNone(value, ast.dump(node))
 
@@ -354,6 +360,8 @@ class TestFiles(unittest.TestCase):
                 node = executing.node
             except Exception:
                 if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
+                    continue
+                if isinstance(only(Source.for_frame(frame).statements_at_line(lineno)), ast.AugAssign):
                     continue
                 raise
             self.assertIsNone(nodes[node])
