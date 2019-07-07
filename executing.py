@@ -445,8 +445,6 @@ class NodeFinder(object):
             setter(replacement)
             try:
                 instructions = self.compile_instructions()
-            except SyntaxError:
-                continue
             finally:
                 setter(expr)
             indices = [
