@@ -409,12 +409,12 @@ class NodeFinder(object):
             typ = ast.BinOp
         elif op_name.startswith('UNARY_'):
             typ = ast.UnaryOp
-        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD'):
+        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
         elif op_name == 'COMPARE_OP':
             typ = ast.Compare
         else:
-            return
+            raise RuntimeError(op_name)
 
         with lock:
             exprs = {
