@@ -305,6 +305,8 @@ class TestFiles(unittest.TestCase):
                         ast.UnaryOp,
                         ast.BinOp,
                         ast.Subscript,
+                        ast.Call,
+                        ast.Compare,
                         ast.Attribute
                 )):
                     nodes[node] = None
@@ -317,6 +319,9 @@ class TestFiles(unittest.TestCase):
                     continue
 
                 if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Delete)):
+                    continue
+
+                if isinstance(node, ast.Compare) and len(node.ops) > 1:
                     continue
 
                 self.assertIsNotNone(value, ast.dump(node))
@@ -334,19 +339,23 @@ class TestFiles(unittest.TestCase):
         lineno = None
         for inst in instructions:
             lineno = linestarts.get(inst.offset, lineno)
-            if not inst.opname.startswith(
-                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
-                     'SLICE+',
-                            # 'COMPARE_OP',
-                     )):
+            if not inst.opname.startswith((
+                    'BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
+                    'SLICE+', 'COMPARE_OP', 'CALL_',
+            )):
                 continue
             frame = C()
             frame.f_lasti = inst.offset
             frame.f_code = code
             frame.f_globals = globals()
             frame.f_lineno = lineno
-            executing = Source.executing(frame)
-            node = executing.node
+            try:
+                executing = Source.executing(frame)
+                node = executing.node
+            except Exception:
+                if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
+                    continue
+                raise
             self.assertIsNone(nodes[node])
             nodes[node] = (inst, frame.__dict__)
 

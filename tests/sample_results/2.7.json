@@ -9,8 +9,20 @@
             "sys.version_info[0]"
         ], 
         [
+            "COMPARE_OP", 
+            "sys.version_info[0] == 3"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "lru_cache(maxsize=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "dis.get_instructions"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "namedtuple('Instruction', 'offset argval opname')"
         ], 
         [
             "LOAD_ATTR", 
@@ -21,28 +33,68 @@
             "__future__.all_feature_names"
         ], 
         [
+            "CALL_FUNCTION", 
+            "sum(\n    getattr(__future__, fname).compiler_flag\n    for fname in __future__.all_feature_names\n)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "RLock()"
+        ], 
+        [
             "LOAD_ATTR", 
             "functools.wraps"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "functools.wraps(func)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "args in d"
         ], 
         [
             "BINARY_SUBSCR", 
             "d[args]"
         ], 
         [
+            "CALL_FUNCTION_VAR", 
+            "func(*args)"
+        ], 
+        [
             "LOAD_ATTR", 
             "co.co_code"
         ], 
         [
+            "CALL_FUNCTION", 
+            "len(code)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "i < n"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "code[i]"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ord(c)"
         ], 
         [
             "BINARY_ADD", 
             "i + 1"
         ], 
         [
+            "COMPARE_OP", 
+            "op >= HAVE_ARGUMENT"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "code[i]"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ord(code[i])"
         ], 
         [
             "BINARY_ADD", 
@@ -51,6 +103,10 @@
         [
             "BINARY_SUBSCR", 
             "code[i + 1]"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ord(code[i + 1])"
         ], 
         [
             "BINARY_MULTIPLY", 
@@ -69,8 +125,16 @@
             "i + 2"
         ], 
         [
+            "COMPARE_OP", 
+            "op == EXTENDED_ARG"
+        ], 
+        [
             "BINARY_MULTIPLY", 
             "oparg * 65536"
+        ], 
+        [
+            "COMPARE_OP", 
+            "op in hasconst"
         ], 
         [
             "LOAD_ATTR", 
@@ -85,20 +149,88 @@
             "opname[op]"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Instruction(offset, argval, opname[op])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(it, Sized)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "len(it)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "len(it) != 1"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "len(it)"
+        ], 
+        [
             "BINARY_MODULO", 
             "'Expected one value, found %s' % len(it)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "NotOneValueFound('Expected one value, found %s' % len(it))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(it)"
         ], 
         [
             "BINARY_SUBSCR", 
             "list(it)[0]"
         ], 
         [
+            "CALL_FUNCTION", 
+            "islice(it, 2)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tuple(islice(it, 2))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "len(lst)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "len(lst) == 0"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "NotOneValueFound('Expected one value, found 0')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "len(lst)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "len(lst) > 1"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "NotOneValueFound('Expected one value, found several')"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "lst[0]"
         ], 
         [
+            "CALL_FUNCTION", 
+            "isinstance(text, text_type)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.decode_source"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.decode_source(text)"
         ], 
         [
             "LOAD_ATTR", 
@@ -109,12 +241,40 @@
             "text.splitlines"
         ], 
         [
+            "CALL_FUNCTION", 
+            "text.splitlines(True)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "enumerate(text.splitlines(True))"
+        ], 
+        [
+            "COMPARE_OP", 
+            "i < 2"
+        ], 
+        [
             "LOAD_ATTR", 
             "encoding_pattern.match"
         ], 
         [
+            "CALL_FUNCTION", 
+            "encoding_pattern.match(line)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "defaultdict(list)"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.parse"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ast.parse(ast_text, filename=filename)"
         ], 
         [
             "LOAD_ATTR", 
@@ -125,8 +285,20 @@
             "self.tree"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ast.walk(self.tree)"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.iter_child_nodes"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ast.iter_child_nodes(node)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "hasattr(node, 'lineno')"
         ], 
         [
             "LOAD_ATTR", 
@@ -145,12 +317,24 @@
             "self._nodes_by_line[node.lineno].append"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self._nodes_by_line[node.lineno].append(node)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "QualnameVisitor()"
+        ], 
+        [
             "LOAD_ATTR", 
             "visitor.visit"
         ], 
         [
             "LOAD_ATTR", 
             "self.tree"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "visitor.visit(self.tree)"
         ], 
         [
             "LOAD_ATTR", 
@@ -173,8 +357,16 @@
             "frame.f_globals"
         ], 
         [
+            "CALL_FUNCTION", 
+            "cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})"
+        ], 
+        [
             "LOAD_ATTR", 
             "cls._class_local"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "cls._class_local('__source_cache', {})"
         ], 
         [
             "BINARY_SUBSCR", 
@@ -185,8 +377,24 @@
             "linecache.getlines"
         ], 
         [
+            "CALL_FUNCTION", 
+            "linecache.getlines(filename, module_globals)"
+        ], 
+        [
             "LOAD_ATTR", 
             "''.join"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "''.join(lines)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "cls(filename, ''.join(lines))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "hasattr(linecache, 'lazycache')"
         ], 
         [
             "LOAD_ATTR", 
@@ -205,6 +413,10 @@
             "frame.f_globals"
         ], 
         [
+            "CALL_FUNCTION", 
+            "linecache.lazycache(frame.f_code.co_filename, frame.f_globals)"
+        ], 
+        [
             "LOAD_ATTR", 
             "frame.f_code"
         ], 
@@ -217,12 +429,20 @@
             "cls._class_local"
         ], 
         [
+            "CALL_FUNCTION", 
+            "cls._class_local('__executing_cache', {})"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "executing_cache[key]"
         ], 
         [
             "LOAD_ATTR", 
             "cls.for_frame"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "cls.for_frame(frame)"
         ], 
         [
             "LOAD_ATTR", 
@@ -237,12 +457,32 @@
             "frame.f_lineno"
         ], 
         [
+            "CALL_FUNCTION", 
+            "source.statements_at_line(frame.f_lineno)"
+        ], 
+        [
             "LOAD_ATTR", 
             "source.tree"
         ], 
         [
+            "CALL_FUNCTION", 
+            "NodeFinder(frame, stmts, source.tree)"
+        ], 
+        [
             "LOAD_ATTR", 
             "NodeFinder(frame, stmts, source.tree).result"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "statement_containing_node(node)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "new_stmts <= stmts"
+        ], 
+        [
+            "CALL_FUNCTION_VAR", 
+            "Executing(frame, *args)"
         ], 
         [
             "LOAD_ATTR", 
@@ -253,12 +493,24 @@
             "cls.__dict__.get"
         ], 
         [
+            "CALL_FUNCTION", 
+            "cls.__dict__.get(name, default)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "setattr(cls, name, result)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self._nodes_by_line"
         ], 
         [
             "BINARY_SUBSCR", 
             "self._nodes_by_line[lineno]"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "statement_containing_node(node)"
         ], 
         [
             "LOAD_ATTR", 
@@ -273,16 +525,36 @@
             "self.filename"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ASTTokens(\n            self.text,\n            tree=self.tree,\n            filename=self.filename,\n        )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(source, bytes)"
+        ], 
+        [
             "LOAD_ATTR", 
             "io.BytesIO"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "io.BytesIO(source)"
         ], 
         [
             "LOAD_ATTR", 
             "io.BytesIO(source).readline"
         ], 
         [
+            "CALL_FUNCTION", 
+            "detect_encoding(io.BytesIO(source).readline)"
+        ], 
+        [
             "LOAD_ATTR", 
             "source.decode"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "source.decode(encoding)"
         ], 
         [
             "LOAD_ATTR", 
@@ -291,6 +563,10 @@
         [
             "LOAD_ATTR", 
             "self.filename"
+        ], 
+        [
+            "COMPARE_OP", 
+            "code.co_filename == self.filename"
         ], 
         [
             "LOAD_ATTR", 
@@ -313,6 +589,10 @@
             "code.co_name"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.source"
         ], 
@@ -329,12 +609,20 @@
             "self.frame.f_code"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.source.code_qualname(self.frame.f_code)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.source"
         ], 
         [
             "LOAD_ATTR", 
             "self.source.asttokens"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.source.asttokens()"
         ], 
         [
             "LOAD_ATTR", 
@@ -345,12 +633,20 @@
             "self.node"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.source.asttokens().get_text(self.node)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.source"
         ], 
         [
             "LOAD_ATTR", 
             "self.source.asttokens"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.source.asttokens()"
         ], 
         [
             "LOAD_ATTR", 
@@ -361,8 +657,20 @@
             "self.node"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.source.asttokens().get_text_range(self.node)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "super(QualnameVisitor, self)"
+        ], 
+        [
             "LOAD_ATTR", 
             "super(QualnameVisitor, self).__init__"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "super(QualnameVisitor, self).__init__()"
         ], 
         [
             "LOAD_ATTR", 
@@ -375,6 +683,10 @@
         [
             "LOAD_ATTR", 
             "self.stack.append"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.stack.append(name)"
         ], 
         [
             "LOAD_ATTR", 
@@ -397,6 +709,14 @@
             "self.stack"
         ], 
         [
+            "CALL_FUNCTION", 
+            "\".\".join(self.stack)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.qualnames.setdefault((name, node.lineno), \".\".join(self.stack))"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.stack"
         ], 
@@ -405,8 +725,16 @@
             "self.stack.append"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.stack.append('<locals>')"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.Lambda"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(node, ast.Lambda)"
         ], 
         [
             "LOAD_ATTR", 
@@ -421,12 +749,8 @@
             "self.visit"
         ], 
         [
-            "LOAD_ATTR", 
-            "self.stack"
-        ], 
-        [
-            "LOAD_ATTR", 
-            "self.stack.pop"
+            "CALL_FUNCTION", 
+            "self.visit(child)"
         ], 
         [
             "LOAD_ATTR", 
@@ -435,30 +759,78 @@
         [
             "LOAD_ATTR", 
             "self.stack.pop"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.stack.pop()"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "self.stack"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "self.stack.pop"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.stack.pop()"
         ], 
         [
             "LOAD_ATTR", 
             "ast.iter_fields"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ast.iter_fields(node)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "field == 'body'"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.AST"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(child, ast.AST)"
         ], 
         [
             "LOAD_ATTR", 
             "self.visit"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.visit(child)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(child, list)"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.AST"
         ], 
         [
+            "CALL_FUNCTION", 
+            "isinstance(grandchild, ast.AST)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.visit"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.visit(grandchild)"
         ], 
         [
             "LOAD_ATTR", 
             "self.visit_FunctionDef"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.visit_FunctionDef(node, '<lambda>')"
         ], 
         [
             "LOAD_ATTR", 
@@ -473,8 +845,16 @@
             "node.name"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.stack.append(node.name)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.generic_visit"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.generic_visit(node)"
         ], 
         [
             "LOAD_ATTR", 
@@ -483,6 +863,14 @@
         [
             "LOAD_ATTR", 
             "self.stack.pop"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.stack.pop()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "getattr(__future__, fname)"
         ], 
         [
             "LOAD_ATTR", 
@@ -501,6 +889,10 @@
             "future_flags & matching_code.co_flags"
         ], 
         [
+            "CALL_FUNCTION", 
+            "compile(\n        source,\n        matching_code.co_filename,\n        'exec',\n        flags=future_flags & matching_code.co_flags,\n        dont_inherit=True,\n    )"
+        ], 
+        [
             "LOAD_ATTR", 
             "frame.f_code"
         ], 
@@ -517,6 +909,10 @@
             "frame.f_code.co_code[frame.f_lasti]"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ord(b)"
+        ], 
+        [
             "LOAD_ATTR", 
             "dis.opname"
         ], 
@@ -529,8 +925,16 @@
             "op_name.startswith"
         ], 
         [
+            "CALL_FUNCTION", 
+            "op_name.startswith('CALL_')"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.Call"
+        ], 
+        [
+            "COMPARE_OP", 
+            "op_name == 'BINARY_SUBSCR'"
         ], 
         [
             "LOAD_ATTR", 
@@ -541,6 +945,10 @@
             "op_name.startswith"
         ], 
         [
+            "CALL_FUNCTION", 
+            "op_name.startswith('BINARY_')"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.BinOp"
         ], 
@@ -549,24 +957,64 @@
             "op_name.startswith"
         ], 
         [
+            "CALL_FUNCTION", 
+            "op_name.startswith('UNARY_')"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.UnaryOp"
+        ], 
+        [
+            "COMPARE_OP", 
+            "op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD')"
         ], 
         [
             "LOAD_ATTR", 
             "ast.Attribute"
         ], 
         [
+            "COMPARE_OP", 
+            "op_name == 'COMPARE_OP'"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.Compare"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "RuntimeError(op_name)"
         ], 
         [
             "LOAD_ATTR", 
             "self.matching_nodes"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.matching_nodes(exprs)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(self.matching_nodes(exprs))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "only(list(self.matching_nodes(exprs)))"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.walk"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ast.walk(stmt)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(node, typ)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "hasattr(node, \"ctx\")"
         ], 
         [
             "LOAD_ATTR", 
@@ -577,8 +1025,20 @@
             "ast.Load"
         ], 
         [
+            "CALL_FUNCTION", 
+            "isinstance(node.ctx, ast.Load)"
+        ], 
+        [
             "UNARY_NOT", 
             "not isinstance(node.ctx, ast.Load)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "enumerate(exprs)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "get_setter(expr)"
         ], 
         [
             "LOAD_ATTR", 
@@ -589,20 +1049,60 @@
             "ast.Pow"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ast.Pow()"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.Str"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ast.Str(s=sentinel)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )"
         ], 
         [
             "LOAD_ATTR", 
             "ast.fix_missing_locations"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ast.fix_missing_locations(replacement)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "setter(replacement)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.compile_instructions"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.compile_instructions()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "setter(expr)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "enumerate(instructions)"
+        ], 
+        [
             "LOAD_ATTR", 
             "instruction.argval"
+        ], 
+        [
+            "COMPARE_OP", 
+            "instruction.argval == sentinel"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "only(indices)"
         ], 
         [
             "BINARY_SUBTRACT", 
@@ -615,6 +1115,10 @@
         [
             "LOAD_ATTR", 
             "instructions[arg_index].opname"
+        ], 
+        [
+            "COMPARE_OP", 
+            "instructions[arg_index].opname == 'EXTENDED_ARG'"
         ], 
         [
             "BINARY_SUBSCR", 
@@ -633,6 +1137,10 @@
             "self.frame.f_lasti"
         ], 
         [
+            "COMPARE_OP", 
+            "instructions[arg_index].offset == self.frame.f_lasti"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.tree"
         ], 
@@ -645,12 +1153,32 @@
             "self.frame.f_code"
         ], 
         [
+            "CALL_FUNCTION", 
+            "compile_similar_to(self.tree, self.frame.f_code)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.frame"
         ], 
         [
             "LOAD_ATTR", 
             "self.frame.f_code"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "find_codes(module_code, self.frame.f_code)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "only(find_codes(module_code, self.frame.f_code))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "get_instructions(code)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(get_instructions(code))"
         ], 
         [
             "LOAD_ATTR", 
@@ -661,8 +1189,68 @@
             "ast.iter_fields"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ast.iter_fields(parent)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "field is node"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(field, list)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "enumerate(field)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "item is node"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "setattr(parent, name, new_node)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "matches(root_code)"
+        ], 
+        [
             "LOAD_ATTR", 
             "code_options.append"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "code_options.append(root_code)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "finder(root_code)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "attrgetter('co_firstlineno')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "attrgetter('co_name')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "all(\n            f(c) == f(matching)\n            for f in [\n                attrgetter('co_firstlineno'),\n                attrgetter('co_name'),\n                code_names,\n            ]\n        )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "f(c)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "f(matching)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "f(c) == f(matching)"
         ], 
         [
             "LOAD_ATTR", 
@@ -673,8 +1261,28 @@
             "inspect.iscode"
         ], 
         [
+            "CALL_FUNCTION", 
+            "inspect.iscode(const)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "matches(const)"
+        ], 
+        [
             "LOAD_ATTR", 
             "code_options.append"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "code_options.append(const)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "finder(const)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "frozenset()"
         ], 
         [
             "LOAD_ATTR", 
@@ -697,8 +1305,16 @@
             "code.co_cellvars"
         ], 
         [
+            "CALL_FUNCTION", 
+            "frozenset().union(\n        code.co_names,\n        code.co_varnames,\n        code.co_freevars,\n        code.co_cellvars,\n    )"
+        ], 
+        [
             "LOAD_ATTR", 
             "ast.stmt"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "isinstance(node, ast.stmt)"
         ], 
         [
             "LOAD_ATTR", 
@@ -715,96 +1331,500 @@
             "unittest.TestCase"
         ], 
         [
+            "CALL_FUNCTION", 
+            "TestFile()"
+        ], 
+        [
             "LOAD_ATTR", 
             "TestFile().test_file"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "TestFile().test_file()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Tester()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2, 3])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester([1, 2, 3]) == [1, 2, 3]"
         ], 
         [
             "LOAD_ATTR", 
             "tester.asd"
         ], 
         [
+            "COMPARE_OP", 
+            "tester.asd is tester"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "tester[19]"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester[19] is tester"
         ], 
         [
             "BINARY_POWER", 
             "tester ** 4"
         ], 
         [
+            "COMPARE_OP", 
+            "tester ** 4 is tester"
+        ], 
+        [
             "BINARY_MULTIPLY", 
             "tester * 3"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester * 3 is tester"
         ], 
         [
             "BINARY_SUBTRACT", 
             "tester - 2"
         ], 
         [
+            "COMPARE_OP", 
+            "tester - 2 is tester"
+        ], 
+        [
             "BINARY_ADD", 
             "tester + 1"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester + 1 is tester"
         ], 
         [
             "UNARY_NEGATIVE", 
             "-tester"
         ], 
         [
+            "COMPARE_OP", 
+            "-tester is tester"
+        ], 
+        [
             "UNARY_POSITIVE", 
             "+tester"
+        ], 
+        [
+            "COMPARE_OP", 
+            "+tester is tester"
         ], 
         [
             "UNARY_INVERT", 
             "~tester"
         ], 
         [
+            "COMPARE_OP", 
+            "~tester is tester"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester < 7"
+        ], 
+        [
+            "COMPARE_OP", 
+            "(tester < 7) is tester"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester >= 78"
+        ], 
+        [
+            "COMPARE_OP", 
+            "(tester >= 78) is tester"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester != 79"
+        ], 
+        [
+            "COMPARE_OP", 
+            "(tester != 79) is tester"
+        ], 
+        [
             "LOAD_ATTR", 
             "tester.foo"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester.foo(45, False)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "tester.foo(45, False) == 45"
+        ], 
+        [
+            "COMPARE_OP", 
+            "__name__ == '__main__'"
         ], 
         [
             "LOAD_ATTR", 
             "unittest.main"
         ], 
         [
-            "LOAD_ATTR", 
-            "self.assertEqual"
+            "CALL_FUNCTION", 
+            "unittest.main()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(1)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(2)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(3)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(9\n               )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(\n            8)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(\n            99\n        )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(33)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([4,\n                               5, 6, [\n                                7]])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester('123')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "int()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "decorator_with_args(tester('123'), x=int())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tuple([1, 2])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(tuple([1, 2]))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(list(tuple([1, 2])), returns=empty_decorator)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tuple(\n                    [3, 4])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(\n                tuple(\n                    [3, 4]))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "int()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "decorator_with_args(\n            str(),\n            x=int())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tuple([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(tuple([5, 6]))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(list(tuple([5, 6])), returns=empty_decorator)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tuple([7, 8])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(tuple([7, 8]))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(list(tuple([7, 8])), returns=empty_decorator)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester('sdf')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester('123234')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "decorator_with_args(tester('sdf'), x=tester('123234'))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(tester(x) for x in [1])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
         ], 
         [
             "LOAD_ATTR", 
             "self.assertEqual"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(3)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "(lambda x: (tester(x), tester(x)))(tester(3))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(\n            (lambda x: (tester(x), tester(x)))(tester(3)),\n            (3, 3),\n        )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "(lambda: (lambda: tester(1))())()"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "self.assertEqual"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "(lambda: [tester(x) for x in tester([1, 2])])()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(\n            (lambda: [tester(x) for x in tester([1, 2])])(),\n            [1, 2],\n        )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "(lambda: tester(1))()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(1)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "foo()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
+        ], 
+        [
             "BINARY_ADD", 
             "a+x"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(a+x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
         ], 
         [
             "BINARY_ADD", 
             "b+x"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(b+x)"
+        ], 
+        [
             "BINARY_ADD", 
             "c+x"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(c+x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "bar()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
         ], 
         [
             "BINARY_ADD", 
             "a+x"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(a+x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
             "BINARY_ADD", 
             "b+x"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(b+x)"
+        ], 
+        [
             "BINARY_ADD", 
             "c+x"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(c+x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
         ], 
         [
             "BINARY_ADD", 
             "a+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(a+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
             "BINARY_ADD", 
             "b+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(b+y)"
+        ], 
+        [
             "BINARY_ADD", 
             "c+y"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(c+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
         ], 
         [
             "BINARY_ADD", 
@@ -815,12 +1835,24 @@
             "a+x+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(a+x+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
             "BINARY_ADD", 
             "b+x"
         ], 
         [
             "BINARY_ADD", 
             "b+x+y"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(b+x+y)"
         ], 
         [
             "BINARY_ADD", 
@@ -831,28 +1863,108 @@
             "c+x+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(c+x+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([5, 6])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
+        ], 
+        [
             "BINARY_ADD", 
             "a+x"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(a+x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
         ], 
         [
             "BINARY_ADD", 
             "b+x"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(b+x)"
+        ], 
+        [
             "BINARY_ADD", 
             "c+x"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(c+x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
         ], 
         [
             "BINARY_ADD", 
             "a+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(a+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
             "BINARY_ADD", 
             "b+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(b+y)"
+        ], 
+        [
             "BINARY_ADD", 
             "c+y"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(c+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
         ], 
         [
             "BINARY_ADD", 
@@ -863,6 +1975,14 @@
             "a+x+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(a+x+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
             "BINARY_ADD", 
             "b+x"
         ], 
@@ -871,12 +1991,24 @@
             "b+x+y"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(b+x+y)"
+        ], 
+        [
             "BINARY_ADD", 
             "c+x"
         ], 
         [
             "BINARY_ADD", 
             "c+x+y"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(c+x+y)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([3, 4])"
         ], 
         [
             "BINARY_ADD", 
@@ -891,6 +2023,14 @@
             "a+x+y+z"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(a+x+y+z)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
             "BINARY_ADD", 
             "b+x"
         ], 
@@ -901,6 +2041,10 @@
         [
             "BINARY_ADD", 
             "b+x+y+z"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(b+x+y+z)"
         ], 
         [
             "BINARY_ADD", 
@@ -915,24 +2059,132 @@
             "c+x+y+z"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(c+x+y+z)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "dict(x=tester)"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "dict(x=tester)['x']"
         ], 
         [
-            "LOAD_ATTR", 
-            "self.assertRaises"
+            "CALL_FUNCTION", 
+            "dict(x=tester)['x'](tester)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "dict(x=tester)['x'](tester)(3, check_func=False)"
         ], 
         [
             "LOAD_ATTR", 
             "self.assertRaises"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertRaises(TypeError)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2, 3])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(0)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(4)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(5)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(ValueError)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(9)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(10)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str()"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "self.assertRaises"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(Exception)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertRaises(tester(Exception))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(0)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(0)"
         ], 
         [
             "BINARY_TRUE_DIVIDE", 
             "1 / 0"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tester(1 / 0)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "gen()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(gen())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(gen2)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(x)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(4)"
+        ], 
+        [
             "LOAD_ATTR", 
             "time.time"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "time.time()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "range(10000)"
         ], 
         [
             "LOAD_ATTR", 
@@ -943,12 +2195,28 @@
             "inspect.currentframe"
         ], 
         [
+            "CALL_FUNCTION", 
+            "inspect.currentframe()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.executing(inspect.currentframe())"
+        ], 
+        [
             "LOAD_ATTR", 
             "Source.executing(inspect.currentframe()).node"
         ], 
         [
+            "COMPARE_OP", 
+            "node is None"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.assertIs"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertIs(node, new_node)"
         ], 
         [
             "LOAD_ATTR", 
@@ -959,36 +2227,140 @@
             "time.time"
         ], 
         [
+            "CALL_FUNCTION", 
+            "time.time()"
+        ], 
+        [
             "BINARY_SUBTRACT", 
             "time.time() - start"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertLess(time.time() - start, 1)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "check(u'# coding=utf8\\n\u00e9', 'utf8')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "check(u'# coding=gbk\\n\u00e9', 'gbk')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "check(u'# coding=utf8\\n\u00e9', 'gbk', exception=UnicodeDecodeError)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "check(u'# coding=gbk\\n\u00e9', 'utf8', matches=False)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "check(u'\u00e9', 'utf8')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "check(u'\u00e9', 'gbk', exception=SyntaxError)"
         ], 
         [
             "LOAD_ATTR", 
             "source.encode"
         ], 
         [
+            "CALL_FUNCTION", 
+            "source.encode(encoding)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.assertRaises"
         ], 
         [
-            "LOAD_ATTR", 
-            "Source.decode_source"
+            "CALL_FUNCTION", 
+            "self.assertRaises(exception)"
         ], 
         [
             "LOAD_ATTR", 
             "Source.decode_source"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.decode_source(encoded)"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "Source.decode_source"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.decode_source(encoded)"
         ], 
         [
             "LOAD_ATTR", 
             "self.assertEqual"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.assertEqual(decoded, source)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.assertNotEqual"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.assertNotEqual(decoded, source)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester('a')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester('''\n            ab''')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester('''\n                    abc\n                    def\n                    '''\n               )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(\n                '''\n                123\n                456\n                '''\n            )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(\n                '''\n                345\n                456786\n                '''\n            )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "str([\n            tester(\n                '''\n                123\n                456\n                '''\n            ),\n            tester(\n                '''\n                345\n                456786\n                '''\n            ),\n        ])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(\n            [\n                '''\n                123\n                456\n                '''\n                '''\n                345\n                456786\n                '''\n                ,\n                '''\n                123\n                456\n                ''',\n                '''\n                345\n                456786\n                '''\n            ]\n        )"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(1)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(2)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester([1, 2])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "tester(3)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Source.for_filename"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.for_filename(__file__)"
         ], 
         [
             "LOAD_ATTR", 
@@ -999,8 +2371,16 @@
             "func.__code__"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Source.for_filename(__file__).code_qualname(func.__code__)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.assertEqual"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(qn, qualname)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1009,6 +2389,10 @@
         [
             "LOAD_ATTR", 
             "func.__qualname__"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(qn, func.__qualname__)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1023,12 +2407,24 @@
             "func.__name__"
         ], 
         [
+            "CALL_FUNCTION", 
+            "qn.endswith(func.__name__)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertTrue(qn.endswith(func.__name__))"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.assert_qualname"
         ], 
         [
             "LOAD_ATTR", 
             "C.f"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(C.f, 'C.f')"
         ], 
         [
             "LOAD_ATTR", 
@@ -1043,12 +2439,28 @@
             "C.D.g"
         ], 
         [
-            "LOAD_ATTR", 
-            "self.assert_qualname"
+            "CALL_FUNCTION", 
+            "self.assert_qualname(C.D.g, 'C.D.g')"
         ], 
         [
             "LOAD_ATTR", 
             "self.assert_qualname"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(f, 'f')"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "self.assert_qualname"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "f()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(f(), 'f.<locals>.g')"
         ], 
         [
             "LOAD_ATTR", 
@@ -1063,12 +2475,32 @@
             "C.D.h"
         ], 
         [
-            "LOAD_ATTR", 
-            "self.assert_qualname"
+            "CALL_FUNCTION", 
+            "C.D.h()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')"
         ], 
         [
             "LOAD_ATTR", 
             "self.assert_qualname"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(lamb, '<lambda>')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "lambda_maker()"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "self.assert_qualname"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(foo, 'lambda_maker.<locals>.foo')"
         ], 
         [
             "LOAD_ATTR", 
@@ -1079,12 +2511,44 @@
             "foo.x"
         ], 
         [
-            "LOAD_ATTR", 
-            "self.assert_qualname"
+            "CALL_FUNCTION", 
+            "self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')"
         ], 
         [
             "LOAD_ATTR", 
             "self.assert_qualname"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "foo()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "self.assert_qualname"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "foo()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "foo()()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "range(66000)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "list(range(66000))"
         ], 
         [
             "BINARY_MODULO", 
@@ -1095,16 +2559,60 @@
             "tempfile.mkstemp"
         ], 
         [
+            "CALL_FUNCTION", 
+            "tempfile.mkstemp()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "compile(source, filename, 'exec')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "open(filename, 'w')"
+        ], 
+        [
             "LOAD_ATTR", 
             "outfile.write"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "outfile.write(source)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "range(5)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "range(n)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "n == 1"
         ], 
         [
             "LOAD_ATTR", 
             "self.assertEqual"
         ], 
         [
+            "CALL_FUNCTION", 
+            "only(gen)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(only(gen), 0)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.assertRaises"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertRaises(NotOneValueFound)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "only(gen)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1123,8 +2631,20 @@
             "os.path.dirname"
         ], 
         [
+            "CALL_FUNCTION", 
+            "os.path.dirname(__file__)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "os.path.join(os.path.dirname(__file__), 'not_code.txt', )"
+        ], 
+        [
             "LOAD_ATTR", 
             "Source.for_filename"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.for_filename(path)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1135,12 +2655,24 @@
             "source.tree"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.assertIsNone(source.tree)"
+        ], 
+        [
             "LOAD_ATTR", 
             "inspect.currentframe"
         ], 
         [
+            "CALL_FUNCTION", 
+            "inspect.currentframe()"
+        ], 
+        [
             "LOAD_ATTR", 
             "Source.executing"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.executing(frame)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1151,12 +2683,28 @@
             "executing.code_qualname"
         ], 
         [
+            "CALL_FUNCTION", 
+            "executing.code_qualname()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')"
+        ], 
+        [
             "LOAD_ATTR", 
             "sys.version"
         ], 
         [
             "LOAD_ATTR", 
             "sys.version.lower"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "sys.version.lower()"
+        ], 
+        [
+            "COMPARE_OP", 
+            "'pypy' not in sys.version.lower()"
         ], 
         [
             "LOAD_ATTR", 
@@ -1167,8 +2715,20 @@
             "executing.text"
         ], 
         [
+            "CALL_FUNCTION", 
+            "executing.text()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(executing.text(), text)"
+        ], 
+        [
             "LOAD_ATTR", 
             "executing.text_range"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "executing.text_range()"
         ], 
         [
             "LOAD_ATTR", 
@@ -1185,6 +2745,14 @@
         [
             "SLICE+3", 
             "executing.source.text[start:end]"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.assertEqual(executing.source.text[start:end], text)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "C()"
         ], 
         [
             "LOAD_ATTR", 
@@ -1235,12 +2803,24 @@
             "c.y.qwe"
         ], 
         [
+            "CALL_FUNCTION", 
+            "str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
+        ], 
+        [
             "LOAD_ATTR", 
             "Source.for_frame"
         ], 
         [
             "LOAD_ATTR", 
             "inspect.currentframe"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "inspect.currentframe()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.for_frame(inspect.currentframe())"
         ], 
         [
             "LOAD_ATTR", 
@@ -1251,8 +2831,20 @@
             "source.filename"
         ], 
         [
+            "CALL_FUNCTION", 
+            "compile(source.text, source.filename, 'exec')"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "get_instructions(code)"
+        ], 
+        [
             "LOAD_ATTR", 
             "inst.starts_line"
+        ], 
+        [
+            "COMPARE_OP", 
+            "inst.starts_line is not None"
         ], 
         [
             "LOAD_ATTR", 
@@ -1267,24 +2859,60 @@
             "inst.opname.startswith"
         ], 
         [
+            "CALL_FUNCTION", 
+            "inst.opname.startswith(\n                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP'))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "C()"
+        ], 
+        [
             "LOAD_ATTR", 
             "inst.offset"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "globals()"
         ], 
         [
             "LOAD_ATTR", 
             "inst.opname"
         ], 
         [
+            "CALL_FUNCTION", 
+            "print(inst.opname)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Source.executing"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.executing(frame)"
         ], 
         [
             "LOAD_ATTR", 
             "Source.executing(frame).node"
         ], 
         [
+            "COMPARE_OP", 
+            "Source.executing(frame).node is not None"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "i()"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "assign(lambda: 1)"
+        ], 
+        [
             "LOAD_ATTR", 
             "inspect.currentframe"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "inspect.currentframe()"
         ], 
         [
             "LOAD_ATTR", 
@@ -1299,16 +2927,32 @@
             "Source.lazycache"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Source.lazycache(frame)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Source.executing"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Source.executing(frame)"
         ], 
         [
             "LOAD_ATTR", 
             "Source.executing(frame).node"
         ], 
         [
+            "CALL_FUNCTION", 
+            "isinstance(node, typ)"
+        ], 
+        [
             "LOAD_ATTR", 
             "inspect.currentframe"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "inspect.currentframe()"
         ], 
         [
             "LOAD_ATTR", 
@@ -1323,12 +2967,20 @@
             "ast.Expression"
         ], 
         [
+            "CALL_FUNCTION", 
+            "ast.Expression(node)"
+        ], 
+        [
             "LOAD_ATTR", 
             "frame.f_code"
         ], 
         [
             "LOAD_ATTR", 
             "frame.f_code.co_filename"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "compile(ast.Expression(node), frame.f_code.co_filename, 'eval')"
         ], 
         [
             "LOAD_ATTR", 
@@ -1339,12 +2991,24 @@
             "frame.f_locals"
         ], 
         [
+            "CALL_FUNCTION", 
+            "eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )"
+        ], 
+        [
+            "COMPARE_OP", 
+            "result == value"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.get_node"
         ], 
         [
             "LOAD_ATTR", 
             "ast.Call"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.get_node(ast.Call)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1359,12 +3023,24 @@
             "call.args[0]"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.check(call.args[0], arg)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.check"
         ], 
         [
             "LOAD_ATTR", 
             "call.func"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.check(call.func, self)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "returns is None"
         ], 
         [
             "LOAD_ATTR", 
@@ -1375,6 +3051,10 @@
             "ast.Attribute"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.get_node(ast.Attribute)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.check"
         ], 
@@ -1383,8 +3063,16 @@
             "node.value"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.check(node.value, self)"
+        ], 
+        [
             "LOAD_ATTR", 
             "node.attr"
+        ], 
+        [
+            "COMPARE_OP", 
+            "node.attr == item"
         ], 
         [
             "LOAD_ATTR", 
@@ -1395,12 +3083,20 @@
             "ast.Subscript"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.get_node(ast.Subscript)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.check"
         ], 
         [
             "LOAD_ATTR", 
             "node.value"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.check(node.value, self)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1415,6 +3111,10 @@
             "node.slice.value"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.check(node.slice.value, item)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.get_node"
         ], 
@@ -1423,12 +3123,20 @@
             "ast.BinOp"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.get_node(ast.BinOp)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.check"
         ], 
         [
             "LOAD_ATTR", 
             "node.left"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.check(node.left, self)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1439,12 +3147,20 @@
             "node.right"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.check(node.right, other)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.get_node"
         ], 
         [
             "LOAD_ATTR", 
             "ast.UnaryOp"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.get_node(ast.UnaryOp)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1455,6 +3171,10 @@
             "node.operand"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.check(node.operand, self)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.get_node"
         ], 
@@ -1463,12 +3183,20 @@
             "ast.Compare"
         ], 
         [
+            "CALL_FUNCTION", 
+            "self.get_node(ast.Compare)"
+        ], 
+        [
             "LOAD_ATTR", 
             "self.check"
         ], 
         [
             "LOAD_ATTR", 
             "node.left"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.check(node.left, self)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1481,6 +3209,10 @@
         [
             "BINARY_SUBSCR", 
             "node.comparators[0]"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "self.check(node.comparators[0], other)"
         ]
     ]
 }

@@ -9,8 +9,20 @@
             "Subscript(value=Attribute(value=Name(id='sys', ctx=Load()), attr='version_info', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Subscript(value=Attribute(value=Name(id='sys', ctx=Load()), attr='version_info', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load()), ops=[Eq()], comparators=[Num(n=3)])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='lru_cache', ctx=Load()), args=[], keywords=[keyword(arg='maxsize', value=Name(id='None', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='dis', ctx=Load()), attr='get_instructions', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='namedtuple', ctx=Load()), args=[Str(s='Instruction'), Str(s='offset argval opname')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -21,28 +33,68 @@
             "Attribute(value=Name(id='__future__', ctx=Load()), attr='all_feature_names', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='sum', ctx=Load()), args=[GeneratorExp(elt=Attribute(value=Call(func=Name(id='getattr', ctx=Load()), args=[Name(id='__future__', ctx=Load()), Name(id='fname', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='compiler_flag', ctx=Load()), generators=[comprehension(target=Name(id='fname', ctx=Store()), iter=Attribute(value=Name(id='__future__', ctx=Load()), attr='all_feature_names', ctx=Load()), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='RLock', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='functools', ctx=Load()), attr='wraps', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='functools', ctx=Load()), attr='wraps', ctx=Load()), args=[Name(id='func', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='args', ctx=Load()), ops=[In()], comparators=[Name(id='d', ctx=Load())])"
         ], 
         [
             "BINARY_SUBSCR", 
             "Subscript(value=Name(id='d', ctx=Load()), slice=Index(value=Name(id='args', ctx=Load())), ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION_VAR", 
+            "Call(func=Name(id='func', ctx=Load()), args=[], keywords=[], starargs=Name(id='args', ctx=Load()), kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='co', ctx=Load()), attr='co_code', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='len', ctx=Load()), args=[Name(id='code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='i', ctx=Load()), ops=[Lt()], comparators=[Name(id='n', ctx=Load())])"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=Name(id='i', ctx=Load())), ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='ord', ctx=Load()), args=[Name(id='c', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='op', ctx=Load()), ops=[GtE()], comparators=[Name(id='HAVE_ARGUMENT', ctx=Load())])"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=Name(id='i', ctx=Load())), ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='ord', ctx=Load()), args=[Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=Name(id='i', ctx=Load())), ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
@@ -51,6 +103,10 @@
         [
             "BINARY_SUBSCR", 
             "Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))), ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='ord', ctx=Load()), args=[Subscript(value=Name(id='code', ctx=Load()), slice=Index(value=BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=1))), ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_MULTIPLY", 
@@ -69,8 +125,16 @@
             "BinOp(left=Name(id='i', ctx=Load()), op=Add(), right=Num(n=2))"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='op', ctx=Load()), ops=[Eq()], comparators=[Name(id='EXTENDED_ARG', ctx=Load())])"
+        ], 
+        [
             "BINARY_MULTIPLY", 
             "BinOp(left=Name(id='oparg', ctx=Load()), op=Mult(), right=Num(n=65536))"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='op', ctx=Load()), ops=[In()], comparators=[Name(id='hasconst', ctx=Load())])"
         ], 
         [
             "LOAD_ATTR", 
@@ -85,20 +149,88 @@
             "Subscript(value=Name(id='opname', ctx=Load()), slice=Index(value=Name(id='op', ctx=Load())), ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='Instruction', ctx=Load()), args=[Name(id='offset', ctx=Load()), Name(id='argval', ctx=Load()), Subscript(value=Name(id='opname', ctx=Load()), slice=Index(value=Name(id='op', ctx=Load())), ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='it', ctx=Load()), Name(id='Sized', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='len', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Call(func=Name(id='len', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[], starargs=None, kwargs=None), ops=[NotEq()], comparators=[Num(n=1)])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='len', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_MODULO", 
             "BinOp(left=Str(s='Expected one value, found %s'), op=Mod(), right=Call(func=Name(id='len', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[], starargs=None, kwargs=None))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='NotOneValueFound', ctx=Load()), args=[BinOp(left=Str(s='Expected one value, found %s'), op=Mod(), right=Call(func=Name(id='len', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[], starargs=None, kwargs=None))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_SUBSCR", 
             "Subscript(value=Call(func=Name(id='list', ctx=Load()), args=[Name(id='it', ctx=Load())], keywords=[], starargs=None, kwargs=None), slice=Index(value=Num(n=0)), ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='islice', ctx=Load()), args=[Name(id='it', ctx=Load()), Num(n=2)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tuple', ctx=Load()), args=[Call(func=Name(id='islice', ctx=Load()), args=[Name(id='it', ctx=Load()), Num(n=2)], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='len', ctx=Load()), args=[Name(id='lst', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Call(func=Name(id='len', ctx=Load()), args=[Name(id='lst', ctx=Load())], keywords=[], starargs=None, kwargs=None), ops=[Eq()], comparators=[Num(n=0)])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='NotOneValueFound', ctx=Load()), args=[Str(s='Expected one value, found 0')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='len', ctx=Load()), args=[Name(id='lst', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Call(func=Name(id='len', ctx=Load()), args=[Name(id='lst', ctx=Load())], keywords=[], starargs=None, kwargs=None), ops=[Gt()], comparators=[Num(n=1)])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='NotOneValueFound', ctx=Load()), args=[Str(s='Expected one value, found several')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "Subscript(value=Name(id='lst', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='text', ctx=Load()), Name(id='text_type', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='decode_source', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='decode_source', ctx=Load()), args=[Name(id='text', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -109,12 +241,40 @@
             "Attribute(value=Name(id='text', ctx=Load()), attr='splitlines', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='splitlines', ctx=Load()), args=[Name(id='True', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='enumerate', ctx=Load()), args=[Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='splitlines', ctx=Load()), args=[Name(id='True', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='i', ctx=Load()), ops=[Lt()], comparators=[Num(n=2)])"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='encoding_pattern', ctx=Load()), attr='match', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='encoding_pattern', ctx=Load()), attr='match', ctx=Load()), args=[Name(id='line', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Str(s=''), attr='join', ctx=Load()), args=[ListComp(elt=IfExp(test=BoolOp(op=And(), values=[Compare(left=Name(id='i', ctx=Load()), ops=[Lt()], comparators=[Num(n=2)]), Call(func=Attribute(value=Name(id='encoding_pattern', ctx=Load()), attr='match', ctx=Load()), args=[Name(id='line', ctx=Load())], keywords=[], starargs=None, kwargs=None)]), body=Str(s='\\n'), orelse=Name(id='line', ctx=Load())), generators=[comprehension(target=Tuple(elts=[Name(id='i', ctx=Store()), Name(id='line', ctx=Store())], ctx=Store()), iter=Call(func=Name(id='enumerate', ctx=Load()), args=[Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='splitlines', ctx=Load()), args=[Name(id='True', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='defaultdict', ctx=Load()), args=[Name(id='list', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='parse', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='parse', ctx=Load()), args=[Name(id='ast_text', ctx=Load())], keywords=[keyword(arg='filename', value=Name(id='filename', ctx=Load()))], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -125,8 +285,20 @@
             "Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='walk', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='iter_child_nodes', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='iter_child_nodes', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='hasattr', ctx=Load()), args=[Name(id='node', ctx=Load()), Str(s='lineno')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -145,12 +317,24 @@
             "Attribute(value=Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load()), slice=Index(value=Attribute(value=Name(id='node', ctx=Load()), attr='lineno', ctx=Load())), ctx=Load()), attr='append', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load()), slice=Index(value=Attribute(value=Name(id='node', ctx=Load()), attr='lineno', ctx=Load())), ctx=Load()), attr='append', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='QualnameVisitor', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='visitor', ctx=Load()), attr='visit', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='visitor', ctx=Load()), attr='visit', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -173,8 +357,16 @@
             "Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='cls', ctx=Load()), attr='for_filename', ctx=Load()), args=[Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load()), BoolOp(op=Or(), values=[Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load()), Dict(keys=[], values=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='cls', ctx=Load()), attr='_class_local', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='cls', ctx=Load()), attr='_class_local', ctx=Load()), args=[Str(s='__source_cache'), Dict(keys=[], values=[])], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_SUBSCR", 
@@ -185,8 +377,24 @@
             "Attribute(value=Name(id='linecache', ctx=Load()), attr='getlines', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='linecache', ctx=Load()), attr='getlines', ctx=Load()), args=[Name(id='filename', ctx=Load()), Name(id='module_globals', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Str(s=''), attr='join', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Str(s=''), attr='join', ctx=Load()), args=[Name(id='lines', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='cls', ctx=Load()), args=[Name(id='filename', ctx=Load()), Call(func=Attribute(value=Str(s=''), attr='join', ctx=Load()), args=[Name(id='lines', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='hasattr', ctx=Load()), args=[Name(id='linecache', ctx=Load()), Str(s='lazycache')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -205,6 +413,10 @@
             "Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='linecache', ctx=Load()), attr='lazycache', ctx=Load()), args=[Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load()), Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
         ], 
@@ -217,12 +429,20 @@
             "Attribute(value=Name(id='cls', ctx=Load()), attr='_class_local', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='cls', ctx=Load()), attr='_class_local', ctx=Load()), args=[Str(s='__executing_cache'), Dict(keys=[], values=[])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "Subscript(value=Name(id='executing_cache', ctx=Load()), slice=Index(value=Name(id='key', ctx=Load())), ctx=Load())"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='cls', ctx=Load()), attr='for_frame', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='cls', ctx=Load()), attr='for_frame', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -237,12 +457,32 @@
             "Attribute(value=Name(id='frame', ctx=Load()), attr='f_lineno', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='source', ctx=Load()), attr='statements_at_line', ctx=Load()), args=[Attribute(value=Name(id='frame', ctx=Load()), attr='f_lineno', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='NodeFinder', ctx=Load()), args=[Name(id='frame', ctx=Load()), Name(id='stmts', ctx=Load()), Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Call(func=Name(id='NodeFinder', ctx=Load()), args=[Name(id='frame', ctx=Load()), Name(id='stmts', ctx=Load()), Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='result', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='statement_containing_node', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='new_stmts', ctx=Load()), ops=[LtE()], comparators=[Name(id='stmts', ctx=Load())])"
+        ], 
+        [
+            "CALL_FUNCTION_VAR", 
+            "Call(func=Name(id='Executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=Name(id='args', ctx=Load()), kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -253,12 +493,24 @@
             "Attribute(value=Attribute(value=Name(id='cls', ctx=Load()), attr='__dict__', ctx=Load()), attr='get', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='cls', ctx=Load()), attr='__dict__', ctx=Load()), attr='get', ctx=Load()), args=[Name(id='name', ctx=Load()), Name(id='default', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='setattr', ctx=Load()), args=[Name(id='cls', ctx=Load()), Name(id='name', ctx=Load()), Name(id='result', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load())"
         ], 
         [
             "BINARY_SUBSCR", 
             "Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='_nodes_by_line', ctx=Load()), slice=Index(value=Name(id='lineno', ctx=Load())), ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='statement_containing_node', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -273,16 +525,36 @@
             "Attribute(value=Name(id='self', ctx=Load()), attr='filename', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='ASTTokens', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='text', ctx=Load())], keywords=[keyword(arg='tree', value=Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())), keyword(arg='filename', value=Attribute(value=Name(id='self', ctx=Load()), attr='filename', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='source', ctx=Load()), Name(id='bytes', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='io', ctx=Load()), attr='BytesIO', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='io', ctx=Load()), attr='BytesIO', ctx=Load()), args=[Name(id='source', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Call(func=Attribute(value=Name(id='io', ctx=Load()), attr='BytesIO', ctx=Load()), args=[Name(id='source', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='readline', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='detect_encoding', ctx=Load()), args=[Attribute(value=Call(func=Attribute(value=Name(id='io', ctx=Load()), attr='BytesIO', ctx=Load()), args=[Name(id='source', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='readline', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='source', ctx=Load()), attr='decode', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='source', ctx=Load()), attr='decode', ctx=Load()), args=[Name(id='encoding', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -291,6 +563,10 @@
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='filename', ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Name(id='code', ctx=Load()), attr='co_filename', ctx=Load()), ops=[Eq()], comparators=[Attribute(value=Name(id='self', ctx=Load()), attr='filename', ctx=Load())])"
         ], 
         [
             "LOAD_ATTR", 
@@ -313,6 +589,10 @@
             "Attribute(value=Name(id='code', ctx=Load()), attr='co_name', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='_qualnames', ctx=Load()), attr='get', ctx=Load()), args=[Tuple(elts=[Attribute(value=Name(id='code', ctx=Load()), attr='co_name', ctx=Load()), Attribute(value=Name(id='code', ctx=Load()), attr='co_firstlineno', ctx=Load())], ctx=Load()), Attribute(value=Name(id='code', ctx=Load()), attr='co_name', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load())"
         ], 
@@ -329,12 +609,20 @@
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='code_qualname', ctx=Load()), args=[Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load())"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -345,12 +633,20 @@
             "Attribute(value=Name(id='self', ctx=Load()), attr='node', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), attr='get_text', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load())"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -361,8 +657,20 @@
             "Attribute(value=Name(id='self', ctx=Load()), attr='node', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='source', ctx=Load()), attr='asttokens', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), attr='get_text_range', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='super', ctx=Load()), args=[Name(id='QualnameVisitor', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Call(func=Name(id='super', ctx=Load()), args=[Name(id='QualnameVisitor', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='__init__', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Call(func=Name(id='super', ctx=Load()), args=[Name(id='QualnameVisitor', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='__init__', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -375,6 +683,10 @@
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load()), args=[Name(id='name', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -397,6 +709,14 @@
             "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Str(s='.'), attr='join', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='qualnames', ctx=Load()), attr='setdefault', ctx=Load()), args=[Tuple(elts=[Name(id='name', ctx=Load()), Attribute(value=Name(id='node', ctx=Load()), attr='lineno', ctx=Load())], ctx=Load()), Call(func=Attribute(value=Str(s='.'), attr='join', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
         ], 
@@ -405,8 +725,16 @@
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load()), args=[Str(s='<locals>')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Lambda', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='node', ctx=Load()), Attribute(value=Name(id='ast', ctx=Load()), attr='Lambda', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -421,12 +749,8 @@
             "Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load())"
         ], 
         [
-            "LOAD_ATTR", 
-            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
-        ], 
-        [
-            "LOOKUP_METHOD", 
-            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load())"
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load()), args=[Name(id='child', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -435,30 +759,78 @@
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "LOAD_ATTR", 
+            "Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load())"
+        ], 
+        [
+            "LOOKUP_METHOD", 
+            "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='iter_fields', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='iter_fields', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='field', ctx=Load()), ops=[Eq()], comparators=[Str(s='body')])"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='AST', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='child', ctx=Load()), Attribute(value=Name(id='ast', ctx=Load()), attr='AST', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load()), args=[Name(id='child', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='child', ctx=Load()), Name(id='list', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='AST', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='grandchild', ctx=Load()), Attribute(value=Name(id='ast', ctx=Load()), attr='AST', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='visit', ctx=Load()), args=[Name(id='grandchild', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='visit_FunctionDef', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='visit_FunctionDef', ctx=Load()), args=[Name(id='node', ctx=Load()), Str(s='<lambda>')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -473,8 +845,16 @@
             "Attribute(value=Name(id='node', ctx=Load()), attr='name', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='append', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='name', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='generic_visit', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='generic_visit', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -483,6 +863,14 @@
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='stack', ctx=Load()), attr='pop', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='getattr', ctx=Load()), args=[Name(id='__future__', ctx=Load()), Name(id='fname', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -501,6 +889,10 @@
             "BinOp(left=Name(id='future_flags', ctx=Load()), op=BitAnd(), right=Attribute(value=Name(id='matching_code', ctx=Load()), attr='co_flags', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='compile', ctx=Load()), args=[Name(id='source', ctx=Load()), Attribute(value=Name(id='matching_code', ctx=Load()), attr='co_filename', ctx=Load()), Str(s='exec')], keywords=[keyword(arg='flags', value=BinOp(left=Name(id='future_flags', ctx=Load()), op=BitAnd(), right=Attribute(value=Name(id='matching_code', ctx=Load()), attr='co_flags', ctx=Load()))), keyword(arg='dont_inherit', value=Name(id='True', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
         ], 
@@ -517,6 +909,10 @@
             "Subscript(value=Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_code', ctx=Load()), slice=Index(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_lasti', ctx=Load())), ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='ord', ctx=Load()), args=[Name(id='b', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='dis', ctx=Load()), attr='opname', ctx=Load())"
         ], 
@@ -529,8 +925,16 @@
             "Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load()), args=[Str(s='CALL_')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Call', ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='op_name', ctx=Load()), ops=[Eq()], comparators=[Str(s='BINARY_SUBSCR')])"
         ], 
         [
             "LOAD_ATTR", 
@@ -541,6 +945,10 @@
             "Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load()), args=[Str(s='BINARY_')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load())"
         ], 
@@ -549,24 +957,64 @@
             "Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='op_name', ctx=Load()), attr='startswith', ctx=Load()), args=[Str(s='UNARY_')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='UnaryOp', ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='op_name', ctx=Load()), ops=[In()], comparators=[Tuple(elts=[Str(s='LOAD_ATTR'), Str(s='LOAD_METHOD'), Str(s='LOOKUP_METHOD')], ctx=Load())])"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Attribute', ctx=Load())"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='op_name', ctx=Load()), ops=[Eq()], comparators=[Str(s='COMPARE_OP')])"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Compare', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='RuntimeError', ctx=Load()), args=[Name(id='op_name', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='matching_nodes', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='matching_nodes', ctx=Load()), args=[Name(id='exprs', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='matching_nodes', ctx=Load()), args=[Name(id='exprs', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='only', ctx=Load()), args=[Call(func=Name(id='list', ctx=Load()), args=[Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='matching_nodes', ctx=Load()), args=[Name(id='exprs', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='walk', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='walk', ctx=Load()), args=[Name(id='stmt', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='node', ctx=Load()), Name(id='typ', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='hasattr', ctx=Load()), args=[Name(id='node', ctx=Load()), Str(s='ctx')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -577,6 +1025,18 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Load', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='ctx', ctx=Load()), Attribute(value=Name(id='ast', ctx=Load()), attr='Load', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='enumerate', ctx=Load()), args=[Name(id='exprs', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='get_setter', ctx=Load()), args=[Name(id='expr', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load())"
         ], 
@@ -585,20 +1045,60 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Pow', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='Pow', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Str', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='Str', ctx=Load()), args=[], keywords=[keyword(arg='s', value=Name(id='sentinel', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load()), args=[], keywords=[keyword(arg='left', value=Name(id='expr', ctx=Load())), keyword(arg='op', value=Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='Pow', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)), keyword(arg='right', value=Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='Str', ctx=Load()), args=[], keywords=[keyword(arg='s', value=Name(id='sentinel', ctx=Load()))], starargs=None, kwargs=None))], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='fix_missing_locations', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='fix_missing_locations', ctx=Load()), args=[Name(id='replacement', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='setter', ctx=Load()), args=[Name(id='replacement', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='compile_instructions', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='compile_instructions', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='setter', ctx=Load()), args=[Name(id='expr', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='enumerate', ctx=Load()), args=[Name(id='instructions', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='instruction', ctx=Load()), attr='argval', ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Name(id='instruction', ctx=Load()), attr='argval', ctx=Load()), ops=[Eq()], comparators=[Name(id='sentinel', ctx=Load())])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='only', ctx=Load()), args=[Name(id='indices', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_SUBTRACT", 
@@ -611,6 +1111,10 @@
         [
             "LOAD_ATTR", 
             "Attribute(value=Subscript(value=Name(id='instructions', ctx=Load()), slice=Index(value=Name(id='arg_index', ctx=Load())), ctx=Load()), attr='opname', ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Subscript(value=Name(id='instructions', ctx=Load()), slice=Index(value=Name(id='arg_index', ctx=Load())), ctx=Load()), attr='opname', ctx=Load()), ops=[Eq()], comparators=[Str(s='EXTENDED_ARG')])"
         ], 
         [
             "BINARY_SUBSCR", 
@@ -629,6 +1133,10 @@
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_lasti', ctx=Load())"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Subscript(value=Name(id='instructions', ctx=Load()), slice=Index(value=Name(id='arg_index', ctx=Load())), ctx=Load()), attr='offset', ctx=Load()), ops=[Eq()], comparators=[Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_lasti', ctx=Load())])"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load())"
         ], 
@@ -641,12 +1149,32 @@
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='compile_similar_to', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='tree', ctx=Load()), Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='find_codes', ctx=Load()), args=[Name(id='module_code', ctx=Load()), Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='only', ctx=Load()), args=[Call(func=Name(id='find_codes', ctx=Load()), args=[Name(id='module_code', ctx=Load()), Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='frame', ctx=Load()), attr='f_code', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='get_instructions', ctx=Load()), args=[Name(id='code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='get_instructions', ctx=Load()), args=[Name(id='code', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -657,8 +1185,68 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='iter_fields', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='iter_fields', ctx=Load()), args=[Name(id='parent', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='field', ctx=Load()), ops=[Is()], comparators=[Name(id='node', ctx=Load())])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='field', ctx=Load()), Name(id='list', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='enumerate', ctx=Load()), args=[Name(id='field', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='item', ctx=Load()), ops=[Is()], comparators=[Name(id='node', ctx=Load())])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='setattr', ctx=Load()), args=[Name(id='parent', ctx=Load()), Name(id='name', ctx=Load()), Name(id='new_node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='matches', ctx=Load()), args=[Name(id='root_code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='code_options', ctx=Load()), attr='append', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='code_options', ctx=Load()), attr='append', ctx=Load()), args=[Name(id='root_code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='finder', ctx=Load()), args=[Name(id='root_code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='attrgetter', ctx=Load()), args=[Str(s='co_firstlineno')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='attrgetter', ctx=Load()), args=[Str(s='co_name')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='all', ctx=Load()), args=[GeneratorExp(elt=Compare(left=Call(func=Name(id='f', ctx=Load()), args=[Name(id='c', ctx=Load())], keywords=[], starargs=None, kwargs=None), ops=[Eq()], comparators=[Call(func=Name(id='f', ctx=Load()), args=[Name(id='matching', ctx=Load())], keywords=[], starargs=None, kwargs=None)]), generators=[comprehension(target=Name(id='f', ctx=Store()), iter=List(elts=[Call(func=Name(id='attrgetter', ctx=Load()), args=[Str(s='co_firstlineno')], keywords=[], starargs=None, kwargs=None), Call(func=Name(id='attrgetter', ctx=Load()), args=[Str(s='co_name')], keywords=[], starargs=None, kwargs=None), Name(id='code_names', ctx=Load())], ctx=Load()), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='f', ctx=Load()), args=[Name(id='c', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='f', ctx=Load()), args=[Name(id='matching', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Call(func=Name(id='f', ctx=Load()), args=[Name(id='c', ctx=Load())], keywords=[], starargs=None, kwargs=None), ops=[Eq()], comparators=[Call(func=Name(id='f', ctx=Load()), args=[Name(id='matching', ctx=Load())], keywords=[], starargs=None, kwargs=None)])"
         ], 
         [
             "LOAD_ATTR", 
@@ -669,8 +1257,28 @@
             "Attribute(value=Name(id='inspect', ctx=Load()), attr='iscode', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='iscode', ctx=Load()), args=[Name(id='const', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='matches', ctx=Load()), args=[Name(id='const', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='code_options', ctx=Load()), attr='append', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='code_options', ctx=Load()), attr='append', ctx=Load()), args=[Name(id='const', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='finder', ctx=Load()), args=[Name(id='const', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='frozenset', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -693,8 +1301,16 @@
             "Attribute(value=Name(id='code', ctx=Load()), attr='co_cellvars', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Call(func=Name(id='frozenset', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), attr='union', ctx=Load()), args=[Attribute(value=Name(id='code', ctx=Load()), attr='co_names', ctx=Load()), Attribute(value=Name(id='code', ctx=Load()), attr='co_varnames', ctx=Load()), Attribute(value=Name(id='code', ctx=Load()), attr='co_freevars', ctx=Load()), Attribute(value=Name(id='code', ctx=Load()), attr='co_cellvars', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='stmt', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='node', ctx=Load()), Attribute(value=Name(id='ast', ctx=Load()), attr='stmt', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -711,96 +1327,500 @@
             "Attribute(value=Name(id='unittest', ctx=Load()), attr='TestCase', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='TestFile', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Call(func=Name(id='TestFile', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), attr='test_file', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Call(func=Name(id='TestFile', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), attr='test_file', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='Tester', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2), Num(n=3)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2), Num(n=3)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ops=[Eq()], comparators=[List(elts=[Num(n=1), Num(n=2), Num(n=3)], ctx=Load())])"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='tester', ctx=Load()), attr='asd', ctx=Load())"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Name(id='tester', ctx=Load()), attr='asd', ctx=Load()), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "Subscript(value=Name(id='tester', ctx=Load()), slice=Index(value=Num(n=19)), ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Subscript(value=Name(id='tester', ctx=Load()), slice=Index(value=Num(n=19)), ctx=Load()), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
         ], 
         [
             "BINARY_POWER", 
             "BinOp(left=Name(id='tester', ctx=Load()), op=Pow(), right=Num(n=4))"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=BinOp(left=Name(id='tester', ctx=Load()), op=Pow(), right=Num(n=4)), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
             "BINARY_MULTIPLY", 
             "BinOp(left=Name(id='tester', ctx=Load()), op=Mult(), right=Num(n=3))"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=BinOp(left=Name(id='tester', ctx=Load()), op=Mult(), right=Num(n=3)), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
         ], 
         [
             "BINARY_SUBTRACT", 
             "BinOp(left=Name(id='tester', ctx=Load()), op=Sub(), right=Num(n=2))"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=BinOp(left=Name(id='tester', ctx=Load()), op=Sub(), right=Num(n=2)), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='tester', ctx=Load()), op=Add(), right=Num(n=1))"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=BinOp(left=Name(id='tester', ctx=Load()), op=Add(), right=Num(n=1)), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
         ], 
         [
             "UNARY_NEGATIVE", 
             "UnaryOp(op=USub(), operand=Name(id='tester', ctx=Load()))"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=UnaryOp(op=USub(), operand=Name(id='tester', ctx=Load())), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
             "UNARY_POSITIVE", 
             "UnaryOp(op=UAdd(), operand=Name(id='tester', ctx=Load()))"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=UnaryOp(op=UAdd(), operand=Name(id='tester', ctx=Load())), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
         ], 
         [
             "UNARY_INVERT", 
             "UnaryOp(op=Invert(), operand=Name(id='tester', ctx=Load()))"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=UnaryOp(op=Invert(), operand=Name(id='tester', ctx=Load())), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='tester', ctx=Load()), ops=[Lt()], comparators=[Num(n=7)])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Compare(left=Name(id='tester', ctx=Load()), ops=[Lt()], comparators=[Num(n=7)]), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='tester', ctx=Load()), ops=[GtE()], comparators=[Num(n=78)])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Compare(left=Name(id='tester', ctx=Load()), ops=[GtE()], comparators=[Num(n=78)]), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='tester', ctx=Load()), ops=[NotEq()], comparators=[Num(n=79)])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Compare(left=Name(id='tester', ctx=Load()), ops=[NotEq()], comparators=[Num(n=79)]), ops=[Is()], comparators=[Name(id='tester', ctx=Load())])"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='tester', ctx=Load()), attr='foo', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='tester', ctx=Load()), attr='foo', ctx=Load()), args=[Num(n=45), Name(id='False', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Call(func=Attribute(value=Name(id='tester', ctx=Load()), attr='foo', ctx=Load()), args=[Num(n=45), Name(id='False', ctx=Load())], keywords=[], starargs=None, kwargs=None), ops=[Eq()], comparators=[Num(n=45)])"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='__name__', ctx=Load()), ops=[Eq()], comparators=[Str(s='__main__')])"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='unittest', ctx=Load()), attr='main', ctx=Load())"
         ], 
         [
-            "LOOKUP_METHOD", 
-            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='unittest', ctx=Load()), attr='main', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=1)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=2)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=3)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=9)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=8)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=99)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=33)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=4), Num(n=5), Num(n=6), List(elts=[Num(n=7)], ctx=Load())], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='123')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='int', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='decorator_with_args', ctx=Load()), args=[Call(func=Name(id='tester', ctx=Load()), args=[Str(s='123')], keywords=[], starargs=None, kwargs=None)], keywords=[keyword(arg='x', value=Call(func=Name(id='int', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)], keywords=[keyword(arg='returns', value=Name(id='empty_decorator', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)], keywords=[keyword(arg='returns', value=Name(id='empty_decorator', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='int', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='decorator_with_args', ctx=Load()), args=[Call(func=Name(id='str', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)], keywords=[keyword(arg='x', value=Call(func=Name(id='int', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)], keywords=[keyword(arg='returns', value=Name(id='empty_decorator', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=7), Num(n=8)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=7), Num(n=8)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='tuple', ctx=Load()), args=[List(elts=[Num(n=7), Num(n=8)], ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)], keywords=[keyword(arg='returns', value=Name(id='empty_decorator', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='sdf')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='123234')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='decorator_with_args', ctx=Load()), args=[Call(func=Name(id='tester', ctx=Load()), args=[Str(s='sdf')], keywords=[], starargs=None, kwargs=None)], keywords=[keyword(arg='x', value=Call(func=Name(id='tester', ctx=Load()), args=[Str(s='123234')], keywords=[], starargs=None, kwargs=None))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[List(elts=[SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=List(elts=[Num(n=1)], ctx=Load()), ifs=[])]), SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='y', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='y', ctx=Store()), iter=List(elts=[Num(n=1)], ctx=Load()), ifs=[])])], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[List(elts=[SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=List(elts=[Num(n=1)], ctx=Load()), ifs=[])]), SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=List(elts=[Num(n=1)], ctx=Load()), ifs=[])])], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[GeneratorExp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=List(elts=[Num(n=1)], ctx=Load()), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[List(elts=[SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=List(elts=[Num(n=1)], ctx=Load()), ifs=[])]), Call(func=Name(id='list', ctx=Load()), args=[GeneratorExp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=List(elts=[Num(n=1)], ctx=Load()), ifs=[])])], keywords=[], starargs=None, kwargs=None)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='y', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=3)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Lambda(args=arguments(args=[Name(id='x', ctx=Param())], vararg=None, kwarg=None, defaults=[]), body=Tuple(elts=[Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)], ctx=Load())), args=[Call(func=Name(id='tester', ctx=Load()), args=[Num(n=3)], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Call(func=Lambda(args=arguments(args=[Name(id='x', ctx=Param())], vararg=None, kwarg=None, defaults=[]), body=Tuple(elts=[Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)], ctx=Load())), args=[Call(func=Name(id='tester', ctx=Load()), args=[Num(n=3)], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None), Tuple(elts=[Num(n=3), Num(n=3)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Lambda(args=arguments(args=[], vararg=None, kwarg=None, defaults=[]), body=Call(func=Lambda(args=arguments(args=[], vararg=None, kwarg=None, defaults=[]), body=Call(func=Name(id='tester', ctx=Load()), args=[Num(n=1)], keywords=[], starargs=None, kwargs=None)), args=[], keywords=[], starargs=None, kwargs=None)), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "LOOKUP_METHOD", 
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Lambda(args=arguments(args=[], vararg=None, kwarg=None, defaults=[]), body=ListComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Call(func=Lambda(args=arguments(args=[], vararg=None, kwarg=None, defaults=[]), body=ListComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='x', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])), args=[], keywords=[], starargs=None, kwargs=None), List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Lambda(args=arguments(args=[], vararg=None, kwarg=None, defaults=[]), body=Call(func=Name(id='tester', ctx=Load()), args=[Num(n=1)], keywords=[], starargs=None, kwargs=None)), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=1)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='foo', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='bar', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
@@ -811,12 +1831,24 @@
             "BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
@@ -827,28 +1859,108 @@
             "BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=DictComp(key=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))], keywords=[], starargs=None, kwargs=None), value=SetComp(elt=Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))], keywords=[], starargs=None, kwargs=None), generators=[comprehension(target=Name(id='c', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='b', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])]), generators=[comprehension(target=Name(id='a', ctx=Store()), iter=Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=5), Num(n=6)], ctx=Load())], keywords=[], starargs=None, kwargs=None), ifs=[])])], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
@@ -859,6 +1971,14 @@
             "BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
@@ -867,12 +1987,24 @@
             "BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
         [
             "BINARY_ADD", 
             "BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=3), Num(n=4)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
@@ -887,6 +2019,14 @@
             "BinOp(left=BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=BinOp(left=Name(id='a', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_ADD", 
             "BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load()))"
         ], 
@@ -897,6 +2037,10 @@
         [
             "BINARY_ADD", 
             "BinOp(left=BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=BinOp(left=Name(id='b', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_ADD", 
@@ -911,24 +2055,132 @@
             "BinOp(left=BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=BinOp(left=BinOp(left=Name(id='c', ctx=Load()), op=Add(), right=Name(id='x', ctx=Load())), op=Add(), right=Name(id='y', ctx=Load())), op=Add(), right=Name(id='z', ctx=Load()))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='dict', ctx=Load()), args=[], keywords=[keyword(arg='x', value=Name(id='tester', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_SUBSCR", 
             "Subscript(value=Call(func=Name(id='dict', ctx=Load()), args=[], keywords=[keyword(arg='x', value=Name(id='tester', ctx=Load()))], starargs=None, kwargs=None), slice=Index(value=Str(s='x')), ctx=Load())"
         ], 
         [
-            "LOOKUP_METHOD", 
-            "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+            "CALL_FUNCTION", 
+            "Call(func=Subscript(value=Call(func=Name(id='dict', ctx=Load()), args=[], keywords=[keyword(arg='x', value=Name(id='tester', ctx=Load()))], starargs=None, kwargs=None), slice=Index(value=Str(s='x')), ctx=Load()), args=[Name(id='tester', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Call(func=Subscript(value=Call(func=Name(id='dict', ctx=Load()), args=[], keywords=[keyword(arg='x', value=Name(id='tester', ctx=Load()))], starargs=None, kwargs=None), slice=Index(value=Str(s='x')), ctx=Load()), args=[Name(id='tester', ctx=Load())], keywords=[], starargs=None, kwargs=None), args=[Num(n=3)], keywords=[keyword(arg='check_func', value=Name(id='False', ctx=Load()))], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Name(id='TypeError', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2), Num(n=3)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=0)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=4)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=5)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='ValueError', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=9)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=10)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "LOOKUP_METHOD", 
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='Exception', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Call(func=Name(id='tester', ctx=Load()), args=[Name(id='Exception', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=0)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=0)], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_TRUE_DIVIDE", 
             "BinOp(left=Num(n=1), op=Div(), right=Num(n=0))"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[BinOp(left=Num(n=1), op=Div(), right=Num(n=0))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='gen', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='gen', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Name(id='gen2', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=4)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='range', ctx=Load()), args=[Num(n=10000)], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -939,12 +2191,28 @@
             "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None), attr='node', ctx=Load())"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='node', ctx=Load()), ops=[Is()], comparators=[Name(id='None', ctx=Load())])"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertIs', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertIs', ctx=Load()), args=[Name(id='node', ctx=Load()), Name(id='new_node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -955,36 +2223,140 @@
             "Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "BINARY_SUBTRACT", 
             "BinOp(left=Call(func=Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), op=Sub(), right=Name(id='start', ctx=Load()))"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertLess', ctx=Load()), args=[BinOp(left=Call(func=Attribute(value=Name(id='time', ctx=Load()), attr='time', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), op=Sub(), right=Name(id='start', ctx=Load())), Num(n=1)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='check', ctx=Load()), args=[Str(s=u'# coding=utf8\\n\\xe9'), Str(s='utf8')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='check', ctx=Load()), args=[Str(s=u'# coding=gbk\\n\\xe9'), Str(s='gbk')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='check', ctx=Load()), args=[Str(s=u'# coding=utf8\\n\\xe9'), Str(s='gbk')], keywords=[keyword(arg='exception', value=Name(id='UnicodeDecodeError', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='check', ctx=Load()), args=[Str(s=u'# coding=gbk\\n\\xe9'), Str(s='utf8')], keywords=[keyword(arg='matches', value=Name(id='False', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='check', ctx=Load()), args=[Str(s=u'\\xe9'), Str(s='utf8')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='check', ctx=Load()), args=[Str(s=u'\\xe9'), Str(s='gbk')], keywords=[keyword(arg='exception', value=Name(id='SyntaxError', ctx=Load()))], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='source', ctx=Load()), attr='encode', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='source', ctx=Load()), attr='encode', ctx=Load()), args=[Name(id='encoding', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
         ], 
         [
-            "LOOKUP_METHOD", 
-            "Attribute(value=Name(id='Source', ctx=Load()), attr='decode_source', ctx=Load())"
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Name(id='exception', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='Source', ctx=Load()), attr='decode_source', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='decode_source', ctx=Load()), args=[Name(id='encoded', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "LOOKUP_METHOD", 
+            "Attribute(value=Name(id='Source', ctx=Load()), attr='decode_source', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='decode_source', ctx=Load()), args=[Name(id='encoded', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Name(id='decoded', ctx=Load()), Name(id='source', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertNotEqual', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertNotEqual', ctx=Load()), args=[Name(id='decoded', ctx=Load()), Name(id='source', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='a')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='\\n            ab')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='\\n                    abc\\n                    def\\n                    ')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='\\n                123\\n                456\\n                ')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Str(s='\\n                345\\n                456786\\n                ')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[List(elts=[Call(func=Name(id='tester', ctx=Load()), args=[Str(s='\\n                123\\n                456\\n                ')], keywords=[], starargs=None, kwargs=None), Call(func=Name(id='tester', ctx=Load()), args=[Str(s='\\n                345\\n                456786\\n                ')], keywords=[], starargs=None, kwargs=None)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Str(s='\\n                123\\n                456\\n                \\n                345\\n                456786\\n                '), Str(s='\\n                123\\n                456\\n                '), Str(s='\\n                345\\n                456786\\n                ')], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=1)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=2)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[List(elts=[Num(n=1), Num(n=2)], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='tester', ctx=Load()), args=[Num(n=3)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load()), args=[Name(id='__file__', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -995,8 +2367,16 @@
             "Attribute(value=Name(id='func', ctx=Load()), attr='__code__', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load()), args=[Name(id='__file__', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='code_qualname', ctx=Load()), args=[Attribute(value=Name(id='func', ctx=Load()), attr='__code__', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Name(id='qn', ctx=Load()), Name(id='qualname', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1005,6 +2385,10 @@
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='func', ctx=Load()), attr='__qualname__', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Name(id='qn', ctx=Load()), Attribute(value=Name(id='func', ctx=Load()), attr='__qualname__', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1019,12 +2403,24 @@
             "Attribute(value=Name(id='func', ctx=Load()), attr='__name__', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='qn', ctx=Load()), attr='endswith', ctx=Load()), args=[Attribute(value=Name(id='func', ctx=Load()), attr='__name__', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertTrue', ctx=Load()), args=[Call(func=Attribute(value=Name(id='qn', ctx=Load()), attr='endswith', ctx=Load()), args=[Attribute(value=Name(id='func', ctx=Load()), attr='__name__', ctx=Load())], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='C', ctx=Load()), attr='f', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Attribute(value=Name(id='C', ctx=Load()), attr='f', ctx=Load()), Str(s='C.f')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1039,12 +2435,28 @@
             "Attribute(value=Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load()), attr='g', ctx=Load())"
         ], 
         [
-            "LOOKUP_METHOD", 
-            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Attribute(value=Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load()), attr='g', ctx=Load()), Str(s='C.D.g')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Name(id='f', ctx=Load()), Str(s='f')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "LOOKUP_METHOD", 
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='f', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Call(func=Name(id='f', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), Str(s='f.<locals>.g')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1059,12 +2471,32 @@
             "Attribute(value=Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load()), attr='h', ctx=Load())"
         ], 
         [
-            "LOOKUP_METHOD", 
-            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load()), attr='h', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Call(func=Attribute(value=Attribute(value=Name(id='C', ctx=Load()), attr='D', ctx=Load()), attr='h', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), Str(s='C.D.h.<locals>.i.<locals>.j')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Name(id='lamb', ctx=Load()), Str(s='<lambda>')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='lambda_maker', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "LOOKUP_METHOD", 
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Name(id='foo', ctx=Load()), Str(s='lambda_maker.<locals>.foo')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1075,12 +2507,44 @@
             "Attribute(value=Name(id='foo', ctx=Load()), attr='x', ctx=Load())"
         ], 
         [
-            "LOOKUP_METHOD", 
-            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Attribute(value=Name(id='foo', ctx=Load()), attr='x', ctx=Load()), Str(s='lambda_maker.<locals>.<lambda>')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='foo', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Call(func=Name(id='foo', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), Str(s='lambda_maker.<locals>.foo.<locals>.<lambda>')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "LOOKUP_METHOD", 
+            "Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='foo', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Call(func=Name(id='foo', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assert_qualname', ctx=Load()), args=[Call(func=Call(func=Name(id='foo', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), args=[], keywords=[], starargs=None, kwargs=None), Str(s='lambda_maker.<locals>.foo.<locals>.<lambda>')], keywords=[keyword(arg='check_actual_qualname', value=Name(id='False', ctx=Load()))], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='range', ctx=Load()), args=[Num(n=66000)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='range', ctx=Load()), args=[Num(n=66000)], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "BINARY_MODULO", 
@@ -1091,16 +2555,60 @@
             "Attribute(value=Name(id='tempfile', ctx=Load()), attr='mkstemp', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='tempfile', ctx=Load()), attr='mkstemp', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='compile', ctx=Load()), args=[Name(id='source', ctx=Load()), Name(id='filename', ctx=Load()), Str(s='exec')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='open', ctx=Load()), args=[Name(id='filename', ctx=Load()), Str(s='w')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='outfile', ctx=Load()), attr='write', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='outfile', ctx=Load()), attr='write', ctx=Load()), args=[Name(id='source', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='range', ctx=Load()), args=[Num(n=5)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='range', ctx=Load()), args=[Name(id='n', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='n', ctx=Load()), ops=[Eq()], comparators=[Num(n=1)])"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='only', ctx=Load()), args=[Name(id='gen', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Call(func=Name(id='only', ctx=Load()), args=[Name(id='gen', ctx=Load())], keywords=[], starargs=None, kwargs=None), Num(n=0)], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Name(id='NotOneValueFound', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='only', ctx=Load()), args=[Name(id='gen', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1119,8 +2627,20 @@
             "Attribute(value=Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load()), attr='dirname', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load()), attr='dirname', ctx=Load()), args=[Name(id='__file__', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load()), attr='join', ctx=Load()), args=[Call(func=Attribute(value=Attribute(value=Name(id='os', ctx=Load()), attr='path', ctx=Load()), attr='dirname', ctx=Load()), args=[Name(id='__file__', ctx=Load())], keywords=[], starargs=None, kwargs=None), Str(s='not_code.txt')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='for_filename', ctx=Load()), args=[Name(id='path', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1131,12 +2651,24 @@
             "Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertIsNone', ctx=Load()), args=[Attribute(value=Name(id='source', ctx=Load()), attr='tree', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1147,12 +2679,28 @@
             "Attribute(value=Name(id='executing', ctx=Load()), attr='code_qualname', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='executing', ctx=Load()), attr='code_qualname', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Call(func=Attribute(value=Name(id='executing', ctx=Load()), attr='code_qualname', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), Str(s='TestStuff.test_executing_methods')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='sys', ctx=Load()), attr='version', ctx=Load())"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Attribute(value=Name(id='sys', ctx=Load()), attr='version', ctx=Load()), attr='lower', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='sys', ctx=Load()), attr='version', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Str(s='pypy'), ops=[NotIn()], comparators=[Call(func=Attribute(value=Attribute(value=Name(id='sys', ctx=Load()), attr='version', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)])"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1163,8 +2711,20 @@
             "Attribute(value=Name(id='executing', ctx=Load()), attr='text', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='executing', ctx=Load()), attr='text', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Call(func=Attribute(value=Name(id='executing', ctx=Load()), attr='text', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None), Name(id='text', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='executing', ctx=Load()), attr='text_range', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='executing', ctx=Load()), attr='text_range', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1181,6 +2741,14 @@
         [
             "SLICE+3", 
             "Subscript(value=Attribute(value=Attribute(value=Name(id='executing', ctx=Load()), attr='source', ctx=Load()), attr='text', ctx=Load()), slice=Slice(lower=Name(id='start', ctx=Load()), upper=Name(id='end', ctx=Load()), step=None), ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Subscript(value=Attribute(value=Attribute(value=Name(id='executing', ctx=Load()), attr='source', ctx=Load()), attr='text', ctx=Load()), slice=Slice(lower=Name(id='start', ctx=Load()), upper=Name(id='end', ctx=Load()), step=None), ctx=Load()), Name(id='text', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='C', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1231,12 +2799,24 @@
             "Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load()), attr='qwe', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='str', ctx=Load()), args=[Tuple(elts=[Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load()), attr='x', ctx=Load()), Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load()), attr='y', ctx=Load()), Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load()), attr='x', ctx=Load()), Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load()), attr='y', ctx=Load()), Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='x', ctx=Load()), attr='asd', ctx=Load()), Attribute(value=Attribute(value=Name(id='c', ctx=Load()), attr='y', ctx=Load()), attr='qwe', ctx=Load())], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='Source', ctx=Load()), attr='for_frame', ctx=Load())"
         ], 
         [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='for_frame', ctx=Load()), args=[Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1247,8 +2827,20 @@
             "Attribute(value=Name(id='source', ctx=Load()), attr='filename', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='compile', ctx=Load()), args=[Attribute(value=Name(id='source', ctx=Load()), attr='text', ctx=Load()), Attribute(value=Name(id='source', ctx=Load()), attr='filename', ctx=Load()), Str(s='exec')], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='get_instructions', ctx=Load()), args=[Name(id='code', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='inst', ctx=Load()), attr='starts_line', ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Name(id='inst', ctx=Load()), attr='starts_line', ctx=Load()), ops=[IsNot()], comparators=[Name(id='None', ctx=Load())])"
         ], 
         [
             "LOAD_ATTR", 
@@ -1263,24 +2855,60 @@
             "Attribute(value=Attribute(value=Name(id='inst', ctx=Load()), attr='opname', ctx=Load()), attr='startswith', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Attribute(value=Name(id='inst', ctx=Load()), attr='opname', ctx=Load()), attr='startswith', ctx=Load()), args=[Tuple(elts=[Str(s='BINARY_'), Str(s='UNARY_'), Str(s='LOAD_ATTR'), Str(s='LOAD_METHOD'), Str(s='LOOKUP_METHOD'), Str(s='COMPARE_OP')], ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='C', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='inst', ctx=Load()), attr='offset', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='globals', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='inst', ctx=Load()), attr='opname', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='print', ctx=Load()), args=[Attribute(value=Name(id='inst', ctx=Load()), attr='opname', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='node', ctx=Load())"
         ], 
         [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='node', ctx=Load()), ops=[IsNot()], comparators=[Name(id='None', ctx=Load())])"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='i', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='assign', ctx=Load()), args=[Lambda(args=arguments(args=[], vararg=None, kwarg=None, defaults=[]), body=Num(n=1))], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1295,16 +2923,32 @@
             "Attribute(value=Name(id='Source', ctx=Load()), attr='lazycache', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='lazycache', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Call(func=Attribute(value=Name(id='Source', ctx=Load()), attr='executing', ctx=Load()), args=[Name(id='frame', ctx=Load())], keywords=[], starargs=None, kwargs=None), attr='node', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='isinstance', ctx=Load()), args=[Name(id='node', ctx=Load()), Name(id='typ', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='inspect', ctx=Load()), attr='currentframe', ctx=Load()), args=[], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1319,12 +2963,20 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Expression', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='Expression', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load())"
+        ], 
+        [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='compile', ctx=Load()), args=[Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='Expression', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None), Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load()), Str(s='eval')], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOAD_ATTR", 
@@ -1335,12 +2987,24 @@
             "Attribute(value=Name(id='frame', ctx=Load()), attr='f_locals', ctx=Load())"
         ], 
         [
+            "CALL_FUNCTION", 
+            "Call(func=Name(id='eval', ctx=Load()), args=[Call(func=Name(id='compile', ctx=Load()), args=[Call(func=Attribute(value=Name(id='ast', ctx=Load()), attr='Expression', ctx=Load()), args=[Name(id='node', ctx=Load())], keywords=[], starargs=None, kwargs=None), Attribute(value=Attribute(value=Name(id='frame', ctx=Load()), attr='f_code', ctx=Load()), attr='co_filename', ctx=Load()), Str(s='eval')], keywords=[], starargs=None, kwargs=None), Attribute(value=Name(id='frame', ctx=Load()), attr='f_globals', ctx=Load()), Attribute(value=Name(id='frame', ctx=Load()), attr='f_locals', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='result', ctx=Load()), ops=[Eq()], comparators=[Name(id='value', ctx=Load())])"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Call', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load()), args=[Attribute(value=Name(id='ast', ctx=Load()), attr='Call', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1355,12 +3019,24 @@
             "Subscript(value=Attribute(value=Name(id='call', ctx=Load()), attr='args', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Subscript(value=Attribute(value=Name(id='call', ctx=Load()), attr='args', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load()), Name(id='arg', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='call', ctx=Load()), attr='func', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Name(id='call', ctx=Load()), attr='func', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Name(id='returns', ctx=Load()), ops=[Is()], comparators=[Name(id='None', ctx=Load())])"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1371,6 +3047,10 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Attribute', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load()), args=[Attribute(value=Name(id='ast', ctx=Load()), attr='Attribute', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
         ], 
@@ -1379,8 +3059,16 @@
             "Attribute(value=Name(id='node', ctx=Load()), attr='value', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='value', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='node', ctx=Load()), attr='attr', ctx=Load())"
+        ], 
+        [
+            "COMPARE_OP", 
+            "Compare(left=Attribute(value=Name(id='node', ctx=Load()), attr='attr', ctx=Load()), ops=[Eq()], comparators=[Name(id='item', ctx=Load())])"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1391,12 +3079,20 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Subscript', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load()), args=[Attribute(value=Name(id='ast', ctx=Load()), attr='Subscript', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='node', ctx=Load()), attr='value', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='value', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1411,6 +3107,10 @@
             "Attribute(value=Attribute(value=Name(id='node', ctx=Load()), attr='slice', ctx=Load()), attr='value', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Attribute(value=Name(id='node', ctx=Load()), attr='slice', ctx=Load()), attr='value', ctx=Load()), Name(id='item', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
         ], 
@@ -1419,12 +3119,20 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load()), args=[Attribute(value=Name(id='ast', ctx=Load()), attr='BinOp', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='node', ctx=Load()), attr='left', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='left', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1435,12 +3143,20 @@
             "Attribute(value=Name(id='node', ctx=Load()), attr='right', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='right', ctx=Load()), Name(id='other', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='ast', ctx=Load()), attr='UnaryOp', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load()), args=[Attribute(value=Name(id='ast', ctx=Load()), attr='UnaryOp', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1451,6 +3167,10 @@
             "Attribute(value=Name(id='node', ctx=Load()), attr='operand', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='operand', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load())"
         ], 
@@ -1459,12 +3179,20 @@
             "Attribute(value=Name(id='ast', ctx=Load()), attr='Compare', ctx=Load())"
         ], 
         [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='get_node', ctx=Load()), args=[Attribute(value=Name(id='ast', ctx=Load()), attr='Compare', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
+        ], 
+        [
             "LOOKUP_METHOD", 
             "Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load())"
         ], 
         [
             "LOAD_ATTR", 
             "Attribute(value=Name(id='node', ctx=Load()), attr='left', ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Attribute(value=Name(id='node', ctx=Load()), attr='left', ctx=Load()), Name(id='self', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ], 
         [
             "LOOKUP_METHOD", 
@@ -1477,6 +3205,10 @@
         [
             "BINARY_SUBSCR", 
             "Subscript(value=Attribute(value=Name(id='node', ctx=Load()), attr='comparators', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())"
+        ], 
+        [
+            "CALL_METHOD", 
+            "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='check', ctx=Load()), args=[Subscript(value=Attribute(value=Name(id='node', ctx=Load()), attr='comparators', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load()), Name(id='other', ctx=Load())], keywords=[], starargs=None, kwargs=None)"
         ]
     ]
 }
