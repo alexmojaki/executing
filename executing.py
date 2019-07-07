@@ -428,6 +428,12 @@ class NodeFinder(object):
             self.result = only(list(self.matching_nodes(exprs)))
 
     def matching_nodes(self, exprs):
+        original_instructions = self.compile_instructions()
+        original_index = only(
+            i
+            for i, inst in enumerate(original_instructions)
+            if inst.offset == self.frame.f_lasti
+        )
         for i, expr in enumerate(exprs):
             setter = get_setter(expr)
             replacement = ast.BinOp(
@@ -451,16 +457,18 @@ class NodeFinder(object):
             if not indices:
                 continue
             arg_index = only(indices) - 1
-            while instructions[arg_index].opname == 'EXTENDED_ARG':
-                arg_index -= 1
 
-            if instructions[arg_index].offset == self.frame.f_lasti:
+            if arg_index == original_index:
                 yield expr
 
     def compile_instructions(self):
         module_code = compile_similar_to(self.tree, self.frame.f_code)
         code = only(find_codes(module_code, self.frame.f_code))
-        return list(get_instructions(code))
+        return [
+            inst
+            for inst in get_instructions(code)
+            if inst.opname != 'EXTENDED_ARG'
+        ]
 
 
 def get_setter(node):
