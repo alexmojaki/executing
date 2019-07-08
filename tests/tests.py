@@ -10,7 +10,6 @@ import sys
 import tempfile
 import time
 import unittest
-from collections import defaultdict
 
 from executing import Source, only, PY3, NotOneValueFound, get_instructions
 

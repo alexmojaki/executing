@@ -462,6 +462,8 @@ class NodeFinder(object):
             assert instructions.pop(sentinel_index).opname == 'LOAD_CONST'
             assert instructions.pop(sentinel_index).opname == 'BINARY_POWER'
 
+            call_method = False
+
             if (
                     len(instructions) == len(original_instructions) + 1
                     and 'UNARY_NOT' == instructions[new_index].opname
@@ -469,8 +471,22 @@ class NodeFinder(object):
                     and 'JUMP_IF_' in original_instructions[new_index].opname
             ):
                 instructions[new_index:new_index + 2] = [original_instructions[new_index]]
+            elif (
+                    original_instructions[new_index].opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
+                    instructions[new_index].opname == 'LOAD_ATTR'
+            ):
+                call_method = True
+                instructions[new_index] = original_instructions[new_index]
 
             for inst1, inst2 in zip_longest(original_instructions, instructions):
+                if (
+                        call_method and
+                        inst1.opname == 'CALL_METHOD' and
+                        inst2.opname == 'CALL_FUNCTION'
+                ):
+                    call_method = False
+                    continue
+
                 assert (
                         inst1.opname == inst2.opname or
                         all(
