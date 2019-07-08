@@ -292,46 +292,11 @@ class TestFiles(unittest.TestCase):
         samples_dir = os.path.join(root_dir, 'samples')
         result_filename = PYPY * 'pypy' + sys.version[:3] + '.json'
         result_filename = os.path.join(root_dir, 'sample_results', result_filename)
-        result = defaultdict(list)
+        result = {}
 
         for filename in os.listdir(samples_dir):
-            print(filename)
-            file_result = result[filename]
-            filename = os.path.join(samples_dir, filename)
-            source = Source.for_filename(filename)
-
-            nodes = {}
-            for node in ast.walk(source.tree):
-                if isinstance(node, (
-                        ast.UnaryOp,
-                        ast.BinOp,
-                        ast.Subscript,
-                        ast.Call,
-                        ast.Compare,
-                        ast.Attribute
-                )):
-                    nodes[node] = None
-
-            code = compile(source.tree, source.filename, 'exec')
-            file_result += self.check_code(code, nodes)
-
-            for node, value in nodes.items():
-                if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
-                    continue
-
-                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
-                    continue
-
-                if isinstance(node, ast.Compare) and len(node.ops) > 1:
-                    continue
-
-                try:
-                    ast.literal_eval(node)
-                    continue
-                except ValueError:
-                    pass
-
-                self.assertIsNotNone(value, ast.dump(node))
+            full_filename = os.path.join(samples_dir, filename)
+            result[filename] = self.check_filename(full_filename)
 
         if os.getenv('FIX_EXECUTING_TESTS'):
             with open(result_filename, 'w') as outfile:
@@ -339,6 +304,51 @@ class TestFiles(unittest.TestCase):
         else:
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
+
+        # for module in sys.modules.values():
+        #     filename = inspect.getsourcefile(module)
+        #     if 'executing' in filename:
+        #         continue
+        # 
+        #     self.check_filename(filename)
+
+    def check_filename(self, filename):
+        print(filename)
+        source = Source.for_filename(filename)
+        nodes = {}
+        for node in ast.walk(source.tree):
+            if isinstance(node, (
+                    ast.UnaryOp,
+                    ast.BinOp,
+                    ast.Subscript,
+                    ast.Call,
+                    ast.Compare,
+                    ast.Attribute
+            )):
+                nodes[node] = None
+
+        code = compile(source.tree, source.filename, 'exec')
+        result = list(self.check_code(code, nodes))
+
+        for node, value in nodes.items():
+            if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+                continue
+
+            if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
+                continue
+
+            if isinstance(node, ast.Compare) and len(node.ops) > 1:
+                continue
+
+            try:
+                ast.literal_eval(node)
+                continue
+            except ValueError:
+                pass
+
+            self.assertIsNotNone(value, ast.dump(node))
+
+        return result
 
     def check_code(self, code, nodes):
         linestarts = dict(dis.findlinestarts(code))
@@ -492,7 +502,6 @@ class Tester(object):
 
 
 tester = Tester()
-
 
 assert tester([1, 2, 3]) == [1, 2, 3]
 
