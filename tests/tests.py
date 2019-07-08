@@ -295,6 +295,7 @@ class TestFiles(unittest.TestCase):
         result = defaultdict(list)
 
         for filename in os.listdir(samples_dir):
+            print(filename)
             file_result = result[filename]
             filename = os.path.join(samples_dir, filename)
             source = Source.for_filename(filename)

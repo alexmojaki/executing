@@ -30,11 +30,13 @@ if PY3:
     from functools import lru_cache
     # noinspection PyUnresolvedReferences
     from tokenize import detect_encoding
+    from itertools import zip_longest
 
     cache = lru_cache(maxsize=None)
     text_type = str
 else:
     from lib2to3.pgen2.tokenize import detect_encoding
+    from itertools import izip_longest as zip_longest
 
 
     def cache(func):
@@ -454,9 +456,30 @@ class NodeFinder(object):
             ]
             if not indices:
                 continue
-            arg_index = only(indices) - 1
+            sentinel_index = only(indices)
+            new_index = sentinel_index - 1
 
-            if arg_index == original_index:
+            assert instructions.pop(sentinel_index).opname == 'LOAD_CONST'
+            assert instructions.pop(sentinel_index).opname == 'BINARY_POWER'
+
+            if (
+                    len(instructions) == len(original_instructions) + 1
+                    and 'UNARY_NOT' == instructions[new_index].opname
+                    and 'JUMP_IF_' in instructions[new_index + 1].opname
+                    and 'JUMP_IF_' in original_instructions[new_index].opname
+            ):
+                instructions[new_index:new_index + 2] = [original_instructions[new_index]]
+
+            for inst1, inst2 in zip_longest(original_instructions, instructions):
+                assert (
+                        inst1.opname == inst2.opname or
+                        all(
+                            'JUMP_IF_' in inst.opname
+                            for inst in [inst1, inst2]
+                        )
+                ), (inst1, inst2, ast.dump(expr), expr.lineno, self.frame.f_code.co_filename)
+
+            if new_index == original_index:
                 yield expr
 
     def compile_instructions(self):
