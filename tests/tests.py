@@ -402,6 +402,23 @@ def is_literal(node):
     if isinstance(node, ast.BinOp):
         return is_literal(node.left) and is_literal(node.right)
 
+    if isinstance(node, ast.Compare):
+        return all(map(is_literal, [node.left] + node.comparators))
+
+    if isinstance(node, ast.Subscript) and is_literal(node.value):
+        if isinstance(node.slice, ast.Index):
+            return is_literal(node.slice.value)
+        else:
+            assert isinstance(node.slice, ast.Slice)
+            return all(
+                x is None or is_literal(x)
+                for x in [
+                    node.slice.lower,
+                    node.slice.upper,
+                    node.slice.step,
+                ]
+            )
+
     try:
         ast.literal_eval(node)
         return True
