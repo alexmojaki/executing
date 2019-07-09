@@ -354,7 +354,7 @@ class TestFiles(unittest.TestCase):
             if PYPY and '    if 0 and ' in source.text:
                 continue
 
-            self.assertIsNotNone(value, ast.dump(node))
+            self.assertIsNotNone(value, (ast.dump(node), source.text))
 
         return result
 
