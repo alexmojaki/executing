@@ -351,6 +351,9 @@ class TestFiles(unittest.TestCase):
             if is_literal(node):
                 continue
 
+            if PYPY and '    if 0 and ' in source.text:
+                continue
+
             self.assertIsNotNone(value, ast.dump(node))
 
         return result
