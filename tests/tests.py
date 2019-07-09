@@ -304,12 +304,21 @@ class TestFiles(unittest.TestCase):
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
 
-        # for module in sys.modules.values():
-        #     filename = inspect.getsourcefile(module)
-        #     if 'executing' in filename:
-        #         continue
-        # 
-        #     self.check_filename(filename)
+        for module in list(sys.modules.values()):
+            try:
+                filename = inspect.getsourcefile(module)
+            except TypeError:
+                continue
+
+            if not filename:
+                continue
+
+            filename = os.path.abspath(filename)
+
+            if 'executing' in filename:
+                continue
+
+            self.check_filename(filename)
 
     def check_filename(self, filename):
         print(filename)
@@ -339,11 +348,8 @@ class TestFiles(unittest.TestCase):
             if isinstance(node, ast.Compare) and len(node.ops) > 1:
                 continue
 
-            try:
-                ast.literal_eval(node)
+            if is_literal(node):
                 continue
-            except ValueError:
-                pass
 
             self.assertIsNotNone(value, ast.dump(node))
 
@@ -387,6 +393,20 @@ class TestFiles(unittest.TestCase):
             if isinstance(const, type(code)):
                 for x in self.check_code(const, nodes):
                     yield x
+
+
+def is_literal(node):
+    if isinstance(node, ast.UnaryOp):
+        return is_literal(node.operand)
+
+    if isinstance(node, ast.BinOp):
+        return is_literal(node.left) and is_literal(node.right)
+
+    try:
+        ast.literal_eval(node)
+        return True
+    except ValueError:
+        return False
 
 
 class C(object):

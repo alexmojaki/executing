@@ -492,6 +492,10 @@ class NodeFinder(object):
                         all(
                             'JUMP_IF_' in inst.opname
                             for inst in [inst1, inst2]
+                        ) or
+                        all(
+                            inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
+                            for inst in [inst1, inst2]
                         )
                 ), (inst1, inst2, ast.dump(expr), expr.lineno, self.frame.f_code.co_filename)
 
