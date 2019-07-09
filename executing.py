@@ -462,6 +462,9 @@ class NodeFinder(object):
             assert instructions.pop(sentinel_index).opname == 'LOAD_CONST'
             assert instructions.pop(sentinel_index).opname == 'BINARY_POWER'
 
+            if new_index != original_index:
+                continue
+
             call_method = False
 
             if (
@@ -499,8 +502,7 @@ class NodeFinder(object):
                         )
                 ), (inst1, inst2, ast.dump(expr), expr.lineno, self.frame.f_code.co_filename)
 
-            if new_index == original_index:
-                yield expr
+            yield expr
 
     def compile_instructions(self):
         module_code = compile_similar_to(self.tree, self.frame.f_code)
