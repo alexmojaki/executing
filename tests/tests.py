@@ -361,7 +361,9 @@ class TestFiles(unittest.TestCase):
                 if is_literal(node):
                     continue
 
-                self.assertIsNotNone(value, (ast.dump(node), source.text))
+                if value is None:
+                    print(source.text, '---', node_string(source, node), file=sys.stderr, sep='\n')
+                    self.fail()
 
         return result
 
@@ -381,28 +383,39 @@ class TestFiles(unittest.TestCase):
             frame.f_code = code
             frame.f_globals = globals()
             frame.f_lineno = lineno
+            source = Source.for_frame(frame)
+            node = None
+
             try:
-                executing = Source.executing(frame)
-                node = executing.node
+                try:
+                    node = Source.executing(frame).node
+                except Exception:
+                    if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
+                        continue
+                    if isinstance(only(source.statements_at_line(lineno)), ast.AugAssign):
+                        continue
+                    raise
+
+                self.assertIsNone(nodes[node])
             except Exception:
-                if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
-                    continue
-                if isinstance(only(Source.for_frame(frame).statements_at_line(lineno)), ast.AugAssign):
-                    continue
+                print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
                 raise
-            self.assertIsNone(nodes[node])
+
             nodes[node] = (inst, frame.__dict__)
 
-            if PYPY:
-                value = ast.dump(executing.node)
-            else:
-                value = executing.text()
-            yield [inst.opname, value]
+            yield [inst.opname, node_string(source, node)]
 
         for const in code.co_consts:
             if isinstance(const, type(code)):
                 for x in self.check_code(const, nodes):
                     yield x
+
+
+def node_string(source, node):
+    if PYPY:
+        return ast.dump(node)
+    else:
+        return source.asttokens().get_text(node)
 
 
 def is_literal(node):
