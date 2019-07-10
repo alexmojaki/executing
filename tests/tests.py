@@ -6,6 +6,7 @@ import dis
 import inspect
 import json
 import os
+import re
 import sys
 import tempfile
 import time
@@ -338,23 +339,21 @@ class TestFiles(unittest.TestCase):
         code = compile(source.tree, source.filename, 'exec')
         result = list(self.check_code(code, nodes))
 
-        for node, value in nodes.items():
-            if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
-                continue
+        if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
+            for node, value in nodes.items():
+                if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+                    continue
 
-            if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
-                continue
+                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
+                    continue
 
-            if isinstance(node, ast.Compare) and len(node.ops) > 1:
-                continue
+                if isinstance(node, ast.Compare) and len(node.ops) > 1:
+                    continue
 
-            if is_literal(node):
-                continue
+                if is_literal(node):
+                    continue
 
-            if PYPY and '    if 0 and ' in source.text:
-                continue
-
-            self.assertIsNotNone(value, (ast.dump(node), source.text))
+                self.assertIsNotNone(value, (ast.dump(node), source.text))
 
         return result
 
