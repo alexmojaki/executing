@@ -392,7 +392,7 @@ class TestFiles(unittest.TestCase):
                 except Exception:
                     if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
                         continue
-                    if isinstance(only(source.statements_at_line(lineno)), ast.AugAssign):
+                    if isinstance(only(source.statements_at_line(lineno)), (ast.AugAssign, ast.Import)):
                         continue
                     raise
 
