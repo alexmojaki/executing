@@ -347,8 +347,16 @@ class TestFiles(unittest.TestCase):
                 if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
                     continue
 
-                if isinstance(node, ast.Compare) and len(node.ops) > 1:
-                    continue
+                if isinstance(node, ast.Compare):
+                    if len(node.ops) > 1:
+                        continue
+
+                    if (
+                            isinstance(node.ops[0], (ast.In, ast.Is)) and
+                            isinstance(node.parent, ast.UnaryOp) and
+                            isinstance(node.parent.op, ast.Not)
+                    ):
+                        continue
 
                 if is_literal(node):
                     continue
