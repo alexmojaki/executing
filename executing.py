@@ -203,7 +203,7 @@ class Source(object):
         Returns an `Executing` object representing the operation
         currently executing in the given frame.
         """
-        key = (frame.f_code, frame.f_lasti)
+        key = (frame.f_code, id(frame.f_code), frame.f_lasti)
         executing_cache = cls._class_local('__executing_cache', {})
 
         try:
