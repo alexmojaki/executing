@@ -399,7 +399,7 @@ class TestFiles(unittest.TestCase):
                 try:
                     self.assertIsNone(nodes[node])
                 except KeyError:
-                    print(ast.dump(source.tree), list(ast.walk(source.tree)), nodes, file=sys.stderr, sep='\n')
+                    print(ast.dump(source.tree), list(ast.walk(source.tree)), nodes, node, ast.dump(node), file=sys.stderr, sep='\n')
             except Exception:
                 print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
                 raise
