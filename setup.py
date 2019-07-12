@@ -1,10 +1,11 @@
 from setuptools import setup
+from executing import __version__
 
 package = 'executing'
 
 
 setup(name=package,
-      version='0.1.3',
+      version=__version__,
       description='Get the currently executing AST node of a frame, and other information',
       url='https://github.com/alexmojaki/' + package,
       author='Alex Hall',
