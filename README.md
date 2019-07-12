@@ -9,7 +9,16 @@ This mini-package lets you get information about what a frame is currently doing
     node = executing.Source.executing(frame).node
     # node will be an AST node or None
 
-Currently it only works for function calls and corresponding `ast.Call` nodes, but the plan is to expand to as many operations as possible. It can find the call node in almost any situation where the source code is available (obtained from `linecache`). The only known exception is if you have two very similar looking list/dict/set comprehensions, generator expressions, or lambdas on the same line.
+Currently it works in most cases for the following `ast` nodes:
+ 
+ - `Call`, e.g. `self.foo(bar)`
+ - `Attribute`, e.g. `point.x`
+ - `Subscript`, e.g. `lst[1]`
+ - `BinOp`, e.g. `x + y` (doesn't include `and` and `or`)
+ - `UnaryOp`, e.g. `-n` (includes `not` but only works sometimes)
+ - `Compare` e.g. `a < b` (not for chains such as `0 < p < 1`)
+
+The plan is to extend to more operations in the future.
 
 This package can be installed with `pip install executing`, or if you don't like that you can just copy the file `executing.py`, there are no dependencies (but of course you won't get updates).
 
