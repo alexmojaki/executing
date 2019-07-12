@@ -10,6 +10,9 @@ python:
   - pypy2.7-6.0
   - pypy3.5
 
+env:
+  - EXECUTING_SLOW_TESTS=1
+
 install:
   - pip install coveralls asttokens
 script:

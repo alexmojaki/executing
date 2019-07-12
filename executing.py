@@ -87,6 +87,8 @@ except AttributeError:
                     argval = co.co_consts[oparg]
             yield Instruction(offset, argval, opname[op])
 
+TESTING = 0
+
 
 class NotOneValueFound(Exception):
     pass
@@ -216,7 +218,8 @@ class Source(object):
                 try:
                     node = NodeFinder(frame, stmts, source.tree).result
                 except Exception:
-                    raise
+                    if TESTING:
+                        raise
                 else:
                     new_stmts = {statement_containing_node(node)}
                     assert new_stmts <= stmts

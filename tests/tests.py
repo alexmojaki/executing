@@ -12,9 +12,12 @@ import tempfile
 import time
 import unittest
 
+import executing
 from executing import Source, only, PY3, NotOneValueFound, get_instructions
 
 PYPY = 'pypy' in sys.version.lower()
+
+executing.TESTING = 1
 
 
 class TestStuff(unittest.TestCase):
@@ -62,7 +65,7 @@ class TestStuff(unittest.TestCase):
         str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])
         # but not if everything is the same
         # noinspection PyTypeChecker
-        with self.assertRaises((AttributeError, NotOneValueFound)):
+        with self.assertRaises(NotOneValueFound):
             str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
     def test_lambda(self):
@@ -286,6 +289,10 @@ class TestStuff(unittest.TestCase):
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
 
+@unittest.skipUnless(
+    os.getenv('EXECUTING_SLOW_TESTS'),
+    'These tests are very slow, enable them explicitly',
+)
 class TestFiles(unittest.TestCase):
     def test_files(self):
         root_dir = os.path.dirname(__file__)
