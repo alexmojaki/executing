@@ -578,6 +578,8 @@ class Tester(object):
             return False
         assert 0
 
+    __nonzero__ = __bool__
+
 
 tester = Tester()
 
@@ -598,9 +600,6 @@ assert tester.foo(45, False) == 45
 
 assert (tester or 234) == 234
 assert (tester and 1123) is tester
-
-if not tester:
-    str(9)
 
 
 def empty_decorator(func):
