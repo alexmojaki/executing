@@ -476,13 +476,6 @@ class NodeFinder(object):
             call_method = False
 
             if (
-                    len(instructions) == len(original_instructions) + 1
-                    and 'UNARY_NOT' == instructions[new_index].opname
-                    and 'JUMP_IF_' in instructions[new_index + 1].opname
-                    and 'JUMP_IF_' in original_instructions[new_index].opname
-            ):
-                instructions[new_index:new_index + 2] = [original_instructions[new_index]]
-            elif (
                     original_instructions[new_index].opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
                     instructions[new_index].opname == 'LOAD_ATTR'
             ):
