@@ -289,6 +289,10 @@ class TestStuff(unittest.TestCase):
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
 
+def is_unary_not(node):
+    return isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)
+
+
 @unittest.skipUnless(
     os.getenv('EXECUTING_SLOW_TESTS'),
     'These tests are very slow, enable them explicitly',
@@ -348,21 +352,19 @@ class TestFiles(unittest.TestCase):
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
             for node, value in nodes.items():
-                if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+                if is_unary_not(node):
                     continue
 
                 if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
+                    assert value is None
                     continue
 
                 if isinstance(node, ast.Compare):
                     if len(node.ops) > 1:
+                        assert value is None
                         continue
 
-                    if (
-                            isinstance(node.ops[0], (ast.In, ast.Is)) and
-                            isinstance(node.parent, ast.UnaryOp) and
-                            isinstance(node.parent.op, ast.Not)
-                    ):
+                    if is_unary_not(node.parent) and isinstance(node.ops[0], (ast.In, ast.Is)):
                         continue
 
                 if is_literal(node):
