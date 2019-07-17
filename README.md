@@ -3,7 +3,18 @@
 [![Build Status](https://travis-ci.org/alexmojaki/executing.svg?branch=master)](https://travis-ci.org/alexmojaki/executing) [![Coverage Status](https://coveralls.io/repos/github/alexmojaki/executing/badge.svg?branch=master)](https://coveralls.io/github/alexmojaki/executing?branch=master) [![Supports Python versions 2.7 and 3.4+, including PyPy](https://img.shields.io/pypi/pyversions/executing.svg)](https://pypi.python.org/pypi/executing)
 
 This mini-package lets you get information about what a frame is currently doing, particularly the AST node being executed.
- 
+
+* [Usage](#usage)
+    * [Getting the AST node](#getting-the-ast-node)
+    * [Getting the source code of the node](#getting-the-source-code-of-the-node)
+    * [Getting the __qualname__ of the current function](#getting-the-__qualname__-of-the-current-function)
+    * [The Source class](#the-source-class)
+* [Installation](#installation)
+* [How does it work?](#how-does-it-work)
+* [Is it reliable?](#is-it-reliable)
+* [Which nodes can it identify?](#which-nodes-can-it-identify)
+* [Libraries that use this](#libraries-that-use-this)
+
 ## Usage
 
 ### Getting the AST node
@@ -91,3 +102,9 @@ Currently it works in almost all cases for the following `ast` nodes:
  - `Compare` e.g. `a < b` (not for chains such as `0 < p < 1`)
 
 The plan is to extend to more operations in the future.
+
+## Libraries that use this
+
+- **[`snoop`](https://github.com/alexmojaki/snoop)**: A feature-rich and convenient debugging library. Uses `executing` to show the operation which caused an exception and to allow the `pp` function to display the source of its arguments.
+- **[`heartrate`](https://github.com/alexmojaki/heartrate)**: A simple real time visualisation of the execution of a Python program. Uses `executing` to highlight currently executing operations, particularly in each frame of the stack trace.
+- **[`sorcery`](https://github.com/alexmojaki/sorcery)**: Dark magic delights in Python. Uses `executing` to let special callables called spells know where they're being called from.
