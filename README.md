@@ -7,7 +7,7 @@ This mini-package lets you get information about what a frame is currently doing
 * [Usage](#usage)
     * [Getting the AST node](#getting-the-ast-node)
     * [Getting the source code of the node](#getting-the-source-code-of-the-node)
-    * [Getting the __qualname__ of the current function](#getting-the-__qualname__-of-the-current-function)
+    * [Getting the `__qualname__` of the current function](#getting-the-__qualname__-of-the-current-function)
     * [The Source class](#the-source-class)
 * [Installation](#installation)
 * [How does it work?](#how-does-it-work)
