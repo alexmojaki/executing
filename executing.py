@@ -348,7 +348,11 @@ class QualnameVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node, name=None):
         name = name or node.name
         self.stack.append(name)
-        self.qualnames.setdefault((name, node.lineno), ".".join(self.stack))
+        if getattr(node, 'decorator_list', ()):
+            lineno = node.decorator_list[0].lineno
+        else:
+            lineno = node.lineno
+        self.qualnames.setdefault((name, lineno), ".".join(self.stack))
 
         self.stack.append('<locals>')
         if isinstance(node, ast.Lambda):
