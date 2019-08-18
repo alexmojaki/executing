@@ -15,7 +15,7 @@ import inspect
 import io
 import linecache
 import sys
-from collections import defaultdict, namedtuple, Sized
+from collections import defaultdict, namedtuple
 from itertools import islice
 from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 from operator import attrgetter
@@ -100,7 +100,7 @@ class NotOneValueFound(Exception):
 
 
 def only(it):
-    if isinstance(it, Sized):
+    if hasattr(it, '__len__'):
         if len(it) != 1:
             raise NotOneValueFound('Expected one value, found %s' % len(it))
         # noinspection PyTypeChecker
