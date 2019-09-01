@@ -15,6 +15,7 @@ import inspect
 import io
 import linecache
 import sys
+import types
 from collections import defaultdict, namedtuple
 from itertools import islice
 from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
@@ -205,12 +206,29 @@ class Source(object):
             linecache.lazycache(frame.f_code.co_filename, frame.f_globals)
 
     @classmethod
-    def executing(cls, frame):
+    def executing(cls, frame_or_tb):
         """
         Returns an `Executing` object representing the operation
-        currently executing in the given frame.
+        currently executing in the given frame or traceback object.
         """
-        key = (frame.f_code, id(frame.f_code), frame.f_lasti)
+        if isinstance(frame_or_tb, types.TracebackType):
+            # https://docs.python.org/3/reference/datamodel.html#traceback-objects
+            # "tb_lineno gives the line number where the exception occurred;
+            #  tb_lasti indicates the precise instruction.
+            #  The line number and last instruction in the traceback may differ
+            #  from the line number of its frame object
+            #  if the exception occurred in a try statement with no matching except clause
+            #  or with a finally clause."
+            tb = frame_or_tb
+            frame = tb.tb_frame
+            lineno = tb.tb_lineno
+            lasti = tb.tb_lasti
+        else:
+            frame = frame_or_tb
+            lineno = frame.f_lineno
+            lasti = frame.f_lasti
+
+        key = (frame.f_code, id(frame.f_code), lasti)
         executing_cache = cls._class_local('__executing_cache', {})
 
         try:
@@ -219,9 +237,9 @@ class Source(object):
             source = cls.for_frame(frame)
             node = stmts = None
             if source.tree:
-                stmts = source.statements_at_line(frame.f_lineno)
+                stmts = source.statements_at_line(lineno)
                 try:
-                    node = NodeFinder(frame, stmts, source.tree).result
+                    node = NodeFinder(frame, stmts, source.tree, lasti).result
                 except Exception:
                     if TESTING:
                         raise
@@ -406,11 +424,12 @@ sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
 
 
 class NodeFinder(object):
-    def __init__(self, frame, stmts, tree):
+    def __init__(self, frame, stmts, tree, lasti):
         self.frame = frame
         self.tree = tree
+        self.lasti = lasti
 
-        b = frame.f_code.co_code[frame.f_lasti]
+        b = frame.f_code.co_code[lasti]
         if not PY3:
             b = ord(b)
         op_name = dis.opname[b]
@@ -446,7 +465,7 @@ class NodeFinder(object):
         original_index = only(
             i
             for i, inst in enumerate(original_instructions)
-            if inst.offset == self.frame.f_lasti
+            if inst.offset == self.lasti
         )
         for i, expr in enumerate(exprs):
             setter = get_setter(expr)

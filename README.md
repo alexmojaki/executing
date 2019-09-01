@@ -27,6 +27,8 @@ Then `node` will be an AST node (from the `ast` standard library module) or None
 
 `node` will always be the same instance for multiple calls with frames at the same point of execution.
 
+If you have a traceback object, pass it directly to `Source.executing()` rather than the `tb_frame` attribute to get the correct node.
+
 ### Getting the source code of the node
 
 For this you will need to separately install the [`asttokens`](https://github.com/gristlabs/asttokens) library, then obtain an `ASTTokens` object:
