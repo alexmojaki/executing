@@ -41,8 +41,8 @@ or:
 
 or use one of the convenience methods:
 
-    executing.Source.executing(frame).get_text()
-    executing.Source.executing(frame).get_text_range()
+    executing.Source.executing(frame).text()
+    executing.Source.executing(frame).text_range()
 
 ### Getting the `__qualname__` of the current function
 
