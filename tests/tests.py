@@ -288,6 +288,16 @@ class TestStuff(unittest.TestCase):
         c.x = c.y = tester
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
+    def test_traceback(self):
+        try:
+            134895 / 0
+        except:
+            tb = sys.exc_info()[2]
+            ex = Source.executing(tb)
+            self.assertTrue(isinstance(ex.node, ast.BinOp))
+            if 'pypy' not in sys.version.lower():
+                self.assertEqual(ex.text(), "134895 / 0")
+
 
 def is_unary_not(node):
     return isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)

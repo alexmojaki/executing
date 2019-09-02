@@ -19,36 +19,50 @@ This mini-package lets you get information about what a frame is currently doing
 
 ### Getting the AST node
 
-    import executing
+```python
+import executing
 
-    node = executing.Source.executing(frame).node
+node = executing.Source.executing(frame).node
+```
 
 Then `node` will be an AST node (from the `ast` standard library module) or None if the node couldn't be identified (which may happen often and should always be checked).
 
 `node` will always be the same instance for multiple calls with frames at the same point of execution.
 
+If you have a traceback object, pass it directly to `Source.executing()` rather than the `tb_frame` attribute to get the correct node.
+
 ### Getting the source code of the node
 
 For this you will need to separately install the [`asttokens`](https://github.com/gristlabs/asttokens) library, then obtain an `ASTTokens` object:
 
-    executing.Source.executing(frame).source.asttokens()
+```python
+executing.Source.executing(frame).source.asttokens()
+```
 
 or:
 
-    executing.Source.for_frame(frame).asttokens()
+```python
+executing.Source.for_frame(frame).asttokens()
+```
 
 or use one of the convenience methods:
 
-    executing.Source.executing(frame).get_text()
-    executing.Source.executing(frame).get_text_range()
+```python
+executing.Source.executing(frame).text()
+executing.Source.executing(frame).text_range()
+```
 
 ### Getting the `__qualname__` of the current function
 
-    executing.Source.executing(frame).code_qualname()
+```python
+executing.Source.executing(frame).code_qualname()
+```
 
 or:
 
-    executing.Source.for_frame(frame).code_qualname(frame.f_code)
+```python
+executing.Source.for_frame(frame).code_qualname(frame.f_code)
+```
 
 ### The `Source` class
 
@@ -64,13 +78,17 @@ If you don't like that you can just copy the file `executing.py`, there are no d
 
 Suppose the frame is executing this line:
 
-    self.foo(bar.x)
+```python
+self.foo(bar.x)
+```
 
 and in particular it's currently obtaining the attribute `self.foo`. Looking at the bytecode, specifically `frame.f_code.co_code[frame.f_lasti]`, we can tell that it's loading an attribute, but it's not obvious which one. We can narrow down the statement being executed using `frame.f_lineno` and find the two `ast.Attribute` nodes representing `self.foo` and `bar.x`. How do we find out which one it is, without recreating the entire compiler in Python?
 
 The trick is to modify the AST slightly for each candidate expression and observe the changes in the bytecode instructions. We change the AST to this:
 
-    (self.foo ** 'longuniqueconstant')(bar.x)
+```python
+(self.foo ** 'longuniqueconstant')(bar.x)
+```
     
 and compile it, and the bytecode will be almost the same but there will be two new instructions:
 
