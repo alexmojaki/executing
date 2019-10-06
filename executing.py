@@ -228,7 +228,8 @@ class Source(object):
             lineno = frame.f_lineno
             lasti = frame.f_lasti
 
-        key = (frame.f_code, id(frame.f_code), lasti)
+        code = frame.f_code
+        key = (code, id(code), lasti)
         executing_cache = cls._class_local('__executing_cache', {})
 
         try:
@@ -238,12 +239,27 @@ class Source(object):
             node = stmts = None
             if source.tree:
                 stmts = source.statements_at_line(lineno)
-                try:
-                    node = NodeFinder(frame, stmts, source.tree, lasti).result
-                except Exception:
-                    if TESTING:
-                        raise
+                if code.co_filename.startswith('<ipython-input-') and code.co_name == '<module>':
+
+                    # IPython separates each statement in a cell to be executed separately
+                    # So NodeFinder should only compile one statement at a time or it
+                    # will find a code mismatch.
+                    for stmt in stmts:
+                        tree = ast.Module(body=[stmt])
+                        ast.copy_location(tree, stmt)
+                        try:
+                            node = NodeFinder(frame, stmts, tree, lasti).result
+                            break
+                        except Exception:
+                            pass
                 else:
+                    try:
+                        node = NodeFinder(frame, stmts, source.tree, lasti).result
+                    except Exception:
+                        if TESTING:
+                            raise
+
+                if node:
                     new_stmts = {statement_containing_node(node)}
                     assert new_stmts <= stmts
                     stmts = new_stmts
