@@ -12,6 +12,8 @@ import tempfile
 import time
 import unittest
 
+import snoop as snoop
+
 import executing
 from executing import Source, only, PY3, NotOneValueFound, get_instructions
 
@@ -309,42 +311,12 @@ def is_unary_not(node):
 )
 class TestFiles(unittest.TestCase):
     def test_files(self):
-        root_dir = os.path.dirname(__file__)
-        samples_dir = os.path.join(root_dir, 'samples')
-        result_filename = PYPY * 'pypy' + sys.version[:3] + '.json'
-        result_filename = os.path.join(root_dir, 'sample_results', result_filename)
-        result = {}
-
-        for filename in os.listdir(samples_dir):
-            full_filename = os.path.join(samples_dir, filename)
-            result[filename] = self.check_filename(full_filename)
-
-        if os.getenv('FIX_EXECUTING_TESTS'):
-            with open(result_filename, 'w') as outfile:
-                json.dump(result, outfile, indent=4, sort_keys=True)
-        else:
-            with open(result_filename, 'r') as infile:
-                self.assertEqual(result, json.load(infile))
-
-        for module in list(sys.modules.values()):
-            try:
-                filename = inspect.getsourcefile(module)
-            except TypeError:
-                continue
-
-            if not filename:
-                continue
-
-            filename = os.path.abspath(filename)
-
-            if 'executing' in filename:
-                continue
-
-            self.check_filename(filename)
+        self.check_filename('/opt/python/3.7.1/lib/python3.7/lib2to3/pgen2/tokenize.py')
 
     def check_filename(self, filename):
         print(filename)
         source = Source.for_filename(filename)
+        print(source.text)
         nodes = {}
         for node in ast.walk(source.tree):
             if isinstance(node, (
@@ -405,27 +377,28 @@ class TestFiles(unittest.TestCase):
             source = Source.for_frame(frame)
             node = None
 
-            try:
+            with snoop:
                 try:
-                    node = Source.executing(frame).node
+                    try:
+                        node = Source.executing(frame).node
+                    except Exception:
+                        if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
+                            continue
+                        if isinstance(only(source.statements_at_line(lineno)), (ast.AugAssign, ast.Import)):
+                            continue
+                        raise
+    
+                    try:
+                        self.assertIsNone(nodes[node])
+                    except KeyError:
+                        print(ast.dump(source.tree), list(ast.walk(source.tree)), nodes, node, ast.dump(node), file=sys.stderr, sep='\n')
                 except Exception:
-                    if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
-                        continue
-                    if isinstance(only(source.statements_at_line(lineno)), (ast.AugAssign, ast.Import)):
-                        continue
+                    print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
                     raise
-
-                try:
-                    self.assertIsNone(nodes[node])
-                except KeyError:
-                    print(ast.dump(source.tree), list(ast.walk(source.tree)), nodes, node, ast.dump(node), file=sys.stderr, sep='\n')
-            except Exception:
-                print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
-                raise
-
-            nodes[node] = (inst, frame.__dict__)
-
-            yield [inst.opname, node_string(source, node)]
+    
+                nodes[node] = (inst, frame.__dict__)
+    
+                yield [inst.opname, node_string(source, node)]
 
         for const in code.co_consts:
             if isinstance(const, type(code)):
