@@ -279,11 +279,10 @@ class TestStuff(unittest.TestCase):
         frame = inspect.currentframe()
         executing = Source.executing(frame)
         self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')
-        if 'pypy' not in sys.version.lower():
-            text = 'Source.executing(frame)'
-            self.assertEqual(executing.text(), text)
-            start, end = executing.text_range()
-            self.assertEqual(executing.source.text[start:end], text)
+        text = 'Source.executing(frame)'
+        self.assertEqual(executing.text(), text)
+        start, end = executing.text_range()
+        self.assertEqual(executing.source.text[start:end], text)
 
     def test_attr(self):
         c = C()
@@ -297,8 +296,7 @@ class TestStuff(unittest.TestCase):
             tb = sys.exc_info()[2]
             ex = Source.executing(tb)
             self.assertTrue(isinstance(ex.node, ast.BinOp))
-            if 'pypy' not in sys.version.lower():
-                self.assertEqual(ex.text(), "134895 / 0")
+            self.assertEqual(ex.text(), "134895 / 0")
 
 
 def is_unary_not(node):
@@ -436,10 +434,7 @@ class TestFiles(unittest.TestCase):
 
 
 def node_string(source, node):
-    if PYPY:
-        return ast.dump(node)
-    else:
-        return source.asttokens().get_text(node)
+    source.asttokens().get_text(node)
 
 
 def is_literal(node):
