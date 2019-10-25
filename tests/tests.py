@@ -12,6 +12,8 @@ import tempfile
 import time
 import unittest
 
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import executing
 from executing import Source, only, PY3, NotOneValueFound, get_instructions
 

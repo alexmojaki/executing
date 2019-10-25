@@ -16,7 +16,7 @@ env:
 install:
   - pip install coveralls asttokens
 script:
-  - PYTHONPATH=`pwd` coverage run --include=executing.py tests/tests.py
+  - coverage run --include=executing.py tests/tests.py
   - coverage report -m
 
 after_success:
