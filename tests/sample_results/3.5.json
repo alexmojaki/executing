@@ -70,7 +70,7 @@
         ],
         [
             "CALL_FUNCTION",
-            "@lru_cache()"
+            "lru_cache()"
         ],
         [
             "CALL_FUNCTION",
@@ -4154,11 +4154,11 @@
         ],
         [
             "BINARY_MODULO",
-            "'<span class=\"glyphicon glyphicon-%s\" '\n                              'style=\"color: %s\"></span>' % (\n                                  ('ok', 'green') if self.success else\n                                  ('remove', 'red')"
+            "'<span class=\"glyphicon glyphicon-%s\" '\n                              'style=\"color: %s\"></span>' % (\n                                  ('ok', 'green') if self.success else\n                                  ('remove', 'red'))"
         ],
         [
             "CALL_FUNCTION",
-            "Markup('<span class=\"glyphicon glyphicon-%s\" '\n                              'style=\"color: %s\"></span>' % (\n                                  ('ok', 'green') if self.success else\n                                  ('remove', 'red'))"
+            "Markup('<span class=\"glyphicon glyphicon-%s\" '\n                              'style=\"color: %s\"></span>' % (\n                                  ('ok', 'green') if self.success else\n                                  ('remove', 'red')))"
         ],
         [
             "LOAD_ATTR",
@@ -9802,7 +9802,7 @@
         ],
         [
             "CALL_FUNCTION",
-            "@lru_cache()"
+            "lru_cache()"
         ],
         [
             "CALL_FUNCTION",
