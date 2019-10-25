@@ -477,7 +477,10 @@ class NodeFinder(object):
             self.result = only(list(self.matching_nodes(exprs)))
 
     def matching_nodes(self, exprs):
-        original_instructions = self.compile_instructions()
+        original_instructions = [
+            inst for inst in get_instructions(self.frame.f_code)
+            if inst.opname not in ("JUMP_IF_NOT_DEBUG", "EXTENDED_ARG")
+        ]
         original_index = only(
             i
             for i, inst in enumerate(original_instructions)
