@@ -434,7 +434,7 @@ class TestFiles(unittest.TestCase):
 
 
 def node_string(source, node):
-    source.asttokens().get_text(node)
+    return source.asttokens().get_text(node)
 
 
 def is_literal(node):
