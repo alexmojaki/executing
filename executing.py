@@ -476,11 +476,26 @@ class NodeFinder(object):
 
             self.result = only(list(self.matching_nodes(exprs)))
 
-    def matching_nodes(self, exprs):
-        original_instructions = [
+    def get_original_instructions(self):
+        hide_instructions = ["EXTENDED_ARG"]
+
+        # pypy sometimes (when is not clear)
+        # inserts JUMP_IF_NOT_DEBUG instructions in bytecode
+        # If they're not present in our compiled instructions,
+        # ignore them in the original bytecode
+        if not any(
+                inst.opname == "JUMP_IF_NOT_DEBUG"
+                for inst in self.compile_instructions()
+        ):
+            hide_instructions.append("JUMP_IF_NOT_DEBUG")
+
+        return [
             inst for inst in get_instructions(self.frame.f_code)
-            if inst.opname not in ("JUMP_IF_NOT_DEBUG", "EXTENDED_ARG")
+            if inst.opname not in hide_instructions
         ]
+
+    def matching_nodes(self, exprs):
+        original_instructions = self.get_original_instructions()
         original_index = only(
             i
             for i, inst in enumerate(original_instructions)
