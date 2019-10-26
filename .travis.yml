@@ -12,7 +12,9 @@ python:
   - pypy3.5
 
 env:
-  - EXECUTING_SLOW_TESTS=1
+  global:
+    - EXECUTING_SLOW_TESTS=1
+    - COVERALLS_PARALLEL=true
 
 install:
   - pip install coveralls asttokens
@@ -25,3 +27,4 @@ after_success:
 
 notifications:
   email: false
+  webhooks: https://coveralls.io/webhook
