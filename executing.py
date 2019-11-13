@@ -62,17 +62,19 @@ else:
     text_type = unicode
 try:
     # noinspection PyUnresolvedReferences
-    get_instructions = dis.get_instructions
+    _get_instructions = dis.get_instructions
 except AttributeError:
-    Instruction = namedtuple('Instruction', 'offset argval opname')
+    class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):
+        lineno = None
 
-    from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname
+    from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts
 
     # Based on dis.disassemble from 2.7
     # Left as similar as possible for easy diff
 
-    def get_instructions(co):
+    def _get_instructions(co):
         code = co.co_code
+        linestarts = dict(findlinestarts(co))
         n = len(code)
         i = 0
         extended_arg = 0
@@ -80,6 +82,7 @@ except AttributeError:
             offset = i
             c = code[i]
             op = ord(c)
+            lineno = linestarts.get(i)
             argval = None
             i = i + 1
             if op >= HAVE_ARGUMENT:
@@ -91,7 +94,17 @@ except AttributeError:
 
                 if op in hasconst:
                     argval = co.co_consts[oparg]
-            yield Instruction(offset, argval, opname[op])
+            yield Instruction(offset, argval, opname[op], lineno)
+
+
+def get_instructions(co):
+    lineno = None
+    for inst in _get_instructions(co):
+        lineno = inst.starts_line or lineno
+        assert lineno
+        inst.lineno = lineno
+        yield inst
+
 
 TESTING = 0
 
@@ -444,8 +457,18 @@ class NodeFinder(object):
         self.frame = frame
         self.tree = tree
         self.lasti = lasti
+        self.code = code = frame.f_code
+        self.is_pytest = any(
+            'pytest' in name.lower()
+            for name in code_names(code)
+        )
 
-        b = frame.f_code.co_code[lasti]
+        if self.is_pytest:
+            self.ignore_linenos = frozenset(assert_linenos(tree))
+        else:
+            self.ignore_linenos = frozenset()
+
+        b = code.co_code[lasti]
         if not PY3:
             b = ord(b)
         op_name = dis.opname[b]
@@ -476,8 +499,16 @@ class NodeFinder(object):
 
             self.result = only(list(self.matching_nodes(exprs)))
 
+    def clean_instructions(self, code):
+        return [
+            inst
+            for inst in get_instructions(code)
+            if inst.opname != 'EXTENDED_ARG'
+            if inst.lineno not in self.ignore_linenos
+        ]
+
     def get_original_instructions(self):
-        hide_instructions = ["EXTENDED_ARG"]
+        result = self.clean_instructions(self.code)
 
         # pypy sometimes (when is not clear)
         # inserts JUMP_IF_NOT_DEBUG instructions in bytecode
@@ -487,12 +518,12 @@ class NodeFinder(object):
                 inst.opname == "JUMP_IF_NOT_DEBUG"
                 for inst in self.compile_instructions()
         ):
-            hide_instructions.append("JUMP_IF_NOT_DEBUG")
+            result = [
+                inst for inst in result
+                if inst.opname != "JUMP_IF_NOT_DEBUG"
+            ]
 
-        return [
-            inst for inst in get_instructions(self.frame.f_code)
-            if inst.opname not in hide_instructions
-        ]
+        return result
 
     def matching_nodes(self, exprs):
         original_instructions = self.get_original_instructions()
@@ -558,18 +589,44 @@ class NodeFinder(object):
                             inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
                             for inst in [inst1, inst2]
                         )
-                ), (inst1, inst2, ast.dump(expr), expr.lineno, self.frame.f_code.co_filename)
+                ), (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
 
             yield expr
 
     def compile_instructions(self):
-        module_code = compile_similar_to(self.tree, self.frame.f_code)
-        code = only(find_codes(module_code, self.frame.f_code))
-        return [
-            inst
-            for inst in get_instructions(code)
-            if inst.opname != 'EXTENDED_ARG'
+        module_code = compile_similar_to(self.tree, self.code)
+        code = only(self.find_codes(module_code))
+        return self.clean_instructions(code)
+
+    def find_codes(self, root_code):
+        checks = [
+            attrgetter('co_firstlineno'),
+            attrgetter('co_name'),
         ]
+        if not self.is_pytest:
+            checks.append(code_names)
+
+        def matches(c):
+            return all(
+                f(c) == f(self.code)
+                for f in checks
+            )
+
+        code_options = []
+        if matches(root_code):
+            code_options.append(root_code)
+
+        def finder(code):
+            for const in code.co_consts:
+                if not inspect.iscode(const):
+                    continue
+
+                if matches(const):
+                    code_options.append(const)
+                finder(const)
+
+        finder(root_code)
+        return code_options
 
 
 def get_setter(node):
@@ -589,34 +646,6 @@ def get_setter(node):
 lock = RLock()
 
 
-def find_codes(root_code, matching):
-    def matches(c):
-        return all(
-            f(c) == f(matching)
-            for f in [
-                attrgetter('co_firstlineno'),
-                attrgetter('co_name'),
-                code_names,
-            ]
-        )
-
-    code_options = []
-    if matches(root_code):
-        code_options.append(root_code)
-
-    def finder(code):
-        for const in code.co_consts:
-            if not inspect.iscode(const):
-                continue
-
-            if matches(const):
-                code_options.append(const)
-            finder(const)
-
-    finder(root_code)
-    return code_options
-
-
 def code_names(code):
     return frozenset().union(
         code.co_names,
@@ -631,3 +660,13 @@ def statement_containing_node(node):
     while not isinstance(node, ast.stmt):
         node = node.parent
     return node
+
+
+def assert_linenos(tree):
+    for node in ast.walk(tree):
+        if (
+                hasattr(node, 'parent') and
+                hasattr(node, 'lineno') and
+                isinstance(statement_containing_node(node), ast.Assert)
+        ):
+            yield node.lineno
