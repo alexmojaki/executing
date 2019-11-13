@@ -460,7 +460,8 @@ class NodeFinder(object):
         self.code = code = frame.f_code
         self.is_pytest = any(
             'pytest' in name.lower()
-            for name in code_names(code)
+            for group in [code.co_names, code.co_varnames]
+            for name in group
         )
 
         if self.is_pytest:
@@ -602,9 +603,14 @@ class NodeFinder(object):
         checks = [
             attrgetter('co_firstlineno'),
             attrgetter('co_name'),
+            attrgetter('co_freevars'),
+            attrgetter('co_cellvars'),
         ]
         if not self.is_pytest:
-            checks.append(code_names)
+            checks += [
+                attrgetter('co_names'),
+                attrgetter('co_varnames'),
+            ]
 
         def matches(c):
             return all(
@@ -644,15 +650,6 @@ def get_setter(node):
 
 
 lock = RLock()
-
-
-def code_names(code):
-    return frozenset().union(
-        code.co_names,
-        code.co_varnames,
-        code.co_freevars,
-        code.co_cellvars,
-    )
 
 
 @cache
