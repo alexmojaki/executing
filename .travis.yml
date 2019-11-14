@@ -17,9 +17,10 @@ env:
     - COVERALLS_PARALLEL=true
 
 install:
-  - pip install coveralls asttokens
+  - pip install coveralls asttokens pytest
 script:
-  - coverage run --include=executing.py tests/tests.py
+  - coverage run --include=executing.py tests/test_main.py
+  - coverage run --include=executing.py -m pytest tests/test_pytest.py
   - coverage report -m
 
 after_success:
