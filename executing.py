@@ -166,7 +166,7 @@ class Source(object):
             lines = [line.decode(encoding) for line in lines]
 
         self.text = text
-        self.lines = lines
+        self.lines = [line.rstrip('\r\n') for line in lines]
 
         if PY3:
             ast_text = text
