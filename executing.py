@@ -142,6 +142,7 @@ class Source(object):
     Attributes:
         - filename
         - text
+        - lines
         - tree: AST parsed from text, or None if text is not valid Python
             All nodes in the tree have an extra `parent` attribute
 
@@ -151,16 +152,21 @@ class Source(object):
         - code_qualname
     """
 
-    def __init__(self, filename, text):
+    def __init__(self, filename, lines):
         """
         Don't call this constructor, see the class docstring.
         """
 
         self.filename = filename
+        text = ''.join(lines)
 
         if not isinstance(text, text_type):
-            text = self.decode_source(text)
+            encoding = self.detect_encoding(text)
+            text = text.decode(encoding)
+            lines = [line.decode(encoding) for line in lines]
+
         self.text = text
+        self.lines = lines
 
         if PY3:
             ast_text = text
@@ -171,7 +177,7 @@ class Source(object):
             ast_text = ''.join([
                 '\n' if i < 2 and encoding_pattern.match(line)
                 else line
-                for i, line in enumerate(text.splitlines(True))
+                for i, line in enumerate(lines)
             ])
 
         self._nodes_by_line = defaultdict(list)
@@ -210,7 +216,7 @@ class Source(object):
             pass
 
         lines = linecache.getlines(filename, module_globals)
-        result = source_cache[filename] = cls(filename, ''.join(lines))
+        result = source_cache[filename] = cls(filename, lines)
         return result
 
     @classmethod
@@ -330,9 +336,13 @@ class Source(object):
     @staticmethod
     def decode_source(source):
         if isinstance(source, bytes):
-            encoding, _ = detect_encoding(io.BytesIO(source).readline)
+            encoding = Source.detect_encoding(source)
             source = source.decode(encoding)
         return source
+
+    @staticmethod
+    def detect_encoding(source):
+        return detect_encoding(io.BytesIO(source).readline)[0]
 
     def code_qualname(self, code):
         """
