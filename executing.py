@@ -376,8 +376,6 @@ class Executing(object):
 
     Generally you will just want `node`, which is the AST node being executed,
     or None if it's unknown.
-    Currently `node` can only be an `ast.Call` object, other operations
-    will be supported in future.
     """
 
     def __init__(self, frame, source, node, stmts):
