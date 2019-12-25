@@ -37,12 +37,18 @@ if PY3:
     # noinspection PyUnresolvedReferences
     from tokenize import detect_encoding
     from itertools import zip_longest
+    # noinspection PyUnresolvedReferences
+    from pathlib import Path
 
     cache = lru_cache(maxsize=None)
     text_type = str
 else:
     from lib2to3.pgen2.tokenize import detect_encoding
     from itertools import izip_longest as zip_longest
+
+
+    class Path(object):
+        pass
 
 
     def cache(func):
@@ -215,6 +221,8 @@ class Source(object):
         except KeyError:
             pass
 
+        if isinstance(filename, Path):
+            filename = str(filename)
         lines = linecache.getlines(filename, module_globals)
         result = source_cache[filename] = cls(filename, lines)
         return result
