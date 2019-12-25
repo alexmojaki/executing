@@ -11,6 +11,7 @@ setup(name=package,
       author='Alex Hall',
       author_email='alex.mojaki@gmail.com',
       license='MIT',
+      include_package_data=True,
       py_modules=[package],
       classifiers=[
           'License :: OSI Approved :: MIT License',
