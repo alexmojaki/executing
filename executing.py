@@ -190,21 +190,20 @@ class Source(object):
         self.tree = None
         self._qualnames = {}
 
-        if text:
-            try:
-                self.tree = ast.parse(ast_text, filename=filename)
-            except SyntaxError:
-                pass
-            else:
-                for node in ast.walk(self.tree):
-                    for child in ast.iter_child_nodes(node):
-                        child.parent = node
-                    if hasattr(node, 'lineno'):
-                        self._nodes_by_line[node.lineno].append(node)
+        try:
+            self.tree = ast.parse(ast_text, filename=filename)
+        except SyntaxError:
+            pass
+        else:
+            for node in ast.walk(self.tree):
+                for child in ast.iter_child_nodes(node):
+                    child.parent = node
+                if hasattr(node, 'lineno'):
+                    self._nodes_by_line[node.lineno].append(node)
 
-                visitor = QualnameVisitor()
-                visitor.visit(self.tree)
-                self._qualnames = visitor.qualnames
+            visitor = QualnameVisitor()
+            visitor.visit(self.tree)
+            self._qualnames = visitor.qualnames
 
     @classmethod
     def for_frame(cls, frame):
