@@ -22,10 +22,10 @@ from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 from operator import attrgetter
 from threading import RLock
 
-__version__ = '0.4.1'
-__version_info__ = namedtuple(
-    'VersionInfo', ('major', 'minor', 'micro')
-)(*(map(int, __version__.split('.'))))
+from .version import __version__
+from packaging.version import Version
+
+__version_info__ = Version(__version__)
 
 __all__ = ["Source"]
 

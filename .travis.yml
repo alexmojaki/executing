@@ -16,11 +16,18 @@ env:
     - EXECUTING_SLOW_TESTS=1
     - COVERALLS_PARALLEL=true
 
+before_install:
+  - pip install --upgrade coveralls asttokens pytest setuptools>=44 setuptools_scm>=3.4.3 pep517
+
 install:
-  - pip install coveralls asttokens pytest
+  - python3 -m pep517.build -b .
+  - ls -l
+  - export WHLNAME=./dist/stack_data-0.CI-py3-none-any.whl
+  - mv ./dist/*.whl $WHLNAME
+  - pip install --upgrade "$WHLNAME"
+
 script:
-  - coverage run --include=executing.py tests/test_main.py
-  - coverage run --include=executing.py --append -m pytest tests/test_pytest.py
+  - coverage run --branch --include=executing.py -m pytest --junitxml=./rspec.xml tests/test_main.py tests/test_pytest.py
   - coverage report -m
 
 after_success:
