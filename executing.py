@@ -18,7 +18,6 @@ import sys
 import types
 from collections import defaultdict, namedtuple
 from itertools import islice
-from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern
 from operator import attrgetter
 from threading import RLock
 
@@ -43,7 +42,7 @@ if PY3:
     cache = lru_cache(maxsize=None)
     text_type = str
 else:
-    from lib2to3.pgen2.tokenize import detect_encoding
+    from lib2to3.pgen2.tokenize import detect_encoding, cookie_re as encoding_pattern
     from itertools import izip_longest as zip_longest
 
 
