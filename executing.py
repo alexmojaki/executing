@@ -21,7 +21,7 @@ from itertools import islice
 from operator import attrgetter
 from threading import RLock
 
-__version__ = '0.4.1'
+__version__ = '0.4.2'
 __version_info__ = namedtuple(
     'VersionInfo', ('major', 'minor', 'micro')
 )(*(map(int, __version__.split('.'))))
