@@ -270,7 +270,11 @@ class Source(object):
                     # So NodeFinder should only compile one statement at a time or it
                     # will find a code mismatch.
                     for stmt in stmts:
-                        tree = ast.Module(body=[stmt])
+                        # use `ast.parse` instead of `ast.Module` for better portability
+                        # python3.8 changes the signature of `ast.Module`
+                        # Inspired by https://github.com/pallets/werkzeug/pull/1552/files
+                        tree = ast.parse("")
+                        tree.body = [stmt]
                         ast.copy_location(tree, stmt)
                         try:
                             node = NodeFinder(frame, stmts, tree, lasti).result
@@ -603,6 +607,10 @@ class NodeFinder(object):
                         all(
                             inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
                             for inst in [inst1, inst2]
+                        )
+                        or (
+                                inst1.opname == 'PRINT_EXPR' and
+                                inst2.opname == 'POP_TOP'
                         )
                 ), (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
 
