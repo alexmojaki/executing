@@ -581,53 +581,58 @@ class NodeFinder(object):
                 for i, instruction in enumerate(instructions)
                 if instruction.argval == sentinel
             ]
-            if not indices:
-                continue
-            sentinel_index = only(indices)
-            new_index = sentinel_index - 1
 
-            assert_(instructions.pop(sentinel_index).opname == 'LOAD_CONST')
-            assert_(instructions.pop(sentinel_index).opname == 'BINARY_POWER')
+            # There can be several indices when the bytecode is duplicated,
+            # as happens in a finally block in 3.9+
+            for index_num, sentinel_index in enumerate(indices):
+                # Adjustment for removing sentinel instructions below
+                # in past iterations
+                sentinel_index -= index_num * 2
 
-            if new_index != original_index:
-                continue
+                new_index = sentinel_index - 1
 
-            call_method = False
+                assert_(instructions.pop(sentinel_index).opname == 'LOAD_CONST')
+                assert_(instructions.pop(sentinel_index).opname == 'BINARY_POWER')
 
-            if (
-                    original_instructions[new_index].opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
-                    instructions[new_index].opname == 'LOAD_ATTR'
-            ):
-                call_method = True
-                instructions[new_index] = original_instructions[new_index]
-
-            for inst1, inst2 in zip_longest(original_instructions, instructions):
-                if (
-                        call_method and
-                        inst1.opname == 'CALL_METHOD' and
-                        inst2.opname == 'CALL_FUNCTION'
-                ):
-                    call_method = False
+                if new_index != original_index:
                     continue
 
-                assert_(
-                    inst1.opname == inst2.opname or
-                    all(
-                        'JUMP_IF_' in inst.opname
-                        for inst in [inst1, inst2]
-                    ) or
-                    all(
-                        inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
-                        for inst in [inst1, inst2]
-                    )
-                    or (
-                            inst1.opname == 'PRINT_EXPR' and
-                            inst2.opname == 'POP_TOP'
-                    ),
-                    (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
-                )
+                call_method = False
 
-            yield expr
+                if (
+                        original_instructions[new_index].opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
+                        instructions[new_index].opname == 'LOAD_ATTR'
+                ):
+                    call_method = True
+                    instructions[new_index] = original_instructions[new_index]
+
+                for inst1, inst2 in zip_longest(original_instructions, instructions):
+                    if (
+                            call_method and
+                            inst1.opname == 'CALL_METHOD' and
+                            inst2.opname == 'CALL_FUNCTION'
+                    ):
+                        call_method = False
+                        continue
+
+                    assert_(
+                        inst1.opname == inst2.opname or
+                        all(
+                            'JUMP_IF_' in inst.opname
+                            for inst in [inst1, inst2]
+                        ) or
+                        all(
+                            inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
+                            for inst in [inst1, inst2]
+                        )
+                        or (
+                                inst1.opname == 'PRINT_EXPR' and
+                                inst2.opname == 'POP_TOP'
+                        ),
+                        (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
+                    )
+
+                yield expr
 
     def compile_instructions(self):
         module_code = compile_similar_to(self.tree, self.code)
