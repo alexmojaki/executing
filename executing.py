@@ -36,7 +36,7 @@ if PY3:
     # noinspection PyUnresolvedReferences
     from tokenize import detect_encoding
     from itertools import zip_longest
-    # noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences,PyCompatibility
     from pathlib import Path
 
     cache = lru_cache(maxsize=None)
@@ -102,11 +102,21 @@ except AttributeError:
             yield Instruction(offset, argval, opname[op], lineno)
 
 
+def assert_(condition, message=""):
+    """
+    Like an assert statement, but unaffected by -O
+    :param condition: value that is expected to be truthy
+    :type message: Any
+    """
+    if not condition:
+        raise AssertionError(str(message))
+
+
 def get_instructions(co):
     lineno = None
     for inst in _get_instructions(co):
         lineno = inst.starts_line or lineno
-        assert lineno
+        assert_(lineno)
         inst.lineno = lineno
         yield inst
 
@@ -167,6 +177,7 @@ class Source(object):
 
         if not isinstance(text, text_type):
             encoding = self.detect_encoding(text)
+            # noinspection PyUnresolvedReferences
             text = text.decode(encoding)
             lines = [line.decode(encoding) for line in lines]
 
@@ -290,7 +301,7 @@ class Source(object):
 
                 if node:
                     new_stmts = {statement_containing_node(node)}
-                    assert new_stmts <= stmts
+                    assert_(new_stmts <= stmts)
                     stmts = new_stmts
 
             args = source, node, stmts
@@ -376,7 +387,7 @@ class Source(object):
         the outer lambda's qualname will be returned for the codes
         of both lambdas)
         """
-        assert code.co_filename == self.filename
+        assert_(code.co_filename == self.filename)
         return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
 
 
@@ -443,6 +454,7 @@ class QualnameVisitor(ast.NodeVisitor):
                         self.visit(grandchild)
 
     def visit_Lambda(self, node):
+        # noinspection PyTypeChecker
         self.visit_FunctionDef(node, '<lambda>')
 
     def visit_ClassDef(self, node):
@@ -574,8 +586,8 @@ class NodeFinder(object):
             sentinel_index = only(indices)
             new_index = sentinel_index - 1
 
-            assert instructions.pop(sentinel_index).opname == 'LOAD_CONST'
-            assert instructions.pop(sentinel_index).opname == 'BINARY_POWER'
+            assert_(instructions.pop(sentinel_index).opname == 'LOAD_CONST')
+            assert_(instructions.pop(sentinel_index).opname == 'BINARY_POWER')
 
             if new_index != original_index:
                 continue
@@ -598,21 +610,22 @@ class NodeFinder(object):
                     call_method = False
                     continue
 
-                assert (
-                        inst1.opname == inst2.opname or
-                        all(
-                            'JUMP_IF_' in inst.opname
-                            for inst in [inst1, inst2]
-                        ) or
-                        all(
-                            inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
-                            for inst in [inst1, inst2]
-                        )
-                        or (
-                                inst1.opname == 'PRINT_EXPR' and
-                                inst2.opname == 'POP_TOP'
-                        )
-                ), (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
+                assert_(
+                    inst1.opname == inst2.opname or
+                    all(
+                        'JUMP_IF_' in inst.opname
+                        for inst in [inst1, inst2]
+                    ) or
+                    all(
+                        inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
+                        for inst in [inst1, inst2]
+                    )
+                    or (
+                            inst1.opname == 'PRINT_EXPR' and
+                            inst2.opname == 'POP_TOP'
+                    ),
+                    (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
+                )
 
             yield expr
 
