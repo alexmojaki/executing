@@ -1,3 +1,4 @@
+import sys
 import ast
 import inspect
 import executing
@@ -42,7 +43,7 @@ class Tester(object):
     def __getitem__(self, item):
         node = self.get_node(ast.Subscript)
         self.check(node.value, self)
-        self.check(node.slice.value, item)
+        self.check(subscript_item(node), item)
         return self
 
     def __add__(self, other):
@@ -79,3 +80,10 @@ class Tester(object):
 
 
 tester = Tester()
+
+
+def subscript_item(node):
+    if sys.version_info < (3, 9):
+        return node.slice.value
+    else:
+        return node.slice

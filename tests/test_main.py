@@ -14,7 +14,7 @@ import unittest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from tests.utils import tester
+from tests.utils import tester, subscript_item
 
 PYPY = 'pypy' in sys.version.lower()
 
@@ -447,10 +447,7 @@ def is_literal(node):
         return all(map(is_literal, [node.left] + node.comparators))
 
     if isinstance(node, ast.Subscript) and is_literal(node.value):
-        if isinstance(node.slice, ast.Index):
-            return is_literal(node.slice.value)
-        else:
-            assert isinstance(node.slice, ast.Slice)
+        if isinstance(node.slice, ast.Slice):
             return all(
                 x is None or is_literal(x)
                 for x in [
@@ -459,6 +456,8 @@ def is_literal(node):
                     node.slice.step,
                 ]
             )
+        else:
+            return is_literal(subscript_item(node))
 
     try:
         ast.literal_eval(node)
