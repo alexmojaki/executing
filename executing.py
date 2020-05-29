@@ -602,6 +602,21 @@ class NodeFinder(object):
                 if new_index != original_index:
                     continue
 
+                original_inst = original_instructions[original_index]
+                new_inst = instructions[new_index]
+
+                # In Python 3.9+, changing 'not x in y' to 'not sentinel_transformation(x in y)'
+                # changes a CONTAINS_OP(invert=1) to CONTAINS_OP(invert=0),<sentinel stuff>,UNARY_NOT
+                if (
+                        original_inst.opname == new_inst.opname in ('CONTAINS_OP', 'IS_OP')
+                        and original_inst.arg != new_inst.arg
+                        and (
+                        original_instructions[original_index + 1].opname
+                        != instructions[new_index + 1].opname == 'UNARY_NOT'
+                )):
+                    # Remove the difference for the upcoming assert
+                    instructions.pop(new_index + 1)
+
                 # Check that the modified instructions don't have anything unexpected
                 for inst1, inst2 in zip_longest(original_instructions, instructions):
                     assert_(
