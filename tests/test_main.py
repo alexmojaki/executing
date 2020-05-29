@@ -309,6 +309,7 @@ def is_unary_not(node):
 )
 class TestFiles(unittest.TestCase):
     def test_files(self):
+        start_time = time.time()
         root_dir = os.path.dirname(__file__)
         samples_dir = os.path.join(root_dir, 'samples')
         result_filename = PYPY * 'pypy' + sys.version[:3] + '.json'
@@ -327,6 +328,10 @@ class TestFiles(unittest.TestCase):
                 self.assertEqual(result, json.load(infile))
 
         for module in list(sys.modules.values()):
+            if time.time() - start_time > 45 * 60:
+                # Avoid travis time limit of 50 minutes
+                break
+
             try:
                 filename = inspect.getsourcefile(module)
             except TypeError:
