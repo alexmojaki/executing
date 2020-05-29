@@ -514,7 +514,7 @@ class NodeFinder(object):
             typ = ast.UnaryOp
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
-        elif op_name == 'COMPARE_OP':
+        elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
         else:
             raise RuntimeError(op_name)
@@ -565,6 +565,7 @@ class NodeFinder(object):
         )
         for i, expr in enumerate(exprs):
             setter = get_setter(expr)
+            # noinspection PyArgumentList
             replacement = ast.BinOp(
                 left=expr,
                 op=ast.Pow(),
@@ -584,37 +585,25 @@ class NodeFinder(object):
 
             # There can be several indices when the bytecode is duplicated,
             # as happens in a finally block in 3.9+
+            # First we remove the opcodes caused by our modifications
             for index_num, sentinel_index in enumerate(indices):
                 # Adjustment for removing sentinel instructions below
                 # in past iterations
                 sentinel_index -= index_num * 2
 
-                new_index = sentinel_index - 1
-
                 assert_(instructions.pop(sentinel_index).opname == 'LOAD_CONST')
                 assert_(instructions.pop(sentinel_index).opname == 'BINARY_POWER')
+
+            # Then we see if any of the instruction indices match
+            for index_num, sentinel_index in enumerate(indices):
+                sentinel_index -= index_num * 2
+                new_index = sentinel_index - 1
 
                 if new_index != original_index:
                     continue
 
-                call_method = False
-
-                if (
-                        original_instructions[new_index].opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
-                        instructions[new_index].opname == 'LOAD_ATTR'
-                ):
-                    call_method = True
-                    instructions[new_index] = original_instructions[new_index]
-
+                # Check that the modified instructions don't have anything unexpected
                 for inst1, inst2 in zip_longest(original_instructions, instructions):
-                    if (
-                            call_method and
-                            inst1.opname == 'CALL_METHOD' and
-                            inst2.opname == 'CALL_FUNCTION'
-                    ):
-                        call_method = False
-                        continue
-
                     assert_(
                         inst1.opname == inst2.opname or
                         all(
@@ -628,6 +617,14 @@ class NodeFinder(object):
                         or (
                                 inst1.opname == 'PRINT_EXPR' and
                                 inst2.opname == 'POP_TOP'
+                        )
+                        or (
+                                inst1.opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
+                                inst2.opname == 'LOAD_ATTR'
+                        )
+                        or (
+                                inst1.opname == 'CALL_METHOD' and
+                                inst2.opname == 'CALL_FUNCTION'
                         ),
                         (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
                     )

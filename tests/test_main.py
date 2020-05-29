@@ -11,10 +11,11 @@ import sys
 import tempfile
 import time
 import unittest
+from collections import defaultdict
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from tests.utils import tester, subscript_item
+from tests.utils import tester, subscript_item, in_finally
 
 PYPY = 'pypy' in sys.version.lower()
 
@@ -344,7 +345,7 @@ class TestFiles(unittest.TestCase):
     def check_filename(self, filename):
         print(filename)
         source = Source.for_filename(filename)
-        nodes = {}
+        nodes = defaultdict(list)
         for node in ast.walk(source.tree):
             if isinstance(node, (
                     ast.UnaryOp,
@@ -354,23 +355,23 @@ class TestFiles(unittest.TestCase):
                     ast.Compare,
                     ast.Attribute
             )):
-                nodes[node] = None
+                nodes[node] = []
 
         code = compile(source.tree, source.filename, 'exec')
         result = list(self.check_code(code, nodes))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
-            for node, value in nodes.items():
+            for node, values in nodes.items():
                 if is_unary_not(node):
                     continue
 
                 if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
-                    assert value is None
+                    assert not values
                     continue
 
                 if isinstance(node, ast.Compare):
                     if len(node.ops) > 1:
-                        assert value is None
+                        assert not values
                         continue
 
                     if is_unary_not(node.parent) and isinstance(node.ops[0], (ast.In, ast.Is)):
@@ -379,8 +380,14 @@ class TestFiles(unittest.TestCase):
                 if is_literal(node):
                     continue
 
-                if value is None:
-                    print(source.text, '---', node_string(source, node), file=sys.stderr, sep='\n')
+                if sys.version_info >= (3, 9) and in_finally(node):
+                    correct = len(values) > 1
+                else:
+                    correct = len(values) == 1
+
+                if not correct:
+                    print(source.text, '---', node_string(source, node), node.lineno,
+                          len(values), correct, values, file=sys.stderr, sep='\n')
                     self.fail()
 
         return result
@@ -393,7 +400,7 @@ class TestFiles(unittest.TestCase):
             lineno = linestarts.get(inst.offset, lineno)
             if not inst.opname.startswith((
                     'BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
-                    'SLICE+', 'COMPARE_OP', 'CALL_',
+                    'SLICE+', 'COMPARE_OP', 'CALL_', 'IS_OP', 'CONTAINS_OP',
             )):
                 continue
             frame = C()
@@ -413,16 +420,11 @@ class TestFiles(unittest.TestCase):
                     if isinstance(only(source.statements_at_line(lineno)), (ast.AugAssign, ast.Import)):
                         continue
                     raise
-
-                try:
-                    self.assertIsNone(nodes[node])
-                except KeyError:
-                    print(ast.dump(source.tree), list(ast.walk(source.tree)), nodes, node, ast.dump(node), file=sys.stderr, sep='\n')
             except Exception:
                 print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
                 raise
 
-            nodes[node] = (inst, frame.__dict__)
+            nodes[node].append((inst, frame.__dict__))
 
             yield [inst.opname, node_string(source, node)]
 

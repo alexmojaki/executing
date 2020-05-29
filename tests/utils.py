@@ -87,3 +87,11 @@ def subscript_item(node):
         return node.slice.value
     else:
         return node.slice
+
+
+def in_finally(node):
+    while hasattr(node, 'parent'):
+        if isinstance(node.parent, ast.Try) and node in node.parent.finalbody:
+            return True
+        node = node.parent
+    return False
