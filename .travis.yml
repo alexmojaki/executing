@@ -24,8 +24,8 @@ install:
   - pip install .
 
 script:
-  - coverage run --include=executing.py tests/test_main.py
-  - coverage run --include=executing.py --append -m pytest tests/test_pytest.py
+  - coverage run --include=executing/executing.py tests/test_main.py
+  - coverage run --include=executing/executing.py --append -m pytest tests/test_pytest.py
   - coverage report -m
 
 after_success:
