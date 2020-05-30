@@ -1,12 +1,3 @@
-"""
-Get information about what a frame is currently doing. Typical usage:
-
-    import executing
-
-    node = executing.Source.executing(frame).node
-    # node will be an AST node or None
-"""
-
 import __future__
 import ast
 import dis
@@ -20,13 +11,6 @@ from collections import defaultdict, namedtuple
 from itertools import islice
 from operator import attrgetter
 from threading import RLock
-
-__version__ = '0.4.3'
-__version_info__ = namedtuple(
-    'VersionInfo', ('major', 'minor', 'micro')
-)(*map(int, __version__.split('.')))
-
-__all__ = ["Source"]
 
 PY3 = sys.version_info[0] == 3
 
@@ -72,7 +56,9 @@ except AttributeError:
     class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):
         lineno = None
 
+
     from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts
+
 
     # Based on dis.disassemble from 2.7
     # Left as similar as possible for easy diff
