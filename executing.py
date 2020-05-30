@@ -36,7 +36,7 @@ if PY3:
     # noinspection PyUnresolvedReferences
     from tokenize import detect_encoding
     from itertools import zip_longest
-    # noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences,PyCompatibility
     from pathlib import Path
 
     cache = lru_cache(maxsize=None)
@@ -102,11 +102,21 @@ except AttributeError:
             yield Instruction(offset, argval, opname[op], lineno)
 
 
+def assert_(condition, message=""):
+    """
+    Like an assert statement, but unaffected by -O
+    :param condition: value that is expected to be truthy
+    :type message: Any
+    """
+    if not condition:
+        raise AssertionError(str(message))
+
+
 def get_instructions(co):
     lineno = None
     for inst in _get_instructions(co):
         lineno = inst.starts_line or lineno
-        assert lineno
+        assert_(lineno)
         inst.lineno = lineno
         yield inst
 
@@ -167,6 +177,7 @@ class Source(object):
 
         if not isinstance(text, text_type):
             encoding = self.detect_encoding(text)
+            # noinspection PyUnresolvedReferences
             text = text.decode(encoding)
             lines = [line.decode(encoding) for line in lines]
 
@@ -290,7 +301,7 @@ class Source(object):
 
                 if node:
                     new_stmts = {statement_containing_node(node)}
-                    assert new_stmts <= stmts
+                    assert_(new_stmts <= stmts)
                     stmts = new_stmts
 
             args = source, node, stmts
@@ -376,7 +387,7 @@ class Source(object):
         the outer lambda's qualname will be returned for the codes
         of both lambdas)
         """
-        assert code.co_filename == self.filename
+        assert_(code.co_filename == self.filename)
         return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
 
 
@@ -443,6 +454,7 @@ class QualnameVisitor(ast.NodeVisitor):
                         self.visit(grandchild)
 
     def visit_Lambda(self, node):
+        # noinspection PyTypeChecker
         self.visit_FunctionDef(node, '<lambda>')
 
     def visit_ClassDef(self, node):
@@ -502,7 +514,7 @@ class NodeFinder(object):
             typ = ast.UnaryOp
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
-        elif op_name == 'COMPARE_OP':
+        elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
         else:
             raise RuntimeError(op_name)
@@ -553,6 +565,7 @@ class NodeFinder(object):
         )
         for i, expr in enumerate(exprs):
             setter = get_setter(expr)
+            # noinspection PyArgumentList
             replacement = ast.BinOp(
                 left=expr,
                 op=ast.Pow(),
@@ -569,36 +582,44 @@ class NodeFinder(object):
                 for i, instruction in enumerate(instructions)
                 if instruction.argval == sentinel
             ]
-            if not indices:
-                continue
-            sentinel_index = only(indices)
-            new_index = sentinel_index - 1
 
-            assert instructions.pop(sentinel_index).opname == 'LOAD_CONST'
-            assert instructions.pop(sentinel_index).opname == 'BINARY_POWER'
+            # There can be several indices when the bytecode is duplicated,
+            # as happens in a finally block in 3.9+
+            # First we remove the opcodes caused by our modifications
+            for index_num, sentinel_index in enumerate(indices):
+                # Adjustment for removing sentinel instructions below
+                # in past iterations
+                sentinel_index -= index_num * 2
 
-            if new_index != original_index:
-                continue
+                assert_(instructions.pop(sentinel_index).opname == 'LOAD_CONST')
+                assert_(instructions.pop(sentinel_index).opname == 'BINARY_POWER')
 
-            call_method = False
+            # Then we see if any of the instruction indices match
+            for index_num, sentinel_index in enumerate(indices):
+                sentinel_index -= index_num * 2
+                new_index = sentinel_index - 1
 
-            if (
-                    original_instructions[new_index].opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
-                    instructions[new_index].opname == 'LOAD_ATTR'
-            ):
-                call_method = True
-                instructions[new_index] = original_instructions[new_index]
-
-            for inst1, inst2 in zip_longest(original_instructions, instructions):
-                if (
-                        call_method and
-                        inst1.opname == 'CALL_METHOD' and
-                        inst2.opname == 'CALL_FUNCTION'
-                ):
-                    call_method = False
+                if new_index != original_index:
                     continue
 
-                assert (
+                original_inst = original_instructions[original_index]
+                new_inst = instructions[new_index]
+
+                # In Python 3.9+, changing 'not x in y' to 'not sentinel_transformation(x in y)'
+                # changes a CONTAINS_OP(invert=1) to CONTAINS_OP(invert=0),<sentinel stuff>,UNARY_NOT
+                if (
+                        original_inst.opname == new_inst.opname in ('CONTAINS_OP', 'IS_OP')
+                        and original_inst.arg != new_inst.arg
+                        and (
+                        original_instructions[original_index + 1].opname
+                        != instructions[new_index + 1].opname == 'UNARY_NOT'
+                )):
+                    # Remove the difference for the upcoming assert
+                    instructions.pop(new_index + 1)
+
+                # Check that the modified instructions don't have anything unexpected
+                for inst1, inst2 in zip_longest(original_instructions, instructions):
+                    assert_(
                         inst1.opname == inst2.opname or
                         all(
                             'JUMP_IF_' in inst.opname
@@ -612,9 +633,18 @@ class NodeFinder(object):
                                 inst1.opname == 'PRINT_EXPR' and
                                 inst2.opname == 'POP_TOP'
                         )
-                ), (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
+                        or (
+                                inst1.opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
+                                inst2.opname == 'LOAD_ATTR'
+                        )
+                        or (
+                                inst1.opname == 'CALL_METHOD' and
+                                inst2.opname == 'CALL_FUNCTION'
+                        ),
+                        (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
+                    )
 
-            yield expr
+                yield expr
 
     def compile_instructions(self):
         module_code = compile_similar_to(self.tree, self.code)
