@@ -1,9 +1,9 @@
 import sys
 import ast
 import inspect
-import executing
+import executing.executing
 
-executing.TESTING = 1
+executing.executing.TESTING = 1
 
 from executing import Source
 

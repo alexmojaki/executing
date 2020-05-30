@@ -19,7 +19,8 @@ from tests.utils import tester, subscript_item, in_finally
 
 PYPY = 'pypy' in sys.version.lower()
 
-from executing import Source, only, PY3, NotOneValueFound, get_instructions
+from executing import Source, only, NotOneValueFound
+from executing.executing import PY3, get_instructions
 
 
 class TestStuff(unittest.TestCase):
@@ -556,3 +557,4 @@ def decorator_with_args(*_, **__):
 
 if __name__ == '__main__':
     unittest.main()
+
