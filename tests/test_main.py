@@ -342,7 +342,12 @@ class TestFiles(unittest.TestCase):
 
             filename = os.path.abspath(filename)
 
-            if 'executing' in filename:
+            if (
+                    # The sentinel actually appearing in code messes things up
+                    'executing' in filename
+                    # A file that's particularly slow
+                    or 'errorcodes.py' in filename
+            ):
                 continue
 
             self.check_filename(filename)
