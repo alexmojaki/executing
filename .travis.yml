@@ -19,6 +19,7 @@ env:
 
 before_install:
   - pip install --upgrade coveralls asttokens pytest setuptools setuptools_scm pep517
+  - pip install snoop
 
 install:
   - pip install .

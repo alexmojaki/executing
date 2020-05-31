@@ -309,6 +309,8 @@ def is_unary_not(node):
     'These tests are very slow, enable them explicitly',
 )
 class TestFiles(unittest.TestCase):
+    import snoop
+    @snoop
     def test_files(self):
         start_time = time.time()
         root_dir = os.path.dirname(__file__)
