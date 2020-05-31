@@ -305,6 +305,10 @@ def is_unary_not(node):
     return isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)
 
 
+class TimeOut(Exception):
+    pass
+
+
 @unittest.skipUnless(
     os.getenv('EXECUTING_SLOW_TESTS'),
     'These tests are very slow, enable them explicitly',
@@ -352,7 +356,7 @@ class TestFiles(unittest.TestCase):
 
             try:
                 self.check_filename(filename)
-            except TimeoutError:
+            except TimeOut:
                 print("Time's up")
 
     def check_filename(self, filename):
@@ -412,7 +416,7 @@ class TestFiles(unittest.TestCase):
         for inst in instructions:
             if time.time() - self.start_time > 45 * 60:
                 # Avoid travis time limit of 50 minutes
-                raise TimeoutError
+                raise TimeOut
 
             lineno = linestarts.get(inst.offset, lineno)
             if not inst.opname.startswith((
