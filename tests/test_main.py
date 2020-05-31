@@ -12,6 +12,7 @@ import tempfile
 import time
 import unittest
 from collections import defaultdict
+from random import shuffle
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -310,7 +311,7 @@ def is_unary_not(node):
 )
 class TestFiles(unittest.TestCase):
     def test_files(self):
-        start_time = time.time()
+        self.start_time = time.time()
         root_dir = os.path.dirname(__file__)
         samples_dir = os.path.join(root_dir, 'samples')
         result_filename = PYPY * 'pypy' + sys.version[:3] + '.json'
@@ -328,11 +329,9 @@ class TestFiles(unittest.TestCase):
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
 
-        for module in list(sys.modules.values()):
-            if time.time() - start_time > 45 * 60:
-                # Avoid travis time limit of 50 minutes
-                break
-
+        modules = list(sys.modules.values())
+        shuffle(modules)
+        for module in modules:
             try:
                 filename = inspect.getsourcefile(module)
             except TypeError:
@@ -408,6 +407,11 @@ class TestFiles(unittest.TestCase):
         instructions = get_instructions(code)
         lineno = None
         for inst in instructions:
+            if time.time() - self.start_time > 45 * 60:
+                # Avoid travis time limit of 50 minutes
+                print("Time exceeded")
+                return
+
             lineno = linestarts.get(inst.offset, lineno)
             if not inst.opname.startswith((
                     'BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
