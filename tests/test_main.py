@@ -350,7 +350,10 @@ class TestFiles(unittest.TestCase):
             ):
                 continue
 
-            self.check_filename(filename)
+            try:
+                self.check_filename(filename)
+            except TimeoutError:
+                print("Time's up")
 
     def check_filename(self, filename):
         print(filename)
@@ -409,8 +412,7 @@ class TestFiles(unittest.TestCase):
         for inst in instructions:
             if time.time() - self.start_time > 45 * 60:
                 # Avoid travis time limit of 50 minutes
-                print("Time exceeded")
-                return
+                raise TimeoutError
 
             lineno = linestarts.get(inst.offset, lineno)
             if not inst.opname.startswith((
