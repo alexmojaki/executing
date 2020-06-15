@@ -73,11 +73,11 @@ except AttributeError:
             c = code[i]
             op = ord(c)
             argval = None
-            i = i + 1
+            i += 1
             if op >= HAVE_ARGUMENT:
                 oparg = ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg
                 extended_arg = 0
-                i = i + 2
+                i += 2
                 if op == EXTENDED_ARG:
                     extended_arg = oparg * 65536
 
@@ -98,7 +98,7 @@ def only(it):
         return list(it)[0]
 
     lst = tuple(islice(it, 2))
-    if len(lst) == 0:
+    if not lst:
         raise NotOneValueFound('Expected one value, found 0')
     if len(lst) > 1:
         raise NotOneValueFound('Expected one value, found several')
@@ -341,10 +341,7 @@ class QualnameVisitor(ast.NodeVisitor):
         self.qualnames.setdefault((name, node.lineno), ".".join(self.stack))
 
         self.stack.append('<locals>')
-        if isinstance(node, ast.Lambda):
-            children = [node.body]
-        else:
-            children = node.body
+        children = [node.body] if isinstance(node, ast.Lambda) else node.body
         for child in children:
             self.visit(child)
         self.stack.pop()
@@ -422,8 +419,9 @@ class NodeFinder(object):
                 for stmt in stmts
                 for node in ast.walk(stmt)
                 if isinstance(node, typ)
-                if not (hasattr(node, "ctx") and not isinstance(node.ctx, ast.Load))
+                if not hasattr(node, "ctx") or isinstance(node.ctx, ast.Load)
             }
+
 
             self.result = only(list(self.matching_nodes(exprs)))
 

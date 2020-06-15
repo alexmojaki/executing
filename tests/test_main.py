@@ -66,7 +66,7 @@ class TestStuff(unittest.TestCase):
         str([{tester(x) for x in [1]},
              {tester(x) for x in [1]}])
         # or are of different types
-        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])
+        str([{tester(x) for x in [1]}, [tester(x) for x in [1]]])
         # but not if everything is the same
         # noinspection PyTypeChecker
         with self.assertRaises(NotOneValueFound):
@@ -131,12 +131,7 @@ class TestStuff(unittest.TestCase):
         str()
 
         with self.assertRaises(tester(Exception)):
-            if tester(0):
-                pass
-            elif tester(0):
-                pass
-            elif tester(1 / 0):
-                pass
+            pass
 
     def test_generator(self):
         def gen():
@@ -154,7 +149,7 @@ class TestStuff(unittest.TestCase):
     def test_many_calls(self):
         node = None
         start = time.time()
-        for i in range(10000):
+        for _ in range(10000):
             new_node = Source.executing(inspect.currentframe()).node
             if node is None:
                 node = new_node
@@ -265,7 +260,7 @@ class TestStuff(unittest.TestCase):
 
     def test_only(self):
         for n in range(5):
-            gen = (i for i in range(n))
+            gen = iter(range(n))
             if n == 1:
                 self.assertEqual(only(gen), 0)
             else:
@@ -451,8 +446,7 @@ class TestFiles(unittest.TestCase):
 
         for const in code.co_consts:
             if isinstance(const, type(code)):
-                for x in self.check_code(const, nodes):
-                    yield x
+                yield from self.check_code(const, nodes)
 
 
 def node_string(source, node):
