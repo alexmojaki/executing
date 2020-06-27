@@ -222,8 +222,19 @@ class Source(object):
         if not use_cache:
             linecache.checkcache(filename)
 
-        lines = linecache.getlines(filename, module_globals)
-        result = source_cache[filename] = cls(filename, lines)
+        lines = tuple(linecache.getlines(filename, module_globals))
+        result = source_cache[filename] = cls._for_filename_and_lines(filename, lines)
+        return result
+
+    @classmethod
+    def _for_filename_and_lines(cls, filename, lines):
+        source_cache = cls._class_local('__source_cache_with_lines', {})
+        try:
+            return source_cache[(filename, lines)]
+        except KeyError:
+            pass
+
+        result = source_cache[(filename, lines)] = cls(filename, lines)
         return result
 
     @classmethod
