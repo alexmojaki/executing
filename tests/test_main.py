@@ -300,6 +300,19 @@ class TestStuff(unittest.TestCase):
             self.assertTrue(isinstance(ex.node, ast.BinOp))
             self.assertEqual(ex.text(), "134895 / 0")
 
+    def test_retry_cache(self):
+        _, filename = tempfile.mkstemp()
+
+        def check(x):
+            source = 'tester(6)\n%s\ntester(9)' % list(range(x))
+            code = compile(source, filename, 'exec')
+            with open(filename, 'w') as outfile:
+                outfile.write(source)
+            exec(code, globals(), locals())
+
+        check(3)
+        check(5)
+
 
 def is_unary_not(node):
     return isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)

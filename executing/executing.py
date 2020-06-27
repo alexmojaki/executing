@@ -59,7 +59,6 @@ except AttributeError:
 
     from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts
 
-
     # Based on dis.disassemble from 2.7
     # Left as similar as possible for easy diff
 
@@ -202,22 +201,27 @@ class Source(object):
             self._qualnames = visitor.qualnames
 
     @classmethod
-    def for_frame(cls, frame):
+    def for_frame(cls, frame, use_cache=True):
         """
         Returns the `Source` object corresponding to the file the frame is executing in.
         """
-        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})
+        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {}, use_cache)
 
     @classmethod
-    def for_filename(cls, filename, module_globals=None):
+    def for_filename(cls, filename, module_globals=None, use_cache=True):
         source_cache = cls._class_local('__source_cache', {})
-        try:
-            return source_cache[filename]
-        except KeyError:
-            pass
+        if use_cache:
+            try:
+                return source_cache[filename]
+            except KeyError:
+                pass
 
         if isinstance(filename, Path):
             filename = str(filename)
+
+        if not use_cache:
+            linecache.checkcache(filename)
+
         lines = linecache.getlines(filename, module_globals)
         result = source_cache[filename] = cls(filename, lines)
         return result
@@ -257,40 +261,51 @@ class Source(object):
         try:
             args = executing_cache[key]
         except KeyError:
-            source = cls.for_frame(frame)
-            node = stmts = None
-            if source.tree:
-                stmts = source.statements_at_line(lineno)
-                if code.co_filename.startswith('<ipython-input-') and code.co_name == '<module>':
+            def find(source, retry_cache):
+                node = stmts = None
+                if source.tree:
+                    stmts = source.statements_at_line(lineno)
+                    if code.co_filename.startswith('<ipython-input-') and code.co_name == '<module>':
 
-                    # IPython separates each statement in a cell to be executed separately
-                    # So NodeFinder should only compile one statement at a time or it
-                    # will find a code mismatch.
-                    for stmt in stmts:
-                        # use `ast.parse` instead of `ast.Module` for better portability
-                        # python3.8 changes the signature of `ast.Module`
-                        # Inspired by https://github.com/pallets/werkzeug/pull/1552/files
-                        tree = ast.parse("")
-                        tree.body = [stmt]
-                        ast.copy_location(tree, stmt)
+                        # IPython separates each statement in a cell to be executed separately
+                        # So NodeFinder should only compile one statement at a time or it
+                        # will find a code mismatch.
+                        for stmt in stmts:
+                            # use `ast.parse` instead of `ast.Module` for better portability
+                            # python3.8 changes the signature of `ast.Module`
+                            # Inspired by https://github.com/pallets/werkzeug/pull/1552/files
+                            tree = ast.parse("")
+                            tree.body = [stmt]
+                            ast.copy_location(tree, stmt)
+                            try:
+                                node = NodeFinder(frame, stmts, tree, lasti).result
+                                break
+                            except Exception:
+                                pass
+                    else:
                         try:
-                            node = NodeFinder(frame, stmts, tree, lasti).result
-                            break
-                        except Exception:
-                            pass
-                else:
-                    try:
-                        node = NodeFinder(frame, stmts, source.tree, lasti).result
-                    except Exception:
-                        if TESTING:
-                            raise
+                            node = NodeFinder(frame, stmts, source.tree, lasti).result
+                        except Exception as e:
+                            # These exceptions can be caused by the source code having changed
+                            # so the cached Source doesn't match the running code
+                            # (e.g. when using IPython %autoreload)
+                            # Try again with a fresh Source object
+                            if retry_cache and isinstance(e, (NotOneValueFound, AssertionError)):
+                                return find(
+                                    source=cls.for_frame(frame, use_cache=False),
+                                    retry_cache=False,
+                                )
+                            if TESTING:
+                                raise
 
-                if node:
-                    new_stmts = {statement_containing_node(node)}
-                    assert_(new_stmts <= stmts)
-                    stmts = new_stmts
+                    if node:
+                        new_stmts = {statement_containing_node(node)}
+                        assert_(new_stmts <= stmts)
+                        stmts = new_stmts
 
-            args = source, node, stmts
+                return source, node, stmts
+
+            args = find(source=cls.for_frame(frame), retry_cache=True)
             executing_cache[key] = args
 
         return Executing(frame, *args)
