@@ -209,15 +209,15 @@ class Source(object):
 
     @classmethod
     def for_filename(cls, filename, module_globals=None, use_cache=True):
+        if isinstance(filename, Path):
+            filename = str(filename)
+
         source_cache = cls._class_local('__source_cache', {})
         if use_cache:
             try:
                 return source_cache[filename]
             except KeyError:
                 pass
-
-        if isinstance(filename, Path):
-            filename = str(filename)
 
         if not use_cache:
             linecache.checkcache(filename)
