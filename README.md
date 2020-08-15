@@ -123,6 +123,16 @@ The plan is to extend to more operations in the future.
 
 ## Libraries that use this
 
+### My libraries
+
+- **[`stack_data`](https://github.com/alexmojaki/stack_data)**: Extracts data from stack frames and tracebacks, particularly to display more useful tracebacks than the default. Also uses another related library of mine: **[`pure_eval`](https://github.com/alexmojaki/pure_eval)**.
 - **[`snoop`](https://github.com/alexmojaki/snoop)**: A feature-rich and convenient debugging library. Uses `executing` to show the operation which caused an exception and to allow the `pp` function to display the source of its arguments.
 - **[`heartrate`](https://github.com/alexmojaki/heartrate)**: A simple real time visualisation of the execution of a Python program. Uses `executing` to highlight currently executing operations, particularly in each frame of the stack trace.
 - **[`sorcery`](https://github.com/alexmojaki/sorcery)**: Dark magic delights in Python. Uses `executing` to let special callables called spells know where they're being called from.
+
+### Libraries I've contributed to
+
+- **[`IPython`](https://github.com/ipython/ipython/pull/12150)**: Highlights the executing node in tracebacks using `executing` via [`stack_data`](https://github.com/alexmojaki/stack_data).
+- **[`icecream`](https://github.com/gruns/icecream)**: 🍦 Sweet and creamy print debugging. Uses `executing` to identify where `ic` is called and print its arguments.
+- **[`sentry_sdk`](https://github.com/getsentry/sentry-python)**: Add the integration `sentry_sdk.integrations.executingExecutingIntegration()` to show the function `__qualname__` in each frame in sentry events. Highlighting the executing node is hopefully [coming soon](https://github.com/getsentry/sentry/pull/19924).
+- **[`varname`](https://github.com/pwwang/python-varname)**: Dark magics about variable names in python. Uses `executing` to find where its various magical functions like `varname` and `nameof` are called from.
