@@ -274,40 +274,26 @@ class Source(object):
         except KeyError:
             def find(source, retry_cache):
                 node = stmts = None
-                if source.tree:
-                    stmts = source.statements_at_line(lineno)
-                    if code.co_filename.startswith('<ipython-input-') and code.co_name == '<module>':
-
-                        # IPython separates each statement in a cell to be executed separately
-                        # So NodeFinder should only compile one statement at a time or it
-                        # will find a code mismatch.
-                        for stmt in stmts:
-                            # use `ast.parse` instead of `ast.Module` for better portability
-                            # python3.8 changes the signature of `ast.Module`
-                            # Inspired by https://github.com/pallets/werkzeug/pull/1552/files
-                            tree = ast.parse("")
-                            tree.body = [stmt]
-                            ast.copy_location(tree, stmt)
-                            try:
-                                node = NodeFinder(frame, stmts, tree, lasti).result
-                                break
-                            except Exception:
-                                pass
-                    else:
-                        try:
-                            node = NodeFinder(frame, stmts, source.tree, lasti).result
-                        except Exception as e:
-                            # These exceptions can be caused by the source code having changed
-                            # so the cached Source doesn't match the running code
-                            # (e.g. when using IPython %autoreload)
-                            # Try again with a fresh Source object
-                            if retry_cache and isinstance(e, (NotOneValueFound, AssertionError)):
-                                return find(
-                                    source=cls.for_frame(frame, use_cache=False),
-                                    retry_cache=False,
-                                )
-                            if TESTING:
-                                raise
+                tree = source.tree
+                if tree:
+                    try:
+                        stmts = source.statements_at_line(lineno)
+                        if stmts:
+                            if code.co_filename.startswith('<ipython-input-') and code.co_name == '<module>':
+                                tree = _extract_ipython_statement(stmts, tree)
+                            node = NodeFinder(frame, stmts, tree, lasti).result
+                    except Exception as e:
+                        # These exceptions can be caused by the source code having changed
+                        # so the cached Source doesn't match the running code
+                        # (e.g. when using IPython %autoreload)
+                        # Try again with a fresh Source object
+                        if retry_cache and isinstance(e, (NotOneValueFound, AssertionError)):
+                            return find(
+                                source=cls.for_frame(frame, use_cache=False),
+                                retry_cache=False,
+                            )
+                        if TESTING:
+                            raise
 
                     if node:
                         new_stmts = {statement_containing_node(node)}
@@ -731,3 +717,19 @@ def assert_linenos(tree):
                 isinstance(statement_containing_node(node), ast.Assert)
         ):
             yield node.lineno
+
+
+def _extract_ipython_statement(stmts, tree):
+    # IPython separates each statement in a cell to be executed separately
+    # So NodeFinder should only compile one statement at a time or it
+    # will find a code mismatch.
+    stmt = list(stmts)[0]
+    while not isinstance(stmt.parent, ast.Module):
+        stmt = stmt.parent
+    # use `ast.parse` instead of `ast.Module` for better portability
+    # python3.8 changes the signature of `ast.Module`
+    # Inspired by https://github.com/pallets/werkzeug/pull/1552/files
+    tree = ast.parse("")
+    tree.body = [stmt]
+    ast.copy_location(tree, stmt)
+    return tree
