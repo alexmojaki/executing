@@ -9,8 +9,13 @@ python:
   - 3.7
   - 3.8
   - 3.9-dev
+  - pypy
+  - pypy2
+  - pypy2.7
   - pypy2.7-6.0
   - pypy3.5
+  - pypy3.6
+  - pypy3
 
 env:
   global:
