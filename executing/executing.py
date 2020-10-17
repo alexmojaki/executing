@@ -484,7 +484,6 @@ class NodeFinder(object):
     def __init__(self, frame, stmts, tree, lasti):
         self.frame = frame
         self.tree = tree
-        self.lasti = lasti
         self.code = code = frame.f_code
         self.is_pytest = any(
             'pytest' in name.lower()
@@ -497,10 +496,9 @@ class NodeFinder(object):
         else:
             self.ignore_linenos = frozenset()
 
-        b = code.co_code[lasti]
-        if not PY3:
-            b = ord(b)
-        op_name = dis.opname[b]
+        instruction = self.get_actual_current_instruction(lasti)
+        op_name = instruction.opname
+        self.lasti = instruction.offset
 
         if op_name.startswith('CALL_'):
             typ = ast.Call
@@ -536,7 +534,7 @@ class NodeFinder(object):
             if inst.lineno not in self.ignore_linenos
         ]
 
-    def get_original_instructions(self):
+    def get_original_clean_instructions(self):
         result = self.clean_instructions(self.code)
 
         # pypy sometimes (when is not clear)
@@ -555,7 +553,7 @@ class NodeFinder(object):
         return result
 
     def matching_nodes(self, exprs):
-        original_instructions = self.get_original_instructions()
+        original_instructions = self.get_original_clean_instructions()
         original_index = only(
             i
             for i, inst in enumerate(original_instructions)
@@ -683,6 +681,27 @@ class NodeFinder(object):
 
         finder(root_code)
         return code_options
+
+    def get_actual_current_instruction(self, lasti):
+        """
+        Get the instruction corresponding to the current
+        frame offset, skipping EXTENDED_ARG instructions
+        """
+        # Don't use get_original_clean_instructions
+        # because we need the actual instructions including
+        # EXTENDED_ARG
+        instructions = list(get_instructions(self.code))
+        index = only(
+            i
+            for i, inst in enumerate(instructions)
+            if inst.offset == lasti
+        )
+
+        while True:
+            instruction = instructions[index]
+            if instruction.opname != "EXTENDED_ARG":
+                return instruction
+            index += 1
 
 
 def get_setter(node):
