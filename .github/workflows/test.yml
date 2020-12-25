@@ -1,0 +1,28 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, pypy2, pypy3]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python --version
+        pip install -U pip
+        pip install --upgrade coveralls asttokens pytest setuptools setuptools_scm pep517
+        pip install .
+    - name: Test
+      run: |
+        python -m unittest tests.test_main
+        python -m pytest tests/test_pytest.py
