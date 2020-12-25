@@ -419,7 +419,7 @@ class QualnameVisitor(ast.NodeVisitor):
         self.stack = []
         self.qualnames = {}
 
-    def visit_FunctionDef(self, node, name=None):
+    def add_qualname(self, node, name=None):
         name = name or node.name
         self.stack.append(name)
         if getattr(node, 'decorator_list', ()):
@@ -428,6 +428,8 @@ class QualnameVisitor(ast.NodeVisitor):
             lineno = node.lineno
         self.qualnames.setdefault((name, lineno), ".".join(self.stack))
 
+    def visit_FunctionDef(self, node, name=None):
+        self.add_qualname(node, name)
         self.stack.append('<locals>')
         if isinstance(node, ast.Lambda):
             children = [node.body]
@@ -451,12 +453,14 @@ class QualnameVisitor(ast.NodeVisitor):
                     if isinstance(grandchild, ast.AST):
                         self.visit(grandchild)
 
+    visit_AsyncFunctionDef = visit_FunctionDef
+
     def visit_Lambda(self, node):
         # noinspection PyTypeChecker
         self.visit_FunctionDef(node, '<lambda>')
 
     def visit_ClassDef(self, node):
-        self.stack.append(node.name)
+        self.add_qualname(node)
         self.generic_visit(node)
         self.stack.pop()
 

@@ -375,6 +375,14 @@ class TestFiles(unittest.TestCase):
     def check_filename(self, filename):
         print(filename)
         source = Source.for_filename(filename)
+
+        if PY3:
+            code = compile(source.text, filename, "exec", dont_inherit=True)
+            for subcode, qualname in find_qualnames(code):
+                if not qualname.endswith(">"):
+                    code_qualname = source.code_qualname(subcode)
+                    self.assertEqual(code_qualname, qualname)
+
         nodes = defaultdict(list)
         for node in ast.walk(source.tree):
             if isinstance(node, (
@@ -576,6 +584,25 @@ def empty_decorator(func):
 
 def decorator_with_args(*_, **__):
     return empty_decorator
+
+
+def find_qualnames(code, prefix=""):
+    for subcode in code.co_consts:
+        if type(subcode) != type(code):
+            continue
+        qualname = prefix + subcode.co_name
+        instructions = list(get_instructions(subcode))[:4]
+        opnames = [inst.opname for inst in instructions]
+        arg_reprs = [inst.argrepr for inst in instructions]
+        is_class = (
+            opnames == "LOAD_NAME STORE_NAME LOAD_CONST STORE_NAME".split()
+            and arg_reprs == ["__name__", "__module__", repr(qualname), "__qualname__"]
+        )
+        yield subcode, qualname
+        for x in find_qualnames(
+            subcode, qualname + ("." if is_class else ".<locals>.")
+        ):
+            yield x
 
 
 if __name__ == '__main__':
