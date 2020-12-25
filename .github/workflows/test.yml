@@ -15,10 +15,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Coveralls Python
-      uses: AndreMiras/coveralls-python-action@v20201129
-      with:
-        parallel: true
     - name: Install dependencies
       run: |
         python --version
@@ -30,6 +26,11 @@ jobs:
         coverage run --include=executing/executing.py -m unittest tests.test_main
         coverage run --include=executing/executing.py --append -m pytest tests/test_pytest.py
         coverage report -m
+    - name: Coveralls Python
+      uses: AndreMiras/coveralls-python-action@v20201129
+      with:
+        parallel: true
+        flag-name: test-${{ matrix.python-version }}
 
   coveralls_finish:
     needs: test
