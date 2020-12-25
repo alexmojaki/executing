@@ -22,6 +22,8 @@ jobs:
         pip install --upgrade coveralls asttokens pytest setuptools setuptools_scm pep517
         pip install .
     - name: Test
+      env:
+        EXECUTING_SLOW_TESTS: 1
       run: |
         coverage run --include=executing/executing.py -m unittest tests.test_main
         coverage run --include=executing/executing.py --append -m pytest tests/test_pytest.py
