@@ -1,0 +1,44 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, pypy2, pypy-3.6]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python --version
+        pip install -U pip
+        pip install --upgrade coveralls asttokens pytest setuptools setuptools_scm pep517
+        pip install .
+    - name: Test
+      env:
+        EXECUTING_SLOW_TESTS: 1
+      run: |
+        coverage run --include=executing/executing.py -m unittest tests.test_main
+        coverage run --include=executing/executing.py --append -m pytest tests/test_pytest.py
+        coverage report -m
+    - name: Coveralls Python
+      uses: AndreMiras/coveralls-python-action@v20201129
+      with:
+        parallel: true
+        flag-name: test-${{ matrix.python-version }}
+
+  coveralls_finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: AndreMiras/coveralls-python-action@v20201129
+        with:
+          parallel-finished: true
