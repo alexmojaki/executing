@@ -365,7 +365,7 @@ class TestFiles(unittest.TestCase):
                     # A file that's particularly slow
                     or 'errorcodes.py' in filename
                     # Contains unreachable code which pypy removes
-                    or 'sysconfig.py' in filename
+                    or pypy and ('sysconfig.py' in filename or 'pyparsing.py' in filename)
             ):
                 continue
 
