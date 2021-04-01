@@ -9,12 +9,22 @@ from executing import Source
 
 
 class Tester(object):
+    def __init__(self):
+        self.decorators = []
+
+    def check_decorators(self, expected):
+        assert self.decorators == expected, (self.decorators, expected)
+        self.decorators = []
+
     def get_node(self, typ):
-        frame = inspect.currentframe().f_back.f_back
-        Source.lazycache(frame)
-        node = Source.executing(frame).node
+        ex = self.get_executing(inspect.currentframe().f_back.f_back)
+        node = ex.node
         assert isinstance(node, typ), (node, typ)
         return node
+
+    def get_executing(self, frame):
+        Source.lazycache(frame)
+        return Source.executing(frame)
 
     def check(self, node, value):
         frame = inspect.currentframe().f_back.f_back
@@ -25,14 +35,22 @@ class Tester(object):
         )
         assert result == value, (result, value)
 
-    def __call__(self, arg, check_func=True, returns=None):
-        call = self.get_node(ast.Call)
-        self.check(call.args[0], arg)
-        if check_func:
-            self.check(call.func, self)
-        if returns is None:
-            return arg
-        return returns
+    def __call__(self, arg, check_func=True):
+        ex = self.get_executing(inspect.currentframe().f_back)
+        if ex.decorator:
+            assert {ex.node} == ex.statements
+            self.decorators.append(ex.node.decorator_list.index(ex.decorator))
+        else:
+            call = ex.node
+            self.check(call.args[0], arg)
+            if check_func:
+                self.check(call.func, self)
+            if (
+                isinstance(call.parent, (ast.ClassDef, ast.FunctionDef))
+                and call in call.parent.decorator_list
+            ):
+                return self
+        return arg
 
     def __getattr__(self, item):
         node = self.get_node(ast.Attribute)

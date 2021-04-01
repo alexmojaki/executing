@@ -21,7 +21,7 @@ from tests.utils import tester, subscript_item, in_finally
 PYPY = 'pypy' in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions
+from executing.executing import PY3, get_instructions, function_node_types
 
 
 class TestStuff(unittest.TestCase):
@@ -40,24 +40,73 @@ class TestStuff(unittest.TestCase):
         # @formatter:on
 
     def test_decorator(self):
-        @empty_decorator
-        @decorator_with_args(tester('123'), x=int())
-        @tester(list(tuple([1, 2])), returns=empty_decorator)
-        @tester(
+        @empty_decorator  # 0
+        @decorator_with_args(tester('123'), x=int())  # 1
+        @tester(list(tuple([1, 2])))  # 2!
+        @tester(  # 3!
             list(
                 tuple(
                     [3, 4])),
-            returns=empty_decorator)
-        @empty_decorator
-        @decorator_with_args(
+            )
+        @empty_decorator  # 4
+        @decorator_with_args(  # 5
             str(),
             x=int())
-        @tester(list(tuple([5, 6])), returns=empty_decorator)
-        @tester(list(tuple([7, 8])), returns=empty_decorator)
+        @tester(list(tuple([5, 6])))  # 6!
+        @tester(list(tuple([7, 8])))  # 7!
         @empty_decorator
         @decorator_with_args(tester('sdf'), x=tester('123234'))
         def foo():
             pass
+
+        tester.check_decorators([7, 6, 3, 2])
+
+        empty_decorator.tester = tester
+
+        @empty_decorator
+        @tester
+        @empty_decorator
+        @tester.qwe
+        @empty_decorator
+        @tester("1")
+        @empty_decorator.tester("2")
+        @empty_decorator
+        def foo2(_=tester("3"), __=tester("4")):
+            pass
+
+        tester.check_decorators([6, 5, 3, 1])
+
+        @tester
+        @empty_decorator
+        @tester.qwe
+        @empty_decorator
+        @tester("11")
+        @empty_decorator.tester("22")
+        @empty_decorator
+        class foo3(tester("5") and list):
+            pass
+
+        tester.check_decorators([5, 4, 2, 0])
+
+        class Foo(object):
+            @tester
+            @tester
+            @empty_decorator
+            @tester.qwe
+            @empty_decorator
+            def foo(self):
+                super(Foo, self)
+
+                class Bar:
+                    @tester
+                    @empty_decorator
+                    @tester.qwe
+                    @empty_decorator
+                    def bar(self):
+                        pass
+
+        Foo().foo()
+        tester.check_decorators([3, 1, 0, 2, 0])
 
     def test_comprehensions(self):
         # Comprehensions can be separated if they contain different names
@@ -327,6 +376,9 @@ class TimeOut(Exception):
     'These tests are very slow, enable them explicitly',
 )
 class TestFiles(unittest.TestCase):
+
+    maxDiff = None
+
     def test_files(self):
         self.start_time = time.time()
         root_dir = os.path.dirname(__file__)
@@ -386,6 +438,8 @@ class TestFiles(unittest.TestCase):
                     self.assertEqual(code_qualname, qualname)
 
         nodes = defaultdict(list)
+        decorators = defaultdict(list)
+        expected_decorators = {}
         for node in ast.walk(source.tree):
             if isinstance(node, (
                     ast.UnaryOp,
@@ -396,9 +450,13 @@ class TestFiles(unittest.TestCase):
                     ast.Attribute
             )):
                 nodes[node] = []
+            elif isinstance(node, (ast.ClassDef, function_node_types)):
+                expected_decorators[(node.lineno, node.name)] = node.decorator_list[::-1]
+                decorators[(node.lineno, node.name)] = []
 
         code = compile(source.tree, source.filename, 'exec')
-        result = list(self.check_code(code, nodes))
+        result = list(self.check_code(code, nodes, decorators))
+        self.assertDictEqual(dict(decorators), dict(expected_decorators))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
             for node, values in nodes.items():
@@ -432,7 +490,7 @@ class TestFiles(unittest.TestCase):
 
         return result
 
-    def check_code(self, code, nodes):
+    def check_code(self, code, nodes, decorators):
         linestarts = dict(dis.findlinestarts(code))
         instructions = get_instructions(code)
         lineno = None
@@ -457,7 +515,8 @@ class TestFiles(unittest.TestCase):
 
             try:
                 try:
-                    node = Source.executing(frame).node
+                    ex = Source.executing(frame)
+                    node = ex.node
                 except Exception:
                     if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
                         continue
@@ -468,13 +527,16 @@ class TestFiles(unittest.TestCase):
                 print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
                 raise
 
-            nodes[node].append((inst, frame.__dict__))
+            if ex.decorator:
+                decorators[(node.lineno, node.name)].append(ex.decorator)
+            else:
+                nodes[node].append((inst, frame.__dict__))
 
-            yield [inst.opname, node_string(source, node)]
+            yield [inst.opname, node_string(source, ex.decorator or node)]
 
         for const in code.co_consts:
             if isinstance(const, type(code)):
-                for x in self.check_code(const, nodes):
+                for x in self.check_code(const, nodes, decorators):
                     yield x
 
 
