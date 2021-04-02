@@ -11,6 +11,7 @@ from executing import Source
 class Tester(object):
     def __init__(self):
         self.decorators = []
+        self.__name__ = ""  # weird pypy3.6 thing
 
     def check_decorators(self, expected):
         assert self.decorators == expected, (self.decorators, expected)

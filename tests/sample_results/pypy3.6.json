@@ -70,7 +70,23 @@
         ],
         [
             "CALL_FUNCTION",
+            "try_register_repr('pandas', 'Series')"
+        ],
+        [
+            "CALL_FUNCTION",
+            "cached_property"
+        ],
+        [
+            "CALL_FUNCTION",
             "lru_cache()"
+        ],
+        [
+            "CALL_FUNCTION",
+            "lru_cache()"
+        ],
+        [
+            "CALL_FUNCTION",
+            "retry_db"
         ],
         [
             "CALL_FUNCTION",
@@ -1035,6 +1051,10 @@
         [
             "CALL_FUNCTION",
             "exception_string(exc)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "retry_db"
         ],
         [
             "CALL_FUNCTION",
@@ -2745,6 +2765,18 @@
             "safe_qualname(rev[i])"
         ],
         [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
             "LOAD_ATTR",
             "self.meta"
         ],
@@ -3829,6 +3861,10 @@
             "retry(3, (InterfaceError, OperationalError, InternalError, ProgrammingError))"
         ],
         [
+            "CALL_FUNCTION",
+            "contextmanager"
+        ],
+        [
             "LOAD_ATTR",
             "os.environ"
         ],
@@ -3947,6 +3983,10 @@
         [
             "CALL_METHOD",
             "sys.exit('The birdseye database schema is out of date. '\n                     'Run \"python -m birdseye.clear_db\" to delete the existing tables.')"
+        ],
+        [
+            "CALL_FUNCTION",
+            "declared_attr"
         ],
         [
             "LOAD_ATTR",
@@ -4103,6 +4143,38 @@
         [
             "CALL_FUNCTION",
             "Column(DateTime, index=True)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "property"
+        ],
+        [
+            "CALL_FUNCTION",
+            "staticmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "property"
+        ],
+        [
+            "CALL_FUNCTION",
+            "property"
+        ],
+        [
+            "CALL_FUNCTION",
+            "property"
+        ],
+        [
+            "CALL_FUNCTION",
+            "property"
+        ],
+        [
+            "CALL_FUNCTION",
+            "property"
+        ],
+        [
+            "CALL_FUNCTION",
+            "staticmethod"
         ],
         [
             "LOOKUP_METHOD",
@@ -4283,6 +4355,14 @@
         [
             "CALL_FUNCTION",
             "Index('idx_name', 'name', mysql_length=32)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "property"
+        ],
+        [
+            "CALL_FUNCTION",
+            "staticmethod"
         ],
         [
             "LOOKUP_METHOD",
@@ -4474,6 +4554,10 @@
         ],
         [
             "CALL_FUNCTION",
+            "functools.wraps(func)"
+        ],
+        [
+            "CALL_FUNCTION",
             "retry_db(wrapper)"
         ],
         [
@@ -4531,11 +4615,19 @@
             "RLock()"
         ],
         [
+            "CALL_FUNCTION",
+            "cache"
+        ],
+        [
             "LOOKUP_METHOD",
             "functools.wraps"
         ],
         [
             "CALL_METHOD",
+            "functools.wraps(func)"
+        ],
+        [
+            "CALL_FUNCTION",
             "functools.wraps(func)"
         ],
         [
@@ -4709,6 +4801,38 @@
         [
             "BINARY_SUBSCR",
             "lst[0]"
+        ],
+        [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "classmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "cache"
+        ],
+        [
+            "CALL_FUNCTION",
+            "cache"
+        ],
+        [
+            "CALL_FUNCTION",
+            "staticmethod"
         ],
         [
             "CALL_FUNCTION",
@@ -6132,6 +6256,10 @@
         ],
         [
             "CALL_FUNCTION",
+            "magics_class"
+        ],
+        [
+            "CALL_FUNCTION",
             "LocalProxy(p)"
         ],
         [
@@ -6229,6 +6357,10 @@
         [
             "CALL_FUNCTION",
             "Unicode(\n        u'', config=True,\n        help='The database URL that the server started by %%eye reads from. '\n             'Equivalent to the environment variable BIRDSEYE_DB.'\n    )"
+        ],
+        [
+            "CALL_FUNCTION",
+            "cell_magic"
         ],
         [
             "LOAD_ATTR",
@@ -6417,6 +6549,14 @@
             "db.provide_session"
         ],
         [
+            "CALL_FUNCTION",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "app.route('/')"
+        ],
+        [
             "LOOKUP_METHOD",
             "app.route"
         ],
@@ -6427,6 +6567,14 @@
         [
             "LOAD_ATTR",
             "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "app.route('/file/<file:path>')"
         ],
         [
             "LOOKUP_METHOD",
@@ -6441,6 +6589,14 @@
             "db.provide_session"
         ],
         [
+            "CALL_FUNCTION",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "app.route('/file/<file:path>/__function__/<func_name>')"
+        ],
+        [
             "LOOKUP_METHOD",
             "app.route"
         ],
@@ -6453,7 +6609,19 @@
             "db.provide_session"
         ],
         [
+            "CALL_FUNCTION",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "app.route('/api/file/<file:path>/__function__/<func_name>/latest_call/')"
+        ],
+        [
             "LOAD_ATTR",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
             "db.provide_session"
         ],
         [
@@ -6465,11 +6633,19 @@
             "app.route('/call/<call_id>')"
         ],
         [
+            "CALL_FUNCTION",
+            "app.route('/call/<call_id>')"
+        ],
+        [
             "LOOKUP_METHOD",
             "app.route"
         ],
         [
             "CALL_METHOD",
+            "app.route('/ipython_call/<call_id>')"
+        ],
+        [
+            "CALL_FUNCTION",
             "app.route('/ipython_call/<call_id>')"
         ],
         [
@@ -6481,11 +6657,19 @@
             "app.route('/ipython_iframe/<call_id>')"
         ],
         [
+            "CALL_FUNCTION",
+            "app.route('/ipython_iframe/<call_id>')"
+        ],
+        [
             "LOOKUP_METHOD",
             "app.route"
         ],
         [
             "CALL_METHOD",
+            "app.route('/kill', methods=['POST'])"
+        ],
+        [
+            "CALL_FUNCTION",
             "app.route('/kill', methods=['POST'])"
         ],
         [
@@ -6501,6 +6685,14 @@
             "db.provide_session"
         ],
         [
+            "CALL_FUNCTION",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "app.route('/api/call/<call_id>')"
+        ],
+        [
             "LOOKUP_METHOD",
             "app.route"
         ],
@@ -6513,6 +6705,14 @@
             "db.provide_session"
         ],
         [
+            "CALL_FUNCTION",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "app.route('/api/calls_by_body_hash/<body_hash>')"
+        ],
+        [
             "LOOKUP_METHOD",
             "app.route"
         ],
@@ -6523,6 +6723,14 @@
         [
             "LOAD_ATTR",
             "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "db.provide_session"
+        ],
+        [
+            "CALL_FUNCTION",
+            "app.route('/api/body_hashes_present/', methods=['POST'])"
         ],
         [
             "LOAD_ATTR",
@@ -7872,6 +8080,46 @@
         ],
         [
             "CALL_FUNCTION",
+            "decorator_with_args(tester('sdf'), x=tester('123234'))"
+        ],
+        [
+            "CALL_FUNCTION",
+            "empty_decorator"
+        ],
+        [
+            "CALL_FUNCTION",
+            "tester(list(tuple([7, 8])), returns=empty_decorator)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "tester(list(tuple([5, 6])), returns=empty_decorator)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "decorator_with_args(\n            str(),\n            x=int())"
+        ],
+        [
+            "CALL_FUNCTION",
+            "empty_decorator"
+        ],
+        [
+            "CALL_FUNCTION",
+            "tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "tester(list(tuple([1, 2])), returns=empty_decorator)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "decorator_with_args(tester('123'), x=int())"
+        ],
+        [
+            "CALL_FUNCTION",
+            "empty_decorator"
+        ],
+        [
+            "CALL_FUNCTION",
             "str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])"
         ],
         [
@@ -9184,7 +9432,23 @@
         ],
         [
             "CALL_FUNCTION",
+            "staticmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "staticmethod"
+        ],
+        [
+            "CALL_FUNCTION",
+            "staticmethod"
+        ],
+        [
+            "CALL_FUNCTION",
             "i()"
+        ],
+        [
+            "CALL_FUNCTION",
+            "assign(lambda: 1)"
         ],
         [
             "CALL_FUNCTION",
@@ -9778,6 +10042,10 @@
         ],
         [
             "CALL_FUNCTION",
+            "lru_cache()"
+        ],
+        [
+            "CALL_FUNCTION",
             "defaultdict(list)"
         ],
         [
@@ -10067,6 +10335,10 @@
         [
             "CALL_METHOD",
             "self.trace_function(actual_func)"
+        ],
+        [
+            "CALL_FUNCTION",
+            "wraps(actual_func)"
         ],
         [
             "CALL_FUNCTION",
@@ -10395,6 +10667,10 @@
         [
             "BINARY_SUBSCR",
             "frame_info.statement_stack[-1]"
+        ],
+        [
+            "CALL_FUNCTION",
+            "staticmethod"
         ],
         [
             "CALL_FUNCTION",
@@ -11087,6 +11363,10 @@
             "six.add_metaclass(TracerMeta)"
         ],
         [
+            "CALL_FUNCTION",
+            "six.add_metaclass(TracerMeta)"
+        ],
+        [
             "LOAD_ATTR",
             "frame.f_lineno"
         ],
@@ -11543,11 +11823,19 @@
             "functools.wraps(function)"
         ],
         [
+            "CALL_FUNCTION",
+            "functools.wraps(function)"
+        ],
+        [
             "LOOKUP_METHOD",
             "functools.wraps"
         ],
         [
             "CALL_METHOD",
+            "functools.wraps(function)"
+        ],
+        [
+            "CALL_FUNCTION",
             "functools.wraps(function)"
         ],
         [
@@ -12099,6 +12387,10 @@
             "functools.wraps(func)"
         ],
         [
+            "CALL_FUNCTION",
+            "functools.wraps(func)"
+        ],
+        [
             "LOAD_ATTR",
             "self.config"
         ],
@@ -12637,6 +12929,10 @@
         [
             "LOAD_ATTR",
             "ast.FormattedValue"
+        ],
+        [
+            "CALL_FUNCTION",
+            "try_register_repr('pandas', 'Series')"
         ],
         [
             "CALL_FUNCTION",
