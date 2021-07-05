@@ -12,6 +12,8 @@ from itertools import islice
 from operator import attrgetter
 from threading import RLock
 
+function_node_types = (ast.FunctionDef,)
+
 PY3 = sys.version_info[0] == 3
 
 if PY3:
@@ -49,6 +51,7 @@ else:
 
     # noinspection PyUnresolvedReferences
     text_type = unicode
+
 try:
     # noinspection PyUnresolvedReferences
     _get_instructions = dis.get_instructions
@@ -85,6 +88,12 @@ except AttributeError:
                 if op in hasconst:
                     argval = co.co_consts[oparg]
             yield Instruction(offset, argval, opname[op], lineno)
+
+
+try:
+    function_node_types += (ast.AsyncFunctionDef,)
+except AttributeError:
+    pass
 
 
 def assert_(condition, message=""):
@@ -273,7 +282,7 @@ class Source(object):
             args = executing_cache[key]
         except KeyError:
             def find(source, retry_cache):
-                node = stmts = None
+                node = stmts = decorator = None
                 tree = source.tree
                 if tree:
                     try:
@@ -281,7 +290,9 @@ class Source(object):
                         if stmts:
                             if code.co_filename.startswith('<ipython-input-') and code.co_name == '<module>':
                                 tree = _extract_ipython_statement(stmts, tree)
-                            node = NodeFinder(frame, stmts, tree, lasti).result
+                            node_finder = NodeFinder(frame, stmts, tree, lasti)
+                            node = node_finder.result
+                            decorator = node_finder.decorator
                     except Exception as e:
                         # These exceptions can be caused by the source code having changed
                         # so the cached Source doesn't match the running code
@@ -300,7 +311,7 @@ class Source(object):
                         assert_(new_stmts <= stmts)
                         stmts = new_stmts
 
-                return source, node, stmts
+                return source, node, stmts, decorator
 
             args = find(source=cls.for_frame(frame), retry_cache=True)
             executing_cache[key] = args
@@ -395,13 +406,19 @@ class Executing(object):
 
     Generally you will just want `node`, which is the AST node being executed,
     or None if it's unknown.
+
+    If a decorator is currently being called, then:
+        - `node` is a function or class definition
+        - `decorator` is the expression in `node.decorator_list` being called
+        - `statements == {node}`
     """
 
-    def __init__(self, frame, source, node, stmts):
+    def __init__(self, frame, source, node, stmts, decorator):
         self.frame = frame
         self.source = source
         self.node = node
         self.statements = stmts
+        self.decorator = decorator
 
     def code_qualname(self):
         return self.source.code_qualname(self.frame.f_code)
@@ -500,9 +517,10 @@ class NodeFinder(object):
         else:
             self.ignore_linenos = frozenset()
 
-        instruction = self.get_actual_current_instruction(lasti)
+        self.decorator = None
+
+        self.instruction = instruction = self.get_actual_current_instruction(lasti)
         op_name = instruction.opname
-        self.lasti = instruction.offset
 
         if op_name.startswith('CALL_'):
             typ = ast.Call
@@ -528,7 +546,43 @@ class NodeFinder(object):
                 if not (hasattr(node, "ctx") and not isinstance(node.ctx, ast.Load))
             }
 
-            self.result = only(list(self.matching_nodes(exprs)))
+            matching = list(self.matching_nodes(exprs))
+            if not matching and typ == ast.Call:
+                self.find_decorator(stmts)
+            else:
+                self.result = only(matching)
+
+    def find_decorator(self, stmts):
+        stmt = only(stmts)
+        assert_(isinstance(stmt, (ast.ClassDef, function_node_types)))
+        decorators = stmt.decorator_list
+        assert_(decorators)
+        line_instructions = [
+            inst
+            for inst in self.clean_instructions(self.code)
+            if inst.lineno == self.frame.f_lineno
+        ]
+        last_decorator_instruction_index = [
+            i
+            for i, inst in enumerate(line_instructions)
+            if inst.opname == "CALL_FUNCTION"
+        ][-1]
+        assert_(
+            line_instructions[last_decorator_instruction_index + 1].opname.startswith(
+                "STORE_"
+            )
+        )
+        decorator_instructions = line_instructions[
+            last_decorator_instruction_index
+            - len(decorators)
+            + 1 : last_decorator_instruction_index
+            + 1
+        ]
+        assert_({inst.opname for inst in decorator_instructions} == {"CALL_FUNCTION"})
+        decorator_index = decorator_instructions.index(self.instruction)
+        decorator = decorators[::-1][decorator_index]
+        self.decorator = decorator
+        self.result = stmt
 
     def clean_instructions(self, code):
         return [
@@ -561,7 +615,7 @@ class NodeFinder(object):
         original_index = only(
             i
             for i, inst in enumerate(original_instructions)
-            if inst.offset == self.lasti
+            if inst == self.instruction
         )
         for i, expr in enumerate(exprs):
             setter = get_setter(expr)
