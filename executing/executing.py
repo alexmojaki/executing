@@ -60,7 +60,7 @@ except AttributeError:
         lineno = None
 
 
-    from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts
+    from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts, hasname
 
     # Based on dis.disassemble from 2.7
     # Left as similar as possible for easy diff
@@ -87,6 +87,10 @@ except AttributeError:
 
                 if op in hasconst:
                     argval = co.co_consts[oparg]
+                elif op in hasname:
+                    argval = co.co_names[oparg]
+                elif opname[op] == 'LOAD_FAST':
+                    argval = co.co_varnames[oparg]
             yield Instruction(offset, argval, opname[op], lineno)
 
 
@@ -532,6 +536,8 @@ class NodeFinder(object):
             typ = ast.UnaryOp
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
+        elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
+            typ = ast.Name
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
         else:

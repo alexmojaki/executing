@@ -2,6 +2,7 @@
 from __future__ import print_function, division
 
 import ast
+import contextlib
 import dis
 import inspect
 import json
@@ -22,6 +23,9 @@ PYPY = 'pypy' in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
 from executing.executing import PY3, get_instructions, function_node_types
+
+if eval("0"):
+    global_never_defined = 1
 
 
 class TestStuff(unittest.TestCase):
@@ -362,6 +366,38 @@ class TestStuff(unittest.TestCase):
         check(3)
         check(5)
 
+    @contextlib.contextmanager
+    def assert_name_error(self):
+        try:
+            yield
+        except NameError as e:
+            tb = sys.exc_info()[2]
+            ex = Source.executing(tb.tb_next)
+            self.assertEqual(type(ex.node), ast.Name)
+            self.assertIn(ex.node.id, str(e))
+            self.assertEqual(ex.text(), ex.node.id)
+        else:
+            self.fail("NameError not raised")
+
+    def test_names(self):
+        with self.assert_name_error():
+            self, completely_nonexistent  # noqa
+
+        with self.assert_name_error():
+            self, global_never_defined  # noqa
+
+        with self.assert_name_error():
+            self, local_not_defined_yet  # noqa
+
+        local_not_defined_yet = 1  # noqa
+
+        def foo():
+            with self.assert_name_error():
+                self, closure_not_defined_yet  # noqa
+
+        foo()
+        closure_not_defined_yet = 1  # noqa
+
 
 def is_unary_not(node):
     return isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)
@@ -389,11 +425,12 @@ class TestFiles(unittest.TestCase):
 
         for filename in os.listdir(samples_dir):
             full_filename = os.path.join(samples_dir, filename)
-            result[filename] = self.check_filename(full_filename)
+            result[filename] = self.check_filename(full_filename, check_names=True)
 
         if os.getenv('FIX_EXECUTING_TESTS'):
             with open(result_filename, 'w') as outfile:
                 json.dump(result, outfile, indent=4, sort_keys=True)
+            return
         else:
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
@@ -422,11 +459,11 @@ class TestFiles(unittest.TestCase):
                 continue
 
             try:
-                self.check_filename(filename)
+                self.check_filename(filename, check_names=False)
             except TimeOut:
                 print("Time's up")
 
-    def check_filename(self, filename):
+    def check_filename(self, filename, check_names):
         print(filename)
         source = Source.for_filename(filename)
 
@@ -442,6 +479,7 @@ class TestFiles(unittest.TestCase):
         expected_decorators = {}
         for node in ast.walk(source.tree):
             if isinstance(node, (
+                    (ast.Name,) * check_names,
                     ast.UnaryOp,
                     ast.BinOp,
                     ast.Subscript,
@@ -455,15 +493,14 @@ class TestFiles(unittest.TestCase):
                 decorators[(node.lineno, node.name)] = []
 
         code = compile(source.tree, source.filename, 'exec')
-        result = list(self.check_code(code, nodes, decorators))
-        self.assertDictEqual(dict(decorators), dict(expected_decorators))
+        result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
             for node, values in nodes.items():
                 if is_unary_not(node):
                     continue
 
-                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del)):
+                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del, getattr(ast, 'Param', ()))):
                     assert not values
                     continue
 
@@ -490,7 +527,7 @@ class TestFiles(unittest.TestCase):
 
         return result
 
-    def check_code(self, code, nodes, decorators):
+    def check_code(self, code, nodes, decorators, check_names):
         linestarts = dict(dis.findlinestarts(code))
         instructions = get_instructions(code)
         lineno = None
@@ -500,10 +537,13 @@ class TestFiles(unittest.TestCase):
                 raise TimeOut
 
             lineno = linestarts.get(inst.offset, lineno)
-            if not inst.opname.startswith((
+            if not inst.opname.startswith(
+                (
                     'BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
                     'SLICE+', 'COMPARE_OP', 'CALL_', 'IS_OP', 'CONTAINS_OP',
-            )):
+                )
+                + ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF') * check_names
+            ):
                 continue
             frame = C()
             frame.f_lasti = inst.offset
@@ -518,11 +558,22 @@ class TestFiles(unittest.TestCase):
                     ex = Source.executing(frame)
                     node = ex.node
                 except Exception:
-                    if inst.opname.startswith(('COMPARE_OP', 'CALL_')):
+                    if inst.opname.startswith(('COMPARE_OP', 'CALL_', 'LOAD_NAME')):
                         continue
-                    if isinstance(only(source.statements_at_line(lineno)), (ast.AugAssign, ast.Import)):
+                    if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
+                        continue
+
+                    if inst.argval == 'AssertionError':
+                        continue
+
+                    stmt = only(source.statements_at_line(lineno))
+
+                    if isinstance(stmt, (ast.AugAssign, ast.Import)):
                         continue
                     raise
+                # argval isn't set for all relevant instructions in python 2
+                if isinstance(node, ast.Name) and (PY3 or inst.argval):
+                    self.assertEqual(inst.argval, node.id)
             except Exception:
                 print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
                 raise
@@ -536,7 +587,7 @@ class TestFiles(unittest.TestCase):
 
         for const in code.co_consts:
             if isinstance(const, type(code)):
-                for x in self.check_code(const, nodes, decorators):
+                for x in self.check_code(const, nodes, decorators, check_names=check_names):
                     yield x
 
 
