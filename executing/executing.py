@@ -806,11 +806,25 @@ def non_sentinel_instructions(instructions, start):
 
 
 def walk_both_instructions(original_instructions, original_start, instructions, start):
-    for (i1, inst1), (i2, inst2) in zip(
-        islice(enumerate(original_instructions), original_start, None),
-        non_sentinel_instructions(instructions, start),
-    ):
-        yield i1, inst1, i2, inst2
+    it1 = islice(enumerate(original_instructions), original_start, None)
+    it2 = non_sentinel_instructions(instructions, start)
+    inverted_comparison = False
+    while True:
+        try:
+            i1, original_inst = next(it1)
+            i2, new_inst = next(it2)
+        except StopIteration:
+            return
+        if (
+            inverted_comparison
+            and original_inst.opname != new_inst.opname == "UNARY_NOT"
+        ):
+            i2, new_inst = next(it2)
+        inverted_comparison = (
+            original_inst.opname == new_inst.opname in ("CONTAINS_OP", "IS_OP")
+            and original_inst.arg != new_inst.arg
+        )
+        yield i1, original_inst, i2, new_inst
 
 
 def handle_jumps(instructions, original_instructions):
