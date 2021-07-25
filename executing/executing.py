@@ -825,39 +825,41 @@ def handle_jumps(instructions, original_instructions):
                     if inst.offset == inst2.argval
                     and not getattr(inst, "_copied", False)
                 )
-                for j1, inst_j1, j2, inst_j2 in walk_both_instructions(
-                    original_instructions, i1, instructions, start
-                ):
-                    assert_(opnames_match(inst_j1, inst_j2))
-                    if inst_j1.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
-                        inlined = deepcopy(instructions[start : j2 + 1])
-                        for inl in inlined:
-                            inl._copied = True
-                        orig_section = original_instructions[i1 : j1 + 1]
-                        for dup_start in range(len(original_instructions)):
-                            if dup_start == i1:
-                                continue
-                            dup_section = original_instructions[
-                                dup_start : dup_start + len(orig_section)
-                            ]
-                            if len(dup_section) == len(orig_section) and all(
-                                opnames_match(orig_inst, dup_inst)
-                                and orig_inst.lineno == dup_inst.lineno
-                                for orig_inst, dup_inst in zip(
-                                    orig_section, dup_section
-                                )
-                            ):
-                                break
-                        else:
-                            instructions[start : j2 + 1] = []
-                        instructions[i2 : i2 + 1] = inlined
-                        break
+                handle_jump(instructions, original_instructions, i1, i2, start)
                 break
             else:
                 if not (opnames_match(inst1, inst2)):
                     raise AssertionError
         else:
             return
+
+
+def handle_jump(instructions, original_instructions, i1, i2, start):
+    for j1, inst_j1, j2, inst_j2 in walk_both_instructions(
+        original_instructions, i1, instructions, start
+    ):
+        assert_(opnames_match(inst_j1, inst_j2))
+        if inst_j1.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
+            inlined = deepcopy(instructions[start : j2 + 1])
+            for inl in inlined:
+                inl._copied = True
+            orig_section = original_instructions[i1 : j1 + 1]
+            if not check_duplicates(i1, orig_section, original_instructions):
+                instructions[start : j2 + 1] = []
+            instructions[i2 : i2 + 1] = inlined
+            break
+
+
+def check_duplicates(i1, orig_section, original_instructions):
+    for dup_start in range(len(original_instructions)):
+        if dup_start == i1:
+            continue
+        dup_section = original_instructions[dup_start : dup_start + len(orig_section)]
+        if len(dup_section) == len(orig_section) and all(
+            opnames_match(orig_inst, dup_inst) and orig_inst.lineno == dup_inst.lineno
+            for orig_inst, dup_inst in zip(orig_section, dup_section)
+        ):
+            return True
 
 
 def opnames_match(inst1, inst2):
