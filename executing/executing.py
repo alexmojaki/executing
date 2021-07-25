@@ -677,7 +677,7 @@ class NodeFinder(object):
                 setter(expr)
 
             if sys.version_info >= (3, 10):
-                self.handle_jumps(instructions, original_instructions)
+                handle_jumps(instructions, original_instructions)
 
             indices = [
                 i
@@ -728,70 +728,6 @@ class NodeFinder(object):
                         assert_(inst1 and inst2 and opnames_match(inst1, inst2))
 
                 yield expr
-
-    def handle_jumps(self, instructions, original_instructions):
-        while True:
-            i1 = i2 = 0
-            while True:
-                try:
-                    inst1 = original_instructions[i1]
-                    inst2 = instructions[i2]
-                except IndexError:
-                    return
-                if inst2.argval == sentinel:
-                    assert_(inst2.opname == "LOAD_CONST")
-                    assert_(instructions[i2 + 1].opname == "BINARY_POWER")
-                    i2 += 2
-                    continue
-                if "JUMP" in inst2.opname and "JUMP" not in inst1.opname:
-                    start = only(
-                        i
-                        for i, inst in enumerate(instructions)
-                        if inst.offset == inst2.argval
-                        and not getattr(inst, "_copied", False)
-                    )
-                    j1 = i1
-                    j2 = start
-                    while True:
-                        inst_j1 = original_instructions[j1]
-                        inst_j2 = instructions[j2]
-                        if inst_j2.argval == sentinel:
-                            assert_(inst_j2.opname == "LOAD_CONST")
-                            assert_(instructions[j2 + 1].opname == "BINARY_POWER")
-                            j2 += 2
-                            continue
-                        assert_(opnames_match(inst_j1, inst_j2))
-                        if inst_j1.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
-                            inlined = deepcopy(instructions[start : j2 + 1])
-                            for inl in inlined:
-                                inl._copied = True
-                            orig_section = original_instructions[i1 : j1 + 1]
-                            for dup_start in range(len(original_instructions)):
-                                if dup_start == i1:
-                                    continue
-                                dup_section = original_instructions[
-                                    dup_start : dup_start + len(orig_section)
-                                ]
-                                if len(dup_section) == len(orig_section) and all(
-                                    opnames_match(orig_inst, dup_inst)
-                                    and orig_inst.lineno == dup_inst.lineno
-                                    for orig_inst, dup_inst in zip(
-                                        orig_section, dup_section
-                                    )
-                                ):
-                                    break
-                            else:
-                                instructions[start : j2 + 1] = []
-                            instructions[i2 : i2 + 1] = inlined
-                            break
-                        j1 += 1
-                        j2 += 1
-                    break
-                else:
-                    if not (opnames_match(inst1, inst2)):
-                        raise AssertionError
-                i1 += 1
-                i2 += 1
 
     def compile_instructions(self):
         module_code = compile_similar_to(self.tree, self.code)
@@ -853,6 +789,71 @@ class NodeFinder(object):
             if instruction.opname != "EXTENDED_ARG":
                 return instruction
             index += 1
+
+
+def handle_jumps(instructions, original_instructions):
+    while True:
+        i1 = i2 = 0
+        while True:
+            try:
+                inst1 = original_instructions[i1]
+                inst2 = instructions[i2]
+            except IndexError:
+                return
+            if inst2.argval == sentinel:
+                assert_(inst2.opname == "LOAD_CONST")
+                assert_(instructions[i2 + 1].opname == "BINARY_POWER")
+                i2 += 2
+                continue
+            if "JUMP" in inst2.opname and "JUMP" not in inst1.opname:
+                start = only(
+                    i
+                    for i, inst in enumerate(instructions)
+                    if inst.offset == inst2.argval
+                    and not getattr(inst, "_copied", False)
+                )
+                j1 = i1
+                j2 = start
+                while True:
+                    inst_j1 = original_instructions[j1]
+                    inst_j2 = instructions[j2]
+                    if inst_j2.argval == sentinel:
+                        assert_(inst_j2.opname == "LOAD_CONST")
+                        assert_(instructions[j2 + 1].opname == "BINARY_POWER")
+                        j2 += 2
+                        continue
+                    assert_(opnames_match(inst_j1, inst_j2))
+                    if inst_j1.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
+                        inlined = deepcopy(instructions[start : j2 + 1])
+                        for inl in inlined:
+                            inl._copied = True
+                        orig_section = original_instructions[i1 : j1 + 1]
+                        for dup_start in range(len(original_instructions)):
+                            if dup_start == i1:
+                                continue
+                            dup_section = original_instructions[
+                                dup_start : dup_start + len(orig_section)
+                            ]
+                            if len(dup_section) == len(orig_section) and all(
+                                opnames_match(orig_inst, dup_inst)
+                                and orig_inst.lineno == dup_inst.lineno
+                                for orig_inst, dup_inst in zip(
+                                    orig_section, dup_section
+                                )
+                            ):
+                                break
+                        else:
+                            instructions[start : j2 + 1] = []
+                        instructions[i2 : i2 + 1] = inlined
+                        break
+                    j1 += 1
+                    j2 += 1
+                break
+            else:
+                if not (opnames_match(inst1, inst2)):
+                    raise AssertionError
+            i1 += 1
+            i2 += 1
 
 
 def opnames_match(inst1, inst2):
