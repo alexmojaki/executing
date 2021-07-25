@@ -419,7 +419,7 @@ class TestFiles(unittest.TestCase):
         self.start_time = time.time()
         root_dir = os.path.dirname(__file__)
         samples_dir = os.path.join(root_dir, 'samples')
-        result_filename = PYPY * 'pypy' + sys.version[:3] + '.json'
+        result_filename = PYPY * 'pypy' + '.'.join(map(str, sys.version_info[:2])) + '.json'
         result_filename = os.path.join(root_dir, 'sample_results', result_filename)
         result = {}
 
@@ -505,6 +505,8 @@ class TestFiles(unittest.TestCase):
                     continue
 
                 if isinstance(node, ast.Compare):
+                    if sys.version_info >= (3, 10):
+                        continue
                     if len(node.ops) > 1:
                         assert not values
                         continue
@@ -515,7 +517,9 @@ class TestFiles(unittest.TestCase):
                 if is_literal(node):
                     continue
 
-                if sys.version_info >= (3, 9) and in_finally(node):
+                if sys.version_info >= (3, 10):
+                    correct = len(values) >= 1
+                elif sys.version_info >= (3, 9) and in_finally(node):
                     correct = len(values) > 1
                 else:
                     correct = len(values) == 1
@@ -558,7 +562,7 @@ class TestFiles(unittest.TestCase):
                     ex = Source.executing(frame)
                     node = ex.node
                 except Exception:
-                    if inst.opname.startswith(('COMPARE_OP', 'CALL_', 'LOAD_NAME')):
+                    if inst.opname.startswith(('COMPARE_OP', 'IS_OP', 'CALL_', 'LOAD_NAME')):
                         continue
                     if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
                         continue
@@ -566,9 +570,10 @@ class TestFiles(unittest.TestCase):
                     if inst.argval == 'AssertionError':
                         continue
 
-                    stmt = only(source.statements_at_line(lineno))
-
-                    if isinstance(stmt, (ast.AugAssign, ast.Import)):
+                    if any(
+                        isinstance(stmt, (ast.AugAssign, ast.Import))
+                        for stmt in source.statements_at_line(lineno)
+                    ):
                         continue
                     raise
                 # argval isn't set for all relevant instructions in python 2

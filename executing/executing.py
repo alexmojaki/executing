@@ -8,6 +8,7 @@ import linecache
 import sys
 import types
 from collections import defaultdict, namedtuple
+from copy import deepcopy
 from itertools import islice
 from operator import attrgetter
 from threading import RLock
@@ -111,7 +112,7 @@ def assert_(condition, message=""):
 
 
 def get_instructions(co):
-    lineno = None
+    lineno = co.co_firstlineno
     for inst in _get_instructions(co):
         lineno = inst.starts_line or lineno
         assert_(lineno)
@@ -206,8 +207,13 @@ class Source(object):
             for node in ast.walk(self.tree):
                 for child in ast.iter_child_nodes(node):
                     child.parent = node
-                if hasattr(node, 'lineno'):
-                    self._nodes_by_line[node.lineno].append(node)
+                if hasattr(node, "lineno"):
+                    if hasattr(node, "end_lineno") and isinstance(node, ast.expr):
+                        linenos = range(node.lineno, node.end_lineno + 1)
+                    else:
+                        linenos = [node.lineno]
+                    for lineno in linenos:
+                        self._nodes_by_line[lineno].append(node)
 
             visitor = QualnameVisitor()
             visitor.visit(self.tree)
@@ -507,6 +513,7 @@ sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
 
 class NodeFinder(object):
     def __init__(self, frame, stmts, tree, lasti):
+        assert_(stmts)
         self.frame = frame
         self.tree = tree
         self.code = code = frame.f_code
@@ -525,6 +532,7 @@ class NodeFinder(object):
 
         self.instruction = instruction = self.get_actual_current_instruction(lasti)
         op_name = instruction.opname
+        extra_filter = lambda e: True
 
         if op_name.startswith('CALL_'):
             typ = ast.Call
@@ -532,14 +540,42 @@ class NodeFinder(object):
             typ = ast.Subscript
         elif op_name.startswith('BINARY_'):
             typ = ast.BinOp
+            op_type = dict(
+                BINARY_POWER=ast.Pow,
+                BINARY_MULTIPLY=ast.Mult,
+                BINARY_MATRIX_MULTIPLY=getattr(ast, "MatMult", ()),
+                BINARY_FLOOR_DIVIDE=ast.FloorDiv,
+                BINARY_TRUE_DIVIDE=ast.Div,
+                BINARY_MODULO=ast.Mod,
+                BINARY_ADD=ast.Add,
+                BINARY_SUBTRACT=ast.Sub,
+                BINARY_LSHIFT=ast.LShift,
+                BINARY_RSHIFT=ast.RShift,
+                BINARY_AND=ast.BitAnd,
+                BINARY_XOR=ast.BitXor,
+                BINARY_OR=ast.BitOr,
+            )[op_name]
+            extra_filter = lambda e: isinstance(e.op, op_type)
         elif op_name.startswith('UNARY_'):
             typ = ast.UnaryOp
+            op_type = dict(
+                UNARY_POSITIVE=ast.UAdd,
+                UNARY_NEGATIVE=ast.USub,
+                UNARY_NOT=ast.Not,
+                UNARY_INVERT=ast.Invert,
+            )[op_name]
+            extra_filter = lambda e: isinstance(e.op, op_type)
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
+            # `in` to handle private mangled attributes
+            extra_filter = lambda e: e.attr in instruction.argval
         elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
             typ = ast.Name
+            if PY3 or instruction.argval:
+                extra_filter = lambda e: e.id == instruction.argval
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
+            extra_filter = lambda e: len(e.ops) == 1
         else:
             raise RuntimeError(op_name)
 
@@ -550,6 +586,8 @@ class NodeFinder(object):
                 for node in ast.walk(stmt)
                 if isinstance(node, typ)
                 if not (hasattr(node, "ctx") and not isinstance(node.ctx, ast.Load))
+                if extra_filter(node)
+                if statement_containing_node(node) == stmt
             }
 
             matching = list(self.matching_nodes(exprs))
@@ -594,7 +632,7 @@ class NodeFinder(object):
         return [
             inst
             for inst in get_instructions(code)
-            if inst.opname != 'EXTENDED_ARG'
+            if inst.opname not in ("EXTENDED_ARG", "NOP")
             if inst.lineno not in self.ignore_linenos
         ]
 
@@ -637,6 +675,10 @@ class NodeFinder(object):
                 instructions = self.compile_instructions()
             finally:
                 setter(expr)
+
+            if sys.version_info >= (3, 10):
+                self.handle_jumps(instructions, original_instructions)
+
             indices = [
                 i
                 for i, instruction in enumerate(instructions)
@@ -678,33 +720,78 @@ class NodeFinder(object):
                     instructions.pop(new_index + 1)
 
                 # Check that the modified instructions don't have anything unexpected
-                for inst1, inst2 in zip_longest(original_instructions, instructions):
-                    assert_(
-                        inst1.opname == inst2.opname or
-                        all(
-                            'JUMP_IF_' in inst.opname
-                            for inst in [inst1, inst2]
-                        ) or
-                        all(
-                            inst.opname in ('JUMP_FORWARD', 'JUMP_ABSOLUTE')
-                            for inst in [inst1, inst2]
-                        )
-                        or (
-                                inst1.opname == 'PRINT_EXPR' and
-                                inst2.opname == 'POP_TOP'
-                        )
-                        or (
-                                inst1.opname in ('LOAD_METHOD', 'LOOKUP_METHOD') and
-                                inst2.opname == 'LOAD_ATTR'
-                        )
-                        or (
-                                inst1.opname == 'CALL_METHOD' and
-                                inst2.opname == 'CALL_FUNCTION'
-                        ),
-                        (inst1, inst2, ast.dump(expr), expr.lineno, self.code.co_filename)
-                    )
+                # 3.10 is a bit too weird to assert this in all cases but things still work
+                if sys.version_info < (3, 10):
+                    for inst1, inst2 in zip_longest(
+                        original_instructions, instructions
+                    ):
+                        assert_(inst1 and inst2 and opnames_match(inst1, inst2))
 
                 yield expr
+
+    def handle_jumps(self, instructions, original_instructions):
+        while True:
+            i1 = i2 = 0
+            while True:
+                try:
+                    inst1 = original_instructions[i1]
+                    inst2 = instructions[i2]
+                except IndexError:
+                    return
+                if inst2.argval == sentinel:
+                    assert_(inst2.opname == "LOAD_CONST")
+                    assert_(instructions[i2 + 1].opname == "BINARY_POWER")
+                    i2 += 2
+                    continue
+                if "JUMP" in inst2.opname and "JUMP" not in inst1.opname:
+                    start = only(
+                        i
+                        for i, inst in enumerate(instructions)
+                        if inst.offset == inst2.argval
+                        and not getattr(inst, "_copied", False)
+                    )
+                    j1 = i1
+                    j2 = start
+                    while True:
+                        inst_j1 = original_instructions[j1]
+                        inst_j2 = instructions[j2]
+                        if inst_j2.argval == sentinel:
+                            assert_(inst_j2.opname == "LOAD_CONST")
+                            assert_(instructions[j2 + 1].opname == "BINARY_POWER")
+                            j2 += 2
+                            continue
+                        assert_(opnames_match(inst_j1, inst_j2))
+                        if inst_j1.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
+                            inlined = deepcopy(instructions[start : j2 + 1])
+                            for inl in inlined:
+                                inl._copied = True
+                            orig_section = original_instructions[i1 : j1 + 1]
+                            for dup_start in range(len(original_instructions)):
+                                if dup_start == i1:
+                                    continue
+                                dup_section = original_instructions[
+                                    dup_start : dup_start + len(orig_section)
+                                ]
+                                if len(dup_section) == len(orig_section) and all(
+                                    opnames_match(orig_inst, dup_inst)
+                                    and orig_inst.lineno == dup_inst.lineno
+                                    for orig_inst, dup_inst in zip(
+                                        orig_section, dup_section
+                                    )
+                                ):
+                                    break
+                            else:
+                                instructions[start : j2 + 1] = []
+                            instructions[i2 : i2 + 1] = inlined
+                            break
+                        j1 += 1
+                        j2 += 1
+                    break
+                else:
+                    if not (opnames_match(inst1, inst2)):
+                        raise AssertionError
+                i1 += 1
+                i2 += 1
 
     def compile_instructions(self):
         module_code = compile_similar_to(self.tree, self.code)
@@ -766,6 +853,20 @@ class NodeFinder(object):
             if instruction.opname != "EXTENDED_ARG":
                 return instruction
             index += 1
+
+
+def opnames_match(inst1, inst2):
+    return (
+        inst1.opname == inst2.opname
+        or "JUMP" in inst1.opname
+        and "JUMP" in inst2.opname
+        or (inst1.opname == "PRINT_EXPR" and inst2.opname == "POP_TOP")
+        or (
+            inst1.opname in ("LOAD_METHOD", "LOOKUP_METHOD")
+            and inst2.opname == "LOAD_ATTR"
+        )
+        or (inst1.opname == "CALL_METHOD" and inst2.opname == "CALL_FUNCTION")
+    )
 
 
 def get_setter(node):
