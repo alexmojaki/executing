@@ -791,20 +791,33 @@ class NodeFinder(object):
             index += 1
 
 
+def non_sentinel_instructions(instructions):
+    skip_power = False
+    for i, inst in enumerate(instructions):
+        if inst.argval == sentinel:
+            assert_(inst.opname == "LOAD_CONST")
+            skip_power = True
+            continue
+        elif skip_power:
+            assert_(inst.opname == "BINARY_POWER")
+            skip_power = False
+            continue
+        yield i, inst
+
+
+def walk_both_instructions(original_instructions, original_start, instructions, start):
+    for (i1, inst1), (i2, inst2) in zip(
+        islice(enumerate(original_instructions), original_start, None),
+        islice(non_sentinel_instructions(instructions), start, None),
+    ):
+        yield i1, inst1, i2, inst2
+
+
 def handle_jumps(instructions, original_instructions):
     while True:
-        i1 = i2 = 0
-        while True:
-            try:
-                inst1 = original_instructions[i1]
-                inst2 = instructions[i2]
-            except IndexError:
-                return
-            if inst2.argval == sentinel:
-                assert_(inst2.opname == "LOAD_CONST")
-                assert_(instructions[i2 + 1].opname == "BINARY_POWER")
-                i2 += 2
-                continue
+        for i1, inst1, i2, inst2 in walk_both_instructions(
+            original_instructions, 0, instructions, 0
+        ):
             if "JUMP" in inst2.opname and "JUMP" not in inst1.opname:
                 start = only(
                     i
@@ -812,16 +825,9 @@ def handle_jumps(instructions, original_instructions):
                     if inst.offset == inst2.argval
                     and not getattr(inst, "_copied", False)
                 )
-                j1 = i1
-                j2 = start
-                while True:
-                    inst_j1 = original_instructions[j1]
-                    inst_j2 = instructions[j2]
-                    if inst_j2.argval == sentinel:
-                        assert_(inst_j2.opname == "LOAD_CONST")
-                        assert_(instructions[j2 + 1].opname == "BINARY_POWER")
-                        j2 += 2
-                        continue
+                for j1, inst_j1, j2, inst_j2 in walk_both_instructions(
+                    original_instructions, i1, instructions, start
+                ):
                     assert_(opnames_match(inst_j1, inst_j2))
                     if inst_j1.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
                         inlined = deepcopy(instructions[start : j2 + 1])
@@ -846,14 +852,12 @@ def handle_jumps(instructions, original_instructions):
                             instructions[start : j2 + 1] = []
                         instructions[i2 : i2 + 1] = inlined
                         break
-                    j1 += 1
-                    j2 += 1
                 break
             else:
                 if not (opnames_match(inst1, inst2)):
                     raise AssertionError
-            i1 += 1
-            i2 += 1
+        else:
+            return
 
 
 def opnames_match(inst1, inst2):
