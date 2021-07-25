@@ -661,7 +661,7 @@ class NodeFinder(object):
             for i, inst in enumerate(original_instructions)
             if inst == self.instruction
         )
-        for i, expr in enumerate(exprs):
+        for expr_index, expr in enumerate(exprs):
             setter = get_setter(expr)
             # noinspection PyArgumentList
             replacement = ast.BinOp(
@@ -677,7 +677,13 @@ class NodeFinder(object):
                 setter(expr)
 
             if sys.version_info >= (3, 10):
-                handle_jumps(instructions, original_instructions)
+                try:
+                    handle_jumps(instructions, original_instructions)
+                except Exception:
+                    # Give other candidates a chance
+                    if TESTING or expr_index < len(exprs) - 1:
+                        continue
+                    raise
 
             indices = [
                 i
