@@ -791,9 +791,9 @@ class NodeFinder(object):
             index += 1
 
 
-def non_sentinel_instructions(instructions):
+def non_sentinel_instructions(instructions, start):
     skip_power = False
-    for i, inst in enumerate(instructions):
+    for i, inst in islice(enumerate(instructions), start, None):
         if inst.argval == sentinel:
             assert_(inst.opname == "LOAD_CONST")
             skip_power = True
@@ -808,7 +808,7 @@ def non_sentinel_instructions(instructions):
 def walk_both_instructions(original_instructions, original_start, instructions, start):
     for (i1, inst1), (i2, inst2) in zip(
         islice(enumerate(original_instructions), original_start, None),
-        islice(non_sentinel_instructions(instructions), start, None),
+        non_sentinel_instructions(instructions, start),
     ):
         yield i1, inst1, i2, inst2
 
