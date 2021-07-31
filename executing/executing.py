@@ -29,6 +29,7 @@ import functools
 import inspect
 import io
 import linecache
+import re
 import sys
 import types
 from collections import defaultdict, namedtuple
@@ -322,7 +323,10 @@ class Source(object):
                     try:
                         stmts = source.statements_at_line(lineno)
                         if stmts:
-                            if code.co_filename.startswith('<ipython-input-') and code.co_name == '<module>':
+                            if code.co_name == "<module>" and re.search(
+                                r"<ipython-input-|[/\\]ipykernel_\d+[/\\]",
+                                code.co_filename,
+                            ):
                                 tree = _extract_ipython_statement(stmts, tree)
                             node_finder = NodeFinder(frame, stmts, tree, lasti)
                             node = node_finder.result
