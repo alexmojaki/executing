@@ -835,47 +835,50 @@ def walk_both_instructions(original_instructions, original_start, instructions, 
 
 def handle_jumps(instructions, original_instructions):
     while True:
-        for i1, inst1, i2, inst2 in walk_both_instructions(
+        for original_i, original_inst, new_i, new_inst in walk_both_instructions(
             original_instructions, 0, instructions, 0
         ):
-            if "JUMP" in inst2.opname and "JUMP" not in inst1.opname:
+            if "JUMP" in new_inst.opname and "JUMP" not in original_inst.opname:
                 start = only(
                     i
                     for i, inst in enumerate(instructions)
-                    if inst.offset == inst2.argval
+                    if inst.offset == new_inst.argval
                     and not getattr(inst, "_copied", False)
                 )
-                handle_jump(instructions, original_instructions, i1, i2, start)
+                instructions[new_i : new_i + 1] = handle_jump(
+                    instructions, original_instructions, original_i, start
+                )
                 break
             else:
-                if not (opnames_match(inst1, inst2)):
+                if not (opnames_match(original_inst, new_inst)):
                     raise AssertionError
         else:
             return
 
 
-def handle_jump(instructions, original_instructions, i1, i2, start):
-    for j1, inst_j1, j2, inst_j2 in walk_both_instructions(
-        original_instructions, i1, instructions, start
+def handle_jump(instructions, original_instructions, original_i, start):
+    for original_j, original_inst, new_j, new_inst in walk_both_instructions(
+        original_instructions, original_i, instructions, start
     ):
-        assert_(opnames_match(inst_j1, inst_j2))
-        if inst_j1.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
-            inlined = deepcopy(instructions[start : j2 + 1])
+        assert_(opnames_match(original_inst, new_inst))
+        if original_inst.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
+            inlined = deepcopy(instructions[start : new_j + 1])
             for inl in inlined:
                 inl._copied = True
-            orig_section = original_instructions[i1 : j1 + 1]
-            if not check_duplicates(i1, orig_section, original_instructions):
-                instructions[start : j2 + 1] = []
-            instructions[i2 : i2 + 1] = inlined
-            break
+            orig_section = original_instructions[original_i : original_j + 1]
+            if not check_duplicates(original_i, orig_section, original_instructions):
+                instructions[start : new_j + 1] = []
+            return inlined
 
 
-def check_duplicates(i1, orig_section, original_instructions):
+def check_duplicates(original_i, orig_section, original_instructions):
     for dup_start in range(len(original_instructions)):
-        if dup_start == i1:
+        if dup_start == original_i:
             continue
         dup_section = original_instructions[dup_start : dup_start + len(orig_section)]
-        if len(dup_section) == len(orig_section) and all(
+        if len(dup_section) < len(orig_section):
+            return False
+        if all(
             opnames_match(orig_inst, dup_inst) and orig_inst.lineno == dup_inst.lineno
             for orig_inst, dup_inst in zip(orig_section, dup_section)
         ):
