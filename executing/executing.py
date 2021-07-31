@@ -798,6 +798,10 @@ class NodeFinder(object):
 
 
 def non_sentinel_instructions(instructions, start):
+    """
+    Yields (index, instruction) pairs excluding the basic
+    instructions introduced by the sentinel transformation
+    """
     skip_power = False
     for i, inst in islice(enumerate(instructions), start, None):
         if inst.argval == sentinel:
@@ -812,66 +816,96 @@ def non_sentinel_instructions(instructions, start):
 
 
 def walk_both_instructions(original_instructions, original_start, instructions, start):
-    it1 = islice(enumerate(original_instructions), original_start, None)
-    it2 = non_sentinel_instructions(instructions, start)
+    """
+    Yields matching indices and instructions from the new and original instructions,
+    leaving out changes made by the sentinel transformation.
+    """
+    original_iter = islice(enumerate(original_instructions), original_start, None)
+    new_iter = non_sentinel_instructions(instructions, start)
     inverted_comparison = False
     while True:
         try:
-            i1, original_inst = next(it1)
-            i2, new_inst = next(it2)
+            original_i, original_inst = next(original_iter)
+            new_i, new_inst = next(new_iter)
         except StopIteration:
             return
         if (
             inverted_comparison
             and original_inst.opname != new_inst.opname == "UNARY_NOT"
         ):
-            i2, new_inst = next(it2)
+            new_i, new_inst = next(new_iter)
         inverted_comparison = (
             original_inst.opname == new_inst.opname in ("CONTAINS_OP", "IS_OP")
             and original_inst.arg != new_inst.arg
         )
-        yield i1, original_inst, i2, new_inst
+        yield original_i, original_inst, new_i, new_inst
 
 
 def handle_jumps(instructions, original_instructions):
+    """
+    Transforms instructions in place until it looks more like original_instructions,
+    replacing JUMP instructions that aren't also present in original_instructions
+    with the sections that they jump to until a raise or return.
+    This is only needed in 3.10+ where optimisations lead to more drastic changes
+    after the sentinel transformation.
+    """
     while True:
         for original_i, original_inst, new_i, new_inst in walk_both_instructions(
             original_instructions, 0, instructions, 0
         ):
             if "JUMP" in new_inst.opname and "JUMP" not in original_inst.opname:
+                # Find where the new instruction is jumping to, ignoring
+                # instructions which have been copied in previous iterations
                 start = only(
                     i
                     for i, inst in enumerate(instructions)
                     if inst.offset == new_inst.argval
                     and not getattr(inst, "_copied", False)
                 )
+                # Replace the jump instruction with the jumped to section of instructions
+                # That section may also be deleted if it's not similarly duplicated
+                # in original_instructions
                 instructions[new_i : new_i + 1] = handle_jump(
-                    instructions, original_instructions, original_i, start
+                    original_instructions, original_i, instructions, start
                 )
+                # Start the root while loop from the beginning, checking for other jumps
                 break
             else:
                 if not (opnames_match(original_inst, new_inst)):
                     raise AssertionError
-        else:
+        else:  # No mismatched jumps found, we're done
             return
 
 
-def handle_jump(instructions, original_instructions, original_i, start):
+def handle_jump(original_instructions, original_start, instructions, start):
+    """
+    Returns the section of instructions starting at `start` and ending
+    with a RETURN_VALUE or RAISE_VARARGS instruction.
+    There should be a matching section in original_instructions starting at original_start.
+    If that section doesn't appear elsewhere in original_instructions,
+    then also delete the returned section of instructions.
+    """
     for original_j, original_inst, new_j, new_inst in walk_both_instructions(
-        original_instructions, original_i, instructions, start
+        original_instructions, original_start, instructions, start
     ):
         assert_(opnames_match(original_inst, new_inst))
         if original_inst.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
             inlined = deepcopy(instructions[start : new_j + 1])
             for inl in inlined:
                 inl._copied = True
-            orig_section = original_instructions[original_i : original_j + 1]
-            if not check_duplicates(original_i, orig_section, original_instructions):
+            orig_section = original_instructions[original_start : original_j + 1]
+            if not check_duplicates(
+                original_start, orig_section, original_instructions
+            ):
                 instructions[start : new_j + 1] = []
             return inlined
 
 
 def check_duplicates(original_i, orig_section, original_instructions):
+    """
+    Returns True if a section of original_instructions starting somewhere other
+    than original_i and matching orig_section is found, i.e. orig_section is duplicated.
+    """
     for dup_start in range(len(original_instructions)):
         if dup_start == original_i:
             continue
