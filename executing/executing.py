@@ -915,13 +915,15 @@ def handle_jumps(instructions, original_instructions):
 
 def find_new_matching(orig_section, instructions):
     for start in range(len(instructions) - len(orig_section)):
-        indices, dup_section = zip(*islice(non_sentinel_instructions(instructions, start), 0, len(orig_section)))
+        indices, dup_section = zip(
+            *islice(
+                non_sentinel_instructions(instructions, start),
+                len(orig_section),
+            )
+        )
         if len(dup_section) < len(orig_section):
             return
-        if all(
-                orig_inst.lineno == dup_inst.lineno and opnames_match(orig_inst, dup_inst)
-                for orig_inst, dup_inst in zip(orig_section, dup_section)
-        ):
+        if sections_match(orig_section, dup_section):
             yield instructions[start:indices[-1] + 1]
 
 
@@ -960,11 +962,19 @@ def check_duplicates(original_i, orig_section, original_instructions):
         dup_section = original_instructions[dup_start : dup_start + len(orig_section)]
         if len(dup_section) < len(orig_section):
             return False
-        if all(
-            orig_inst.lineno == dup_inst.lineno and opnames_match(orig_inst, dup_inst)
-            for orig_inst, dup_inst in zip(orig_section, dup_section)
-        ):
+        if sections_match(orig_section, dup_section):
             return True
+
+
+def sections_match(orig_section, dup_section):
+    return all(
+        (
+            orig_inst.lineno == dup_inst.lineno
+            or "POP_BLOCK" == orig_inst.opname == dup_inst.opname
+        )
+        and opnames_match(orig_inst, dup_inst)
+        for orig_inst, dup_inst in zip(orig_section, dup_section)
+    )
 
 
 def opnames_match(inst1, inst2):
