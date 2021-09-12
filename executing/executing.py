@@ -871,16 +871,21 @@ def walk_both_instructions(original_instructions, original_start, instructions, 
 
 def handle_jumps(instructions, original_instructions):
     """
-    Transforms instructions in place until it looks more like original_instructions,
-    replacing JUMP instructions that aren't also present in original_instructions
-    with the sections that they jump to until a raise or return.
+    Transforms instructions in place until it looks more like original_instructions.
     This is only needed in 3.10+ where optimisations lead to more drastic changes
     after the sentinel transformation.
+    Replaces JUMP instructions that aren't also present in original_instructions
+    with the sections that they jump to until a raise or return.
+    In some other cases duplication found in `original_instructions`
+    is replicated in `instructions`.
     """
     while True:
         for original_i, original_inst, new_i, new_inst in walk_both_instructions(
             original_instructions, 0, instructions, 0
         ):
+            if opnames_match(original_inst, new_inst):
+                continue
+
             if "JUMP" in new_inst.opname and "JUMP" not in original_inst.opname:
                 # Find where the new instruction is jumping to, ignoring
                 # instructions which have been copied in previous iterations
@@ -896,13 +901,44 @@ def handle_jumps(instructions, original_instructions):
                 instructions[new_i : new_i + 1] = handle_jump(
                     original_instructions, original_i, instructions, start
                 )
-                # Start the root while loop from the beginning, checking for other jumps
-                break
             else:
-                if not (opnames_match(original_inst, new_inst)):
+                # Extract a section of original_instructions from original_i to return/raise
+                orig_section = []
+                for section_inst in original_instructions[original_i:]:
+                    orig_section.append(section_inst)
+                    if section_inst.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
+                        break
+                else:
+                    # No return/raise - this is just a mismatch we can't handle
                     raise AssertionError
+
+                instructions[new_i:new_i] = only(find_new_matching(orig_section, instructions))
+
+            # instructions has been modified, the for loop can't sensibly continue
+            # Restart it from the beginning, checking for other issues
+            break
+
         else:  # No mismatched jumps found, we're done
             return
+
+
+def find_new_matching(orig_section, instructions):
+    """
+    Yields sections of `instructions` which match `orig_section`.
+    The yielded sections include sentinel instructions, but these
+    are ignored when checking for matches.
+    """
+    for start in range(len(instructions) - len(orig_section)):
+        indices, dup_section = zip(
+            *islice(
+                non_sentinel_instructions(instructions, start),
+                len(orig_section),
+            )
+        )
+        if len(dup_section) < len(orig_section):
+            return
+        if sections_match(orig_section, dup_section):
+            yield instructions[start:indices[-1] + 1]
 
 
 def handle_jump(original_instructions, original_start, instructions, start):
@@ -940,11 +976,23 @@ def check_duplicates(original_i, orig_section, original_instructions):
         dup_section = original_instructions[dup_start : dup_start + len(orig_section)]
         if len(dup_section) < len(orig_section):
             return False
-        if all(
-            opnames_match(orig_inst, dup_inst) and orig_inst.lineno == dup_inst.lineno
-            for orig_inst, dup_inst in zip(orig_section, dup_section)
-        ):
+        if sections_match(orig_section, dup_section):
             return True
+
+
+def sections_match(orig_section, dup_section):
+    """
+    Returns True if the given lists of instructions have matching linenos and opnames.
+    """
+    return all(
+        (
+            orig_inst.lineno == dup_inst.lineno
+            # POP_BLOCKs have been found to have differing linenos in innocent cases
+            or "POP_BLOCK" == orig_inst.opname == dup_inst.opname
+        )
+        and opnames_match(orig_inst, dup_inst)
+        for orig_inst, dup_inst in zip(orig_section, dup_section)
+    )
 
 
 def opnames_match(inst1, inst2):
