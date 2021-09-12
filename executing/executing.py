@@ -900,9 +900,29 @@ def handle_jumps(instructions, original_instructions):
                 break
             else:
                 if not (opnames_match(original_inst, new_inst)):
-                    raise AssertionError
+                    orig_section = []
+                    for section_inst in original_instructions[original_i:]:
+                        orig_section.append(section_inst)
+                        if section_inst.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
+                            break
+                    else:
+                        raise AssertionError
+                    instructions[new_i:new_i] = only(find_new_matching(orig_section, instructions))
+                    break
         else:  # No mismatched jumps found, we're done
             return
+
+
+def find_new_matching(orig_section, instructions):
+    for start in range(len(instructions) - len(orig_section)):
+        indices, dup_section = zip(*islice(non_sentinel_instructions(instructions, start), 0, len(orig_section)))
+        if len(dup_section) < len(orig_section):
+            return
+        if all(
+                orig_inst.lineno == dup_inst.lineno and opnames_match(orig_inst, dup_inst)
+                for orig_inst, dup_inst in zip(orig_section, dup_section)
+        ):
+            yield instructions[start:indices[-1] + 1]
 
 
 def handle_jump(original_instructions, original_start, instructions, start):
@@ -941,7 +961,7 @@ def check_duplicates(original_i, orig_section, original_instructions):
         if len(dup_section) < len(orig_section):
             return False
         if all(
-            opnames_match(orig_inst, dup_inst) and orig_inst.lineno == dup_inst.lineno
+            orig_inst.lineno == dup_inst.lineno and opnames_match(orig_inst, dup_inst)
             for orig_inst, dup_inst in zip(orig_section, dup_section)
         ):
             return True
