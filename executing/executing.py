@@ -327,10 +327,28 @@ class Source(object):
                                 r"<ipython-input-|[/\\]ipykernel_\d+[/\\]",
                                 code.co_filename,
                             ):
-                                tree = _extract_ipython_statement(stmts, tree)
-                            node_finder = NodeFinder(frame, stmts, tree, lasti)
-                            node = node_finder.result
-                            decorator = node_finder.decorator
+                                for stmt in stmts:
+                                    tree = _extract_ipython_statement(stmt)
+                                    try:
+                                        node_finder = NodeFinder(frame, stmts, tree, lasti)
+                                        if (node or decorator) and (node_finder.result or node_finder.decorator):
+                                            if retry_cache:
+                                                raise AssertionError
+                                            # Found potential nodes in separate statements,
+                                            # cannot resolve ambiguity, give up here
+                                            node = decorator = None
+                                            break
+
+                                        node = node_finder.result
+                                        decorator = node_finder.decorator
+                                    except Exception:
+                                        if retry_cache:
+                                            raise
+
+                            else:
+                                node_finder = NodeFinder(frame, stmts, tree, lasti)
+                                node = node_finder.result
+                                decorator = node_finder.decorator
                     except Exception as e:
                         # These exceptions can be caused by the source code having changed
                         # so the cached Source doesn't match the running code
@@ -1043,11 +1061,10 @@ def assert_linenos(tree):
             yield node.lineno
 
 
-def _extract_ipython_statement(stmts, tree):
+def _extract_ipython_statement(stmt):
     # IPython separates each statement in a cell to be executed separately
     # So NodeFinder should only compile one statement at a time or it
     # will find a code mismatch.
-    stmt = list(stmts)[0]
     while not isinstance(stmt.parent, ast.Module):
         stmt = stmt.parent
     # use `ast.parse` instead of `ast.Module` for better portability
