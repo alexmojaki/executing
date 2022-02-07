@@ -89,11 +89,15 @@ class Tester(object):
     __ne__ = __ge__ = __lt__
 
     def __bool__(self):
-        try:
-            self.get_node(None)
-        except RuntimeError:
+        if sys.version_info >= (3, 11):
+            self.get_node(ast.BoolOp)
             return False
-        assert 0
+        else:
+            try:
+                self.get_node(None)
+            except RuntimeError:
+                return False
+            assert 0
 
     __nonzero__ = __bool__
 

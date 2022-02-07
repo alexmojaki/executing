@@ -309,6 +309,47 @@ class Source(object):
             lineno = frame.f_lineno
             lasti = frame.f_lasti
 
+        if sys.version_info >= (3, 11):
+            # we can use co_positions() since 3.11, which has fewer limitations
+
+            positions = list(frame.f_code.co_positions())
+            source = cls.for_frame(frame)
+            stmts = source.statements_at_line(lineno)
+
+            def find_node(lasti):
+                position = positions[lasti // 2]
+                for node in source._nodes_by_line[position[0]]:
+                    if isinstance(node, (ast.expr, ast.stmt)) and position == (
+                        node.lineno,
+                        node.end_lineno,
+                        node.col_offset,
+                        node.end_col_offset,
+                    ):
+                        return node
+
+            node = find_node(lasti)
+            assert_(node != None)
+
+            if isinstance(node, (ast.ClassDef, function_node_types)):
+                # get the decorator by counting all CALL_FUNCTION ops until the next STORE_*
+                for idx, inst in enumerate(
+                    islice(dis.Bytecode(frame.f_code), lasti // 2, None)
+                ):
+                    if inst.opname.startswith("STORE_"):
+                        return Executing(
+                            frame, source, node, stmts, node.decorator_list[idx - 1]
+                        )
+
+                    if inst.opname in ("EXTENDED_ARG", "NOP"):
+                        continue
+
+                    assert_(inst.opname == "CALL_FUNCTION", inst)
+
+            if isinstance(node, ast.Expr):
+                node = node.value
+
+            return Executing(frame, source, node, stmts, None)
+
         code = frame.f_code
         key = (code, id(code), lasti)
         executing_cache = cls._class_local('__executing_cache', {})

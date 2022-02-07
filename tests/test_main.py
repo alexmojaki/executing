@@ -122,8 +122,11 @@ class TestStuff(unittest.TestCase):
         str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])
         # but not if everything is the same
         # noinspection PyTypeChecker
-        with self.assertRaises(NotOneValueFound):
+        if sys.version_info >= (3, 11):
             str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
+        else:
+            with self.assertRaises(NotOneValueFound):
+                str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
     def test_lambda(self):
         self.assertEqual(
