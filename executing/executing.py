@@ -316,19 +316,19 @@ class Source(object):
             source = cls.for_frame(frame)
             stmts = source.statements_at_line(lineno)
 
-            def find_node(lasti):
-                position = positions[lasti // 2]
-                for node in source._nodes_by_line[position[0]]:
-                    if isinstance(node, (ast.expr, ast.stmt)) and position == (
-                        node.lineno,
-                        node.end_lineno,
-                        node.col_offset,
-                        node.end_col_offset,
-                    ):
-                        return node
-
-            node = find_node(lasti)
-            assert_(node != None)
+            position = positions[lasti // 2]
+            node = only(
+                node
+                for node in source._nodes_by_line[position[0]]
+                if isinstance(node, (ast.expr, ast.stmt))
+                if not isinstance(node, ast.Expr)
+                if position == (
+                    node.lineno,
+                    node.end_lineno,
+                    node.col_offset,
+                    node.end_col_offset,
+                )
+            )
 
             if isinstance(node, (ast.ClassDef, function_node_types)):
                 # get the decorator by counting all CALL_FUNCTION ops until the next STORE_*
@@ -344,9 +344,6 @@ class Source(object):
                         continue
 
                     assert_(inst.opname == "CALL_FUNCTION", inst)
-
-            if isinstance(node, ast.Expr):
-                node = node.value
 
             return Executing(frame, source, node, stmts, None)
 
