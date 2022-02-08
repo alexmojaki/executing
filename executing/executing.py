@@ -316,33 +316,61 @@ class Source(object):
             source = cls.for_frame(frame)
             stmts = source.statements_at_line(lineno)
 
-            position = positions[lasti // 2]
-            node = only(
-                node
-                for node in source._nodes_by_line[position[0]]
-                if isinstance(node, (ast.expr, ast.stmt))
-                if not isinstance(node, ast.Expr)
-                if position == (
-                    node.lineno,
-                    node.end_lineno,
-                    node.col_offset,
-                    node.end_col_offset,
+            def find_node(index):
+                position = positions[index // 2]
+                return only(
+                    node
+                    for node in source._nodes_by_line[position[0]]
+                    if isinstance(node, (ast.expr, ast.stmt))
+                    if not isinstance(node, ast.Expr)
+                    if position
+                    == (
+                        node.lineno,
+                        node.end_lineno,
+                        node.col_offset,
+                        node.end_col_offset,
+                    )
                 )
-            )
 
-            if isinstance(node, (ast.ClassDef, function_node_types)):
-                # get the decorator by counting all CALL_FUNCTION ops until the next STORE_*
-                for idx, inst in enumerate(
-                    inst
-                    for inst in islice(dis.Bytecode(frame.f_code), lasti // 2, None)
-                    if inst.opname not in ("EXTENDED_ARG", "NOP")
-                ):
-                    if inst.opname.startswith("STORE_"):
-                        return Executing(
-                            frame, source, node, stmts, node.decorator_list[idx - 1]
-                        )
+            node = find_node(lasti)
 
-                    assert_(inst.opname == "CALL_FUNCTION", inst)
+            if (
+                isinstance(node.parent, (ast.ClassDef, function_node_types))
+                and node in node.parent.decorator_list
+            ):
+                node_func = node.parent
+                index = lasti
+                bc_list = list(dis.Bytecode(frame.f_code))
+
+                def opname(i):
+                    return bc_list[i // 2].opname
+
+                while True:
+                    # idx-2: PRECALL_FUNCTION
+                    # idx:   CALL
+                    # idx+2: STORE_* / PRECALL_FUNCTION
+
+                    if not (
+                        opname(index - 2) == "PRECALL_FUNCTION"
+                        and opname(index) == "CALL"
+                    ):
+                        break
+
+                    if (
+                        bc_list[index // 2 - 1].positions
+                        != bc_list[index // 2].positions
+                    ):
+                        break
+
+                    if find_node(index) not in node_func.decorator_list:
+                        break
+
+                    if find_node(index + 2) == node_func and opname(
+                        index + 2
+                    ).startswith("STORE_"):
+                        return Executing(frame, source, node_func, {node_func}, node)
+
+                    index += 4
 
             return Executing(frame, source, node, stmts, None)
 
