@@ -1,13 +1,13 @@
 name: Tests
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10-dev, pypy2, pypy-3.6]
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, '3.10', 3.11-dev, pypy2, pypy-3.6]
 
     steps:
     - uses: actions/checkout@v2
