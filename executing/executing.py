@@ -333,15 +333,14 @@ class Source(object):
             if isinstance(node, (ast.ClassDef, function_node_types)):
                 # get the decorator by counting all CALL_FUNCTION ops until the next STORE_*
                 for idx, inst in enumerate(
-                    islice(dis.Bytecode(frame.f_code), lasti // 2, None)
+                    inst
+                    for inst in islice(dis.Bytecode(frame.f_code), lasti // 2, None)
+                    if inst.opname not in ("EXTENDED_ARG", "NOP")
                 ):
                     if inst.opname.startswith("STORE_"):
                         return Executing(
                             frame, source, node, stmts, node.decorator_list[idx - 1]
                         )
-
-                    if inst.opname in ("EXTENDED_ARG", "NOP"):
-                        continue
 
                     assert_(inst.opname == "CALL_FUNCTION", inst)
 
