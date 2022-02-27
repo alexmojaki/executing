@@ -323,10 +323,7 @@ class Source(object):
                     try:
                         stmts = source.statements_at_line(lineno)
                         if stmts:
-                            if code.co_name == "<module>" and re.search(
-                                r"<ipython-input-|[/\\]ipykernel_\d+[/\\]",
-                                code.co_filename,
-                            ):
+                            if is_ipython_cell_code(code):
                                 for stmt in stmts:
                                     tree = _extract_ipython_statement(stmt)
                                     try:
@@ -789,9 +786,9 @@ class NodeFinder(object):
     def find_codes(self, root_code):
         checks = [
             attrgetter('co_firstlineno'),
-            attrgetter('co_name'),
             attrgetter('co_freevars'),
             attrgetter('co_cellvars'),
+            lambda c: is_ipython_cell_code_name(c.co_name) or c.co_name,
         ]
         if not self.is_pytest:
             checks += [
@@ -1074,3 +1071,18 @@ def _extract_ipython_statement(stmt):
     tree.body = [stmt]
     ast.copy_location(tree, stmt)
     return tree
+
+
+def is_ipython_cell_code_name(code_name):
+    return bool(re.match(r"(<module>|<cell line: \d+>)$", code_name))
+
+
+def is_ipython_cell_filename(filename):
+    return re.search(r"<ipython-input-|[/\\]ipykernel_\d+[/\\]", filename)
+
+
+def is_ipython_cell_code(code_obj):
+    return (
+        is_ipython_cell_filename(code_obj.co_filename) and
+        is_ipython_cell_code_name(code_obj.co_name)
+    )
