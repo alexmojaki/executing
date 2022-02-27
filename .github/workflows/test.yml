@@ -19,7 +19,7 @@ jobs:
       run: |
         python --version
         pip install -U pip
-        pip install --upgrade coveralls asttokens pytest setuptools setuptools_scm pep517
+        pip install --upgrade coveralls asttokens pytest littleutils setuptools setuptools_scm pep517
         pip install .
     - name: Test
       env:

@@ -1,6 +1,7 @@
 import os
 import sys
-from types import SimpleNamespace
+
+from littleutils import SimpleNamespace
 
 from executing.executing import is_ipython_cell_code
 
