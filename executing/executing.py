@@ -340,24 +340,22 @@ class Source(object):
             ):
                 node_func = node.parent
                 index = lasti
-                bc_list = list(dis.Bytecode(frame.f_code))
+                bc_list = list(dis.Bytecode(frame.f_code, show_caches=True))
 
                 def opname(i):
                     return bc_list[i // 2].opname
 
                 while True:
-                    # idx-2: PRECALL_FUNCTION
+                    # idx-4: PRECALL
+                    # idx-2: CACHE
                     # idx:   CALL
-                    # idx+2: STORE_* / PRECALL_FUNCTION
+                    # idx+2: STORE_* / CACHE
 
-                    if not (
-                        opname(index - 2) == "PRECALL_FUNCTION"
-                        and opname(index) == "CALL"
-                    ):
+                    if not (opname(index - 4) == "PRECALL" and opname(index) == "CALL"):
                         break
 
                     if (
-                        bc_list[index // 2 - 1].positions
+                        bc_list[index // 2 - 2].positions
                         != bc_list[index // 2].positions
                     ):
                         break
@@ -365,9 +363,14 @@ class Source(object):
                     if find_node(index) not in node_func.decorator_list:
                         break
 
-                    if find_node(index + 2) == node_func and opname(
-                        index + 2
-                    ).startswith("STORE_"):
+                    index += 2
+
+                    while opname(index) == "CACHE":
+                        index += 2
+
+                    if find_node(index) == node_func and opname(index).startswith(
+                        "STORE_"
+                    ):
                         return Executing(frame, source, node_func, {node_func}, node)
 
                     index += 4

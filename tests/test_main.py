@@ -470,7 +470,7 @@ class TestFiles(unittest.TestCase):
         print(filename)
         source = Source.for_filename(filename)
 
-        if PY3:
+        if PY3 and sys.version_info < (3, 11):
             code = compile(source.text, filename, "exec", dont_inherit=True)
             for subcode, qualname in find_qualnames(code):
                 if not qualname.endswith(">"):
