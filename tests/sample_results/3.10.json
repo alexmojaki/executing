@@ -14356,15 +14356,15 @@
         ],
         [
             "LOAD_GLOBAL",
-            "currentThread"
+            "current_thread"
         ],
         [
             "CALL_FUNCTION",
-            "currentThread()"
+            "current_thread()"
         ],
         [
             "LOAD_ATTR",
-            "currentThread().ident"
+            "current_thread().ident"
         ],
         [
             "LOAD_DEREF",
@@ -14372,7 +14372,7 @@
         ],
         [
             "CALL_METHOD",
-            "thread_proxies.get(currentThread().ident,\n                                  original)"
+            "thread_proxies.get(current_thread().ident,\n                                  original)"
         ],
         [
             "LOAD_FAST",
@@ -14392,15 +14392,15 @@
         ],
         [
             "LOAD_GLOBAL",
-            "currentThread"
+            "current_thread"
         ],
         [
             "CALL_FUNCTION",
-            "currentThread()"
+            "current_thread()"
         ],
         [
             "LOAD_ATTR",
-            "currentThread().ident"
+            "current_thread().ident"
         ],
         [
             "LOAD_GLOBAL",
