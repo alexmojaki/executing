@@ -65,6 +65,24 @@ class Tester(object):
         self.check(subscript_item(node), item)
         return self
 
+    def __setattr__(self, name, value):
+        if name in ('decorators', '__name__'):
+            super().__setattr__(name, value)
+            return
+
+        node = self.get_node(ast.Assign)
+        self.check(node.value, value)
+        self.check(node.targets[0].value, self)
+        assert node.targets[0].attr == name
+        return self
+
+    def __setitem__(self, key, value):
+        node = self.get_node(ast.Assign)
+        self.check(node.value, value)
+        self.check(subscript_item(node.targets[0]), key)
+        self.check(node.targets[0].value, self)
+        return self
+
     def __add__(self, other):
         node = self.get_node(ast.BinOp)
         self.check(node.left, self)

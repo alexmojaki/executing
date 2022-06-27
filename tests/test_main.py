@@ -112,6 +112,12 @@ class TestStuff(unittest.TestCase):
         Foo().foo()
         tester.check_decorators([3, 1, 0, 2, 0])
 
+    def test_setattr(self):
+        tester.x = 1
+
+    def test_setitem(self):
+        tester['x'] = 1
+
     def test_comprehensions(self):
         # Comprehensions can be separated if they contain different names
         str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])

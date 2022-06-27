@@ -619,6 +619,8 @@ class NodeFinder(object):
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
             extra_filter = lambda e: len(e.ops) == 1
+        elif op_name in ('STORE_ATTR', 'STORE_SUBSCR'):
+            typ = ast.Assign
         else:
             raise RuntimeError(op_name)
 
@@ -705,6 +707,10 @@ class NodeFinder(object):
             if inst == self.instruction
         )
         for expr_index, expr in enumerate(exprs):
+            if isinstance(expr, ast.Assign):
+                yield expr
+                continue
+
             setter = get_setter(expr)
             # noinspection PyArgumentList
             replacement = ast.BinOp(
