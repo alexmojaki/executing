@@ -619,7 +619,7 @@ class NodeFinder(object):
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
             extra_filter = lambda e: len(e.ops) == 1
-        elif op_name in ('STORE_ATTR', 'STORE_SUBSCR'):
+        elif op_name.startswith(('STORE_SLICE', 'STORE_ATTR', 'STORE_SUBSCR')):
             typ = ast.Assign
         else:
             raise RuntimeError(op_name)

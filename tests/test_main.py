@@ -117,6 +117,7 @@ class TestStuff(unittest.TestCase):
 
     def test_setitem(self):
         tester['x'] = 1
+        tester[:2] = 3
 
     def test_comprehensions(self):
         # Comprehensions can be separated if they contain different names
@@ -484,15 +485,24 @@ class TestFiles(unittest.TestCase):
         decorators = defaultdict(list)
         expected_decorators = {}
         for node in ast.walk(source.tree):
-            if isinstance(node, (
+            if isinstance(
+                node,
+                (
                     (ast.Name,) * check_names,
                     ast.UnaryOp,
                     ast.BinOp,
                     ast.Subscript,
                     ast.Call,
                     ast.Compare,
-                    ast.Attribute
-            )):
+                    ast.Attribute,
+                ),
+            ) or (
+                isinstance(node, ast.Assign)
+                and any(
+                    isinstance(target, (ast.Subscript, ast.Attribute))
+                    for target in node.targets
+                )
+            ):
                 nodes[node] = []
             elif isinstance(node, (ast.ClassDef, function_node_types)):
                 expected_decorators[(node.lineno, node.name)] = node.decorator_list[::-1]
@@ -527,6 +537,11 @@ class TestFiles(unittest.TestCase):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
                     correct = len(values) > 1
+                elif isinstance(node, ast.Assign):
+                    correct = len(values) == sum(
+                        isinstance(target, (ast.Subscript, ast.Attribute))
+                        for target in node.targets
+                    )
                 else:
                     correct = len(values) == 1
 
@@ -551,6 +566,7 @@ class TestFiles(unittest.TestCase):
                 (
                     'BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
                     'SLICE+', 'COMPARE_OP', 'CALL_', 'IS_OP', 'CONTAINS_OP',
+                    'STORE_SUBSCR', 'STORE_ATTR',
                 )
                 + ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF') * check_names
             ):
