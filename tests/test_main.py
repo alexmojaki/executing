@@ -566,7 +566,7 @@ class TestFiles(unittest.TestCase):
                 (
                     'BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
                     'SLICE+', 'COMPARE_OP', 'CALL_', 'IS_OP', 'CONTAINS_OP',
-                    'STORE_SUBSCR', 'STORE_ATTR',
+                    'STORE_SUBSCR', 'STORE_ATTR', 'STORE_SLICE',
                 )
                 + ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF') * check_names
             ):
