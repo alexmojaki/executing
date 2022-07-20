@@ -310,161 +310,7 @@ class Source(object):
             lineno = frame.f_lineno
             lasti = frame.f_lasti
 
-        def check_code(code):
 
-            positions = code.co_positions()
-            bc = list(dis.Bytecode(code, show_caches=True))
-
-            for pos, inst in zip(positions, bc):
-                if inst.starts_line is not None:
-                    assert pos[0] <= inst.starts_line <= pos[1]
-
-        #        check_code(frame.f_code)
-
-        if sys.version_info >= (3, 11):
-            # we can use co_positions() since 3.11, which has fewer limitations
-
-            positions = list(frame.f_code.co_positions())
-            source = cls.for_frame(frame)
-            stmts = source.statements_at_line(lineno)
-
-            def find_node(index, **kargs):
-                position = positions[index // 2]
-                return find_node_by_position(position, **kargs)
-
-            def find_node_by_position(
-                position, lineno=True, ignore_positions=(), typ=None
-            ):
-                if not lineno:
-                    ignore_positions = ("lineno",)
-
-
-                def match(a, b):
-                    for idx, attr in enumerate(
-                        ["lineno", "end_lineno", "col_offset", "end_col_offset"]
-                    ):
-
-                        if attr not in ignore_positions and a[idx] != b[idx]:
-                            return False
-
-                    return True
-
-                return only(
-                    node
-                    for node in source._nodes_by_line[position[0]]
-                    if isinstance(node, (ast.expr, ast.stmt))
-                    if not isinstance(node, ast.Expr)
-                    if typ is None or isinstance(node, typ)
-                    if match(
-                        position,
-                        (
-                            node.lineno,
-                            node.end_lineno,
-                            node.col_offset,
-                            node.end_col_offset,
-                        ),
-                    )
-                )
-
-
-            bc_list = list(dis.Bytecode(frame.f_code, show_caches=True))
-
-            try:
-                if bc_list[lasti // 2].opname == "LOAD_GLOBAL":
-                    # work around for issue https://github.com/python/cpython/issues/91409
-                    node = find_node(
-                        lasti, ignore_positions=("end_col_offset",), typ=ast.Name
-                    )
-
-                else:
-                    node = find_node(lasti)
-
-            except Exception as e:
-                # lineno of LOAD_METHOD instructions get set to end_lineno by the python compiler
-                # propably to achive improved error messages (PEP-657)
-                # we ignore here the start position and try to find the ast-node just by end position and expected node type
-                if bc_list[lasti // 2].opname == "LOAD_METHOD":
-                    node = find_node(
-                        lasti,
-                        ignore_positions=("col_offset", "lineno"),
-                        typ=ast.Attribute,
-                    )
-                # same for call position because it could be a call to a method
-                elif bc_list[lasti // 2].opname == "CALL":
-                    node = find_node(
-                        lasti, ignore_positions=("col_offset", "lineno"), typ=ast.Call
-                    )
-                else:
-                    # TODO: remove debugging code before merge
-
-                    print(e)
-                    position = positions[lasti // 2]
-                    print("search position", position)
-                    print(bc_list[lasti // 2])
-                    print(source.filename)
-
-                    for a in source._nodes_by_line[position[0]]:
-                        print()
-                        # print(ast.dump(a, include_attributes=True))
-                        print(
-                            "option",
-                            a.lineno,
-                            a.end_lineno,
-                            a.col_offset,
-                            a.end_col_offset,
-                            a,
-                        )
-                    raise
-
-            if bc_list[lasti // 2].opname == "LOAD_METHOD" and isinstance(
-                    node, ast.Call):
-                node = node.func
-
-            # find decorators
-            if (isinstance(node.parent, (ast.ClassDef, function_node_types))
-                    and node in node.parent.decorator_list):
-                node_func = node.parent
-                index = lasti
-                bc_list = list(dis.Bytecode(frame.f_code, show_caches=True))
-                #dis.dis(frame.f_code,show_caches=True)
-                # print(index)
-
-                def opname(i):
-                    return bc_list[i // 2].opname
-
-                while True:
-                    # idx-4: PRECALL
-                    # idx-2: CACHE
-                    # idx:   CALL
-                    # idx+2: STORE_* / CACHE
-
-                    if not (opname(index - 4) == "PRECALL"
-                            and opname(index) == "CALL"):
-                        #print("opcode")
-                        break
-
-                    if False and (bc_list[index // 2 - 2].positions !=
-                            bc_list[index // 2].positions):
-                        #print("position mismatch",bc_list[index // 2 - 2],bc_list[index // 2 ])
-                        break
-
-                    if find_node(index) not in node_func.decorator_list:
-                        #print("decorator")
-                        break
-
-                    index += 2
-
-                    while opname(index) == "CACHE":
-                        index += 2
-
-                    if find_node(index) == node_func and opname(
-                            index).startswith("STORE_"):
-                        return Executing(frame, source, node_func, {node_func},
-                                         node)
-
-                    index += 4
-
-            return Executing(frame, source, node, stmts, None)
 
         code = frame.f_code
         key = (code, id(code), lasti)
@@ -484,8 +330,12 @@ class Source(object):
                                 for stmt in stmts:
                                     tree = _extract_ipython_statement(stmt)
                                     try:
-                                        node_finder = NodeFinder(frame, stmts, tree, lasti)
-                                        if (node or decorator) and (node_finder.result or node_finder.decorator):
+                                        node_finder = NodeFinder(
+                                            frame, stmts, tree, lasti, source
+                                        )
+                                        if (node or decorator) and (
+                                            node_finder.result or node_finder.decorator
+                                        ):
                                             if retry_cache:
                                                 raise AssertionError
                                             # Found potential nodes in separate statements,
@@ -500,7 +350,9 @@ class Source(object):
                                             raise
 
                             else:
-                                node_finder = NodeFinder(frame, stmts, tree, lasti)
+                                node_finder = NodeFinder(
+                                    frame, stmts, tree, lasti, source
+                                )
                                 node = node_finder.result
                                 decorator = node_finder.decorator
                     except Exception as e:
@@ -710,9 +562,128 @@ def compile_similar_to(source, matching_code):
 
 sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
 
+class NewNodeFinder(object):
+    def __init__(self, frame, stmts, tree, lasti, source):
+        # we can use co_positions() since 3.11, which has fewer limitations
+
+        positions = list(frame.f_code.co_positions())
+        #        source = cls.for_frame(frame)
+
+        def find_node(index, ignore_positions=(), typ=None):
+            position = positions[index // 2]
+
+            def match(a, b):
+                for idx, attr in enumerate(
+                    ["lineno", "end_lineno", "col_offset", "end_col_offset"]
+                ):
+
+                    if attr not in ignore_positions and a[idx] != b[idx]:
+                        return False
+
+                return True
+
+
+            return only(
+                node
+                for node in source._nodes_by_line[position[0]]
+                if isinstance(
+                    node, (ast.expr, ast.stmt, ast.excepthandler, ast.MatchAs)
+                )
+                if not isinstance(node, ast.Expr)
+                if typ is None or isinstance(node, typ)
+                if match(
+                    position,
+                    (
+                        node.lineno,
+                        node.end_lineno,
+                        node.col_offset,
+                        node.end_col_offset,
+                    ),
+                )
+            )
+
+        bc_list = list(dis.Bytecode(frame.f_code, show_caches=True))
+
+        try:
+            if bc_list[lasti // 2].opname == "LOAD_GLOBAL":
+                # work around for issue https://github.com/python/cpython/issues/91409
+                node = find_node(
+                    lasti, ignore_positions=("end_col_offset",), typ=ast.Name
+                )
+
+            else:
+                node = find_node(lasti)
+
+        except Exception as e:
+            # lineno of LOAD_METHOD instructions get set to end_lineno by the python compiler
+            # propably to achive improved error messages (PEP-657)
+            # we ignore here the start position and try to find the ast-node just by end position and expected node type
+            if bc_list[lasti // 2].opname == "LOAD_METHOD":
+                node = find_node(
+                    lasti,
+                    ignore_positions=("col_offset", "lineno"),
+                    typ=ast.Attribute,
+                )
+            # same for call position because it could be a call to a method
+            elif bc_list[lasti // 2].opname == "CALL":
+                node = find_node(
+                    lasti, ignore_positions=("col_offset", "lineno"), typ=ast.Call
+                )
+            else:
+                raise
+
+        if bc_list[lasti // 2].opname == "LOAD_METHOD" and isinstance(node, ast.Call):
+            node = node.func
+
+        # find decorators
+        if (
+            isinstance(node.parent, (ast.ClassDef, function_node_types))
+            and node in node.parent.decorator_list
+        ):
+            node_func = node.parent
+            index = lasti
+
+            def opname(i):
+                return bc_list[i // 2].opname
+
+            while True:
+                # idx-4: PRECALL
+                # idx-2: CACHE
+                # idx:   CALL
+                # idx+2: STORE_* / CACHE
+
+                if not (opname(index - 4) == "PRECALL" and opname(index) == "CALL"):
+                    break
+
+                if False and (
+                    bc_list[index // 2 - 2].positions != bc_list[index // 2].positions
+                ):
+                    break
+
+                if find_node(index) not in node_func.decorator_list:
+                    break
+
+                index += 2
+
+                while opname(index) == "CACHE":
+                    index += 2
+
+                if find_node(index) == node_func and opname(index).startswith("STORE_"):
+                    self.result = node_func
+                    self.decorator = node
+                    return
+                    # return Executing(frame, source, node_func, {node_func}, node)
+
+                index += 4
+
+        self.result = node
+        self.decorator = None
+
+        # return Executing(frame, source, node, stmts, None)
+
 
 class NodeFinder(object):
-    def __init__(self, frame, stmts, tree, lasti):
+    def __init__(self, frame, stmts, tree, lasti, source):
         assert_(stmts)
         self.frame = frame
         self.tree = tree
@@ -995,6 +966,10 @@ class NodeFinder(object):
             if instruction.opname != "EXTENDED_ARG":
                 return instruction
             index += 1
+
+
+if sys.version_info >= (3, 11):
+    NodeFinder = NewNodeFinder
 
 
 def non_sentinel_instructions(instructions, start):
