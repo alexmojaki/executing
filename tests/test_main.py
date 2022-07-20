@@ -538,7 +538,8 @@ class TestFiles(unittest.TestCase):
                 elif sys.version_info >= (3, 9) and in_finally(node):
                     correct = len(values) > 1
                 elif isinstance(node, ast.Assign):
-                    correct = len(values) == sum(
+                    # Allow a = b.c = 1
+                    correct = len(values) >= sum(
                         isinstance(target, (ast.Subscript, ast.Attribute))
                         for target in node.targets
                     )
