@@ -596,7 +596,7 @@ class TestFiles(unittest.TestCase):
                     ex = Source.executing(frame)
                     node = ex.node
                 except Exception:
-                    if inst.opname.startswith(('COMPARE_OP', 'IS_OP', 'CALL_', 'LOAD_NAME')):
+                    if inst.opname.startswith(('COMPARE_OP', 'IS_OP', 'CALL_', 'LOAD_NAME', 'STORE_SUBSCR')):
                         continue
                     if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
                         continue
