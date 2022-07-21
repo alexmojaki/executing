@@ -576,11 +576,13 @@ class NodeFinder(object):
         self.instruction = instruction = self.get_actual_current_instruction(lasti)
         op_name = instruction.opname
         extra_filter = lambda e: True
+        ctx = type(None)
 
         if op_name.startswith('CALL_'):
             typ = ast.Call
         elif op_name.startswith(('BINARY_SUBSCR', 'SLICE+')):
             typ = ast.Subscript
+            ctx = ast.Load
         elif op_name.startswith('BINARY_'):
             typ = ast.BinOp
             op_type = dict(
@@ -610,17 +612,25 @@ class NodeFinder(object):
             extra_filter = lambda e: isinstance(e.op, op_type)
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
+            ctx = ast.Load
             # `in` to handle private mangled attributes
             extra_filter = lambda e: e.attr in instruction.argval
         elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
             typ = ast.Name
+            ctx = ast.Load
             if PY3 or instruction.argval:
                 extra_filter = lambda e: e.id == instruction.argval
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
             extra_filter = lambda e: len(e.ops) == 1
-        elif op_name.startswith(('STORE_SLICE', 'STORE_ATTR', 'STORE_SUBSCR')):
-            typ = ast.Assign
+        elif op_name.startswith(('STORE_SLICE', 'STORE_SUBSCR')):
+            ctx = ast.Store
+            typ = ast.Subscript
+        elif op_name.startswith('STORE_ATTR'):
+            ctx = ast.Store
+            typ = ast.Attribute
+            # `in` to handle private mangled attributes
+            extra_filter = lambda e: e.attr in instruction.argval
         else:
             raise RuntimeError(op_name)
 
@@ -630,10 +640,14 @@ class NodeFinder(object):
                 for stmt in stmts
                 for node in ast.walk(stmt)
                 if isinstance(node, typ)
-                if not (hasattr(node, "ctx") and not isinstance(node.ctx, ast.Load))
+                if isinstance(getattr(node, "ctx", None), ctx)
                 if extra_filter(node)
                 if statement_containing_node(node) == stmt
             }
+
+            if ctx == ast.Store:
+                self.result = only(exprs)
+                return
 
             matching = list(self.matching_nodes(exprs))
             if not matching and typ == ast.Call:

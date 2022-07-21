@@ -114,10 +114,29 @@ class TestStuff(unittest.TestCase):
 
     def test_setattr(self):
         tester.x = 1
+        tester.y, tester.z = tester.foo, tester.bar = tester.spam = 1, 2
+
+        for tester.a, (tester.b, tester.c) in [(1, (2, 3))]:
+            pass
+
+        str([None for tester.a, (tester.b, tester.c) in [(1, (2, 3))]])
+
+        with self.assertRaises(NotOneValueFound):
+            tester.a = tester.a = 1
+
+        with self.assertRaises(NotOneValueFound):
+            tester.a, tester.a = 1, 2
 
     def test_setitem(self):
         tester['x'] = 1
         tester[:2] = 3
+        tester['a'], tester.b = 8, 9
+
+        with self.assertRaises(NotOneValueFound):
+            tester['a'] = tester['b'] = 1
+
+        with self.assertRaises(NotOneValueFound):
+            tester['a'], tester['b'] = 1, 2
 
     def test_comprehensions(self):
         # Comprehensions can be separated if they contain different names
@@ -496,12 +515,6 @@ class TestFiles(unittest.TestCase):
                     ast.Compare,
                     ast.Attribute,
                 ),
-            ) or (
-                isinstance(node, ast.Assign)
-                and any(
-                    isinstance(target, (ast.Subscript, ast.Attribute))
-                    for target in node.targets
-                )
             ):
                 nodes[node] = []
             elif isinstance(node, (ast.ClassDef, function_node_types)):
@@ -516,7 +529,11 @@ class TestFiles(unittest.TestCase):
                 if is_unary_not(node):
                     continue
 
-                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del, getattr(ast, 'Param', ()))):
+                ctx = getattr(node, 'ctx', None)
+                if isinstance(ctx, ast.Store):
+                    continue
+
+                if isinstance(ctx, (ast.Del, getattr(ast, 'Param', ()))):
                     assert not values
                     continue
 
@@ -537,12 +554,6 @@ class TestFiles(unittest.TestCase):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
                     correct = len(values) > 1
-                elif isinstance(node, ast.Assign):
-                    # Allow a = b.c = 1
-                    correct = len(values) >= sum(
-                        isinstance(target, (ast.Subscript, ast.Attribute))
-                        for target in node.targets
-                    )
                 else:
                     correct = len(values) == 1
 

@@ -258,7 +258,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._db_uri = db_uri"
+            "self._db_uri"
         ], 
         [
             "LOAD_FAST", 
@@ -266,7 +266,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._code_infos = {}"
+            "self._code_infos"
         ], 
         [
             "LOAD_FAST", 
@@ -274,7 +274,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._last_call_id = None"
+            "self._last_call_id"
         ], 
         [
             "LOAD_FAST", 
@@ -282,7 +282,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._ipython_cell_value = None"
+            "self._ipython_cell_value"
         ], 
         [
             "LOAD_FAST", 
@@ -318,7 +318,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.num_samples = num_samples or dict(\n            big=dict(\n                attributes=50,\n                dict=50,\n                list=30,\n                set=30,\n                pandas_rows=20,\n                pandas_cols=100,\n            ),\n            small=dict(\n                attributes=50,\n                dict=10,\n                list=6,\n                set=6,\n                pandas_rows=6,\n                pandas_cols=10,\n            ),\n        )"
+            "self.num_samples"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -374,7 +374,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "node._loops = tracer.loops(node)"
+            "node._loops"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -414,7 +414,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "node._is_interesting_expression = is_interesting_expression(node)"
+            "node._is_interesting_expression"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -478,7 +478,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "traced_file.tokens = ASTTokens(source, tree=traced_file.root)"
+            "traced_file.tokens"
         ], 
         [
             "LOAD_FAST", 
@@ -886,7 +886,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._ipython_cell_value = value"
+            "self._ipython_cell_value"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -1502,7 +1502,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "iteration.vals[node._tree_index] = value"
+            "iteration.vals[node._tree_index]"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -1762,7 +1762,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.start_time = get_unfrozen_datetime()"
+            "frame_info.start_time"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -1778,7 +1778,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.iteration = Iteration()"
+            "frame_info.iteration"
         ], 
         [
             "LOAD_FAST", 
@@ -1950,7 +1950,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.arguments = json.dumps([[k, cheap_repr(v)] for k, v in arguments])"
+            "frame_info.arguments"
         ], 
         [
             "LOAD_FAST", 
@@ -1970,7 +1970,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.call_id = self._call_id()"
+            "frame_info.call_id"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -1990,7 +1990,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.inner_calls = defaultdict(list)"
+            "frame_info.inner_calls"
         ], 
         [
             "LOAD_FAST", 
@@ -2298,7 +2298,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._last_call_id = frame_info.call_id"
+            "self._last_call_id"
         ], 
         [
             "LOAD_DEREF", 
@@ -2538,7 +2538,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "d[full_path[-1]] = node_value"
+            "d[full_path[-1]]"
         ], 
         [
             "LOAD_FAST", 
@@ -2950,7 +2950,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "traced_file.is_ipython_cell = True"
+            "traced_file.is_ipython_cell"
         ], 
         [
             "LOAD_FAST", 
@@ -3102,7 +3102,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._ipython_cell_value = None"
+            "self._ipython_cell_value"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -3278,7 +3278,7 @@
         ], 
         [
             "STORE_SLICE+2", 
-            "lines[:frame.f_lineno] = [''] * frame.f_lineno"
+            "lines[:frame.f_lineno]"
         ], 
         [
             "LOAD_ATTR", 
@@ -3974,7 +3974,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "self._code_infos[code] = CodeInfo(db_func, traced_file, arg_names)"
+            "self._code_infos[code]"
         ], 
         [
             "LOAD_FAST", 
@@ -4750,7 +4750,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "traced_file.root._depth = 0"
+            "traced_file.root._depth"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -4806,7 +4806,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "child._depth = node._depth + 1"
+            "child._depth"
         ], 
         [
             "LOAD_FAST", 
@@ -5442,7 +5442,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.vals = {}"
+            "self.vals"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -5462,7 +5462,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.loops = defaultdict(IterationList)"
+            "self.loops"
         ], 
         [
             "LOAD_FAST", 
@@ -5470,7 +5470,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.index = None"
+            "self.index"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -5482,7 +5482,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.keep = False"
+            "self.keep"
         ], 
         [
             "LOAD_FAST", 
@@ -5534,7 +5534,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.start = []"
+            "self.start"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -5558,7 +5558,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.end = deque(maxlen=self.side_len)"
+            "self.end"
         ], 
         [
             "LOAD_FAST", 
@@ -5566,7 +5566,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.length = 0"
+            "self.length"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -5582,7 +5582,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.recorded = Counter()"
+            "self.recorded"
         ], 
         [
             "LOAD_FAST", 
@@ -5730,11 +5730,15 @@
         ], 
         [
             "STORE_ATTR", 
-            "iteration.index = self.length"
+            "iteration.index"
         ], 
         [
             "LOAD_FAST", 
             "self"
+        ], 
+        [
+            "STORE_ATTR", 
+            "self.length"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -5830,7 +5834,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.last().keep = True"
+            "self.last().keep"
         ], 
         [
             "LOAD_FAST", 
@@ -5843,6 +5847,10 @@
         [
             "LOAD_FAST", 
             "node"
+        ], 
+        [
+            "STORE_SUBSCR", 
+            "self.recorded[node]"
         ], 
         [
             "LOAD_NAME", 
@@ -5950,7 +5958,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.lock = Lock()"
+            "self.lock"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -5966,7 +5974,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.data = defaultdict(lambda: len(self.data))"
+            "self.data"
         ], 
         [
             "LOAD_DEREF", 
@@ -6150,7 +6158,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.val_repr = val_repr"
+            "self.val_repr"
         ], 
         [
             "LOAD_FAST", 
@@ -6162,7 +6170,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.type_index = type_index"
+            "self.type_index"
         ], 
         [
             "LOAD_FAST", 
@@ -6170,7 +6178,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.meta = None"
+            "self.meta"
         ], 
         [
             "LOAD_FAST", 
@@ -6178,7 +6186,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.children = None"
+            "self.children"
         ], 
         [
             "LOAD_FAST", 
@@ -6194,7 +6202,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.meta = self.meta or {}"
+            "self.meta"
         ], 
         [
             "LOAD_FAST", 
@@ -6214,7 +6222,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "self.meta[key] = value"
+            "self.meta[key]"
         ], 
         [
             "LOAD_FAST", 
@@ -6230,7 +6238,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.children = self.children or []"
+            "self.children"
         ], 
         [
             "LOAD_FAST", 
@@ -6730,7 +6738,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "meta['row_break'] = max_rows // 2"
+            "meta['row_break']"
         ], 
         [
             "LOAD_FAST", 
@@ -6782,7 +6790,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "meta['col_break'] = max_cols // 2"
+            "meta['col_break']"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -8380,7 +8388,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "package.snoop.config = config"
+            "package.snoop.config"
         ], 
         [
             "LOAD_FAST", 
@@ -8396,7 +8404,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "package.pp.config = config"
+            "package.pp.config"
         ], 
         [
             "LOAD_FAST", 
@@ -8412,7 +8420,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "package.spy.config = config"
+            "package.spy.config"
         ], 
         [
             "LOAD_NAME", 
@@ -8500,7 +8508,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.write = get_write_function(out, overwrite)"
+            "self.write"
         ], 
         [
             "LOAD_FAST", 
@@ -8528,7 +8536,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.formatter = formatter_class(prefix, columns, color)"
+            "self.formatter"
         ], 
         [
             "LOAD_FAST", 
@@ -8540,7 +8548,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.enabled = enabled"
+            "self.enabled"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -8560,7 +8568,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.pp = PP(self)"
+            "self.pp"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -8576,7 +8584,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.snoop = ConfiguredTracer"
+            "self.snoop"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -8596,7 +8604,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.spy = Spy(self)"
+            "self.spy"
         ], 
         [
             "LOAD_DEREF", 
@@ -8604,7 +8612,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.last_frame = None"
+            "self.last_frame"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -8624,7 +8632,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.thread_local = threading.local()"
+            "self.thread_local"
         ], 
         [
             "LOAD_FAST", 
@@ -8652,7 +8660,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.watch_extras = ensure_tuple(replace_watch_extras)"
+            "self.watch_extras"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -8684,7 +8692,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.watch_extras = (len_shape_watch, dtype_watch) + ensure_tuple(watch_extras)"
+            "self.watch_extras"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -9044,7 +9052,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.path = six.text_type(path)"
+            "self.path"
         ], 
         [
             "LOAD_FAST", 
@@ -9056,7 +9064,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.overwrite = overwrite"
+            "self.overwrite"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -9108,7 +9116,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.overwrite = False"
+            "self.overwrite"
         ]
     ], 
     "db.py": [
@@ -9234,7 +9242,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.db_uri = db_uri = (\n                db_uri\n                or os.environ.get('BIRDSEYE_DB')\n                or os.path.join(os.path.expanduser('~'),\n                                '.birdseye.db'))"
+            "self.db_uri"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -9302,7 +9310,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.engine = engine"
+            "self.engine"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -9322,7 +9330,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.Session = sessionmaker(bind=engine)"
+            "self.Session"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -9390,7 +9398,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.Call = Call"
+            "self.Call"
         ], 
         [
             "LOAD_FAST", 
@@ -9402,7 +9410,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.Function = Function"
+            "self.Function"
         ], 
         [
             "LOAD_DEREF", 
@@ -9414,7 +9422,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._KeyValue = KeyValue"
+            "self._KeyValue"
         ], 
         [
             "LOAD_FAST", 
@@ -9430,7 +9438,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.key_value_store = kv = KeyValueStore()"
+            "self.key_value_store"
         ], 
         [
             "LOAD_FAST", 
@@ -9482,7 +9490,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "kv.version = DB_VERSION"
+            "kv.version"
         ], 
         [
             "LOAD_FAST", 
@@ -10964,7 +10972,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "result = d[args] = func(*args)"
+            "d[args]"
         ], 
         [
             "LOAD_FAST", 
@@ -11416,7 +11424,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.filename = filename"
+            "self.filename"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -11460,7 +11468,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.text = text"
+            "self.text"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -11548,7 +11556,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._nodes_by_line = defaultdict(list)"
+            "self._nodes_by_line"
         ], 
         [
             "LOAD_FAST", 
@@ -11556,7 +11564,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.tree = None"
+            "self.tree"
         ], 
         [
             "LOAD_FAST", 
@@ -11564,7 +11572,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._qualnames = {}"
+            "self._qualnames"
         ], 
         [
             "LOAD_FAST", 
@@ -11596,7 +11604,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.tree = ast.parse(ast_text, filename=filename)"
+            "self.tree"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -11648,7 +11656,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "child.parent = node"
+            "child.parent"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -11736,7 +11744,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._qualnames = visitor.qualnames"
+            "self._qualnames"
         ], 
         [
             "LOAD_FAST", 
@@ -11852,7 +11860,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "result = source_cache[filename] = cls(filename, ''.join(lines))"
+            "source_cache[filename]"
         ], 
         [
             "LOAD_FAST", 
@@ -12076,7 +12084,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "executing_cache[key] = args"
+            "executing_cache[key]"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -12336,7 +12344,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.frame = frame"
+            "self.frame"
         ], 
         [
             "LOAD_FAST", 
@@ -12348,7 +12356,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.source = source"
+            "self.source"
         ], 
         [
             "LOAD_FAST", 
@@ -12360,7 +12368,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.node = node"
+            "self.node"
         ], 
         [
             "LOAD_FAST", 
@@ -12372,7 +12380,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.statements = stmts"
+            "self.statements"
         ], 
         [
             "LOAD_FAST", 
@@ -12496,7 +12504,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.stack = []"
+            "self.stack"
         ], 
         [
             "LOAD_FAST", 
@@ -12504,7 +12512,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.qualnames = {}"
+            "self.qualnames"
         ], 
         [
             "LOAD_FAST", 
@@ -12944,7 +12952,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.frame = frame"
+            "self.frame"
         ], 
         [
             "LOAD_FAST", 
@@ -12956,7 +12964,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.tree = tree"
+            "self.tree"
         ], 
         [
             "LOAD_FAST", 
@@ -13180,7 +13188,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.result = only(list(self.matching_nodes(exprs)))"
+            "self.result"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -13684,7 +13692,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "field[i] = new_node"
+            "field[i]"
         ], 
         [
             "LOAD_DEREF", 
@@ -13946,7 +13954,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self._spec = spec"
+            "self._spec"
         ], 
         [
             "LOAD_FAST", 
@@ -13958,7 +13966,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.source = source"
+            "self.source"
         ], 
         [
             "LOAD_FAST", 
@@ -13970,7 +13978,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.deep = deep"
+            "self.deep"
         ], 
         [
             "LOAD_FAST", 
@@ -14636,7 +14644,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "sys.stderr = stream_proxy(sys.stderr)"
+            "sys.stderr"
         ], 
         [
             "LOAD_NAME", 
@@ -14660,7 +14668,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "sys.stdout = stream_proxy(sys.stdout)"
+            "sys.stdout"
         ], 
         [
             "LOAD_NAME", 
@@ -14824,7 +14832,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "thread_proxies[current_thread().ident] = fake_stream()"
+            "thread_proxies[current_thread().ident]"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -14968,7 +14976,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "server.db = Database(self.db_url)"
+            "server.db"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -14988,7 +14996,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "server.Function = server.db.Function"
+            "server.Function"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -15008,7 +15016,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "server.Call = server.db.Call"
+            "server.Call"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -15028,7 +15036,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "server.Session = server.db.Session"
+            "server.Session"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -15096,7 +15104,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "eye.db = Database(self.db_url)"
+            "eye.db"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -15246,7 +15254,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "app.jinja_env.auto_reload = True"
+            "app.jinja_env.auto_reload"
         ], 
         [
             "LOAD_NAME", 
@@ -15282,7 +15290,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "app.url_map.converters['file'] = FileConverter"
+            "app.url_map.converters['file']"
         ], 
         [
             "LOAD_NAME", 
@@ -20552,7 +20560,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "c.x = c.y = tester"
+            "c.x"
         ], 
         [
             "LOAD_FAST", 
@@ -20560,7 +20568,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "c.x = c.y = tester"
+            "c.y"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -20764,7 +20772,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame.f_lasti = inst.offset"
+            "frame.f_lasti"
         ], 
         [
             "LOAD_FAST", 
@@ -20776,7 +20784,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame.f_code = code"
+            "frame.f_code"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -20792,7 +20800,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame.f_globals = globals()"
+            "frame.f_globals"
         ], 
         [
             "LOAD_FAST", 
@@ -20804,7 +20812,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame.f_lineno = lineno"
+            "frame.f_lineno"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -20920,7 +20928,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "func.x = x"
+            "func.x"
         ], 
         [
             "LOAD_FAST", 
@@ -21834,7 +21842,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.root = compile(source, filename, 'exec', ast.PyCF_ONLY_AST | flags, dont_inherit=True)"
+            "self.root"
         ], 
         [
             "LOAD_FAST", 
@@ -21842,7 +21850,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.nodes = []"
+            "self.nodes"
         ], 
         [
             "LOAD_FAST", 
@@ -21902,7 +21910,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.root = new_root"
+            "self.root"
         ], 
         [
             "LOAD_FAST", 
@@ -21994,7 +22002,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.code = compile(new_root, filename, \"exec\", dont_inherit=True, flags=flags)"
+            "self.code"
         ], 
         [
             "LOAD_FAST", 
@@ -22006,7 +22014,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.tracer = tracer"
+            "self.tracer"
         ], 
         [
             "LOAD_FAST", 
@@ -22018,7 +22026,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.source = source"
+            "self.source"
         ], 
         [
             "LOAD_FAST", 
@@ -22030,7 +22038,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.filename = filename"
+            "self.filename"
         ], 
         [
             "LOAD_FAST", 
@@ -22038,7 +22046,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.nodes = []"
+            "self.nodes"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -22086,7 +22094,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "child.parent = node"
+            "child.parent"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -22110,7 +22118,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "node._tree_index = len(self.nodes)"
+            "node._tree_index"
         ], 
         [
             "LOAD_FAST", 
@@ -22214,7 +22222,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "node._visit_ignore = True"
+            "node._visit_ignore"
         ], 
         [
             "LOAD_FAST", 
@@ -22282,7 +22290,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "stmt._enter_call_node = True"
+            "stmt._enter_call_node"
         ], 
         [
             "LOAD_FAST", 
@@ -22290,7 +22298,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.statement_stack = []"
+            "self.statement_stack"
         ], 
         [
             "LOAD_FAST", 
@@ -22298,7 +22306,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.expression_stack = []"
+            "self.expression_stack"
         ], 
         [
             "LOAD_FAST", 
@@ -22306,7 +22314,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.expression_values = {}"
+            "self.expression_values"
         ], 
         [
             "LOAD_FAST", 
@@ -22314,7 +22322,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.return_node = None"
+            "self.return_node"
         ], 
         [
             "LOAD_FAST", 
@@ -22322,7 +22330,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.exc_value = None"
+            "self.exc_value"
         ], 
         [
             "LOAD_NAME", 
@@ -22346,7 +22354,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.stack = {}"
+            "self.stack"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -22366,7 +22374,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.main_to_secondary_frames = defaultdict(list)"
+            "self.main_to_secondary_frames"
         ], 
         [
             "LOAD_FAST", 
@@ -22374,7 +22382,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.secondary_to_main_frames = {}"
+            "self.secondary_to_main_frames"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -22834,7 +22842,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "new_func.__kwdefaults__ = getattr(func, '__kwdefaults__', None)"
+            "new_func.__kwdefaults__"
         ], 
         [
             "LOAD_FAST", 
@@ -22846,7 +22854,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "new_func.traced_file = traced_file"
+            "new_func.traced_file"
         ], 
         [
             "LOAD_FAST", 
@@ -23266,7 +23274,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "self.secondary_to_main_frames[original_frame] = frame"
+            "self.secondary_to_main_frames[original_frame]"
         ], 
         [
             "LOAD_FAST", 
@@ -23634,7 +23642,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "frame_info.expression_values[node] = value"
+            "frame_info.expression_values[node]"
         ], 
         [
             "LOAD_FAST", 
@@ -23706,7 +23714,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "self.stack[current_frame] = FrameInfo()"
+            "self.stack[current_frame]"
         ], 
         [
             "LOAD_FAST", 
@@ -24414,7 +24422,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.tracer = tracer"
+            "self.tracer"
         ], 
         [
             "LOAD_FAST", 
@@ -24426,7 +24434,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.node = node"
+            "self.node"
         ], 
         [
             "LOAD_FAST", 
@@ -24438,7 +24446,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.frame = frame"
+            "self.frame"
         ], 
         [
             "LOAD_FAST", 
@@ -24522,7 +24530,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.expression_stack = []"
+            "frame_info.expression_stack"
         ], 
         [
             "LOAD_FAST", 
@@ -24654,7 +24662,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.exc_value = exc_val"
+            "frame_info.exc_value"
         ], 
         [
             "LOAD_FAST", 
@@ -24766,7 +24774,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.return_node = node"
+            "frame_info.return_node"
         ], 
         [
             "LOAD_FAST", 
@@ -25356,7 +25364,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "find_repr_function(six.text_type).maxparts = 100"
+            "find_repr_function(six.text_type).maxparts"
         ], 
         [
             "LOAD_NAME", 
@@ -25376,7 +25384,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "find_repr_function(six.binary_type).maxparts = 100"
+            "find_repr_function(six.binary_type).maxparts"
         ], 
         [
             "LOAD_NAME", 
@@ -25392,7 +25400,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "find_repr_function(object).maxparts = 100"
+            "find_repr_function(object).maxparts"
         ], 
         [
             "LOAD_NAME", 
@@ -25408,7 +25416,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "find_repr_function(int).maxparts = 999999"
+            "find_repr_function(int).maxparts"
         ], 
         [
             "LOAD_NAME", 
@@ -25416,7 +25424,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "cheap_repr.suppression_threshold = 999999"
+            "cheap_repr.suppression_threshold"
         ], 
         [
             "LOAD_NAME", 
@@ -25528,7 +25536,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.frame = frame"
+            "self.frame"
         ], 
         [
             "LOAD_FAST", 
@@ -25536,7 +25544,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.local_reprs = {}"
+            "self.local_reprs"
         ], 
         [
             "LOAD_FAST", 
@@ -25552,7 +25560,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.last_line_no = frame.f_lineno"
+            "self.last_line_no"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -25568,7 +25576,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.comprehension_variables = OrderedDict()"
+            "self.comprehension_variables"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -25592,7 +25600,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.source = Source.for_frame(frame)"
+            "self.source"
         ], 
         [
             "LOAD_FAST", 
@@ -25624,7 +25632,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.is_generator = frame.f_code.co_flags & inspect.CO_GENERATOR"
+            "self.is_generator"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -25636,7 +25644,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.had_exception = False"
+            "self.had_exception"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -25700,7 +25708,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.comprehension_type = (\n                    re.match(r'<(\\w+)comp>', frame.f_code.co_name).group(1).title()\n                    + u' comprehension'\n            )"
+            "self.comprehension_type"
         ], 
         [
             "LOAD_FAST", 
@@ -25708,7 +25716,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.comprehension_type = ''"
+            "self.comprehension_type"
         ], 
         [
             "LOAD_FAST", 
@@ -25728,7 +25736,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.last_line_no = self.frame.f_lineno"
+            "self.last_line_no"
         ], 
         [
             "LOAD_FAST", 
@@ -25772,7 +25780,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.local_reprs = OrderedDict(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )"
+            "self.local_reprs"
         ], 
         [
             "LOAD_FAST", 
@@ -25876,7 +25884,7 @@
         ], 
         [
             "STORE_SLICE+0", 
-            "values[:] = truncate_list(values, 11)"
+            "values[:]"
         ], 
         [
             "LOAD_FAST", 
@@ -26268,7 +26276,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "result.default = result()"
+            "result.default"
         ], 
         [
             "LOAD_FAST", 
@@ -26476,7 +26484,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.watch = [\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ] + [\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]"
+            "self.watch"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -26496,7 +26504,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.frame_infos = ArgDefaultDict(FrameInfo)"
+            "self.frame_infos"
         ], 
         [
             "LOAD_FAST", 
@@ -26508,7 +26516,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.depth = depth"
+            "self.depth"
         ], 
         [
             "LOAD_FAST", 
@@ -26536,7 +26544,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.target_codes = set()"
+            "self.target_codes"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -26552,7 +26560,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.target_frames = set()"
+            "self.target_frames"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -26820,7 +26828,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "calling_frame.f_trace = self.trace"
+            "calling_frame.f_trace"
         ], 
         [
             "LOAD_FAST", 
@@ -26856,7 +26864,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.config.last_frame = calling_frame"
+            "self.config.last_frame"
         ], 
         [
             "LOAD_FAST", 
@@ -27323,6 +27331,10 @@
             "thread_local"
         ], 
         [
+            "STORE_ATTR", 
+            "thread_local.depth"
+        ], 
+        [
             "LOAD_FAST", 
             "self"
         ], 
@@ -27456,7 +27468,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "frame_info.had_exception = True"
+            "frame_info.had_exception"
         ], 
         [
             "LOAD_FAST", 
@@ -27472,7 +27484,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.config.last_frame = frame"
+            "self.config.last_frame"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -27568,7 +27580,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "trace_event.variables = frame_info.update_variables(\n                self.watch,\n                self.config.watch_extras,\n                event,\n            )"
+            "trace_event.variables"
         ], 
         [
             "LOAD_FAST", 
@@ -27593,6 +27605,10 @@
         [
             "LOAD_FAST", 
             "thread_local"
+        ], 
+        [
+            "STORE_ATTR", 
+            "thread_local.depth"
         ], 
         [
             "LOAD_FAST", 
@@ -27656,7 +27672,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.config = config"
+            "self.config"
         ], 
         [
             "LOAD_GLOBAL", 
@@ -28610,7 +28626,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "text.mode = 'r'"
+            "text.mode"
         ], 
         [
             "LOAD_FAST", 
@@ -29556,7 +29572,7 @@
         ], 
         [
             "STORE_ATTR", 
-            "self.factory = factory"
+            "self.factory"
         ], 
         [
             "LOAD_FAST", 
@@ -29584,7 +29600,7 @@
         ], 
         [
             "STORE_SUBSCR", 
-            "result = self[key] = self.factory(key)"
+            "self[key]"
         ], 
         [
             "LOAD_FAST", 

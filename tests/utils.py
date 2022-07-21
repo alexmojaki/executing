@@ -70,18 +70,16 @@ class Tester(object):
             super(Tester, self).__setattr__(name, value)
             return
 
-        node = self.get_node(ast.Assign)
-        self.check(node.value, value)
-        self.check(node.targets[0].value, self)
-        assert node.targets[0].attr == name
+        node = self.get_node(ast.Attribute)
+        self.check(node.value, self)
+        assert node.attr == name
         return self
 
     def __setitem__(self, key, value):
-        node = self.get_node(ast.Assign)
-        self.check(node.value, value)
+        node = self.get_node(ast.Subscript)
+        self.check(node.value, self)
         if not isinstance(key, slice):
-            self.check(subscript_item(node.targets[0]), key)
-        self.check(node.targets[0].value, self)
+            self.check(subscript_item(node), key)
         return self
 
     def __add__(self, other):
