@@ -604,7 +604,8 @@ class TestFiles(unittest.TestCase):
 
                     # Attributes which appear ambiguously in modules:
                     #   op1.sign, op2.sign = (0, 0)
-                    if inst.opname == 'STORE_ATTR' and inst.argval in ['sign']:
+                    #   nm_tpl.__annotations__ = nm_tpl.__new__.__annotations__ = types
+                    if inst.opname == 'STORE_ATTR' and inst.argval in ['sign', '__annotations__']:
                         continue
 
                     if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
