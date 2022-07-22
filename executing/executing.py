@@ -613,8 +613,7 @@ class NodeFinder(object):
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
             ctx = ast.Load
-            # `in` to handle private mangled attributes
-            extra_filter = lambda e: e.attr in instruction.argval
+            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
         elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
             typ = ast.Name
             ctx = ast.Load
@@ -629,8 +628,7 @@ class NodeFinder(object):
         elif op_name.startswith('STORE_ATTR'):
             ctx = ast.Store
             typ = ast.Attribute
-            # `in` to handle private mangled attributes
-            extra_filter = lambda e: e.attr in instruction.argval
+            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
         else:
             raise RuntimeError(op_name)
 
@@ -1106,3 +1104,16 @@ def is_ipython_cell_code(code_obj):
         is_ipython_cell_filename(code_obj.co_filename) and
         is_ipython_cell_code_name(code_obj.co_name)
     )
+
+
+def attr_names_match(attr, argval):
+    """
+    Checks that the user-visible attr (from ast) can correspond to
+    the argval in the bytecode, i.e. the real attribute fetched internally,
+    which may be mangled for private attributes.
+    """
+    if attr == argval:
+        return True
+    if not attr.startswith("__"):
+        return False
+    return bool(re.match(r"^_\w+%s$" % attr, argval))
