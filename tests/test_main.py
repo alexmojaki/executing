@@ -507,7 +507,10 @@ class TestFiles(unittest.TestCase):
 
         for filename in os.listdir(samples_dir):
             full_filename = os.path.join(samples_dir, filename)
-            result[filename] = self.check_filename(full_filename, check_names=True)
+            file_result= self.check_filename(full_filename, check_names=True)
+
+            if file_result is not None:
+                result[filename] = file_result
 
         if os.getenv('FIX_EXECUTING_TESTS'):
             with open(result_filename, 'w') as outfile:
@@ -555,8 +558,14 @@ class TestFiles(unittest.TestCase):
                 print("Time's up")
 
     def check_filename(self, filename, check_names):
-        print(filename)
         source = Source.for_filename(filename)
+
+        if source.tree is None:
+            # we could not parse this file (maybe wrong python version)
+            print("skip %s"%filename)
+            return
+
+        print("check %s"%filename)
 
         if PY3 and sys.version_info < (3, 11):
             code = compile(source.text, filename, "exec", dont_inherit=True)
@@ -593,6 +602,10 @@ class TestFiles(unittest.TestCase):
                 if sys.version_info < (3, 11):
                     if is_unary_not(node):
                         continue
+
+                    if sys.version_info >= (3, 8):
+                        if is_annotation(node):
+                            continue
 
                     if isinstance(
                         getattr(node, "ctx", None),
