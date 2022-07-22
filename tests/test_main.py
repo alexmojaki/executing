@@ -445,6 +445,45 @@ def end(obj):
     return SourcePosition(obj.end_lineno, obj.end_col_offset)
 
 
+def is_annotation(node):
+    if isinstance(node, ast.AnnAssign):
+        return True
+
+    x = node
+    while hasattr(x, "parent"):
+        # check for annotated function arguments
+        # def foo(i: int) -> int
+        #            ^^^
+        if isinstance(x.parent, ast.arg) and x.parent.annotation == x:
+            return True
+
+        # check for function return value annotation
+        # def foo() -> int
+        #              ^^^
+        if isinstance(x.parent, ast.FunctionDef) and x.parent.returns == x:
+            return True
+
+        # annotation itself
+        # a: int = 5
+        #    ^^^
+        if isinstance(x.parent, ast.AnnAssign) and x.parent.annotation == x:
+            return True
+
+        # target of an annotation without value
+        # a: int
+        # ^
+        if (
+            isinstance(x.parent, ast.AnnAssign)
+            and x.parent.target == x
+            and x.parent.value == None
+        ):
+            return True
+        
+        x = x.parent
+
+    return False
+
+
 @unittest.skipUnless(
     os.getenv('EXECUTING_SLOW_TESTS'),
     'These tests are very slow, enable them explicitly',
@@ -475,8 +514,17 @@ class TestFiles(unittest.TestCase):
                 json.dump(result, outfile, indent=4, sort_keys=True)
             return
         else:
-            with open(result_filename, 'r') as infile:
-                self.assertEqual(result, json.load(infile))
+            with open(result_filename, "r") as infile:
+                old_results = json.load(infile)
+                for k, v in old_results.items():
+                    self.assertEqual(result[k], v, "got different results for %s" % k)
+
+                for k, v in result.items():
+                    self.assertTrue(
+                        k in old_results,
+                        msg="%s not in old results (set FIX_EXECUTING_TESTS=1 to add them)"
+                        % k,
+                    )
 
         modules = list(sys.modules.values())
         shuffle(modules)
@@ -557,6 +605,7 @@ class TestFiles(unittest.TestCase):
                             assert not values, [ast.dump(node), values]
                             continue
 
+
                     if isinstance(node, ast.Compare):
                         if sys.version_info >= (3, 10):
                             continue
@@ -574,6 +623,10 @@ class TestFiles(unittest.TestCase):
                 else:
                     if is_unary_not(node):
                         continue
+
+                    if is_annotation(node):
+                        continue
+
 
                     # (is/is not) None
                     if (
@@ -622,6 +675,13 @@ class TestFiles(unittest.TestCase):
                         p(ast.dump(node, indent=4))
                     else:
                         p(ast.dump(node))
+
+                    parents = []
+                    parent = node
+                    while hasattr(parent, "parent"):
+                        parent = parent.parent
+                        parents.append(parent)
+                    p("parents:", parents)
 
                     p(
                         "node range:",
