@@ -601,6 +601,12 @@ class TestFiles(unittest.TestCase):
                 except Exception:
                     if inst.opname.startswith(('COMPARE_OP', 'IS_OP', 'CALL_', 'LOAD_NAME', 'STORE_SUBSCR')):
                         continue
+
+                    # Attributes which appear ambiguously in modules:
+                    #   op1.sign, op2.sign = (0, 0)
+                    if inst.opname == 'STORE_ATTR' and inst.argval in ['sign']:
+                        continue
+
                     if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
                         continue
 
