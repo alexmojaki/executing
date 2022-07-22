@@ -618,7 +618,7 @@ class NewNodeFinder(object):
             # lineno of LOAD_METHOD instructions get set to end_lineno by the python compiler
             # propably to achive improved error messages (PEP-657)
             # we ignore here the start position and try to find the ast-node just by end position and expected node type
-            if bc_list[lasti // 2].opname == "LOAD_METHOD":
+            if bc_list[lasti // 2].opname in ("LOAD_METHOD","LOAD_ATTR"):
                 node = find_node(
                     lasti,
                     ignore_positions=("col_offset", "lineno"),

@@ -519,13 +519,18 @@ class TestFiles(unittest.TestCase):
         else:
             with open(result_filename, "r") as infile:
                 old_results = json.load(infile)
-                for k, v in old_results.items():
-                    self.assertEqual(result[k], v, "got different results for %s" % k)
 
-                for k, v in result.items():
-                    self.assertTrue(
-                        k in old_results,
-                        msg="%s not in old results (set FIX_EXECUTING_TESTS=1 to add them)"
+            for k, v in old_results.items():
+                self.assertEqual(result[k], v, "got different results for %s" % k)
+
+            if any(k not in old_results for k in result):
+                if os.getenv("ADD_EXECUTING_TESTS"):
+                    with open(result_filename, "w") as outfile:
+                        json.dump(result, outfile, indent=4, sort_keys=True)
+                    return
+                else:
+                    self.fail(
+                        msg="%s not in old results (set ADD_EXECUTING_TESTS=1 to add them)"
                         % k,
                     )
 
@@ -777,7 +782,9 @@ class TestFiles(unittest.TestCase):
                         "LOAD_GLOBAL",
                         "STORE_ATTR",
                         "DELETE_ATTR",
+                        "DELETE_NAME",
                         "STORE_SUBSCR",
+                        "STORE_SLICE",
                         "DELETE_SUBSCR",
                         "STORE_NAME",
                         "STORE_FAST",
@@ -859,28 +866,47 @@ class TestFiles(unittest.TestCase):
 
                         dump_source(source_code, start(inst), end(inst))
 
+                        options = []
                         for node in ast.walk(ast.parse(source_code)):
                             if not hasattr(node, "lineno"):
                                 continue
 
-                            if {start(node), end(node)} & {start(inst), end(inst)}:
+                            # if {start(node), end(node)} & {start(inst), end(inst)}:
+                            if start(node) <= end(inst) and start(inst) <= end(node):
+                                options.append(node)
 
-                                print()
-                                print(
-                                    "possible node",
-                                    node.lineno,
-                                    node.end_lineno,
-                                    node.col_offset,
-                                    node.end_col_offset,
-                                    ast.dump(node),
-                                )
+                        for node in sorted(
+                            options,
+                            key=lambda node: (
+                                node.end_lineno - node.lineno,
+                                node.end_col_offset - node.col_offset,
+                            ),
+                        ):
+
+                            if (
+                                0
+                                and (node.end_lineno - node.lineno)
+                                > (inst.positions.end_lineno - inst.positions.lineno)
+                                * 4
+                            ):
+                                # skip nodes which are way to long
+                                continue
+
+                            print()
+                            print(
+                                "possible node",
+                                node.lineno,
+                                node.end_lineno,
+                                node.col_offset,
+                                node.end_col_offset,
+                                ast.dump(node),
+                            )
 
                     raise
                 # argval isn't set for all relevant instructions in python 2
                 if isinstance(node, ast.Name) and (PY3 or inst.argval) and False:
                     self.assertEqual(inst.argval, node.id, msg=(inst, ast.dump(node)))
             except Exception:
-                print(source.text, lineno, inst, node and ast.dump(node), code, file=sys.stderr, sep='\n')
                 raise
 
             if ex.decorator:
