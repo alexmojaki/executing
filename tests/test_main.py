@@ -441,7 +441,7 @@ class TestFiles(unittest.TestCase):
 
     maxDiff = None
 
-    def test_files(self):
+    def test_sample_files(self):
         self.start_time = time.time()
         root_dir = os.path.dirname(__file__)
         samples_dir = os.path.join(root_dir, 'samples')
@@ -460,6 +460,9 @@ class TestFiles(unittest.TestCase):
         else:
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
+
+    def test_module_files(self):
+        self.start_time = time.time()
 
         modules = list(sys.modules.values())
         shuffle(modules)
