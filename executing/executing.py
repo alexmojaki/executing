@@ -644,6 +644,9 @@ class NodeFinder(object):
             }
 
             if ctx == ast.Store:
+                # No special bytecode tricks here.
+                # We can handle multiple assigned attributes with different names,
+                # but only one assigned subscript.
                 self.result = only(exprs)
                 return
 
@@ -719,10 +722,6 @@ class NodeFinder(object):
             if inst == self.instruction
         )
         for expr_index, expr in enumerate(exprs):
-            if isinstance(expr, ast.Assign):
-                yield expr
-                continue
-
             setter = get_setter(expr)
             # noinspection PyArgumentList
             replacement = ast.BinOp(

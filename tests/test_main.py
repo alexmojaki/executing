@@ -536,6 +536,9 @@ class TestFiles(unittest.TestCase):
 
                 ctx = getattr(node, 'ctx', None)
                 if isinstance(ctx, ast.Store):
+                    # Assignment to attributes and subscripts is less magical
+                    # but can also fail fairly easily, so we can't guarantee
+                    # that every node can be identified with some instruction.
                     continue
 
                 if isinstance(ctx, (ast.Del, getattr(ast, 'Param', ()))):
