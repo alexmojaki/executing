@@ -116,6 +116,8 @@ class TestStuff(unittest.TestCase):
         tester.x = 1
         tester.y, tester.z = tester.foo, tester.bar = tester.spam = 1, 2
 
+        tester.test_set_private_attrs()
+
         for tester.a, (tester.b, tester.c) in [(1, (2, 3))]:
             pass
 

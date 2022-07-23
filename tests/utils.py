@@ -2,6 +2,7 @@ import sys
 import ast
 import inspect
 import executing.executing
+from executing.executing import attr_names_match
 
 executing.executing.TESTING = 1
 
@@ -12,6 +13,11 @@ class Tester(object):
     def __init__(self):
         self.decorators = []
         self.__name__ = ""  # weird pypy3.6 thing
+
+    def test_set_private_attrs(self):
+        # Test that attributes with leading __ are handled properly,
+        # as Python mangles their names.
+        self.a, self.aa, self._a, self.__a, self.__aa = range(5)
 
     def check_decorators(self, expected):
         assert self.decorators == expected, (self.decorators, expected)
@@ -72,7 +78,12 @@ class Tester(object):
 
         node = self.get_node(ast.Attribute)
         self.check(node.value, self)
-        assert node.attr == name
+        if node.attr.startswith('__'):
+            # Account for Python's name mangling of private attributes.
+            assert name == "_{self.__class__.__name__}{node.attr}".format(self=self, node=node)
+        else:
+            assert name == node.attr
+        assert attr_names_match(node.attr, name)
         return self
 
     def __setitem__(self, key, value):
