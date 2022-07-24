@@ -22,7 +22,7 @@ from tests.utils import tester, subscript_item, in_finally
 PYPY = 'pypy' in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions, function_node_types
+from executing.executing import PY3, get_instructions, function_node_types, attr_names_match
 
 if eval("0"):
     global_never_defined = 1
@@ -111,6 +111,34 @@ class TestStuff(unittest.TestCase):
 
         Foo().foo()
         tester.check_decorators([3, 1, 0, 2, 0])
+
+    def test_setattr(self):
+        tester.x = 1
+        tester.y, tester.z = tester.foo, tester.bar = tester.spam = 1, 2
+
+        tester.test_set_private_attrs()
+
+        for tester.a, (tester.b, tester.c) in [(1, (2, 3))]:
+            pass
+
+        str([None for tester.a, (tester.b, tester.c) in [(1, (2, 3))]])
+
+        with self.assertRaises(NotOneValueFound):
+            tester.a = tester.a = 1
+
+        with self.assertRaises(NotOneValueFound):
+            tester.a, tester.a = 1, 2
+
+    def test_setitem(self):
+        tester['x'] = 1
+        tester[:2] = 3
+        tester['a'], tester.b = 8, 9
+
+        with self.assertRaises(NotOneValueFound):
+            tester['a'] = tester['b'] = 1
+
+        with self.assertRaises(NotOneValueFound):
+            tester['a'], tester['b'] = 1, 2
 
     def test_comprehensions(self):
         # Comprehensions can be separated if they contain different names
@@ -415,7 +443,7 @@ class TestFiles(unittest.TestCase):
 
     maxDiff = None
 
-    def test_files(self):
+    def test_sample_files(self):
         self.start_time = time.time()
         root_dir = os.path.dirname(__file__)
         samples_dir = os.path.join(root_dir, 'samples')
@@ -434,6 +462,9 @@ class TestFiles(unittest.TestCase):
         else:
             with open(result_filename, 'r') as infile:
                 self.assertEqual(result, json.load(infile))
+
+    def test_module_files(self):
+        self.start_time = time.time()
 
         modules = list(sys.modules.values())
         shuffle(modules)
@@ -478,15 +509,18 @@ class TestFiles(unittest.TestCase):
         decorators = defaultdict(list)
         expected_decorators = {}
         for node in ast.walk(source.tree):
-            if isinstance(node, (
+            if isinstance(
+                node,
+                (
                     (ast.Name,) * check_names,
                     ast.UnaryOp,
                     ast.BinOp,
                     ast.Subscript,
                     ast.Call,
                     ast.Compare,
-                    ast.Attribute
-            )):
+                    ast.Attribute,
+                ),
+            ):
                 nodes[node] = []
             elif isinstance(node, (ast.ClassDef, function_node_types)):
                 expected_decorators[(node.lineno, node.name)] = node.decorator_list[::-1]
@@ -500,7 +534,14 @@ class TestFiles(unittest.TestCase):
                 if is_unary_not(node):
                     continue
 
-                if isinstance(getattr(node, 'ctx', None), (ast.Store, ast.Del, getattr(ast, 'Param', ()))):
+                ctx = getattr(node, 'ctx', None)
+                if isinstance(ctx, ast.Store):
+                    # Assignment to attributes and subscripts is less magical
+                    # but can also fail fairly easily, so we can't guarantee
+                    # that every node can be identified with some instruction.
+                    continue
+
+                if isinstance(ctx, (ast.Del, getattr(ast, 'Param', ()))):
                     assert not values
                     continue
 
@@ -545,6 +586,7 @@ class TestFiles(unittest.TestCase):
                 (
                     'BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD',
                     'SLICE+', 'COMPARE_OP', 'CALL_', 'IS_OP', 'CONTAINS_OP',
+                    'STORE_SUBSCR', 'STORE_ATTR', 'STORE_SLICE',
                 )
                 + ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF') * check_names
             ):
@@ -562,8 +604,15 @@ class TestFiles(unittest.TestCase):
                     ex = Source.executing(frame)
                     node = ex.node
                 except Exception:
-                    if inst.opname.startswith(('COMPARE_OP', 'IS_OP', 'CALL_', 'LOAD_NAME')):
+                    if inst.opname.startswith(('COMPARE_OP', 'IS_OP', 'CALL_', 'LOAD_NAME', 'STORE_SUBSCR')):
                         continue
+
+                    # Attributes which appear ambiguously in modules:
+                    #   op1.sign, op2.sign = (0, 0)
+                    #   nm_tpl.__annotations__ = nm_tpl.__new__.__annotations__ = types
+                    if inst.opname == 'STORE_ATTR' and inst.argval in ['sign', '__annotations__']:
+                        continue
+
                     if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
                         continue
 
@@ -723,6 +772,20 @@ def find_qualnames(code, prefix=""):
             subcode, qualname + ("." if is_class else ".<locals>.")
         ):
             yield x
+
+
+def test_attr_names_match():
+    assert attr_names_match("foo", "foo")
+
+    assert not attr_names_match("foo", "_foo")
+    assert not attr_names_match("foo", "__foo")
+    assert not attr_names_match("_foo", "foo")
+    assert not attr_names_match("__foo", "foo")
+
+    assert attr_names_match("__foo", "_Class__foo")
+    assert not attr_names_match("_Class__foo", "__foo")
+    assert not attr_names_match("__foo", "Class__foo")
+    assert not attr_names_match("__foo", "_Class_foo")
 
 
 if __name__ == '__main__':
