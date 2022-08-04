@@ -562,7 +562,6 @@ class NewNodeFinder(object):
         # we can use co_positions() since 3.11, which has fewer limitations
 
         positions = list(frame.f_code.co_positions())
-        #        source = cls.for_frame(frame)
 
         def find_node(index, ignore_positions=(), typ=None):
             position = positions[index // 2]
@@ -600,13 +599,6 @@ class NewNodeFinder(object):
         bc_list = list(dis.Bytecode(frame.f_code, show_caches=True))
 
         try:
-            if bc_list[lasti // 2].opname == "LOAD_GLOBAL":
-                # work around for issue https://github.com/python/cpython/issues/91409
-                node = find_node(
-                    lasti, ignore_positions=("end_col_offset",), typ=ast.Name
-                )
-
-            else:
                 node = find_node(lasti)
 
         except Exception as e:
