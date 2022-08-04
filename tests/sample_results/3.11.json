@@ -45522,7 +45522,7 @@
         ],
         [
             "CALL",
-            "files.setdefault(\n            row.file, OrderedDict()\n        )"
+            "files.setdefault(\n            row.file, OrderedDict()\n        ).setdefault(\n            row.name, row\n        )"
         ],
         [
             "LOAD_FAST",
@@ -45754,7 +45754,7 @@
         ],
         [
             "CALL",
-            "session.query(\n        filtered_calls.c.name,\n        sqlalchemy.func.max(filtered_calls.c.start_time).label('maxtime')\n    )"
+            "session.query(\n        filtered_calls.c.name,\n        sqlalchemy.func.max(filtered_calls.c.start_time).label('maxtime')\n    ).group_by(\n        filtered_calls.c.name,\n    )"
         ],
         [
             "LOAD_METHOD",

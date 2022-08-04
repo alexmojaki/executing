@@ -113,6 +113,14 @@ class TestStuff(unittest.TestCase):
         Foo().foo()
         tester.check_decorators([3, 1, 0, 2, 0])
 
+    def not_found_prior_311(self):
+        if sys.version_info >= (3, 11):
+            from contextlib import nullcontext
+
+            return nullcontext()
+        else:
+            return self.assertRaises(NotOneValueFound)
+
     def test_setattr(self):
         tester.x = 1
         tester.y, tester.z = tester.foo, tester.bar = tester.spam = 1, 2
@@ -124,10 +132,10 @@ class TestStuff(unittest.TestCase):
 
         str([None for tester.a, (tester.b, tester.c) in [(1, (2, 3))]])
 
-        with self.assertRaises(NotOneValueFound):
+        with self.not_found_prior_311():
             tester.a = tester.a = 1
 
-        with self.assertRaises(NotOneValueFound):
+        with self.not_found_prior_311():
             tester.a, tester.a = 1, 2
 
     def test_setitem(self):
@@ -135,10 +143,10 @@ class TestStuff(unittest.TestCase):
         tester[:2] = 3
         tester['a'], tester.b = 8, 9
 
-        with self.assertRaises(NotOneValueFound):
+        with self.not_found_prior_311():
             tester['a'] = tester['b'] = 1
 
-        with self.assertRaises(NotOneValueFound):
+        with self.not_found_prior_311():
             tester['a'], tester['b'] = 1, 2
 
     def test_comprehensions(self):
