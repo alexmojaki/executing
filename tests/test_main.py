@@ -700,10 +700,6 @@ class TestFiles(unittest.TestCase):
                     if isinstance(node, ast.Compare) and len(node.comparators) > 1:
                         continue
 
-                    if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-                        # TODO: can be broken because of https://github.com/python/cpython/issues/94036
-                        continue
-
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
