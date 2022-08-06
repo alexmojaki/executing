@@ -598,8 +598,6 @@ class PositionNodeFinder(object):
             else:
                 raise
 
-        if bc_list[lasti // 2].opname == "LOAD_METHOD" and isinstance(node, ast.Call):
-            node = node.func
 
         # find decorators
         if (
