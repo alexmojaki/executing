@@ -539,25 +539,7 @@ class QualnameVisitor(ast.NodeVisitor):
         self.stack.pop()
 
 
-future_flags = sum(
-    getattr(__future__, fname).compiler_flag
-    for fname in __future__.all_feature_names
-)
-
-
-def compile_similar_to(source, matching_code):
-    return compile(
-        source,
-        matching_code.co_filename,
-        'exec',
-        flags=future_flags & matching_code.co_flags,
-        dont_inherit=True,
-    )
-
-
-sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
-
-class NewNodeFinder(object):
+class PositionNodeFinder(object):
     def __init__(self, frame, stmts, tree, lasti, source):
         # we can use co_positions() since 3.11, which has fewer limitations
 
@@ -659,17 +641,33 @@ class NewNodeFinder(object):
                     self.result = node_func
                     self.decorator = node
                     return
-                    # return Executing(frame, source, node_func, {node_func}, node)
 
                 index += 4
 
         self.result = node
         self.decorator = None
 
-        # return Executing(frame, source, node, stmts, None)
+
+future_flags = sum(
+    getattr(__future__, fname).compiler_flag
+    for fname in __future__.all_feature_names
+)
 
 
-class NodeFinder(object):
+def compile_similar_to(source, matching_code):
+    return compile(
+        source,
+        matching_code.co_filename,
+        'exec',
+        flags=future_flags & matching_code.co_flags,
+        dont_inherit=True,
+    )
+
+
+sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
+
+
+class SentinelNodeFinder(object):
     def __init__(self, frame, stmts, tree, lasti, source):
         assert_(stmts)
         self.frame = frame
@@ -973,7 +971,9 @@ class NodeFinder(object):
 
 
 if sys.version_info >= (3, 11):
-    NodeFinder = NewNodeFinder
+    NodeFinder = PositionNodeFinder
+else:
+    NodeFinder = SentinelNodeFinder
 
 
 def non_sentinel_instructions(instructions, start):
