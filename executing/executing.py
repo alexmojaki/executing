@@ -543,10 +543,10 @@ class PositionNodeFinder(object):
     def __init__(self, frame, stmts, tree, lasti, source):
         # we can use co_positions() since 3.11, which has fewer limitations
 
-        positions = list(frame.f_code.co_positions())
+        bc_list = list(dis.Bytecode(frame.f_code, show_caches=True))
 
         def find_node(index, ignore_positions=(), typ=None):
-            position = positions[index // 2]
+            position = bc_list[index // 2].positions
 
             def match(a, b):
                 for idx, attr in enumerate(
@@ -578,11 +578,8 @@ class PositionNodeFinder(object):
                 )
             )
 
-        bc_list = list(dis.Bytecode(frame.f_code, show_caches=True))
-
         try:
                 node = find_node(lasti)
-
         except Exception as e:
             # lineno of LOAD_METHOD instructions get set to end_lineno by the python compiler
             # propably to achive improved error messages (PEP-657)
