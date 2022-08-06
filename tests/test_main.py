@@ -569,36 +569,36 @@ class TestFiles(unittest.TestCase):
                         % k,
                     )
 
-    # def test_module_files(self):
-    #     self.start_time = time.time()
-    #
-    #     modules = list(sys.modules.values())
-    #     shuffle(modules)
-    #     for module in modules:
-    #         try:
-    #             filename = inspect.getsourcefile(module)
-    #         except TypeError:
-    #             continue
-    #
-    #         if not filename:
-    #             continue
-    #
-    #         filename = os.path.abspath(filename)
-    #
-    #         if (
-    #                 # The sentinel actually appearing in code messes things up
-    #                 'executing' in filename
-    #                 # A file that's particularly slow
-    #                 or 'errorcodes.py' in filename
-    #                 # Contains unreachable code which pypy removes
-    #                 or PYPY and ('sysconfig.py' in filename or 'pyparsing.py' in filename)
-    #         ):
-    #             continue
-    #
-    #         try:
-    #             self.check_filename(filename, check_names=False)
-    #         except TimeOut:
-    #             print("Time's up")
+    def test_module_files(self):
+        self.start_time = time.time()
+    
+        modules = list(sys.modules.values())
+        shuffle(modules)
+        for module in modules:
+            try:
+                filename = inspect.getsourcefile(module)
+            except TypeError:
+                continue
+    
+            if not filename:
+                continue
+    
+            filename = os.path.abspath(filename)
+    
+            if (
+                    # The sentinel actually appearing in code messes things up
+                    'executing' in filename
+                    # A file that's particularly slow
+                    or 'errorcodes.py' in filename
+                    # Contains unreachable code which pypy removes
+                    or PYPY and ('sysconfig.py' in filename or 'pyparsing.py' in filename)
+            ):
+                continue
+    
+            try:
+                self.check_filename(filename, check_names=False)
+            except TimeOut:
+                print("Time's up")
 
     def check_filename(self, filename, check_names):
         source = Source.for_filename(filename)
