@@ -410,6 +410,13 @@ class TestStuff(unittest.TestCase):
         del tester. \
         x.y
 
+    def test_method_call_multiline(self):
+        tester.method(
+            tester,
+        ).other_method(
+            5
+        )
+
     def test_traceback(self):
         try:
             134895 / 0
