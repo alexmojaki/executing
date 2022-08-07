@@ -557,7 +557,7 @@ class PositionNodeFinder(object):
             # lineno of LOAD_METHOD instructions get set to end_lineno by the python compiler
             # propably to achive improved error messages (PEP-657)
             # we ignore here the start position and try to find the ast-node just by end position and expected node type
-            if self.opname(lasti) in ("LOAD_METHOD", "LOAD_ATTR"):
+            if self.opname(lasti) in ("LOAD_METHOD", "LOAD_ATTR", "STORE_ATTR"):
                 node = self.find_node(
                     lasti,
                     match_positions=("end_col_offset", "end_lineno"),

@@ -384,6 +384,19 @@ class TestStuff(unittest.TestCase):
         c.x = c.y = tester
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
+    def test_store_attr_multiline(self):
+        tester.x \
+        .y = 1
+
+        tester.x. \
+        y = 2
+
+        tester \
+        .x.y = 3
+
+        tester. \
+        x.y = 4
+
     def test_traceback(self):
         try:
             134895 / 0
