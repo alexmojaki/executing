@@ -86,6 +86,11 @@ class Tester(object):
         assert attr_names_match(node.attr, name)
         return self
 
+    def __delattr__(self, name):
+        node = self.get_node(ast.Attribute)
+        assert isinstance(node.ctx, ast.Del)
+        assert node.attr == name
+
     def __setitem__(self, key, value):
         node = self.get_node(ast.Subscript)
         self.check(node.value, self)

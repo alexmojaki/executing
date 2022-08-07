@@ -397,6 +397,19 @@ class TestStuff(unittest.TestCase):
         tester. \
         x.y = 4
 
+    def test_del_attr_multiline(self):
+        del tester.x \
+        .y
+
+        del tester.x. \
+        y
+
+        del tester \
+        .x.y
+
+        del tester. \
+        x.y
+
     def test_traceback(self):
         try:
             134895 / 0
