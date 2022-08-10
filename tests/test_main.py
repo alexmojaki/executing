@@ -442,6 +442,17 @@ class TestStuff(unittest.TestCase):
                 5
             )
 
+    def test_call_things(self):
+        # call things which are no methods or functions
+        if sys.version_info >= (3,11):
+            tester[5](5)
+            tester.some[5](5)
+
+            (tester+tester)(2)
+
+            tester(tester)(5)
+            tester.some(tester)(5)
+
     def test_traceback(self):
         try:
             134895 / 0
