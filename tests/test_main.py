@@ -385,37 +385,62 @@ class TestStuff(unittest.TestCase):
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
     def test_store_attr_multiline(self):
-        tester.x \
-        .y = 1
+        if sys.version_info >= (3,11):
+            tester.x \
+            .y = 1
 
-        tester.x. \
-        y = 2
+            tester.x. \
+            y = 2
 
-        tester \
-        .x.y = 3
+            tester \
+            .x.y = 3
 
-        tester. \
-        x.y = 4
+            tester. \
+            x.y = 4
+
+            tester \
+            . \
+            x \
+            . \
+            y \
+            = \
+            4
+
+            tester \
+           . \
+          x \
+         . \
+        y \
+       = \
+      4
+            (tester
+           .
+          x
+         .
+        y
+       ) = 4
 
     def test_del_attr_multiline(self):
-        del tester.x \
-        .y
+        if sys.version_info >= (3,11):
+            del tester.x \
+            .y
 
-        del tester.x. \
-        y
+            del tester.x. \
+            y
 
-        del tester \
-        .x.y
+            del tester \
+            .x.y
 
-        del tester. \
-        x.y
+            del tester. \
+            x.y
 
     def test_method_call_multiline(self):
-        tester.method(
-            tester,
-        ).other_method(
-            5
-        )
+        if sys.version_info >= (3,11):
+            tester.method(
+                tester,
+            ).other_method(
+                5
+            )
 
     def test_traceback(self):
         try:
