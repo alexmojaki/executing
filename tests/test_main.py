@@ -1178,5 +1178,5 @@ def test_attr_names_match():
 
 
 if __name__ == '__main__':
-    unittest.main(module="test_main")
+    unittest.main()
 
