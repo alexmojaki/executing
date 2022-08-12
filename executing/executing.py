@@ -584,6 +584,14 @@ class PositionNodeFinder(object):
                 else:
                     raise
 
+        if isinstance(node, ast.Assert):
+            # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
+            # All the rewritten expressions get mapped to ast.Assert, which is the wrong ast-node.
+            # We don't report this wrong result.
+            self.result = None
+            self.decorator = None
+            return
+
         # find decorators
         if (
             isinstance(node.parent, (ast.ClassDef, function_node_types))
