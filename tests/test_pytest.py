@@ -6,7 +6,7 @@ from time import sleep
 from littleutils import SimpleNamespace
 
 from executing import Source
-from executing.executing import is_ipython_cell_code, attr_names_match, all_subclasses, PY3, ReloadCacheFinder
+from executing.executing import is_ipython_cell_code, attr_names_match, all_subclasses, PY3
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -76,10 +76,11 @@ def test_all_subclasses():
 
 
 def test_source_reload(tmpdir):
-    assert sum(isinstance(x, ReloadCacheFinder) for x in sys.meta_path) == PY3
-
     if not PY3:
         return
+
+    from executing.executing import ReloadCacheFinder
+    assert sum(isinstance(x, ReloadCacheFinder) for x in sys.meta_path) == 1
 
     check_source_reload(tmpdir, Source)
     check_source_reload(tmpdir, MySource)
