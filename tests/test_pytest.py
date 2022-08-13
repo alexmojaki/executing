@@ -1,9 +1,12 @@
+import importlib
 import os
 import sys
+from time import sleep
 
 from littleutils import SimpleNamespace
 
-from executing.executing import is_ipython_cell_code, attr_names_match
+from executing import Source
+from executing.executing import is_ipython_cell_code, attr_names_match, all_subclasses, PY3, ReloadCacheFinder
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -58,3 +61,59 @@ def test_attr_names_match():
     assert not attr_names_match("_Class__foo", "__foo")
     assert not attr_names_match("__foo", "Class__foo")
     assert not attr_names_match("__foo", "_Class_foo")
+
+
+class MySource(Source):
+    pass
+
+
+class MySource2(MySource):
+    pass
+
+
+def test_all_subclasses():
+    assert all_subclasses(Source) == {Source, MySource, MySource2}
+
+
+def test_source_reload(tmpdir):
+    assert sum(isinstance(x, ReloadCacheFinder) for x in sys.meta_path) == PY3
+
+    if not PY3:
+        return
+
+    check_source_reload(tmpdir, Source)
+    check_source_reload(tmpdir, MySource)
+    check_source_reload(tmpdir, MySource2)
+
+
+def check_source_reload(tmpdir, SourceClass):
+    from pathlib import Path
+
+    modname = "test_tmp_module_" + SourceClass.__name__
+    path = Path(str(tmpdir)) / ("%s.py" % modname)
+    with path.open("w") as f:
+        f.write("1\n")
+
+    sys.path.append(str(tmpdir))
+    mod = importlib.import_module(modname)
+    # ReloadCacheFinder uses __file__ so it needs to be the same
+    # as what we pass to Source.for_filename here.
+    assert mod.__file__ == str(path)
+
+    # Initial sanity check.
+    source = SourceClass.for_filename(path)
+    assert source.text == "1\n"
+
+    # Wait a little before changing the file so that the mtime is different
+    # so that linecache.checkcache() notices.
+    sleep(0.01)
+    with path.open("w") as f:
+        f.write("2\n")
+    source = SourceClass.for_filename(path)
+    # Since the module wasn't reloaded, the text hasn't been updated.
+    assert source.text == "1\n"
+
+    # Reload the module. This should update the text.
+    importlib.reload(mod)
+    source = SourceClass.for_filename(path)
+    assert source.text == "2\n"
