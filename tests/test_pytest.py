@@ -3,7 +3,7 @@ import sys
 
 from littleutils import SimpleNamespace
 
-from executing.executing import is_ipython_cell_code
+from executing.executing import is_ipython_cell_code, attr_names_match
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -44,3 +44,17 @@ def test_ipython_cell_code():
             co_filename="tmp/ipykernel_3",
         )
     )
+
+
+def test_attr_names_match():
+    assert attr_names_match("foo", "foo")
+
+    assert not attr_names_match("foo", "_foo")
+    assert not attr_names_match("foo", "__foo")
+    assert not attr_names_match("_foo", "foo")
+    assert not attr_names_match("__foo", "foo")
+
+    assert attr_names_match("__foo", "_Class__foo")
+    assert not attr_names_match("_Class__foo", "__foo")
+    assert not attr_names_match("__foo", "Class__foo")
+    assert not attr_names_match("__foo", "_Class_foo")
