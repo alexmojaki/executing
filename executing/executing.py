@@ -251,10 +251,17 @@ class Source(object):
         if isinstance(filename, Path):
             filename = str(filename)
 
-        if not use_cache:
-            linecache.checkcache(filename)
+        def get_lines():
+            return linecache.getlines(filename, module_globals)
 
-        lines = tuple(linecache.getlines(filename, module_globals))
+        entry = linecache.cache.get(filename)
+        linecache.checkcache(filename)
+        lines = get_lines()
+        if entry is not None and not lines:
+            linecache.cache[filename] = entry
+            lines = get_lines()
+
+        lines = tuple(lines)
         return cls._for_filename_and_lines(filename, lines)
 
     @classmethod

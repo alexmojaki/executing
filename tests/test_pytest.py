@@ -107,10 +107,4 @@ def check_source_reload(tmpdir, SourceClass):
     with path.open("w") as f:
         f.write("2\n")
     source = SourceClass.for_filename(path)
-    # Since the module wasn't reloaded, the text hasn't been updated.
-    assert source.text == "1\n"
-
-    # Reload the module. This should update the text.
-    importlib.reload(mod)
-    source = SourceClass.for_filename(path)
     assert source.text == "2\n"
