@@ -447,22 +447,6 @@ class Source(object):
         return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
 
 
-if PY3:
-    from importlib.abc import MetaPathFinder
-
-    class ReloadCacheFinder(MetaPathFinder):
-        def find_spec(self, fullname, path, target=None):
-            # Based on https://github.com/ipython/ipython/issues/13598#issuecomment-1207869067
-            # to fix that issue.
-            # `target` should be a module (rather than None) if and only if the module is being reloaded.
-            filename = getattr(target, "__file__", None)
-            if not filename:
-                return
-            linecache.checkcache(filename)
-
-    sys.meta_path.insert(0, ReloadCacheFinder())
-
-
 class Executing(object):
     """
     Information about the operation a frame is currently executing.
