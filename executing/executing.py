@@ -336,9 +336,7 @@ class Source(object):
                     assert_(new_stmts <= stmts)
                     stmts = new_stmts
 
-                args = source, node, stmts, decorator
-
-            executing_cache[key] = args
+            executing_cache[key] = args = source, node, stmts, decorator
 
         return Executing(frame, *args)
 
