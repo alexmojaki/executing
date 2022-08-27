@@ -6,7 +6,7 @@ from time import sleep
 from littleutils import SimpleNamespace
 
 from executing import Source
-from executing.executing import is_ipython_cell_code, attr_names_match, all_subclasses, PY3
+from executing.executing import is_ipython_cell_code, attr_names_match, PY3
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -69,10 +69,6 @@ class MySource(Source):
 
 class MySource2(MySource):
     pass
-
-
-def test_all_subclasses():
-    assert all_subclasses(Source) == {Source, MySource, MySource2}
 
 
 def test_source_reload(tmpdir):
