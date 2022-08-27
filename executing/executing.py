@@ -322,21 +322,7 @@ class Source(object):
                     stmts = source.statements_at_line(lineno)
                     if stmts:
                         if is_ipython_cell_code(code):
-                            for stmt in stmts:
-                                tree = _extract_ipython_statement(stmt)
-                                try:
-                                    node_finder = NodeFinder(frame, stmts, tree, lasti)
-                                    if (node or decorator) and (node_finder.result or node_finder.decorator):
-                                        # Found potential nodes in separate statements,
-                                        # cannot resolve ambiguity, give up here
-                                        node = decorator = None
-                                        break
-
-                                    node = node_finder.result
-                                    decorator = node_finder.decorator
-                                except Exception:
-                                    pass
-
+                            decorator, node = find_node_ipython(frame, lasti, stmts)
                         else:
                             node_finder = NodeFinder(frame, stmts, tree, lasti)
                             node = node_finder.result
@@ -1088,6 +1074,24 @@ def is_ipython_cell_code(code_obj):
         is_ipython_cell_filename(code_obj.co_filename) and
         is_ipython_cell_code_name(code_obj.co_name)
     )
+
+
+def find_node_ipython(frame, lasti, stmts):
+    node = decorator = None
+    for stmt in stmts:
+        tree = _extract_ipython_statement(stmt)
+        try:
+            node_finder = NodeFinder(frame, stmts, tree, lasti)
+            if (node or decorator) and (node_finder.result or node_finder.decorator):
+                # Found potential nodes in separate statements,
+                # cannot resolve ambiguity, give up here
+                return None, None
+
+            node = node_finder.result
+            decorator = node_finder.decorator
+        except Exception:
+            pass
+    return decorator, node
 
 
 def attr_names_match(attr, argval):
