@@ -251,19 +251,11 @@ class Source(object):
         if isinstance(filename, Path):
             filename = str(filename)
 
-        source_cache = cls._class_local('__source_cache', {})
-        if use_cache:
-            try:
-                return source_cache[filename]
-            except KeyError:
-                pass
-
         if not use_cache:
             linecache.checkcache(filename)
 
         lines = tuple(linecache.getlines(filename, module_globals))
-        result = source_cache[filename] = cls._for_filename_and_lines(filename, lines)
-        return result
+        return cls._for_filename_and_lines(filename, lines)
 
     @classmethod
     def _for_filename_and_lines(cls, filename, lines):
