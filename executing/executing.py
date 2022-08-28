@@ -259,10 +259,15 @@ class Source(object):
         def get_lines():
             return linecache.getlines(filename, module_globals)
 
+        # Save the current linecache entry, then ensure the cache is up to date.
         entry = linecache.cache.get(filename)
         linecache.checkcache(filename)
         lines = get_lines()
         if entry is not None and not lines:
+            # There was an entry, checkcache removed it, and nothing replaced it.
+            # This means the file wasn't simply changed (because the `lines` wouldn't be empty)
+            # but rather the file was found not to exist, probably because `filename` was fake.
+            # Restore the original entry so that we still have something.
             linecache.cache[filename] = entry
             lines = get_lines()
 
