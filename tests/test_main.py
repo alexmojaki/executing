@@ -29,6 +29,10 @@ if eval("0"):
     global_never_defined = 1
 
 
+def calling_expression():
+    frame = inspect.currentframe().f_back.f_back
+    return Source.executing(frame).node
+
 class TestStuff(unittest.TestCase):
 
     # noinspection PyTrailingSemicolon
@@ -506,6 +510,24 @@ class TestStuff(unittest.TestCase):
 
         foo()
         closure_not_defined_yet = 1  # noqa
+
+    def test_with(self):
+        if sys.version_info >= (3, 11):
+            class Test:
+                def __enter__(self):
+                    assert isinstance(calling_expression(), ast.With)
+                    return 5
+
+                def __exit__(self, exc_typ, exc_value, exc_traceback):
+                    assert isinstance(calling_expression(), ast.With)
+
+            with Test():
+                pass
+
+    def test_listcomp(self):
+        if sys.version_info >= (3, 11):
+            result = [calling_expression() for e in [1]]
+            self.assertIsInstance(result[0], ast.ListComp)
 
 
 def is_unary_not(node):
