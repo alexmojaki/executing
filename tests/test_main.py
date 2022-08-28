@@ -669,6 +669,7 @@ class TestFiles(unittest.TestCase):
             except TimeOut:
                 print("Time's up")
 
+
     def check_filename(self, filename, check_names):
         source = Source.for_filename(filename)
 
@@ -767,6 +768,18 @@ class TestFiles(unittest.TestCase):
                         continue
 
                     if isinstance(node, ast.Compare) and len(node.comparators) > 1:
+                        continue
+
+                    if is_pattern(node):
+                        continue
+
+                    if (
+                        isinstance(node, ast.BinOp)
+                        and isinstance(node.op, ast.Mod)
+                        and isinstance(node.left, ast.Constant)
+                        and node.left.value in ("%s", "%r")
+                    ):
+                        # "%s"%(...) is missing an BUILD_STRING instruction which normally maps to BinOp
                         continue
 
                 if sys.version_info >= (3, 10):
@@ -1067,6 +1080,14 @@ def is_literal(node):
     except ValueError:
         return False
 
+
+def is_pattern(node):
+    while not isinstance(node, ast.pattern):
+        if hasattr(node, "parent"):
+            node = node.parent
+        else:
+            return False
+    return True
 
 class C(object):
     @staticmethod

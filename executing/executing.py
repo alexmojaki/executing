@@ -700,7 +700,7 @@ class PositionNodeFinder(object):
     ):
         if typ == None:
             # this is not a default argument because ast.MatchAs does not exist in older python versions
-            typ = (ast.expr, ast.stmt, ast.excepthandler, ast.MatchAs)
+            typ = (ast.expr, ast.stmt, ast.excepthandler, ast.pattern)
 
         position = self.instruction(index).positions
 
@@ -709,6 +709,8 @@ class PositionNodeFinder(object):
             for node in self.source._nodes_by_line[position.lineno]
             if isinstance(node, typ)
             if not isinstance(node, ast.Expr)
+            # matchvalue.value has the same positions as matchvalue themself, so we exclude ast.MatchValue
+            if not isinstance(node, ast.MatchValue)
             if all(
                 getattr(position, attr) == getattr(node, attr)
                 for attr in match_positions
