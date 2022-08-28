@@ -609,9 +609,7 @@ class PositionNodeFinder(object):
             # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
             # All the rewritten expressions get mapped to ast.Assert, which is the wrong ast-node.
             # We don't report this wrong result.
-            self.result = None
-            self.decorator = None
-            return
+            raise NotOneValueFound
 
         # find decorators
         if (

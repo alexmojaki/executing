@@ -18159,10 +18159,6 @@
             "month"
         ],
         [
-            "CALL",
-            ""
-        ],
-        [
             "LOAD_FAST",
             "month"
         ],
@@ -18205,10 +18201,6 @@
         [
             "COMPARE_OP",
             "1 <= month <= 12"
-        ],
-        [
-            "CALL",
-            ""
         ],
         [
             "LOAD_GLOBAL",
@@ -18259,10 +18251,6 @@
             "1 <= month <= 12"
         ],
         [
-            "CALL",
-            ""
-        ],
-        [
             "LOAD_GLOBAL",
             "_days_in_month"
         ],
@@ -18305,10 +18293,6 @@
         [
             "BINARY_OP",
             "'day must be in 1..%d' % dim"
-        ],
-        [
-            "CALL",
-            ""
         ],
         [
             "LOAD_GLOBAL",
@@ -29073,10 +29057,6 @@
         [
             "BINARY_OP",
             "m % timedelta(minutes=1)"
-        ],
-        [
-            "CALL",
-            ""
         ],
         [
             "LOAD_FAST",
@@ -51899,10 +51879,6 @@
             "typ"
         ],
         [
-            "CALL",
-            ""
-        ],
-        [
             "LOAD_FAST",
             "node"
         ],
@@ -52013,10 +51989,6 @@
         [
             "LOAD_FAST",
             "value"
-        ],
-        [
-            "CALL",
-            ""
         ],
         [
             "LOAD_FAST",
@@ -54967,10 +54939,6 @@
         [
             "CALL",
             "isinstance(result, ChangeValue)"
-        ],
-        [
-            "CALL",
-            ""
         ],
         [
             "LOAD_FAST",
@@ -58041,10 +58009,6 @@
         [
             "COMPARE_OP",
             "len(pair) == 2"
-        ],
-        [
-            "CALL",
-            ""
         ],
         [
             "LOAD_FAST",
