@@ -671,7 +671,7 @@ class PositionNodeFinder(object):
 
                 index += 2
 
-                while self.opname(index) == "CACHE":
+                while self.opname(index) in ("CACHE", "EXTENDED_ARG"):
                     index += 2
 
                 if self.find_node(index) == node_func and self.opname(index).startswith(
