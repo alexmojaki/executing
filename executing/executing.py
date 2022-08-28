@@ -546,9 +546,21 @@ class PositionNodeFinder(object):
     There are only some exceptions for methods and attributes.
     """
 
+    last_code = None
+    last_instructions = None
+
     def __init__(self, frame, stmts, tree, lasti, source):
 
-        self.bc_list = list(dis.get_instructions(frame.f_code, show_caches=True))
+        # caching the last result of get_instructions is a huge speedup for searches in the same bytecode
+        # a lru_cache with a small size would be better but is not available on older python versions
+        if PositionNodeFinder.last_code == frame.f_code:
+            self.bc_list = PositionNodeFinder.last_instructions
+        else:
+            self.bc_list = PositionNodeFinder.last_instructions = list(
+                dis.get_instructions(frame.f_code, show_caches=True)
+            )
+            PositionNodeFinder.last_code = frame.f_code
+
         self.source = source
 
         # lineno and col_offset of LOAD_METHOD and *_ATTR instructions get set to the beginning of
