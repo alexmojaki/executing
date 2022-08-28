@@ -248,23 +248,32 @@ class Source(object):
         return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {}, use_cache)
 
     @classmethod
-    def for_filename(cls, filename, module_globals=None, use_cache=True):
+    def for_filename(
+        cls,
+        filename,
+        module_globals=None,
+        use_cache=True,  # noqa no longer used
+    ):
         if isinstance(filename, Path):
             filename = str(filename)
 
-        source_cache = cls._class_local('__source_cache', {})
-        if use_cache:
-            try:
-                return source_cache[filename]
-            except KeyError:
-                pass
+        def get_lines():
+            return linecache.getlines(filename, module_globals)
 
-        if not use_cache:
-            linecache.checkcache(filename)
+        # Save the current linecache entry, then ensure the cache is up to date.
+        entry = linecache.cache.get(filename)
+        linecache.checkcache(filename)
+        lines = get_lines()
+        if entry is not None and not lines:
+            # There was an entry, checkcache removed it, and nothing replaced it.
+            # This means the file wasn't simply changed (because the `lines` wouldn't be empty)
+            # but rather the file was found not to exist, probably because `filename` was fake.
+            # Restore the original entry so that we still have something.
+            linecache.cache[filename] = entry
+            lines = get_lines()
 
-        lines = tuple(linecache.getlines(filename, module_globals))
-        result = source_cache[filename] = cls._for_filename_and_lines(filename, lines)
-        return result
+        lines = tuple(lines)
+        return cls._for_filename_and_lines(filename, lines)
 
     @classmethod
     def _for_filename_and_lines(cls, filename, lines):
@@ -311,67 +320,31 @@ class Source(object):
         key = (code, id(code), lasti)
         executing_cache = cls._class_local('__executing_cache', {})
 
-        try:
-            args = executing_cache[key]
-        except KeyError:
-            def find(source, retry_cache):
-                node = stmts = decorator = None
-                tree = source.tree
-                if tree:
-                    try:
-                        stmts = source.statements_at_line(lineno)
-                        if stmts:
-                            if is_ipython_cell_code(code):
-                                for stmt in stmts:
-                                    tree = _extract_ipython_statement(stmt)
-                                    try:
-                                        node_finder = NodeFinder(
-                                            frame, stmts, tree, lasti, source
-                                        )
-                                        if (node or decorator) and (
-                                            node_finder.result or node_finder.decorator
-                                        ):
-                                            if retry_cache:
-                                                raise AssertionError
-                                            # Found potential nodes in separate statements,
-                                            # cannot resolve ambiguity, give up here
-                                            node = decorator = None
-                                            break
+        args = executing_cache.get(key)
+        if not args:
+            node = stmts = decorator = None
+            source = cls.for_frame(frame)
+            tree = source.tree
+            if tree:
+                try:
+                    stmts = source.statements_at_line(lineno)
+                    if stmts:
+                        if is_ipython_cell_code(code):
+                            decorator, node = find_node_ipython(frame, lasti, stmts)
+                        else:
+                            node_finder = NodeFinder(frame, stmts, tree, lasti, source)
+                            node = node_finder.result
+                            decorator = node_finder.decorator
+                except Exception:
+                    if TESTING:
+                        raise
 
-                                        node = node_finder.result
-                                        decorator = node_finder.decorator
-                                    except Exception:
-                                        if retry_cache:
-                                            raise
+                if node:
+                    new_stmts = {statement_containing_node(node)}
+                    assert_(new_stmts <= stmts)
+                    stmts = new_stmts
 
-                            else:
-                                node_finder = NodeFinder(
-                                    frame, stmts, tree, lasti, source
-                                )
-                                node = node_finder.result
-                                decorator = node_finder.decorator
-                    except Exception as e:
-                        # These exceptions can be caused by the source code having changed
-                        # so the cached Source doesn't match the running code
-                        # (e.g. when using IPython %autoreload)
-                        # Try again with a fresh Source object
-                        if retry_cache and isinstance(e, (NotOneValueFound, AssertionError)):
-                            return find(
-                                source=cls.for_frame(frame, use_cache=False),
-                                retry_cache=False,
-                            )
-                        if TESTING:
-                            raise
-
-                    if node:
-                        new_stmts = {statement_containing_node(node)}
-                        assert_(new_stmts <= stmts)
-                        stmts = new_stmts
-
-                return source, node, stmts, decorator
-
-            args = find(source=cls.for_frame(frame), retry_cache=True)
-            executing_cache[key] = args
+            executing_cache[key] = args = source, node, stmts, decorator
 
         return Executing(frame, *args)
 
@@ -1290,6 +1263,24 @@ def is_ipython_cell_code(code_obj):
         is_ipython_cell_filename(code_obj.co_filename) and
         is_ipython_cell_code_name(code_obj.co_name)
     )
+
+
+def find_node_ipython(frame, lasti, stmts, source):
+    node = decorator = None
+    for stmt in stmts:
+        tree = _extract_ipython_statement(stmt)
+        try:
+            node_finder = NodeFinder(frame, stmts, tree, lasti, source)
+            if (node or decorator) and (node_finder.result or node_finder.decorator):
+                # Found potential nodes in separate statements,
+                # cannot resolve ambiguity, give up here
+                return None, None
+
+            node = node_finder.result
+            decorator = node_finder.decorator
+        except Exception:
+            pass
+    return decorator, node
 
 
 def attr_names_match(attr, argval):

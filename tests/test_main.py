@@ -23,7 +23,7 @@ from tests.utils import tester, subscript_item, in_finally
 PYPY = 'pypy' in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions, function_node_types, attr_names_match
+from executing.executing import PY3, get_instructions, function_node_types
 
 if eval("0"):
     global_never_defined = 1
@@ -257,6 +257,19 @@ class TestStuff(unittest.TestCase):
                 node = new_node
             else:
                 self.assertIs(node, new_node)
+        self.assertLess(time.time() - start, 1)
+
+    def test_many_source_for_filename_calls(self):
+        source = None
+        start = time.time()
+        for i in range(10000):
+            new_source = Source.for_filename(__file__)
+            if source is None:
+                source = new_source
+                self.assertGreater(len(source.lines), 700)
+                self.assertGreater(len(source.text), 7000)
+            else:
+                self.assertIs(source, new_source)
         self.assertLess(time.time() - start, 1)
 
     def test_decode_source(self):
@@ -1204,20 +1217,6 @@ def find_qualnames(code, prefix=""):
             subcode, qualname + ("." if is_class else ".<locals>.")
         ):
             yield x
-
-
-def test_attr_names_match():
-    assert attr_names_match("foo", "foo")
-
-    assert not attr_names_match("foo", "_foo")
-    assert not attr_names_match("foo", "__foo")
-    assert not attr_names_match("_foo", "foo")
-    assert not attr_names_match("__foo", "foo")
-
-    assert attr_names_match("__foo", "_Class__foo")
-    assert not attr_names_match("_Class__foo", "__foo")
-    assert not attr_names_match("__foo", "Class__foo")
-    assert not attr_names_match("__foo", "_Class_foo")
 
 
 if __name__ == '__main__':
