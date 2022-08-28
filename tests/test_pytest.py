@@ -123,3 +123,24 @@ def test_exception_catching():
         assert Source.executing(inspect.currentframe()).node is None
     finally:
         executing.executing.TESTING = True
+
+
+def test_bad_linecache():
+    fake_text = "foo bar baz"
+    text = """
+import executing
+import inspect
+
+frame = inspect.currentframe()
+ex = executing.Source.executing(frame)
+assert ex.node is None
+assert ex.statements is None
+assert ex.decorator is None
+assert ex.frame is frame
+assert ex.source.tree is None
+assert ex.source.text == %r
+""" % fake_text
+    filename = "<test_bad_linecache>"
+    code = compile(text, filename, "exec")
+    linecache.cache[filename] = (len(fake_text), 0, fake_text.splitlines(True), filename)
+    exec(code)
