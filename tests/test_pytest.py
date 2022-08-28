@@ -66,7 +66,10 @@ def test_attr_names_match():
     assert not attr_names_match("__foo", "_Class_foo")
 
 
-def test_source_reload(tmpdir):
+def test_source_file_text_change(tmpdir):
+    # Check that Source.for_filename notices changes in file contents
+    # (assuming that linecache can notice)
+
     path = str(tmpdir.join('foo.py'))
     with open(path, "w") as f:
         f.write("1\n")
@@ -85,6 +88,8 @@ def test_source_reload(tmpdir):
 
 
 def test_manual_linecache():
+    # Test that manually putting lines in linecache
+    # under fake filenames works, and the linecache entries aren't removed.
     check_manual_linecache(os.path.join("fake", "path", "to", "foo.py"))
     check_manual_linecache("<my_custom_filename>")
 
@@ -114,33 +119,41 @@ def check_manual_linecache(filename):
 
 
 def test_exception_catching():
-    executing.executing.TESTING = True
-    with pytest.raises(NotOneValueFound):
-        assert Source.executing(inspect.currentframe()).node is None
+    frame = inspect.currentframe()
 
+    executing.executing.TESTING = True  # this is already the case in all other tests
+    # Sanity check that this operation usually raises an exception.
+    # This actually depends on executing not working in the presence of pytest.
+    with pytest.raises(NotOneValueFound):
+        assert Source.executing(frame).node is None
+
+    # By contrast, TESTING is usually false when executing is used in real code.
+    # In that case, the exception is caught and the result is None.
     executing.executing.TESTING = False
     try:
-        assert Source.executing(inspect.currentframe()).node is None
+        assert Source.executing(frame).node is None
     finally:
         executing.executing.TESTING = True
 
 
 def test_bad_linecache():
-    fake_text = "foo bar baz"
+    # Test graceful failure when linecache contains source lines that don't match
+    # the real code being executed.
+    fake_text = "foo bar baz"  # invalid syntax, so source.tree is None
     text = """
-import executing
-import inspect
-
 frame = inspect.currentframe()
-ex = executing.Source.executing(frame)
-assert ex.node is None
-assert ex.statements is None
-assert ex.decorator is None
-assert ex.frame is frame
-assert ex.source.tree is None
-assert ex.source.text == %r
-""" % fake_text
+ex = Source.executing(frame)
+"""
     filename = "<test_bad_linecache>"
     code = compile(text, filename, "exec")
     linecache.cache[filename] = (len(fake_text), 0, fake_text.splitlines(True), filename)
-    exec(code)
+    globs = dict(globals())
+    exec(code, globs)
+    ex = globs["ex"]
+    frame = globs["frame"]
+    assert ex.node is None
+    assert ex.statements is None
+    assert ex.decorator is None
+    assert ex.frame is frame
+    assert ex.source.tree is None
+    assert ex.source.text == fake_text
