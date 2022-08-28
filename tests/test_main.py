@@ -243,6 +243,19 @@ class TestStuff(unittest.TestCase):
                 self.assertIs(node, new_node)
         self.assertLess(time.time() - start, 1)
 
+    def test_many_source_for_filename_calls(self):
+        source = None
+        start = time.time()
+        for i in range(10000):
+            new_source = Source.for_filename(__file__)
+            if source is None:
+                source = new_source
+                self.assertGreater(len(source.lines), 700)
+                self.assertGreater(len(source.text), 7000)
+            else:
+                self.assertIs(source, new_source)
+        self.assertLess(time.time() - start, 1)
+
     def test_decode_source(self):
         def check(source, encoding, exception=None, matches=True):
             encoded = source.encode(encoding)
