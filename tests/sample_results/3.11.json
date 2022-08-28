@@ -12052,7 +12052,7 @@
         ],
         [
             "COMPARE_OP",
-            "            if not start_lineno <= node.first_token.start[0] <= end_lineno:\n                continue"
+            "start_lineno <= node.first_token.start[0] <= end_lineno"
         ],
         [
             "LOAD_FAST",
@@ -12060,7 +12060,7 @@
         ],
         [
             "COMPARE_OP",
-            "            if not start_lineno <= node.first_token.start[0] <= end_lineno:\n                continue"
+            "start_lineno <= node.first_token.start[0] <= end_lineno"
         ],
         [
             "LOAD_FAST",
@@ -12100,11 +12100,11 @@
         ],
         [
             "COMPARE_OP",
-            "            if start == end == 0:\n                continue"
+            "start == end == 0"
         ],
         [
             "COMPARE_OP",
-            "            if start == end == 0:\n                continue"
+            "start == end == 0"
         ],
         [
             "LOAD_FAST",
@@ -18148,11 +18148,11 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= month <= 12"
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= month <= 12"
         ],
         [
             "LOAD_FAST",
@@ -18200,11 +18200,11 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= month <= 12"
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= month <= 12"
         ],
         [
             "CALL",
@@ -18252,11 +18252,11 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= month <= 12"
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= month <= 12"
         ],
         [
             "CALL",
@@ -18288,7 +18288,7 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= day <= dim"
         ],
         [
             "LOAD_FAST",
@@ -18296,7 +18296,7 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "1 <= day <= dim"
         ],
         [
             "LOAD_FAST",
@@ -18724,7 +18724,7 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "0 <= n < _days_in_month(year, month)"
         ],
         [
             "LOAD_GLOBAL",
@@ -18744,7 +18744,7 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "0 <= n < _days_in_month(year, month)"
         ],
         [
             "LOAD_FAST",
@@ -21308,7 +21308,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not MINYEAR <= year <= MAXYEAR:\n        raise ValueError(f\"Year is out of range: {year}\")"
+            "MINYEAR <= year <= MAXYEAR"
         ],
         [
             "LOAD_GLOBAL",
@@ -21316,7 +21316,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not MINYEAR <= year <= MAXYEAR:\n        raise ValueError(f\"Year is out of range: {year}\")"
+            "MINYEAR <= year <= MAXYEAR"
         ],
         [
             "LOAD_GLOBAL",
@@ -21336,11 +21336,11 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 0 < week < 53:\n        out_of_range = True\n\n        if week == 53:\n            # ISO years have 53 weeks in them on years starting with a\n            # Thursday and leap years starting on a Wednesday\n            first_weekday = _ymd2ord(year, 1, 1) % 7\n            if (first_weekday == 4 or (first_weekday == 3 and\n                                       _is_leap(year))):\n                out_of_range = False\n\n        if out_of_range:\n            raise ValueError(f\"Invalid week: {week}\")"
+            "0 < week < 53"
         ],
         [
             "COMPARE_OP",
-            "    if not 0 < week < 53:\n        out_of_range = True\n\n        if week == 53:\n            # ISO years have 53 weeks in them on years starting with a\n            # Thursday and leap years starting on a Wednesday\n            first_weekday = _ymd2ord(year, 1, 1) % 7\n            if (first_weekday == 4 or (first_weekday == 3 and\n                                       _is_leap(year))):\n                out_of_range = False\n\n        if out_of_range:\n            raise ValueError(f\"Invalid week: {week}\")"
+            "0 < week < 53"
         ],
         [
             "STORE_FAST",
@@ -21428,11 +21428,11 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 0 < day < 8:\n        raise ValueError(f\"Invalid weekday: {day} (range is [1, 7])\")"
+            "0 < day < 8"
         ],
         [
             "COMPARE_OP",
-            "    if not 0 < day < 8:\n        raise ValueError(f\"Invalid weekday: {day} (range is [1, 7])\")"
+            "0 < day < 8"
         ],
         [
             "LOAD_GLOBAL",
@@ -21636,7 +21636,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not -timedelta(1) < offset < timedelta(1):\n        raise ValueError(\"%s()=%s, must be strictly between \"\n                         \"-timedelta(hours=24) and timedelta(hours=24)\" %\n                         (name, offset))"
+            "-timedelta(1) < offset < timedelta(1)"
         ],
         [
             "LOAD_GLOBAL",
@@ -21648,7 +21648,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not -timedelta(1) < offset < timedelta(1):\n        raise ValueError(\"%s()=%s, must be strictly between \"\n                         \"-timedelta(hours=24) and timedelta(hours=24)\" %\n                         (name, offset))"
+            "-timedelta(1) < offset < timedelta(1)"
         ],
         [
             "LOAD_GLOBAL",
@@ -21728,7 +21728,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not MINYEAR <= year <= MAXYEAR:\n        raise ValueError('year must be in %d..%d' % (MINYEAR, MAXYEAR), year)"
+            "MINYEAR <= year <= MAXYEAR"
         ],
         [
             "LOAD_GLOBAL",
@@ -21736,7 +21736,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not MINYEAR <= year <= MAXYEAR:\n        raise ValueError('year must be in %d..%d' % (MINYEAR, MAXYEAR), year)"
+            "MINYEAR <= year <= MAXYEAR"
         ],
         [
             "LOAD_GLOBAL",
@@ -21768,11 +21768,11 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 1 <= month <= 12:\n        raise ValueError('month must be in 1..12', month)"
+            "1 <= month <= 12"
         ],
         [
             "COMPARE_OP",
-            "    if not 1 <= month <= 12:\n        raise ValueError('month must be in 1..12', month)"
+            "1 <= month <= 12"
         ],
         [
             "LOAD_GLOBAL",
@@ -21812,7 +21812,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 1 <= day <= dim:\n        raise ValueError('day must be in 1..%d' % dim, day)"
+            "1 <= day <= dim"
         ],
         [
             "LOAD_FAST",
@@ -21820,7 +21820,7 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 1 <= day <= dim:\n        raise ValueError('day must be in 1..%d' % dim, day)"
+            "1 <= day <= dim"
         ],
         [
             "LOAD_GLOBAL",
@@ -21924,11 +21924,11 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= hour <= 23:\n        raise ValueError('hour must be in 0..23', hour)"
+            "0 <= hour <= 23"
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= hour <= 23:\n        raise ValueError('hour must be in 0..23', hour)"
+            "0 <= hour <= 23"
         ],
         [
             "LOAD_GLOBAL",
@@ -21948,11 +21948,11 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= minute <= 59:\n        raise ValueError('minute must be in 0..59', minute)"
+            "0 <= minute <= 59"
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= minute <= 59:\n        raise ValueError('minute must be in 0..59', minute)"
+            "0 <= minute <= 59"
         ],
         [
             "LOAD_GLOBAL",
@@ -21972,11 +21972,11 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= second <= 59:\n        raise ValueError('second must be in 0..59', second)"
+            "0 <= second <= 59"
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= second <= 59:\n        raise ValueError('second must be in 0..59', second)"
+            "0 <= second <= 59"
         ],
         [
             "LOAD_GLOBAL",
@@ -21996,11 +21996,11 @@
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= microsecond <= 999999:\n        raise ValueError('microsecond must be in 0..999999', microsecond)"
+            "0 <= microsecond <= 999999"
         ],
         [
             "COMPARE_OP",
-            "    if not 0 <= microsecond <= 999999:\n        raise ValueError('microsecond must be in 0..999999', microsecond)"
+            "0 <= microsecond <= 999999"
         ],
         [
             "LOAD_GLOBAL",
@@ -23388,11 +23388,11 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "0 <= s < 24*3600"
         ],
         [
             "COMPARE_OP",
-            ""
+            "0 <= s < 24*3600"
         ],
         [
             "LOAD_GLOBAL",
@@ -23416,11 +23416,11 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "0 <= us < 1000000"
         ],
         [
             "COMPARE_OP",
-            ""
+            "0 <= us < 1000000"
         ],
         [
             "LOAD_GLOBAL",
@@ -25484,11 +25484,11 @@
         ],
         [
             "COMPARE_OP",
-            "        if (month is None and\n            isinstance(year, (bytes, str)) and len(year) == 4 and\n            1 <= ord(year[2:3]) <= 12):\n            # Pickle support\n            if isinstance(year, str):\n                try:\n                    year = year.encode('latin1')\n                except UnicodeEncodeError:\n                    # More informative error message.\n                    raise ValueError(\n                        \"Failed to encode latin1 string when unpickling \"\n                        \"a date object. \"\n                        \"pickle.load(data, encoding='latin1') is assumed.\")\n            self = object.__new__(cls)\n            self.__setstate(year)\n            self._hashcode = -1\n            return self"
+            "1 <= ord(year[2:3]) <= 12"
         ],
         [
             "COMPARE_OP",
-            "        if (month is None and\n            isinstance(year, (bytes, str)) and len(year) == 4 and\n            1 <= ord(year[2:3]) <= 12):\n            # Pickle support\n            if isinstance(year, str):\n                try:\n                    year = year.encode('latin1')\n                except UnicodeEncodeError:\n                    # More informative error message.\n                    raise ValueError(\n                        \"Failed to encode latin1 string when unpickling \"\n                        \"a date object. \"\n                        \"pickle.load(data, encoding='latin1') is assumed.\")\n            self = object.__new__(cls)\n            self.__setstate(year)\n            self._hashcode = -1\n            return self"
+            "1 <= ord(year[2:3]) <= 12"
         ],
         [
             "LOAD_GLOBAL",
@@ -26792,7 +26792,7 @@
         ],
         [
             "COMPARE_OP",
-            "            if 0 < o <= _MAXORDINAL:\n                return type(self).fromordinal(o)"
+            "0 < o <= _MAXORDINAL"
         ],
         [
             "LOAD_GLOBAL",
@@ -26800,7 +26800,7 @@
         ],
         [
             "COMPARE_OP",
-            "            if 0 < o <= _MAXORDINAL:\n                return type(self).fromordinal(o)"
+            "0 < o <= _MAXORDINAL"
         ],
         [
             "LOAD_GLOBAL",
@@ -29104,11 +29104,11 @@
         ],
         [
             "COMPARE_OP",
-            "                if 0 <= h < 24:\n                    self._hashcode = hash(time(h, m, self.second, self.microsecond))\n                else:\n                    self._hashcode = hash((h, m, self.second, self.microsecond))"
+            "0 <= h < 24"
         ],
         [
             "COMPARE_OP",
-            "                if 0 <= h < 24:\n                    self._hashcode = hash(time(h, m, self.second, self.microsecond))\n                else:\n                    self._hashcode = hash((h, m, self.second, self.microsecond))"
+            "0 <= h < 24"
         ],
         [
             "LOAD_GLOBAL",
@@ -30756,11 +30756,11 @@
         ],
         [
             "COMPARE_OP",
-            "        if (isinstance(year, (bytes, str)) and len(year) == 10 and\n            1 <= ord(year[2:3])&0x7F <= 12):\n            # Pickle support\n            if isinstance(year, str):\n                try:\n                    year = bytes(year, 'latin1')\n                except UnicodeEncodeError:\n                    # More informative error message.\n                    raise ValueError(\n                        \"Failed to encode latin1 string when unpickling \"\n                        \"a datetime object. \"\n                        \"pickle.load(data, encoding='latin1') is assumed.\")\n            self = object.__new__(cls)\n            self.__setstate(year, month)\n            self._hashcode = -1\n            return self"
+            "1 <= ord(year[2:3])&0x7F <= 12"
         ],
         [
             "COMPARE_OP",
-            "        if (isinstance(year, (bytes, str)) and len(year) == 10 and\n            1 <= ord(year[2:3])&0x7F <= 12):\n            # Pickle support\n            if isinstance(year, str):\n                try:\n                    year = bytes(year, 'latin1')\n                except UnicodeEncodeError:\n                    # More informative error message.\n                    raise ValueError(\n                        \"Failed to encode latin1 string when unpickling \"\n                        \"a datetime object. \"\n                        \"pickle.load(data, encoding='latin1') is assumed.\")\n            self = object.__new__(cls)\n            self.__setstate(year, month)\n            self._hashcode = -1\n            return self"
+            "1 <= ord(year[2:3])&0x7F <= 12"
         ],
         [
             "LOAD_GLOBAL",
@@ -35112,7 +35112,7 @@
         ],
         [
             "COMPARE_OP",
-            "        if 0 < delta.days <= _MAXORDINAL:\n            return type(self).combine(date.fromordinal(delta.days),\n                                      time(hour, minute, second,\n                                           delta.microseconds,\n                                           tzinfo=self._tzinfo))"
+            "0 < delta.days <= _MAXORDINAL"
         ],
         [
             "LOAD_GLOBAL",
@@ -35120,7 +35120,7 @@
         ],
         [
             "COMPARE_OP",
-            "        if 0 < delta.days <= _MAXORDINAL:\n            return type(self).combine(date.fromordinal(delta.days),\n                                      time(hour, minute, second,\n                                           delta.microseconds,\n                                           tzinfo=self._tzinfo))"
+            "0 < delta.days <= _MAXORDINAL"
         ],
         [
             "LOAD_GLOBAL",
@@ -36504,7 +36504,7 @@
         ],
         [
             "COMPARE_OP",
-            "        if not cls._minoffset <= offset <= cls._maxoffset:\n            raise ValueError(\"offset must be a timedelta \"\n                             \"strictly between -timedelta(hours=24) and \"\n                             \"timedelta(hours=24).\")"
+            "cls._minoffset <= offset <= cls._maxoffset"
         ],
         [
             "LOAD_FAST",
@@ -36516,7 +36516,7 @@
         ],
         [
             "COMPARE_OP",
-            "        if not cls._minoffset <= offset <= cls._maxoffset:\n            raise ValueError(\"offset must be a timedelta \"\n                             \"strictly between -timedelta(hours=24) and \"\n                             \"timedelta(hours=24).\")"
+            "cls._minoffset <= offset <= cls._maxoffset"
         ],
         [
             "LOAD_GLOBAL",
@@ -50008,11 +50008,11 @@
         ],
         [
             "COMPARE_OP",
-            ""
+            "list(gen()) == list(gen2) == [1, 2]"
         ],
         [
             "COMPARE_OP",
-            ""
+            "list(gen()) == list(gen2) == [1, 2]"
         ],
         [
             "STORE_FAST",
@@ -61820,11 +61820,11 @@
         ],
         [
             "COMPARE_OP",
-            "c if (0 < ord(c) < 256) else '?'"
+            "0 < ord(c) < 256"
         ],
         [
             "COMPARE_OP",
-            "c if (0 < ord(c) < 256) else '?'"
+            "0 < ord(c) < 256"
         ],
         [
             "LOAD_FAST",

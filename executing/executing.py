@@ -546,6 +546,17 @@ class PositionNodeFinder(object):
     There are only some exceptions for methods and attributes.
     """
 
+    types_cmp_issue = (
+        ast.IfExp,
+        ast.If,
+        ast.Assert,
+        ast.While,
+        ast.ListComp,
+        ast.SetComp,
+        ast.DictComp,
+        ast.GeneratorExp,
+    )
+
     last_code = None
     last_instructions = None
 
@@ -597,6 +608,29 @@ class PositionNodeFinder(object):
             else:
                 raise
 
+        if isinstance(node, self.types_cmp_issue) and self.opname(lasti) in (
+            "COMPARE_OP",
+            "IS_OP",
+            "CONTAINS_OP",
+        ):
+            # this is a workaround for https://github.com/python/cpython/issues/95921
+            # we can fix cases with only on comparison inside the test condition
+            #
+            # we can not fix cases like:
+            # if a<b<c and d<e<f: pass
+            # if (a<b<c)!=d!=e: pass
+            # because we don't know which comparison caused the problem
+
+            comparisons = [
+                n
+                for n in ast.walk(node.test)
+                if isinstance(n, ast.Compare) and len(n.ops) > 1
+            ]
+
+            assert_(comparisons, "expected at least one comparison")
+
+            if len(comparisons) == 1:
+                node = comparisons[0]
 
         if isinstance(node, ast.Assert):
             # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
