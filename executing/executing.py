@@ -563,38 +563,40 @@ class PositionNodeFinder(object):
 
         self.source = source
 
-        # lineno and col_offset of LOAD_METHOD and *_ATTR instructions get set to the beginning of
-        # the attribute by the python compiler to improved error messages (PEP-657)
-        # we ignore here the start position and try to find the ast-node just by end position and expected node type
-        # This is save, because there can only be one attribute ending at a specific point in the source code.
-        if self.opname(lasti) in (
-            "LOAD_METHOD",
-            "LOAD_ATTR",
-            "STORE_ATTR",
-            "DELETE_ATTR",
-        ):
-            node = self.find_node(
+        try:
+            # try to map with all match_positions
+            node = self.find_node(lasti)
+        except NotOneValueFound:
+            # LOAD_METHOD could load "".join for long "..."%(...) BinOps
+            # this can only be associated by using all positions
+            if self.opname(lasti) in (
+                "LOAD_METHOD",
+                "LOAD_ATTR",
+                "STORE_ATTR",
+                "DELETE_ATTR",
+            ):
+                # lineno and col_offset of LOAD_METHOD and *_ATTR instructions get set to the beginning of
+                # the attribute by the python compiler to improved error messages (PEP-657)
+                # we ignore here the start position and try to find the ast-node just by end position and expected node type
+                # This is save, because there can only be one attribute ending at a specific point in the source code.
+                node = self.find_node(
                 lasti,
                 match_positions=("end_col_offset", "end_lineno"),
                 typ=ast.Attribute,
             )
-        else:
-            try:
-                # try to map with all match_positions
-                node = self.find_node(lasti)
-            except NotOneValueFound:
+            elif self.opname(lasti) == "CALL":
                 # A CALL instruction can be a method call, in which case the lineno and col_offset gets changed by the compiler.
                 # Therefore we ignoring here this attributes and searchnig for a Call-node only by end_col_offset and end_lineno. 
                 # This is save, because there can only be one method ending at a specific point in the source code.
                 # One closing ) only belongs to one method.
-                if self.opname(lasti) == "CALL":
-                    node = self.find_node(
-                        lasti,
-                        match_positions=("end_col_offset", "end_lineno"),
-                        typ=ast.Call,
-                    )
-                else:
-                    raise
+                node = self.find_node(
+                    lasti,
+                    match_positions=("end_col_offset", "end_lineno"),
+                    typ=ast.Call,
+                )
+            else:
+                raise
+
 
         if isinstance(node, ast.Assert):
             # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
