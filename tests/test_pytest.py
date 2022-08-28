@@ -1,3 +1,4 @@
+import linecache
 import os
 import sys
 from time import sleep
@@ -78,3 +79,32 @@ def test_source_reload(tmpdir):
         f.write("2\n")
     source = Source.for_filename(path)
     assert source.text == "2\n"
+
+
+def test_manual_linecache():
+    check_manual_linecache(os.path.join("fake", "path", "to", "foo.py"))
+    check_manual_linecache("<my_custom_filename>")
+
+
+def check_manual_linecache(filename):
+    text = "foo\nbar\n"
+    lines = text.splitlines(True)
+    assert lines == ["foo\n", "bar\n"]
+
+    entry = (len(text), 0, lines, filename)
+    linecache.cache[filename] = entry
+
+    # sanity check
+    assert linecache.cache[filename] == entry
+    assert linecache.getlines(filename) == lines
+
+    # checkcache normally removes the entry because the filename doesn't exist
+    linecache.checkcache(filename)
+    assert filename not in linecache.cache
+    assert linecache.getlines(filename) == []
+
+    # Source.for_filename uses checkcache but makes sure the entry isn't removed
+    linecache.cache[filename] = entry
+    source = Source.for_filename(filename)
+    assert linecache.cache[filename] == entry
+    assert source.text == text
