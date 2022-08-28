@@ -1,12 +1,15 @@
+import inspect
 import linecache
 import os
 import sys
 from time import sleep
 
+import pytest
 from littleutils import SimpleNamespace
 
-from executing import Source
+from executing import Source, NotOneValueFound
 from executing.executing import is_ipython_cell_code, attr_names_match
+import executing.executing
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -108,3 +111,15 @@ def check_manual_linecache(filename):
     source = Source.for_filename(filename)
     assert linecache.cache[filename] == entry
     assert source.text == text
+
+
+def test_exception_catching():
+    executing.executing.TESTING = True
+    with pytest.raises(NotOneValueFound):
+        assert Source.executing(inspect.currentframe()).node is None
+
+    executing.executing.TESTING = False
+    try:
+        assert Source.executing(inspect.currentframe()).node is None
+    finally:
+        executing.executing.TESTING = True
