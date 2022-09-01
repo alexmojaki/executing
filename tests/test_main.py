@@ -23,7 +23,7 @@ from tests.utils import tester, subscript_item, in_finally
 PYPY = 'pypy' in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions, function_node_types
+from executing.executing import PY3, get_instructions, function_node_types, KnownIssue
 
 if eval("0"):
     global_never_defined = 1
@@ -981,6 +981,9 @@ class TestFiles(unittest.TestCase):
                 try:
                     ex = Source.executing(frame)
                     node = ex.node
+
+                except KnownIssue:
+                    continue
                 except Exception as e:
                     # continue for every case where this can be an known issue
 

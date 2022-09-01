@@ -152,6 +152,8 @@ TESTING = 0
 class NotOneValueFound(Exception):
     pass
 
+class KnownIssue(Exception):
+    pass
 
 def only(it):
     if hasattr(it, '__len__'):
@@ -519,11 +521,13 @@ class PositionNodeFinder(object):
     There are only some exceptions for methods and attributes.
     """
 
-    types_cmp_issue = (
+    types_cmp_issue_fix = (
         ast.IfExp,
         ast.If,
         ast.Assert,
         ast.While,
+    )
+    types_cmp_issue = types_cmp_issue_fix+ (
         ast.ListComp,
         ast.SetComp,
         ast.DictComp,
@@ -581,7 +585,7 @@ class PositionNodeFinder(object):
             else:
                 raise
 
-        if isinstance(node, self.types_cmp_issue) and self.opname(lasti) in (
+        if isinstance(node, self.types_cmp_issue_fix) and self.opname(lasti) in (
             "COMPARE_OP",
             "IS_OP",
             "CONTAINS_OP",
@@ -593,6 +597,7 @@ class PositionNodeFinder(object):
             # if a<b<c and d<e<f: pass
             # if (a<b<c)!=d!=e: pass
             # because we don't know which comparison caused the problem
+
 
             comparisons = [
                 n
@@ -609,7 +614,7 @@ class PositionNodeFinder(object):
             # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
             # All the rewritten expressions get mapped to ast.Assert, which is the wrong ast-node.
             # We don't report this wrong result.
-            raise NotOneValueFound
+            raise KnownIssue("assert")
 
         # find decorators
         if (

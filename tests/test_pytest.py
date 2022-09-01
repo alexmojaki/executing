@@ -10,7 +10,7 @@ import pytest
 from littleutils import SimpleNamespace
 
 from executing import Source, NotOneValueFound
-from executing.executing import is_ipython_cell_code, attr_names_match
+from executing.executing import is_ipython_cell_code, attr_names_match, KnownIssue
 import executing.executing
 
 from executing import Source,NotOneValueFound
@@ -36,7 +36,7 @@ def test_pytest():
 def this_expression():
     try:
         return Source.executing(inspect.currentframe().f_back).node
-    except NotOneValueFound:
+    except (KnownIssue,NotOneValueFound):
         # TODO: python < 3.11 raises an exception. Should we do the same for the PositionNodeFinder instead of returning None?
         return None
 
@@ -140,7 +140,7 @@ def test_exception_catching():
     executing.executing.TESTING = True  # this is already the case in all other tests
     # Sanity check that this operation usually raises an exception.
     # This actually depends on executing not working in the presence of pytest.
-    with pytest.raises(NotOneValueFound):
+    with pytest.raises((NotOneValueFound, KnownIssue)):
         assert Source.executing(frame).node is None
 
     # By contrast, TESTING is usually false when executing is used in real code.
