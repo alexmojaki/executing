@@ -892,9 +892,9 @@ class TestFiles(unittest.TestCase):
 
     def check_code(self, code, nodes, decorators, check_names):
         linestarts = dict(dis.findlinestarts(code))
-        instructions = get_instructions(code)
+        instructions = list(get_instructions(code))
         lineno = None
-        for inst in instructions:
+        for inst_index, inst in enumerate(instructions):
             if time.time() - self.start_time > 45 * 60:
                 # Avoid travis time limit of 50 minutes
                 raise TimeOut
@@ -991,6 +991,30 @@ class TestFiles(unittest.TestCase):
                         if inst.opname == "BUILD_STRING":
                             # format strings are still a problem
                             # TODO: find reason
+                            continue
+
+                        if (
+                            inst.opname == "STORE_FAST"
+                            and inst_index > 2
+                            and instructions[inst_index - 2].opname == "POP_EXCEPT"
+                        ):
+                            # except cleanup might be mapped to a method
+
+                            # except Exception as e:
+                            #     self.linter._stashed_messages[
+                            #         (self.linter.current_name, "useless-option-value")
+                            #     ].append((option_string, str(e)))
+                            #       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                            #       | STORE_NAME is mapped to this range
+                            #       | and can not be associated with a method, because it is nothing like LOAD_METHOD
+                            continue
+
+                        if (
+                            inst.opname == "DELETE_FAST"
+                            and inst_index > 3
+                            and instructions[inst_index - 3].opname == "POP_EXCEPT"
+                        ):
+                            # same like above
                             continue
 
                     if inst.opname.startswith(
