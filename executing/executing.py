@@ -585,30 +585,37 @@ class PositionNodeFinder(object):
             else:
                 raise
 
-        if isinstance(node, self.types_cmp_issue_fix) and self.opname(lasti) in (
-            "COMPARE_OP",
-            "IS_OP",
-            "CONTAINS_OP",
+        if self.opname(lasti) in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
+            node, self.types_cmp_issue
         ):
-            # this is a workaround for https://github.com/python/cpython/issues/95921
-            # we can fix cases with only on comparison inside the test condition
-            #
-            # we can not fix cases like:
-            # if a<b<c and d<e<f: pass
-            # if (a<b<c)!=d!=e: pass
-            # because we don't know which comparison caused the problem
+            if isinstance(node, self.types_cmp_issue_fix):
+                # this is a workaround for https://github.com/python/cpython/issues/95921
+                # we can fix cases with only on comparison inside the test condition
+                #
+                # we can not fix cases like:
+                # if a<b<c and d<e<f: pass
+                # if (a<b<c)!=d!=e: pass
+                # because we don't know which comparison caused the problem
 
 
-            comparisons = [
-                n
-                for n in ast.walk(node.test)
-                if isinstance(n, ast.Compare) and len(n.ops) > 1
-            ]
+                comparisons = [
+                    n
+                    for n in ast.walk(node.test)
+                    if isinstance(n, ast.Compare) and len(n.ops) > 1
+                ]
 
-            assert_(comparisons, "expected at least one comparison")
+                assert_(comparisons, "expected at least one comparison")
 
-            if len(comparisons) == 1:
-                node = comparisons[0]
+                if len(comparisons) == 1:
+                    node = comparisons[0]
+                else:
+                    raise KnownIssue(
+                        "multiple chain comparison inside %s can not be fixed" % (node)
+                    )
+
+            else:
+                # Comprehension and generators get not fixed for now.
+                raise KnownIssue("chain comparison inside %s can not be fixed" % (node))
 
         if isinstance(node, ast.Assert):
             # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
