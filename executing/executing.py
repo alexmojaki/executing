@@ -514,6 +514,14 @@ class QualnameVisitor(ast.NodeVisitor):
         self.stack.pop()
 
 
+def node_and_parents(node):
+    while True:
+        yield node
+        if hasattr(node, "parent"):
+            node = node.parent
+        else:
+            break
+
 class PositionNodeFinder(object):
     """
     Mapping bytecode to ast-node based on the source positions, which where introduced in pyhon 3.11.
@@ -622,6 +630,10 @@ class PositionNodeFinder(object):
             # All the rewritten expressions get mapped to ast.Assert, which is the wrong ast-node.
             # We don't report this wrong result.
             raise KnownIssue("assert")
+
+        if any(isinstance(n, ast.pattern) for n in node_and_parents(node)):
+            # TODO: investigate
+            raise KnownIssue("pattern matching ranges seems to be wrong")
 
         # find decorators
         if (
