@@ -6915,10 +6915,6 @@
             "    def _separate_comprehensions(self, nodes, end_lineno, positions, traced_file):\n        # type: (list, int, List[HTMLPosition], TracedFile) -> int\n        \"\"\"\n        Comprehensions (e.g. list comprehensions) are troublesome because they can\n        be navigated like loops, and the buttons for these need to be on separate lines.\n        This function inserts newlines to turn:\n\n        [x + y for x in range(3) for y in range(5)] and\n        [[x + y for x in range(3)] for y in range(5)]\n\n        into\n\n        [x + y for x in range(3)\n         for y in range(5)] and\n        [[x + y for x in range(3)]\n         for y in range(5)]\n        \"\"\"\n\n        comprehensions = group_by_key_func(of_type((ast.comprehension, ast.While, ast.For), nodes),\n                                           lambda c: c.first_token.start[0]\n                                           )  # type: Dict[Any, Iterable[ast.comprehension]]\n\n        def get_start(n):\n            # type: (ast.AST) -> int\n            return traced_file.tokens.get_text_range(n)[0]\n\n        for comp_list in comprehensions.values():\n            prev_start = None  # type: Optional[int]\n            for comp in sorted(comp_list, key=lambda c: c.first_token.startpos):\n                if isinstance(comp, ast.comprehension) and comp is comp.parent.generators[0]:\n                    start = get_start(comp.parent)\n                    if prev_start is not None and start < prev_start:\n                        start = get_start(comp)\n                else:\n                    start = get_start(comp)\n                if prev_start is not None:\n                    positions.append(HTMLPosition(start, True, 0, '\\n '))\n                    end_lineno += 1\n                prev_start = start\n\n        return end_lineno"
         ],
         [
-            "STORE_NAME",
-            "    def _separate_comprehensions(self, nodes, end_lineno, positions, traced_file):\n        # type: (list, int, List[HTMLPosition], TracedFile) -> int\n        \"\"\"\n        Comprehensions (e.g. list comprehensions) are troublesome because they can\n        be navigated like loops, and the buttons for these need to be on separate lines.\n        This function inserts newlines to turn:\n\n        [x + y for x in range(3) for y in range(5)] and\n        [[x + y for x in range(3)] for y in range(5)]\n\n        into\n\n        [x + y for x in range(3)\n         for y in range(5)] and\n        [[x + y for x in range(3)]\n         for y in range(5)]\n        \"\"\"\n\n        comprehensions = group_by_key_func(of_type((ast.comprehension, ast.While, ast.For), nodes),\n                                           lambda c: c.first_token.start[0]\n                                           )  # type: Dict[Any, Iterable[ast.comprehension]]\n\n        def get_start(n):\n            # type: (ast.AST) -> int\n            return traced_file.tokens.get_text_range(n)[0]\n\n        for comp_list in comprehensions.values():\n            prev_start = None  # type: Optional[int]\n            for comp in sorted(comp_list, key=lambda c: c.first_token.startpos):\n                if isinstance(comp, ast.comprehension) and comp is comp.parent.generators[0]:\n                    start = get_start(comp.parent)\n                    if prev_start is not None and start < prev_start:\n                        start = get_start(comp)\n                else:\n                    start = get_start(comp)\n                if prev_start is not None:\n                    positions.append(HTMLPosition(start, True, 0, '\\n '))\n                    end_lineno += 1\n                prev_start = start\n\n        return end_lineno"
-        ],
-        [
             "LOAD_GLOBAL",
             "super"
         ],
@@ -27675,10 +27671,6 @@
             "    def __repr__(self):\n        return (f'{self.__class__.__name__}'\n                f'(year={self[0]}, week={self[1]}, weekday={self[2]})')"
         ],
         [
-            "STORE_NAME",
-            "    def __repr__(self):\n        return (f'{self.__class__.__name__}'\n                f'(year={self[0]}, week={self[1]}, weekday={self[2]})')"
-        ],
-        [
             "LOAD_GLOBAL",
             "super"
         ],
@@ -41433,10 +41425,6 @@
         [
             "STORE_NAME",
             "    def visit_Lambda(self, node):\n        self.visit_FunctionDef(node, '<lambda>')"
-        ],
-        [
-            "STORE_NAME",
-            "    def visit_ClassDef(self, node):\n        self.stack.append(node.name)\n        self.generic_visit(node)\n        self.stack.pop()"
         ],
         [
             "STORE_NAME",
@@ -55281,10 +55269,6 @@
             "    @staticmethod\n    def _create_simple_marker_call(node, func):\n        # type: (ast.AST, Callable) -> ast.Call\n        \"\"\"\n        Returns a Call node representing `func(node._tree_index)`\n        where node._tree_index is a numerical literal which allows the node object\n        to be retrieved later through the nodes attribute of a TracedFile.\n        \"\"\"\n        return ast.Call(\n            func=ast.Name(id=func.__name__,\n                          ctx=ast.Load()),\n            args=[ast.Num(node._tree_index)],\n            keywords=[],\n        )"
         ],
         [
-            "STORE_NAME",
-            "    @staticmethod\n    def _create_simple_marker_call(node, func):\n        # type: (ast.AST, Callable) -> ast.Call\n        \"\"\"\n        Returns a Call node representing `func(node._tree_index)`\n        where node._tree_index is a numerical literal which allows the node object\n        to be retrieved later through the nodes attribute of a TracedFile.\n        \"\"\"\n        return ast.Call(\n            func=ast.Name(id=func.__name__,\n                          ctx=ast.Load()),\n            args=[ast.Num(node._tree_index)],\n            keywords=[],\n        )"
-        ],
-        [
             "LOAD_GLOBAL",
             "getattr"
         ],
@@ -58055,10 +58039,6 @@
             "    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
         ],
         [
-            "STORE_NAME",
-            "    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
-        ],
-        [
             "LOAD_GLOBAL",
             "super"
         ],
@@ -58708,6 +58688,10 @@
         ],
         [
             "STORE_FAST",
+            "method"
+        ],
+        [
+            "DELETE_FAST",
             "method"
         ],
         [
@@ -60889,10 +60873,6 @@
             "    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
         ],
         [
-            "STORE_NAME",
-            "    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
-        ],
-        [
             "LOAD_FAST",
             "o"
         ],
@@ -62237,10 +62217,6 @@
         [
             "STORE_NAME",
             "    def __init__(self, factory):\n        super(ArgDefaultDict, self).__init__()\n        self.factory = factory"
-        ],
-        [
-            "STORE_NAME",
-            "    def __missing__(self, key):\n        result = self[key] = self.factory(key)\n        return result"
         ],
         [
             "STORE_NAME",

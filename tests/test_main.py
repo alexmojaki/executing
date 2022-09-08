@@ -746,7 +746,13 @@ class TestFiles(unittest.TestCase):
                 expected_decorators[(node.lineno, node.name)] = node.decorator_list[::-1]
                 decorators[(node.lineno, node.name)] = []
 
-        code = compile(source.tree, source.filename, 'exec')
+        try:
+            code = compile(source.tree, source.filename, "exec")
+        except SyntaxError:
+            # for example:
+            # SyntaxError: 'return' outside function
+            print("skip %s" % filename)
+            return
         result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
@@ -845,9 +851,9 @@ class TestFiles(unittest.TestCase):
                     def p(*args):
                         print(*args, file=sys.stderr)
 
-                    p(filename)
 
                     p("node without associated Bytecode")
+                    p("in file:", filename)
                     p("correct:", correct)
                     p("len(values):", len(values))
                     p("values:", values)
@@ -911,9 +917,10 @@ class TestFiles(unittest.TestCase):
         instructions = list(get_instructions(code))
         lineno = None
         for inst_index, inst in enumerate(instructions):
-            if time.time() - self.start_time > 45 * 60:
-                # Avoid travis time limit of 50 minutes
-                raise TimeOut
+            if hasattr(self, "start_time"):
+                if time.time() - self.start_time > 45 * 60:
+                    # Avoid travis time limit of 50 minutes
+                    raise TimeOut
 
             py11 = sys.version_info >= (3, 11)
 
@@ -952,11 +959,13 @@ class TestFiles(unittest.TestCase):
                         "STORE_ATTR",
                         "DELETE_ATTR",
                         "DELETE_NAME",
+                        "DELETE_FAST",
                         "STORE_SUBSCR",
                         "STORE_SLICE",
                         "DELETE_SUBSCR",
                         "STORE_NAME",
                         "STORE_FAST",
+                        "STORE_GLOBAL",
                         "STORE_DEREF",
                         "BUILD_STRING",
                         "CALL",
@@ -1041,10 +1050,24 @@ class TestFiles(unittest.TestCase):
                 except Exception as e:
                     # continue for every case where this can be an known issue
 
+
                     if sys.version_info >= (3, 11):
+                        exact_options = []
+                        for node in ast.walk(source.tree):
+                            if not hasattr(node, "lineno"):
+                                continue
+
+                            if start(node) == start(inst) and end(node) == end(inst):
+                                exact_options.append(node)
+
                         if inst.opname == "BUILD_STRING":
                             # format strings are still a problem
                             # TODO: find reason
+                            continue
+
+                        if any(isinstance(o, ast.JoinedStr) for o in exact_options):
+                            # every node in a f-string has the same positions
+                            # we are not able to find the correct one
                             continue
 
                         if (
@@ -1071,7 +1094,7 @@ class TestFiles(unittest.TestCase):
                             # same like above
                             continue
 
-                    if inst.opname.startswith(
+                    if not py11 and inst.opname.startswith(
                         ("COMPARE_OP", "IS_OP", "CALL", "LOAD_NAME", "STORE_SUBSCR")
                     ):
                         continue
@@ -1124,12 +1147,9 @@ class TestFiles(unittest.TestCase):
                             ),
                         ):
 
-                            if (
-                                0
-                                and (node.end_lineno - node.lineno)
-                                > (inst.positions.end_lineno - inst.positions.lineno)
-                                * 4
-                            ):
+                            if (node.end_lineno - node.lineno) > (
+                                inst.positions.end_lineno - inst.positions.lineno
+                            ) * 4:
                                 # skip nodes which are way to long
                                 continue
 
