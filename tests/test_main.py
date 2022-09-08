@@ -25,6 +25,9 @@ PYPY = 'pypy' in sys.version.lower()
 from executing import Source, only, NotOneValueFound
 from executing.executing import PY3, get_instructions, function_node_types, KnownIssue
 
+if sys.version_info >= (3,11):
+    from tests.deadcode import Deadcode
+
 if eval("0"):
     global_never_defined = 1
 
@@ -713,6 +716,9 @@ class TestFiles(unittest.TestCase):
             print("skip %s"%filename)
             return
 
+        if sys.version_info >= (3,11):
+            Deadcode.annotate(source.tree)
+
         print("check %s"%filename)
 
         if PY3 and sys.version_info < (3, 11):
@@ -816,6 +822,10 @@ class TestFiles(unittest.TestCase):
                     ):
                         # "%s"%(...) is missing an BUILD_STRING instruction which normally maps to BinOp
                         continue
+
+                    if getattr(node, "deadcode", False):
+                        continue
+
 
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
