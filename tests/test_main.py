@@ -23,7 +23,7 @@ from tests.utils import tester, subscript_item, in_finally
 PYPY = 'pypy' in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions, function_node_types, KnownIssue
+from executing.executing import PY3, get_instructions, function_node_types, VerifierFailure, KnownIssue
 
 if sys.version_info >= (3,11):
     from tests.deadcode import Deadcode
@@ -826,6 +826,12 @@ class TestFiles(unittest.TestCase):
                     if getattr(node, "deadcode", False):
                         continue
 
+                    if (
+                        isinstance(node, ast.Name)
+                        and isinstance(node.ctx, ast.Store)
+                        and node.id == "__classcell__"
+                    ):
+                        continue
 
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
@@ -994,6 +1000,44 @@ class TestFiles(unittest.TestCase):
 
                 except KnownIssue:
                     continue
+
+                except VerifierFailure as e:
+
+                    print("VerifierFailure:")
+
+                    print(e)
+
+                    print("\ninstruction: " + str(e.instruction))
+                    print("\nnode: " + ast.dump(e.node, include_attributes=True))
+
+                    with open(source.filename) as sourcefile:
+                        source_code = sourcefile.read()
+
+                    print(dump_source(source_code, start(e.node), end(e.node)))
+
+                    print("bytecode:")
+                    for inst in dis.get_instructions(code):
+                        if (
+                            e.instruction.offset - 10
+                            < inst.offset
+                            < e.instruction.offset - 10
+                        ):
+                            print(
+                                "%s: %s %s %s"
+                                % (
+                                    inst.offset,
+                                    inst.positions,
+                                    inst.opname,
+                                    inst.argrepr,
+                                )
+                            )
+
+                    self.fail()
+
+                except KnownIssue as e:
+                    print("Known Issue:",e)
+                    continue
+
                 except Exception as e:
                     # continue for every case where this can be an known issue
 

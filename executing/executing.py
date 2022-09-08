@@ -153,7 +153,23 @@ class NotOneValueFound(Exception):
     pass
 
 class KnownIssue(Exception):
+    """
+    Raised in case of an known problem. Mostly because of cpython bugs.
+    Executing.node gets set to None in this case.
+    """
     pass
+
+class VerifierFailure(Exception):
+    """
+    Thrown for an unexpected mapping from instruction to ast node
+    Executing.node gets set to None in this case.
+    """
+
+    def __init__(self, title, node, instruction):
+        self.node = node
+        self.instruction = instruction
+
+        super().__init__(title)
 
 def only(it):
     if hasattr(it, '__len__'):
@@ -522,6 +538,9 @@ def node_and_parents(node):
         else:
             break
 
+
+
+
 class PositionNodeFinder(object):
     """
     Mapping bytecode to ast-node based on the source positions, which where introduced in pyhon 3.11.
@@ -593,7 +612,11 @@ class PositionNodeFinder(object):
             else:
                 raise
 
-        if self.opname(lasti) in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
+        # report KnownIssues
+
+        instruction = self.instruction(lasti)
+
+        if instruction.opname in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
             node, self.types_cmp_issue
         ):
             if isinstance(node, self.types_cmp_issue_fix):
@@ -634,6 +657,11 @@ class PositionNodeFinder(object):
         if any(isinstance(n, ast.pattern) for n in node_and_parents(node)):
             # TODO: investigate
             raise KnownIssue("pattern matching ranges seems to be wrong")
+
+        if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
+            # handle stores to __classcell__ as KnownIssue,
+            # because they get complicated if they are used in `if` or `for` loops
+            raise KnownIssue("define class member")
 
         # find decorators
         if (
@@ -678,8 +706,345 @@ class PositionNodeFinder(object):
 
                 index += 4
 
+        self.verify(node, self.instruction(lasti))
+
         self.result = node
         self.decorator = None
+
+    def verify(self, node, instruction):
+        """
+        checks if this node could gererate this instruction
+        """
+
+        op_name = instruction.opname
+        extra_filter = lambda e: True
+        ctx = type(None)
+
+        op_type_map = {
+            "**": ast.Pow,
+            "*": ast.Mult,
+            "@": getattr(ast, "MatMult", ()),
+            "//": ast.FloorDiv,
+            "/": ast.Div,
+            "%": ast.Mod,
+            "+": ast.Add,
+            "-": ast.Sub,
+            "<<": ast.LShift,
+            ">>": ast.RShift,
+            "&": ast.BitAnd,
+            "^": ast.BitXor,
+            "|": ast.BitOr,
+        }
+
+        def except_cleanup(inst, node):
+
+            if inst.opname not in (
+                "STORE_NAME",
+                "STORE_FAST",
+                "STORE_DEREF",
+                "DELETE_NAME",
+                "DELETE_FAST",
+            ):
+                return False
+
+            # This bytecode does something exception cleanup related.
+            # The position of the instruciton seems to be something in the last ast-node of the ExceptHandler
+            # this could be a bug, but it might not be observable in normal python code.
+
+            # example:
+            # except Exception as exc:
+            #     enum_member._value_ = value
+
+            # other example:
+            # STORE_FAST of e was mapped to Constant(value=False)
+            # except OSError as e:
+            #     if not _ignore_error(e):
+            #         raise
+            #     return False
+
+            # STORE_FAST of msg was mapped to print(...)
+            #  except TypeError as msg:
+            #      print("Sorry:", msg, file=file)
+
+            x = node
+            while hasattr(x, "parent"):
+                x = x.parent
+                if isinstance(x, ast.ExceptHandler):
+                    if (x.name or "exc") == inst.argval:
+                        return True
+
+            return False
+
+        def inst_match(opname, **args):
+            """
+            match instruction
+
+            Parameters:
+                opname (string|Seq[stirng]): inst.opname has to be equal or in `opname`
+                **args: every arg has to match inst.arg
+
+            Returns:
+                True if all conditions match the instruction
+
+            """
+            if isinstance(opname, tuple):
+                if instruction.opname not in opname:
+                    return False
+            else:
+                if instruction.opname != opname:
+                    return False
+            return all(getattr(instruction, k) == v for k, v in args.items())
+
+        def node_match(node_type, **args):
+            """
+            match the ast-node
+
+            Parameters:
+                node_type: type of the node
+                **args: every `arg` has to be equal `node.arg`
+                        or `node.arg` has to be an instance of `arg` if it is a type.
+            """
+            return isinstance(node, node_type) and all(
+                isinstance(getattr(node, k), v)
+                if isinstance(v, type)
+                else getattr(node, k) == v
+                for k, v in args.items()
+            )
+
+        def mangled_name(node, name=None):
+            """
+
+            Parameters:
+                node: the node which should be mangled
+                name: the name of the node
+
+            Returns:
+                The mangled name of `node`
+            """
+            if name is None:
+                if isinstance(node, ast.Attribute):
+                    name = node.attr
+                elif isinstance(node, ast.Name):
+                    name = node.id
+                else:
+                    name = node.name
+
+            if name.startswith("__") and not name.endswith("__"):
+                parent = node.parent
+                while True:
+                    if isinstance(parent, ast.ClassDef):
+                        return "_" + parent.name.lstrip("_") + name
+
+                    if not hasattr(parent, "parent"):
+                        break
+                    parent = parent.parent
+
+            return name
+
+        if op_name == "CACHE":
+            return
+
+        if inst_match("CALL") and node_match((ast.With, ast.AsyncWith)):
+            # call to context.__exit__
+            return
+
+        if inst_match(("CALL", "LOAD_FAST")) and node_match(
+            (ast.ListComp, ast.GeneratorExp, ast.SetComp, ast.DictComp)
+        ):
+            # call to the generator function
+            return
+
+        if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(ast.ClassDef):
+            return
+
+        if inst_match(("COMPARE_OP", "IS_OP", "CONTAINS_OP")) and node_match(
+            ast.Compare
+        ):
+            return
+
+        if inst_match("LOAD_NAME", argval="__annotations__") and node_match(
+            ast.AnnAssign
+        ):
+            return
+
+        if (
+            (inst_match("LOAD_METHOD", argval="join") or inst_match("CALL"))
+            and node_match(ast.BinOp, left=ast.Constant, op=ast.Mod)
+            and isinstance(node.left.value, str)
+        ):
+            # "..."%(...) uses "".join
+            return
+
+        if inst_match("STORE_SUBSCR") and node_match(ast.AnnAssign):
+            # data: int
+            return
+
+        if except_cleanup(instruction, node):
+            return
+
+        if inst_match(("DELETE_NAME", "DELETE_FAST")) and node_match(
+            ast.Name, id=instruction.argval, ctx=ast.Del
+        ):
+            return
+
+        if inst_match("BUILD_STRING") and node_match(ast.BinOp, op=ast.Mod):
+            return
+
+        if inst_match("BUILD_STRING") and node_match(ast.JoinedStr):
+            return
+
+        if inst_match("BEFORE_WITH") and node_match(ast.With):
+            return
+
+        if inst_match(("STORE_NAME", "STORE_GLOBAL"), argval="__doc__") and node_match(
+            ast.Constant
+        ):
+            # store docstrings
+            return
+
+        if inst_match(("STORE_NAME", "STORE_FAST", "STORE_DEREF")) and node_match(
+            ast.ExceptHandler, name=instruction.argval
+        ):
+            # store exception in variable
+            return
+
+        if (
+            inst_match(("STORE_NAME", "STORE_FAST", "STORE_DEREF", "STORE_GLOBAL"))
+            and node_match((ast.Import, ast.ImportFrom))
+            and any(
+                mangled_name(alias, alias.asname or alias.name.split(".")[0])
+                == instruction.argval
+                for alias in node.names
+            )
+        ):
+            # store imported module in variable
+            return
+
+        if (
+            inst_match(("STORE_FAST", "STORE_DEREF", "STORE_NAME", "STORE_GLOBAL"))
+            and (
+                node_match((ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))
+                or node_match(
+                    ast.Name,
+                    ctx=ast.Store,
+                )
+            )
+            and instruction.argval == mangled_name(node)
+        ):
+            return
+
+        if False:
+            # match expressions are not supported for now
+            if inst_match(("STORE_FAST", "STORE_NAME")) and node_match(
+                ast.MatchAs, name=instruction.argval
+            ):
+                return
+
+            if inst_match("COMPARE_OP", argval="==") and node_match(ast.MatchSequence):
+                return
+
+            if inst_match("COMPARE_OP", argval="==") and node_match(ast.MatchValue):
+                return
+
+        if inst_match("BINARY_OP") and node_match(
+            ast.AugAssign, op=op_type_map[instruction.argrepr.removesuffix("=")]
+        ):
+            # a+=5
+            return
+
+        if node_match(ast.Attribute, ctx=ast.Del) and inst_match(
+            "DELETE_ATTR", argval=mangled_name(node)
+        ):
+            return
+
+        if inst_match(("JUMP_IF_TRUE_OR_POP", "JUMP_IF_FALSE_OR_POP")) and node_match(
+            ast.BoolOp
+        ):
+            # and/or short circuit
+            return
+
+        if inst_match("DELETE_SUBSCR") and node_match(ast.Subscript, ctx=ast.Del):
+            return
+
+        if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(ast.Call):
+            return
+
+        if node_match(ast.Name, ctx=ast.Load) and inst_match(
+            ("LOAD_NAME", "LOAD_GLOBAL"), argval=mangled_name(node)
+        ):
+            return
+
+        if node_match(ast.Name, ctx=ast.Del) and inst_match(
+            ("DELETE_NAME", "DELETE_GLOBAL"), argval=mangled_name(node)
+        ):
+            return
+
+        # old verifier
+
+        typ = type(None)
+
+        if op_name.startswith(("BINARY_SUBSCR", "SLICE+")):
+            typ = ast.Subscript
+            ctx = ast.Load
+        elif op_name.startswith("BINARY_"):
+            typ = ast.BinOp
+            op_type = op_type_map[instruction.argrepr]
+            extra_filter = lambda e: isinstance(e.op, op_type)
+        elif op_name.startswith("UNARY_"):
+            typ = ast.UnaryOp
+            op_type = dict(
+                UNARY_POSITIVE=ast.UAdd,
+                UNARY_NEGATIVE=ast.USub,
+                UNARY_NOT=ast.Not,
+                UNARY_INVERT=ast.Invert,
+            )[op_name]
+            extra_filter = lambda e: isinstance(e.op, op_type)
+        elif op_name in ("LOAD_ATTR", "LOAD_METHOD", "LOOKUP_METHOD"):
+            typ = ast.Attribute
+            ctx = ast.Load
+            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+        elif op_name in (
+            "LOAD_NAME",
+            "LOAD_GLOBAL",
+            "LOAD_FAST",
+            "LOAD_DEREF",
+            "LOAD_CLASSDEREF",
+        ):
+            typ = ast.Name
+            ctx = ast.Load
+            if PY3 or instruction.argval:
+                extra_filter = lambda e: e.id == instruction.argval
+        elif op_name in ("COMPARE_OP", "IS_OP", "CONTAINS_OP"):
+            typ = ast.Compare
+            extra_filter = lambda e: len(e.ops) == 1
+        elif op_name.startswith(("STORE_SLICE", "STORE_SUBSCR")):
+            ctx = ast.Store
+            typ = ast.Subscript
+        elif op_name.startswith("STORE_ATTR"):
+            ctx = ast.Store
+            typ = ast.Attribute
+            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+
+        node_ctx = getattr(node, "ctx", None)
+
+        ctx_match = (
+            ctx is not type(None)
+            or not hasattr(node, "ctx")
+            or isinstance(node_ctx, ctx)
+        )
+
+        # check for old verifier
+        if isinstance(node, typ) and ctx_match and extra_filter(node):
+            return
+
+        # generate error
+
+        title = "ast.%s is not created from %s" % (
+            type(node).__name__,
+            instruction.opname,
+        )
+
+        raise VerifierFailure(title, node, instruction)
 
     def instruction(self, index):
         return self.bc_list[index // 2]
