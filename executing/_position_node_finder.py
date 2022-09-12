@@ -3,8 +3,6 @@ import dis
 from .executing import NotOneValueFound, only, function_node_types, attr_names_match, assert_
 from ._exceptions import KnownIssue, VerifierFailure
 
-PY3 = True
-
 # the code in this module can use all python>=3.11 features 
 
 
@@ -198,7 +196,7 @@ class PositionNodeFinder(object):
         op_type_map = {
             "**": ast.Pow,
             "*": ast.Mult,
-            "@": getattr(ast, "MatMult", ()),
+            "@": ast.MatMult,
             "//": ast.FloorDiv,
             "/": ast.Div,
             "%": ast.Mod,
@@ -487,8 +485,7 @@ class PositionNodeFinder(object):
         ):
             typ = ast.Name
             ctx = ast.Load
-            if PY3 or instruction.argval:
-                extra_filter = lambda e: e.id == instruction.argval
+            extra_filter = lambda e: e.id == instruction.argval
         elif op_name in ("COMPARE_OP", "IS_OP", "CONTAINS_OP"):
             typ = ast.Compare
             extra_filter = lambda e: len(e.ops) == 1
@@ -531,12 +528,8 @@ class PositionNodeFinder(object):
         self,
         index,
         match_positions=("lineno", "end_lineno", "col_offset", "end_col_offset"),
-        typ=None,
+        typ=(ast.expr, ast.stmt, ast.excepthandler, ast.pattern),
     ):
-        if typ == None:
-            # this is not a default argument because ast.MatchAs does not exist in older python versions
-            typ = (ast.expr, ast.stmt, ast.excepthandler, ast.pattern)
-
         position = self.instruction(index).positions
 
         return only(
