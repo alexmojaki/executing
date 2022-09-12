@@ -10,8 +10,10 @@ import pytest
 from littleutils import SimpleNamespace
 
 from executing import Source, NotOneValueFound
-from executing.executing import is_ipython_cell_code, attr_names_match, KnownIssue
+from executing.executing import is_ipython_cell_code, attr_names_match
 import executing.executing
+
+from executing._exceptions import KnownIssue
 
 from executing import Source,NotOneValueFound
 

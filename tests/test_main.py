@@ -23,7 +23,9 @@ from tests.utils import tester, subscript_item, in_finally
 PYPY = 'pypy' in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions, function_node_types, VerifierFailure, KnownIssue
+from executing.executing import PY3, get_instructions, function_node_types
+
+from executing._exceptions import VerifierFailure, KnownIssue
 
 if sys.version_info >= (3,11):
     from tests.deadcode import Deadcode
