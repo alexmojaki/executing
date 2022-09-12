@@ -130,7 +130,19 @@ class PositionNodeFinder(object):
         if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
             # handle stores to __classcell__ as KnownIssue,
             # because they get complicated if they are used in `if` or `for` loops
-            raise KnownIssue("define class member")
+            # example:
+            #
+            # class X:
+            #     # ... something
+            #     if some_condition:
+            #         def method(self):
+            #             pass
+            #
+            # The `STORE_NAME` instruction gets mapped to the `ast.If` node,
+            # because it is the last element in the class.
+            # This last element could be anything and gets dificult to verify.
+
+            raise KnownIssue("store __classcell__")
 
         # find decorators
         if (
