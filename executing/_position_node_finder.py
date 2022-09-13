@@ -342,7 +342,9 @@ class PositionNodeFinder(object):
             # call to the generator function
             return
 
-        if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(ast.ClassDef):
+        if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(
+            (ast.ClassDef, ast.Call)
+        ):
             return
 
         if inst_match(("COMPARE_OP", "IS_OP", "CONTAINS_OP")) and node_match(
@@ -445,9 +447,6 @@ class PositionNodeFinder(object):
             return
 
         if inst_match("DELETE_SUBSCR") and node_match(ast.Subscript, ctx=ast.Del):
-            return
-
-        if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(ast.Call):
             return
 
         if node_match(ast.Name, ctx=ast.Load) and inst_match(
