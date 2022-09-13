@@ -1170,8 +1170,10 @@ class TestFiles(unittest.TestCase):
                             )
 
                     raise
-                # argval isn't set for all relevant instructions in python 2
-                if isinstance(node, ast.Name) and (PY3 or inst.argval) and False:
+                # `argval` isn't set for all relevant instructions in python 2
+                # The relation between `ast.Name` and `argval` is already
+                # covered by the verifier and much more complex in python 3.11 
+                if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
                     self.assertEqual(inst.argval, node.id, msg=(inst, ast.dump(node)))
             except Exception:
                 raise
