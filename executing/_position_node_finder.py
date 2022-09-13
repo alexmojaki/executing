@@ -5,8 +5,7 @@ from ._exceptions import KnownIssue, VerifierFailure
 
 from functools import lru_cache
 
-# the code in this module can use all python>=3.11 features 
-
+# the code in this module can use all python>=3.11 features
 
 
 def parents(node):
@@ -39,7 +38,7 @@ def mangled_name(node):
         name = node.id
     elif isinstance(node, (ast.alias)):
         name = node.asname or node.name.split(".")[0]
-    elif isinstance(node,(ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
+    elif isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
         name = node.name
     else:
         raise TypeError("no node to mangle")
@@ -57,6 +56,42 @@ def mangled_name(node):
     return name
 
 
+@lru_cache(128)
+def get_instructions(code):
+    return list(dis.get_instructions(code, show_caches=True))
+
+
+types_cmp_issue_fix = (
+    ast.IfExp,
+    ast.If,
+    ast.Assert,
+    ast.While,
+)
+
+types_cmp_issue = types_cmp_issue_fix + (
+    ast.ListComp,
+    ast.SetComp,
+    ast.DictComp,
+    ast.GeneratorExp,
+)
+
+op_type_map = {
+    "**": ast.Pow,
+    "*": ast.Mult,
+    "@": ast.MatMult,
+    "//": ast.FloorDiv,
+    "/": ast.Div,
+    "%": ast.Mod,
+    "+": ast.Add,
+    "-": ast.Sub,
+    "<<": ast.LShift,
+    ">>": ast.RShift,
+    "&": ast.BitAnd,
+    "^": ast.BitXor,
+    "|": ast.BitOr,
+}
+
+
 class PositionNodeFinder(object):
     """
     Mapping bytecode to ast-node based on the source positions, which where introduced in pyhon 3.11.
@@ -64,29 +99,8 @@ class PositionNodeFinder(object):
     There are only some exceptions for methods and attributes.
     """
 
-    types_cmp_issue_fix = (
-        ast.IfExp,
-        ast.If,
-        ast.Assert,
-        ast.While,
-    )
-    types_cmp_issue = types_cmp_issue_fix + (
-        ast.ListComp,
-        ast.SetComp,
-        ast.DictComp,
-        ast.GeneratorExp,
-    )
-
-    last_code = None
-    last_instructions = None
-
-    @staticmethod
-    @lru_cache(8)
-    def get_instructions(code):
-        return list(dis.get_instructions(code, show_caches=True))
-
     def __init__(self, frame, stmts, tree, lasti, source):
-        self.bc_list = self.get_instructions(frame.f_code)
+        self.bc_list = get_instructions(frame.f_code)
 
         self.source = source
         self.decorator = None
@@ -122,7 +136,6 @@ class PositionNodeFinder(object):
                 match_positions=("end_col_offset", "end_lineno"),
                 typ=typ,
             )
-
 
         self.known_issues(self.result, self.instruction(lasti))
 
@@ -175,9 +188,9 @@ class PositionNodeFinder(object):
 
     def known_issues(self, node, instruction):
         if instruction.opname in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
-            node, self.types_cmp_issue
+            node, types_cmp_issue
         ):
-            if isinstance(node, self.types_cmp_issue_fix):
+            if isinstance(node, types_cmp_issue_fix):
                 # this is a workaround for https://github.com/python/cpython/issues/95921
                 # we can fix cases with only on comparison inside the test condition
                 #
@@ -224,7 +237,7 @@ class PositionNodeFinder(object):
             #     # ... something
             #     if some_condition:
             #         def method(self):
-            #             pass
+            #             super()
             #
             # The `STORE_NAME` instruction gets mapped to the `ast.If` node,
             # because it is the last element in the class.
@@ -247,26 +260,25 @@ class PositionNodeFinder(object):
         # The position of the instruciton seems to be something in the last ast-node of the ExceptHandler
         # this could be a bug, but it might not be observable in normal python code.
 
-            # example:
-            # except Exception as exc:
-            #     enum_member._value_ = value
+        # example:
+        # except Exception as exc:
+        #     enum_member._value_ = value
 
-            # other example:
-            # STORE_FAST of e was mapped to Constant(value=False)
-            # except OSError as e:
-            #     if not _ignore_error(e):
-            #         raise
-            #     return False
+        # other example:
+        # STORE_FAST of e was mapped to Constant(value=False)
+        # except OSError as e:
+        #     if not _ignore_error(e):
+        #         raise
+        #     return False
 
-            # STORE_FAST of msg was mapped to print(...)
-            #  except TypeError as msg:
-            #      print("Sorry:", msg, file=file)
+        # STORE_FAST of msg was mapped to print(...)
+        #  except TypeError as msg:
+        #      print("Sorry:", msg, file=file)
 
         return any(
             isinstance(n, ast.ExceptHandler) and (n.name or "exc") == inst.argval
             for n in parents(node)
         )
-
 
     def verify(self, node, instruction):
         """
@@ -276,22 +288,6 @@ class PositionNodeFinder(object):
         op_name = instruction.opname
         extra_filter = lambda e: True
         ctx = type(None)
-
-        op_type_map = {
-            "**": ast.Pow,
-            "*": ast.Mult,
-            "@": ast.MatMult,
-            "//": ast.FloorDiv,
-            "/": ast.Div,
-            "%": ast.Mod,
-            "+": ast.Add,
-            "-": ast.Sub,
-            "<<": ast.LShift,
-            ">>": ast.RShift,
-            "&": ast.BitAnd,
-            "^": ast.BitXor,
-            "|": ast.BitOr,
-        }
 
         def inst_match(opnames, **kwargs):
             """
@@ -328,7 +324,6 @@ class PositionNodeFinder(object):
                 for k, v in kwargs.items()
             )
 
-
         if op_name == "CACHE":
             return
 
@@ -358,7 +353,10 @@ class PositionNodeFinder(object):
             return
 
         if (
-            (inst_match("LOAD_METHOD", argval="join") or inst_match(("CALL","BUILD_STRING")))
+            (
+                inst_match("LOAD_METHOD", argval="join")
+                or inst_match(("CALL", "BUILD_STRING"))
+            )
             and node_match(ast.BinOp, left=ast.Constant, op=ast.Mod)
             and isinstance(node.left.value, str)
         ):
@@ -482,7 +480,7 @@ class PositionNodeFinder(object):
         elif op_name in ("LOAD_ATTR", "LOAD_METHOD", "LOOKUP_METHOD"):
             typ = ast.Attribute
             ctx = ast.Load
-            extra_filter = lambda e: mangled_name(e)== instruction.argval
+            extra_filter = lambda e: mangled_name(e) == instruction.argval
         elif op_name in (
             "LOAD_NAME",
             "LOAD_GLOBAL",
@@ -502,7 +500,7 @@ class PositionNodeFinder(object):
         elif op_name.startswith("STORE_ATTR"):
             ctx = ast.Store
             typ = ast.Attribute
-            extra_filter = lambda e: mangled_name(e)==instruction.argval
+            extra_filter = lambda e: mangled_name(e) == instruction.argval
 
         node_ctx = getattr(node, "ctx", None)
 
