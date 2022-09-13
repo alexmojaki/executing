@@ -35,18 +35,6 @@ def test_pytest():
     assert x is tester
 
 
-def this_expression():
-    try:
-        return Source.executing(inspect.currentframe().f_back).node
-    except (KnownIssue,NotOneValueFound):
-        # TODO: python < 3.11 raises an exception. Should we do the same for the PositionNodeFinder instead of returning None?
-        return None
-
-
-def test_assert():
-    assert isinstance(this_expression(),(ast.Call, type(None)))
-
-
 def test_ipython_cell_code():
     assert is_ipython_cell_code(
         SimpleNamespace(
