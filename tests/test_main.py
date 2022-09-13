@@ -766,10 +766,22 @@ class TestFiles(unittest.TestCase):
                     if is_literal(node):
                         continue
                 else:
-                    if is_unary_not(node):
-                        # `not` is transformed into controlflow if it is used at places like `if not a: pass`
-                        # There are no bytecode instructions which can be mapped to this ast-node.
+                    # (is/is not) None
+                    none_comparison = (
+                        isinstance(node, ast.Compare)
+                        and len(node.ops) == 1
+                        and isinstance(node.ops[0], (ast.IsNot, ast.Is))
+                        and len(node.comparators) == 1
+                        and isinstance(node.comparators[0], ast.Constant)
+                        and node.comparators[0].value == None
+                    )
+
+                    if is_unary_not(node) or none_comparison:
+                        # some ast-nodes are transformed into control flow, if it is used at places like `if not a: ...`
+                        # There are no bytecode instructions which can be mapped to this ast-node,
+                        # because the compiler generates POP_JUMP_FORWARD_IF_TRUE which mapps to the `if` statement.
                         # `a=not b` generates a UNARY_NOT
+
                         if isinstance(node.parent,(ast.If,ast.Assert,ast.While,ast.IfExp)) and node is node.parent.test:
                             continue
                         if isinstance(node.parent,(ast.match_case)) and node is node.parent.guard:
@@ -794,19 +806,7 @@ class TestFiles(unittest.TestCase):
                     if is_annotation(node):
                         continue
 
-
-                    # (is/is not) None
-                    if (
-                        isinstance(node, ast.Compare)
-                        and len(node.ops) == 1
-                        and isinstance(node.ops[0], (ast.IsNot, ast.Is))
-                        and len(node.comparators) == 1
-                        and isinstance(node.comparators[0], ast.Constant)
-                        and node.comparators[0].value == None
-                    ):
-                        continue
-
-                    if is_literal(node) and not isinstance(node,ast.Constant):
+                    if is_literal(node) and not isinstance(node, ast.Constant):
                         continue
 
                     if isinstance(node, ast.Compare) and len(node.comparators) > 1:
