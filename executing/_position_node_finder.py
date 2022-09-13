@@ -256,40 +256,39 @@ class PositionNodeFinder(object):
             "|": ast.BitOr,
         }
 
-        def inst_match(opname, **args):
+        def inst_match(opnames, **kwargs):
             """
             match instruction
 
             Parameters:
-                opname (string|Seq[stirng]): inst.opname has to be equal or in `opname`
-                **args: every arg has to match inst.arg
+                opnames: (str|Seq[str]): inst.opname has to be equal to or in `opname`
+                **kwargs: every arg has to match inst.arg
 
             Returns:
                 True if all conditions match the instruction
 
             """
-            if isinstance(opname, tuple):
-                if instruction.opname not in opname:
-                    return False
-            else:
-                if instruction.opname != opname:
-                    return False
-            return all(getattr(instruction, k) == v for k, v in args.items())
 
-        def node_match(node_type, **args):
+            if isinstance(opnames, str):
+                opnames = [opnames]
+            return instruction.opname in opnames and kwargs == {
+                k: getattr(instruction, k) for k in kwargs
+            }
+
+        def node_match(node_type, **kwargs):
             """
             match the ast-node
 
             Parameters:
                 node_type: type of the node
-                **args: every `arg` has to be equal `node.arg`
+                **kwargs: every `arg` has to be equal `node.arg`
                         or `node.arg` has to be an instance of `arg` if it is a type.
             """
             return isinstance(node, node_type) and all(
                 isinstance(getattr(node, k), v)
                 if isinstance(v, type)
                 else getattr(node, k) == v
-                for k, v in args.items()
+                for k, v in kwargs.items()
             )
 
         def mangled_name(node, name=None):
