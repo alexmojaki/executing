@@ -192,6 +192,44 @@ class PositionNodeFinder(object):
 
             raise KnownIssue("store __classcell__")
 
+    @staticmethod
+    def is_except_cleanup(inst, node):
+        if inst.opname not in (
+            "STORE_NAME",
+            "STORE_FAST",
+            "STORE_DEREF",
+            "DELETE_NAME",
+            "DELETE_FAST",
+        ):
+            return False
+
+        # This bytecode does something exception cleanup related.
+        # The position of the instruciton seems to be something in the last ast-node of the ExceptHandler
+        # this could be a bug, but it might not be observable in normal python code.
+
+            # example:
+            # except Exception as exc:
+            #     enum_member._value_ = value
+
+            # other example:
+            # STORE_FAST of e was mapped to Constant(value=False)
+            # except OSError as e:
+            #     if not _ignore_error(e):
+            #         raise
+            #     return False
+
+            # STORE_FAST of msg was mapped to print(...)
+            #  except TypeError as msg:
+            #      print("Sorry:", msg, file=file)
+
+        x = node
+        while hasattr(x, "parent"):
+            x = x.parent
+            if isinstance(x, ast.ExceptHandler):
+                if (x.name or "exc") == inst.argval:
+                    return True
+
+        return False
 
     def verify(self, node, instruction):
         """
@@ -217,45 +255,6 @@ class PositionNodeFinder(object):
             "^": ast.BitXor,
             "|": ast.BitOr,
         }
-
-        def except_cleanup(inst, node):
-
-            if inst.opname not in (
-                "STORE_NAME",
-                "STORE_FAST",
-                "STORE_DEREF",
-                "DELETE_NAME",
-                "DELETE_FAST",
-            ):
-                return False
-
-            # This bytecode does something exception cleanup related.
-            # The position of the instruciton seems to be something in the last ast-node of the ExceptHandler
-            # this could be a bug, but it might not be observable in normal python code.
-
-            # example:
-            # except Exception as exc:
-            #     enum_member._value_ = value
-
-            # other example:
-            # STORE_FAST of e was mapped to Constant(value=False)
-            # except OSError as e:
-            #     if not _ignore_error(e):
-            #         raise
-            #     return False
-
-            # STORE_FAST of msg was mapped to print(...)
-            #  except TypeError as msg:
-            #      print("Sorry:", msg, file=file)
-
-            x = node
-            while hasattr(x, "parent"):
-                x = x.parent
-                if isinstance(x, ast.ExceptHandler):
-                    if (x.name or "exc") == inst.argval:
-                        return True
-
-            return False
 
         def inst_match(opname, **args):
             """
@@ -361,7 +360,7 @@ class PositionNodeFinder(object):
             # data: int
             return
 
-        if except_cleanup(instruction, node):
+        if self.is_except_cleanup(instruction, node):
             return
 
         if inst_match(("DELETE_NAME", "DELETE_FAST")) and node_match(
