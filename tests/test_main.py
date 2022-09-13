@@ -1047,10 +1047,6 @@ class TestFiles(unittest.TestCase):
 
                     self.fail()
 
-                except KnownIssue as e:
-                    print("Known Issue:",e)
-                    continue
-
                 except Exception as e:
                     # continue for every case where this can be an known issue
 
