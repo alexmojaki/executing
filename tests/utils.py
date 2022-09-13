@@ -1,7 +1,11 @@
 import sys
 import ast
+import dis
 import inspect
+from collections import namedtuple
+
 import executing.executing
+
 from executing.executing import attr_names_match
 
 executing.executing.TESTING = 1
@@ -158,3 +162,28 @@ def in_finally(node):
             return True
         node = node.parent
     return False
+
+
+SourcePosition = namedtuple("SourcePosition", ["lineno", "col_offset"])
+
+
+def start_position(obj):
+    """
+    returns the start source position as a (lineno,col_offset) tuple.
+    obj can be ast.AST or dis.Instruction.
+    """
+    if isinstance(obj, dis.Instruction):
+        obj = obj.positions
+
+    return SourcePosition(obj.lineno, obj.col_offset)
+
+
+def end_position(obj):
+    """
+    returns the end source position as a (lineno,col_offset) tuple.
+    obj can be ast.AST or dis.Instruction.
+    """
+    if isinstance(obj, dis.Instruction):
+        obj = obj.positions
+
+    return SourcePosition(obj.end_lineno, obj.end_col_offset)

@@ -18,7 +18,7 @@ from random import shuffle
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from tests.utils import tester, subscript_item, in_finally
+from tests.utils import tester, subscript_item, in_finally, start_position, end_position
 
 PYPY = 'pypy' in sys.version.lower()
 
@@ -560,30 +560,6 @@ def dump_source(source, start, end, context=4, file=sys.stdout):
         num += 1
 
 
-SourcePosition = namedtuple("SourcePosition", ["lineno", "col_offset"])
-
-
-def start(obj):
-    """
-    returns the start source position as a (lineno,col_offset) tuple.
-    obj can be ast.AST or dis.Instruction.
-    """
-    if isinstance(obj, dis.Instruction):
-        obj = obj.positions
-
-    return SourcePosition(obj.lineno, obj.col_offset)
-
-
-def end(obj):
-    """
-    returns the end source position as a (lineno,col_offset) tuple.
-    obj can be ast.AST or dis.Instruction.
-    """
-    if isinstance(obj, dis.Instruction):
-        obj = obj.positions
-
-    return SourcePosition(obj.end_lineno, obj.end_col_offset)
-
 
 def is_annotation(node):
     if isinstance(node, ast.AnnAssign):
@@ -878,7 +854,12 @@ class TestFiles(unittest.TestCase):
                         "end_col_offset=%s" % node.end_col_offset,
                     )
 
-                    dump_source(source.text,start(node),end(node),file=sys.stderr)
+                    dump_source(
+                        source.text,
+                        start_position(node),
+                        end_position(node),
+                        file=sys.stderr,
+                    )
                     p()
 
                     p("all bytecodes in this range:")
@@ -1019,7 +1000,11 @@ class TestFiles(unittest.TestCase):
                     with open(source.filename) as sourcefile:
                         source_code = sourcefile.read()
 
-                    print(dump_source(source_code, start(e.node), end(e.node)))
+                    print(
+                        dump_source(
+                            source_code, start_position(e.node), end_position(e.node)
+                        )
+                    )
 
                     print("bytecode:")
                     for inst in dis.get_instructions(code):
@@ -1054,7 +1039,9 @@ class TestFiles(unittest.TestCase):
                             if not hasattr(node, "lineno"):
                                 continue
 
-                            if start(node) == start(inst) and end(node) == end(inst):
+                            if start_position(node) == start_position(
+                                inst
+                            ) and end_position(node) == end_position(inst):
                                 exact_options.append(node)
 
                         if inst.opname == "BUILD_STRING":
@@ -1125,15 +1112,19 @@ class TestFiles(unittest.TestCase):
                         with open(source.filename) as sourcefile:
                             source_code = sourcefile.read()
 
-                        dump_source(source_code, start(inst), end(inst))
+                        dump_source(
+                            source_code, start_position(inst), end_position(inst)
+                        )
 
                         options = []
                         for node in ast.walk(ast.parse(source_code)):
                             if not hasattr(node, "lineno"):
                                 continue
 
-                            # if {start(node), end(node)} & {start(inst), end(inst)}:
-                            if start(node) <= end(inst) and start(inst) <= end(node):
+                            # if {start_position(node), end_position(node)} & {start_position(inst), end_position(inst)}:
+                            if start_position(node) <= end_position(
+                                inst
+                            ) and start_position(inst) <= end_position(node):
                                 options.append(node)
 
                         for node in sorted(
