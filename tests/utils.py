@@ -132,6 +132,13 @@ class Tester(object):
                 return False
             assert 0
 
+    def __enter__(self):
+        self.get_node(ast.With)
+        return self
+
+    def __exit__(self, exc_typ, exc_value, exc_traceback):
+        self.get_node(ast.With)
+
     __nonzero__ = __bool__
 
 

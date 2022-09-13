@@ -531,15 +531,10 @@ class TestStuff(unittest.TestCase):
 
     def test_with(self):
         if sys.version_info >= (3, 11):
-            class Test:
-                def __enter__(self):
-                    assert isinstance(calling_expression(), ast.With)
-                    return 5
+            with tester:
+                pass
 
-                def __exit__(self, exc_typ, exc_value, exc_traceback):
-                    assert isinstance(calling_expression(), ast.With)
-
-            with Test():
+            with (tester as a ,tester as b):
                 pass
 
     def test_listcomp(self):
