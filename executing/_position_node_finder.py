@@ -356,7 +356,7 @@ class PositionNodeFinder(object):
             return
 
         if (
-            (inst_match("LOAD_METHOD", argval="join") or inst_match("CALL"))
+            (inst_match("LOAD_METHOD", argval="join") or inst_match(("CALL","BUILD_STRING")))
             and node_match(ast.BinOp, left=ast.Constant, op=ast.Mod)
             and isinstance(node.left.value, str)
         ):
@@ -373,9 +373,6 @@ class PositionNodeFinder(object):
         if inst_match(("DELETE_NAME", "DELETE_FAST")) and node_match(
             ast.Name, id=instruction.argval, ctx=ast.Del
         ):
-            return
-
-        if inst_match("BUILD_STRING") and node_match(ast.BinOp, op=ast.Mod):
             return
 
         if inst_match("BUILD_STRING") and node_match(ast.JoinedStr):
