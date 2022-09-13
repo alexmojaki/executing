@@ -1003,180 +1003,177 @@ class TestFiles(unittest.TestCase):
             node = None
 
             try:
-                try:
-                    ex = Source.executing(frame)
-                    node = ex.node
+                ex = Source.executing(frame)
+                node = ex.node
 
-                except KnownIssue:
+            except KnownIssue:
+                continue
+
+            except VerifierFailure as e:
+
+                print("VerifierFailure:")
+
+                print(e)
+
+                print("\ninstruction: " + str(e.instruction))
+                print("\nnode: " + ast.dump(e.node, include_attributes=True))
+
+                with open(source.filename) as sourcefile:
+                    source_code = sourcefile.read()
+
+                print(
+                    dump_source(
+                        source_code, start_position(e.node), end_position(e.node)
+                    )
+                )
+
+                print("bytecode:")
+                for inst in dis.get_instructions(code):
+                    if (
+                        e.instruction.offset - 10
+                        < inst.offset
+                        < e.instruction.offset - 10
+                    ):
+                        print(
+                            "%s: %s %s %s"
+                            % (
+                                inst.offset,
+                                inst.positions,
+                                inst.opname,
+                                inst.argrepr,
+                            )
+                        )
+
+                self.fail()
+
+            except Exception as e:
+                # continue for every case where this can be an known issue
+
+
+                if py11:
+                    exact_options = []
+                    for node in ast.walk(source.tree):
+                        if not hasattr(node, "lineno"):
+                            continue
+
+                        if start_position(node) == start_position(
+                            inst
+                        ) and end_position(node) == end_position(inst):
+                            exact_options.append(node)
+
+                    if inst.opname == "BUILD_STRING":
+                        # format strings are still a problem
+                        # TODO: find reason
+                        continue
+
+                    if any(isinstance(o, ast.JoinedStr) for o in exact_options):
+                        # every node in a f-string has the same positions
+                        # we are not able to find the correct one
+                        continue
+
+                    if (
+                        inst.opname == "STORE_FAST"
+                        and inst_index > 2
+                        and instructions[inst_index - 2].opname == "POP_EXCEPT"
+                    ):
+                        # except cleanup might be mapped to a method
+
+                        # except Exception as e:
+                        #     self.linter._stashed_messages[
+                        #         (self.linter.current_name, "useless-option-value")
+                        #     ].append((option_string, str(e)))
+                        #       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        #       | STORE_NAME is mapped to this range
+                        #       | and can not be associated with a method, because it is nothing like LOAD_METHOD
+                        continue
+
+                    if (
+                        inst.opname == "DELETE_FAST"
+                        and inst_index > 3
+                        and instructions[inst_index - 3].opname == "POP_EXCEPT"
+                    ):
+                        # same like above
+                        continue
+
+                if not py11 and inst.opname.startswith(
+                    ("COMPARE_OP", "IS_OP", "CALL", "LOAD_NAME", "STORE_SUBSCR")
+                ):
                     continue
 
-                except VerifierFailure as e:
+                # Attributes which appear ambiguously in modules:
+                #   op1.sign, op2.sign = (0, 0)
+                #   nm_tpl.__annotations__ = nm_tpl.__new__.__annotations__ = types
+                if not py11 and inst.opname == 'STORE_ATTR' and inst.argval in ['sign', '__annotations__']:
+                    continue
 
-                    print("VerifierFailure:")
+                if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
+                    continue
 
-                    print(e)
+                if inst.argval == "AssertionError":
+                    continue
 
-                    print("\ninstruction: " + str(e.instruction))
-                    print("\nnode: " + ast.dump(e.node, include_attributes=True))
+                if any(
+                    isinstance(stmt, (ast.AugAssign, ast.Import))
+                    for stmt in source.statements_at_line(lineno)
+                ):
+                    continue
+
+                # report more information for debugging
+                print(e)
+                print("search bytecode", inst)
+                print("in file", source.filename)
+
+                if py11:
+                    print("at position", inst.positions)
 
                     with open(source.filename) as sourcefile:
                         source_code = sourcefile.read()
 
-                    print(
-                        dump_source(
-                            source_code, start_position(e.node), end_position(e.node)
-                        )
+                    dump_source(
+                        source_code, start_position(inst), end_position(inst)
                     )
 
-                    print("bytecode:")
-                    for inst in dis.get_instructions(code):
-                        if (
-                            e.instruction.offset - 10
-                            < inst.offset
-                            < e.instruction.offset - 10
-                        ):
-                            print(
-                                "%s: %s %s %s"
-                                % (
-                                    inst.offset,
-                                    inst.positions,
-                                    inst.opname,
-                                    inst.argrepr,
-                                )
-                            )
-
-                    self.fail()
-
-                except Exception as e:
-                    # continue for every case where this can be an known issue
-
-
-                    if py11:
-                        exact_options = []
-                        for node in ast.walk(source.tree):
-                            if not hasattr(node, "lineno"):
-                                continue
-
-                            if start_position(node) == start_position(
-                                inst
-                            ) and end_position(node) == end_position(inst):
-                                exact_options.append(node)
-
-                        if inst.opname == "BUILD_STRING":
-                            # format strings are still a problem
-                            # TODO: find reason
+                    options = []
+                    for node in ast.walk(ast.parse(source_code)):
+                        if not hasattr(node, "lineno"):
                             continue
 
-                        if any(isinstance(o, ast.JoinedStr) for o in exact_options):
-                            # every node in a f-string has the same positions
-                            # we are not able to find the correct one
-                            continue
+                        # if {start_position(node), end_position(node)} & {start_position(inst), end_position(inst)}:
+                        if start_position(node) <= end_position(
+                            inst
+                        ) and start_position(inst) <= end_position(node):
+                            options.append(node)
 
-                        if (
-                            inst.opname == "STORE_FAST"
-                            and inst_index > 2
-                            and instructions[inst_index - 2].opname == "POP_EXCEPT"
-                        ):
-                            # except cleanup might be mapped to a method
-
-                            # except Exception as e:
-                            #     self.linter._stashed_messages[
-                            #         (self.linter.current_name, "useless-option-value")
-                            #     ].append((option_string, str(e)))
-                            #       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                            #       | STORE_NAME is mapped to this range
-                            #       | and can not be associated with a method, because it is nothing like LOAD_METHOD
-                            continue
-
-                        if (
-                            inst.opname == "DELETE_FAST"
-                            and inst_index > 3
-                            and instructions[inst_index - 3].opname == "POP_EXCEPT"
-                        ):
-                            # same like above
-                            continue
-
-                    if not py11 and inst.opname.startswith(
-                        ("COMPARE_OP", "IS_OP", "CALL", "LOAD_NAME", "STORE_SUBSCR")
+                    for node in sorted(
+                        options,
+                        key=lambda node: (
+                            node.end_lineno - node.lineno,
+                            node.end_col_offset - node.col_offset,
+                        ),
                     ):
-                        continue
 
-                    # Attributes which appear ambiguously in modules:
-                    #   op1.sign, op2.sign = (0, 0)
-                    #   nm_tpl.__annotations__ = nm_tpl.__new__.__annotations__ = types
-                    if not py11 and inst.opname == 'STORE_ATTR' and inst.argval in ['sign', '__annotations__']:
-                        continue
+                        if (node.end_lineno - node.lineno) > (
+                            inst.positions.end_lineno - inst.positions.lineno
+                        ) * 4:
+                            # skip nodes which are way to long
+                            continue
 
-                    if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
-                        continue
-
-                    if inst.argval == "AssertionError":
-                        continue
-
-                    if any(
-                        isinstance(stmt, (ast.AugAssign, ast.Import))
-                        for stmt in source.statements_at_line(lineno)
-                    ):
-                        continue
-
-                    # report more information for debugging
-                    print(e)
-                    print("search bytecode", inst)
-                    print("in file", source.filename)
-
-                    if py11:
-                        print("at position", inst.positions)
-
-                        with open(source.filename) as sourcefile:
-                            source_code = sourcefile.read()
-
-                        dump_source(
-                            source_code, start_position(inst), end_position(inst)
+                        print()
+                        print(
+                            "possible node",
+                            node.lineno,
+                            node.end_lineno,
+                            node.col_offset,
+                            node.end_col_offset,
+                            ast.dump(node),
                         )
 
-                        options = []
-                        for node in ast.walk(ast.parse(source_code)):
-                            if not hasattr(node, "lineno"):
-                                continue
-
-                            # if {start_position(node), end_position(node)} & {start_position(inst), end_position(inst)}:
-                            if start_position(node) <= end_position(
-                                inst
-                            ) and start_position(inst) <= end_position(node):
-                                options.append(node)
-
-                        for node in sorted(
-                            options,
-                            key=lambda node: (
-                                node.end_lineno - node.lineno,
-                                node.end_col_offset - node.col_offset,
-                            ),
-                        ):
-
-                            if (node.end_lineno - node.lineno) > (
-                                inst.positions.end_lineno - inst.positions.lineno
-                            ) * 4:
-                                # skip nodes which are way to long
-                                continue
-
-                            print()
-                            print(
-                                "possible node",
-                                node.lineno,
-                                node.end_lineno,
-                                node.col_offset,
-                                node.end_col_offset,
-                                ast.dump(node),
-                            )
-
-                    raise
-                # `argval` isn't set for all relevant instructions in python 2
-                # The relation between `ast.Name` and `argval` is already
-                # covered by the verifier and much more complex in python 3.11 
-                if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
-                    self.assertEqual(inst.argval, node.id, msg=(inst, ast.dump(node)))
-            except Exception:
                 raise
+            # `argval` isn't set for all relevant instructions in python 2
+            # The relation between `ast.Name` and `argval` is already
+            # covered by the verifier and much more complex in python 3.11 
+            if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
+                self.assertEqual(inst.argval, node.id, msg=(inst, ast.dump(node)))
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)
