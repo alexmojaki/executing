@@ -534,7 +534,7 @@ class TestStuff(unittest.TestCase):
             with tester:
                 pass
 
-            with (tester as a ,tester as b):
+            with tester as a ,tester as b:
                 pass
 
     def test_listcomp(self):
