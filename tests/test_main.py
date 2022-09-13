@@ -767,6 +767,28 @@ class TestFiles(unittest.TestCase):
                         continue
                 else:
                     if is_unary_not(node):
+                        # `not` is transformed into controlflow if it is used at places like `if not a: pass`
+                        # There are no bytecode instructions which can be mapped to this ast-node.
+                        # `a=not b` generates a UNARY_NOT
+                        if isinstance(node.parent,(ast.If,ast.Assert,ast.While,ast.IfExp)) and node is node.parent.test:
+                            continue
+                        if isinstance(node.parent,(ast.match_case)) and node is node.parent.guard:
+                            continue
+                        if isinstance(node.parent,ast.BoolOp):
+                            continue
+                        if isinstance(node.parent,(ast.comprehension)) and node in node.parent.ifs:
+                            continue
+                        if isinstance(node.parent,(ast.comprehension)) and node in node.parent.ifs:
+                            continue
+                        
+                    if (
+                        isinstance(node, ast.UnaryOp)
+                        and isinstance(node.op, ast.Not)
+                        and isinstance(node.operand, ast.Compare)
+                        and len(node.operand.ops) == 1
+                        and isinstance(node.operand.ops[0], ast.In)
+                    ):
+                        # `not a in l` the not becomes part of the comparison
                         continue
 
                     if is_annotation(node):
