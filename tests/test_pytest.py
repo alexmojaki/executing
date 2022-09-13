@@ -175,3 +175,148 @@ ex = Source.executing(frame)
     assert ex.frame is frame
     assert ex.source.tree is None
     assert ex.source.text == fake_text
+
+
+if sys.version_info >= (3, 11):
+    from executing._position_node_finder import mangled_name
+
+    def test_mangled_name():
+        tree = ast.parse(
+            """
+class Test:
+    class Inner:
+        def __method_a():
+            __mangled_var_a=3
+            __not_mangled_a__=5
+            normal_var=6
+            
+            q.__attribute_a
+
+            try:
+                pass
+            except TypeError as __exception_a:
+                pass
+
+            for __var_a in [1]:
+                pass
+
+            import __mangled_mod_a
+            import __package__.module
+
+        __number_a=5
+
+    class __Mangled:
+        def __method_b():
+            __mangled_var_b=3
+            __not_mangled_b__=5
+            normal_var=6
+            
+            q.__attribute_b
+
+            try:
+                pass
+            except TypeError as __exception_b:
+                pass
+
+            for __var_b in [1]:
+                pass
+
+            import __mangled_mod_b
+            import __package__.module
+        __number_b=5
+
+    def __method_c():
+        __mangled_var_c=3
+        __not_mangled_c__=5
+        normal_var=6
+            
+        q.__attribute_c
+
+        try:
+            pass
+        except TypeError as __exception_c:
+            pass
+
+        for __var_c in [1]:
+            pass
+
+        import __mangled_mod_c
+        import __package__.module
+    __number_c=5
+
+def __function():
+    __mangled_var_d=3
+    __not_mangled_d__=5
+    normal_var=6
+        
+    q.__attribute_d
+
+    try:
+        pass
+    except TypeError as __exception_c:
+        pass
+
+    for __var_d in [1]:
+        pass
+
+    import __mangled_mod_d
+    import __package__.module
+__number_d=5
+    """
+        )
+
+        for parent in ast.walk(tree):
+            for child in ast.iter_child_nodes(parent):
+                child.parent = parent
+
+        assert {
+            mangled_name(n)
+            for n in ast.walk(tree)
+            if isinstance(
+                n,
+                (
+                    ast.Name,
+                    ast.Attribute,
+                    ast.alias,
+                    ast.FunctionDef,
+                    ast.ClassDef,
+                    ast.AsyncFunctionDef,
+                ),
+            )
+        } == {
+            "Inner",
+            "Test",
+            "TypeError",
+            "_Inner__attribute_a",
+            "_Inner__mangled_mod_a",
+            "_Inner__mangled_var_a",
+            "_Inner__method_a",
+            "_Inner__number_a",
+            "_Inner__var_a",
+            "_Mangled__attribute_b",
+            "_Mangled__mangled_mod_b",
+            "_Mangled__mangled_var_b",
+            "_Mangled__method_b",
+            "_Mangled__number_b",
+            "_Mangled__var_b",
+            "_Test__Mangled",
+            "_Test__attribute_c",
+            "_Test__mangled_mod_c",
+            "_Test__mangled_var_c",
+            "_Test__method_c",
+            "_Test__number_c",
+            "_Test__var_c",
+            "__attribute_d",
+            "__function",
+            "__mangled_mod_d",
+            "__mangled_var_d",
+            "__not_mangled_a__",
+            "__not_mangled_b__",
+            "__not_mangled_c__",
+            "__not_mangled_d__",
+            "__number_d",
+            "__package__",
+            "__var_d",
+            "normal_var",
+            "q",
+        }

@@ -1,6 +1,6 @@
 import ast
 import dis
-from .executing import NotOneValueFound, only, function_node_types, attr_names_match, assert_
+from .executing import NotOneValueFound, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
 
 from functools import lru_cache
@@ -21,6 +21,41 @@ def parents(node):
 def node_and_parents(node):
     yield node
     yield from parents(node)
+
+
+def mangled_name(node):
+    """
+
+    Parameters:
+        node: the node which should be mangled
+        name: the name of the node
+
+    Returns:
+        The mangled name of `node`
+    """
+    if isinstance(node, ast.Attribute):
+        name = node.attr
+    elif isinstance(node, ast.Name):
+        name = node.id
+    elif isinstance(node, (ast.alias)):
+        name = node.asname or node.name.split(".")[0]
+    elif isinstance(node,(ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
+        name = node.name
+    else:
+        raise TypeError("no node to mangle")
+
+    if name.startswith("__") and not name.endswith("__"):
+        name = next(
+            (
+                "_" + parent.name.lstrip("_") + name
+                for parent in parents(node)
+                if isinstance(parent, ast.ClassDef)
+            ),
+            name,
+        )
+
+    return name
+
 
 class PositionNodeFinder(object):
     """
@@ -293,35 +328,6 @@ class PositionNodeFinder(object):
                 for k, v in kwargs.items()
             )
 
-        def mangled_name(node, name=None):
-            """
-
-            Parameters:
-                node: the node which should be mangled
-                name: the name of the node
-
-            Returns:
-                The mangled name of `node`
-            """
-            if name is None:
-                if isinstance(node, ast.Attribute):
-                    name = node.attr
-                elif isinstance(node, ast.Name):
-                    name = node.id
-                else:
-                    name = node.name
-
-            if name.startswith("__") and not name.endswith("__"):
-                name = next(
-                    (
-                        "_" + parent.name.lstrip("_") + name
-                        for parent in parents(node)
-                        if isinstance(parent, ast.ClassDef)
-                    ),
-                    name,
-                )
-
-            return name
 
         if op_name == "CACHE":
             return
@@ -393,11 +399,7 @@ class PositionNodeFinder(object):
         if (
             inst_match(("STORE_NAME", "STORE_FAST", "STORE_DEREF", "STORE_GLOBAL"))
             and node_match((ast.Import, ast.ImportFrom))
-            and any(
-                mangled_name(alias, alias.asname or alias.name.split(".")[0])
-                == instruction.argval
-                for alias in node.names
-            )
+            and any(mangled_name(alias) == instruction.argval for alias in node.names)
         ):
             # store imported module in variable
             return
@@ -484,7 +486,7 @@ class PositionNodeFinder(object):
         elif op_name in ("LOAD_ATTR", "LOAD_METHOD", "LOOKUP_METHOD"):
             typ = ast.Attribute
             ctx = ast.Load
-            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+            extra_filter = lambda e: mangled_name(e)== instruction.argval
         elif op_name in (
             "LOAD_NAME",
             "LOAD_GLOBAL",
@@ -504,7 +506,7 @@ class PositionNodeFinder(object):
         elif op_name.startswith("STORE_ATTR"):
             ctx = ast.Store
             typ = ast.Attribute
-            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+            extra_filter = lambda e: mangled_name(e)==instruction.argval
 
         node_ctx = getattr(node, "ctx", None)
 
