@@ -8,14 +8,19 @@ from functools import lru_cache
 # the code in this module can use all python>=3.11 features 
 
 
-def node_and_parents(node):
+
+def parents(node):
     while True:
-        yield node
         if hasattr(node, "parent"):
             node = node.parent
+            yield node
         else:
             break
 
+
+def node_and_parents(node):
+    yield node
+    yield from parents(node)
 
 class PositionNodeFinder(object):
     """
@@ -222,14 +227,11 @@ class PositionNodeFinder(object):
             #  except TypeError as msg:
             #      print("Sorry:", msg, file=file)
 
-        x = node
-        while hasattr(x, "parent"):
-            x = x.parent
-            if isinstance(x, ast.ExceptHandler):
-                if (x.name or "exc") == inst.argval:
-                    return True
+        return any(
+            isinstance(n, ast.ExceptHandler) and (n.name or "exc") == inst.argval
+            for n in parents(node)
+        )
 
-        return False
 
     def verify(self, node, instruction):
         """
@@ -310,14 +312,14 @@ class PositionNodeFinder(object):
                     name = node.name
 
             if name.startswith("__") and not name.endswith("__"):
-                parent = node.parent
-                while True:
-                    if isinstance(parent, ast.ClassDef):
-                        return "_" + parent.name.lstrip("_") + name
-
-                    if not hasattr(parent, "parent"):
-                        break
-                    parent = parent.parent
+                name = next(
+                    (
+                        "_" + parent.name.lstrip("_") + name
+                        for parent in parents(node)
+                        if isinstance(parent, ast.ClassDef)
+                    ),
+                    name,
+                )
 
             return name
 
