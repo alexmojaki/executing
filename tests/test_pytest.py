@@ -179,144 +179,207 @@ ex = Source.executing(frame)
 
 if sys.version_info >= (3, 11):
     from executing._position_node_finder import mangled_name
+    from textwrap import indent
+    import dis
 
     def test_mangled_name():
-        tree = ast.parse(
-            """
-class Test:
-    class Inner:
-        def __method_a():
-            __mangled_var_a=3
-            __not_mangled_a__=5
-            normal_var=6
-            
-            q.__attribute_a
+        def result(*code_levels):
+            code = ""
+            for i, level in enumerate(code_levels):
+                code += indent(level, "    " * i) + "\n"
 
-            try:
-                pass
-            except TypeError as __exception_a:
-                pass
+            tree = ast.parse(code)
 
-            for __var_a in [1]:
-                pass
+            for parent in ast.walk(tree):
+                for child in ast.iter_child_nodes(parent):
+                    child.parent = parent
 
-            import __mangled_mod_a
-            import __package__.module
+            tree_names = {
+                mangled_name(n)
+                for n in ast.walk(tree)
+                if isinstance(
+                    n,
+                    (
+                        ast.Name,
+                        ast.Attribute,
+                        ast.alias,
+                        ast.FunctionDef,
+                        ast.ClassDef,
+                        ast.AsyncFunctionDef,
+                        ast.ExceptHandler,
+                    ),
+                )
+            }
 
-        __number_a=5
+            def collect_names(code):
+                for instruction in dis.get_instructions(code):
+                    if instruction.opname in (
+                        "STORE_NAME",
+                        "LOAD_NAME",
+                        "LOAD_GLOBAL",
+                        "STORE_FAST",
+                        "LOAD_FAST",
+                        "LOAD_ATTR",
+                        "STORE_ATTR",
+                    ):
+                        # TODO: "IMPORT_FROM" gets also mangled but is currently not handled by executing
+                        #
+                        # class Test:
+                        #     from __mangle11c.__suc11c import __submodule11c as __subc11
+                        # IMPORT_FROM(_Test__submodule11c)
+                        # STORE_NAME(_Test__subc11)
 
-    class __Mangled:
-        def __method_b():
-            __mangled_var_b=3
-            __not_mangled_b__=5
-            normal_var=6
-            
-            q.__attribute_b
+                        name = instruction.argval
+                        if name in ("__module__", "__qualname__", "__name__"):
+                            continue
 
-            try:
-                pass
-            except TypeError as __exception_b:
-                pass
+                        yield name
 
-            for __var_b in [1]:
-                pass
+                for const in code.co_consts:
+                    if isinstance(const, type(code)):
+                        for name in collect_names(const):
+                            yield name
 
-            import __mangled_mod_b
-            import __package__.module
-        __number_b=5
+            code_names = set(collect_names(compile(tree, "<code>", "exec")))
 
-    def __method_c():
-        __mangled_var_c=3
-        __not_mangled_c__=5
-        normal_var=6
-            
-        q.__attribute_c
+            assert code_names == tree_names
 
-        try:
-            pass
-        except TypeError as __exception_c:
-            pass
+            return tree_names
 
-        for __var_c in [1]:
-            pass
+        code = "from __mangle11c.__suc11c import __submodule11c as __subc11"
 
-        import __mangled_mod_c
-        import __package__.module
-    __number_c=5
+        assert result(code) == {"__subc11"}
 
-def __function():
-    __mangled_var_d=3
-    __not_mangled_d__=5
-    normal_var=6
-        
-    q.__attribute_d
+        assert result("class Test:", code) == {"Test", "_Test__subc11"}
 
-    try:
-        pass
-    except TypeError as __exception_c:
-        pass
+        assert result("class Test:", "def func():", code) == {
+            "Test",
+            "func",
+            "_Test__subc11",
+        }
 
-    for __var_d in [1]:
-        pass
+        code = """
+import __mangled1.submodule1
+import __mangled2.__submodule2
+import __mangled3.submodule3 as __sub3
+import __mangled4.__submodule4 as __sub4
+import __mangled5.__submodule5 as sub5
+from __mangled6 import submodule6
+from __mangle7.sub7 import submodule7
+from __mangle8.__sub8 import submodule8
+from __mangle9 import submodule9
+from __mangle10.sub10 import submodule10
+from __mangle11.__sub11 import submodule11
+from __mangled6b import __submodule6b
+from __mangle7b.sub7b import __submodule7b
+from __mangle8b.__sub8b import __submodule8b
+from __mangle9b import __submodule9b
+from __mangle10b.sub10b import __submodule10b
+from __mangle11b.__sub11b import __submodule11b
+from __mangled6c import __submodule6c as __subc6
+from __mangle7c.suc7c import __submodule7c as __subc7
+from __mangle8c.__suc8c import __submodule8c as __subc8
+from __mangle9c import __submodule9c as __subc9
+from __mangle10c.suc10c import __submodule10c as __subc10
+from __mangle11c.__suc11c import __submodule11c as __subc11
+"""
 
-    import __mangled_mod_d
-    import __package__.module
-__number_d=5
-    """
-        )
+        assert result("class Test:", "def func():", code) == {
+            "Test",
+            "_Test__mangled1",
+            "_Test__mangled2",
+            "_Test__sub3",
+            "_Test__sub4",
+            "_Test__subc10",
+            "_Test__subc11",
+            "_Test__subc6",
+            "_Test__subc7",
+            "_Test__subc8",
+            "_Test__subc9",
+            "_Test__submodule10b",
+            "_Test__submodule11b",
+            "_Test__submodule6b",
+            "_Test__submodule7b",
+            "_Test__submodule8b",
+            "_Test__submodule9b",
+            "func",
+            "sub5",
+            "submodule10",
+            "submodule11",
+            "submodule6",
+            "submodule7",
+            "submodule8",
+            "submodule9",
+        }
 
-        for parent in ast.walk(tree):
-            for child in ast.iter_child_nodes(parent):
-                child.parent = parent
+        code = """
+__mangled_var=3
+__not_mangled__=5
+normal_var=6
 
-        assert {
-            mangled_name(n)
-            for n in ast.walk(tree)
-            if isinstance(
-                n,
-                (
-                    ast.Name,
-                    ast.Attribute,
-                    ast.alias,
-                    ast.FunctionDef,
-                    ast.ClassDef,
-                    ast.AsyncFunctionDef,
-                ),
-            )
-        } == {
-            "Inner",
+q.__attribute
+
+try:
+    pass
+except TypeError as __exception:
+    pass
+
+for __var in [1]:
+    pass
+"""
+        assert result("class Test:", "def func():", code) == {
             "Test",
             "TypeError",
-            "_Inner__attribute_a",
-            "_Inner__mangled_mod_a",
-            "_Inner__mangled_var_a",
-            "_Inner__method_a",
-            "_Inner__number_a",
-            "_Inner__var_a",
-            "_Mangled__attribute_b",
-            "_Mangled__mangled_mod_b",
-            "_Mangled__mangled_var_b",
-            "_Mangled__method_b",
-            "_Mangled__number_b",
-            "_Mangled__var_b",
-            "_Test__Mangled",
-            "_Test__attribute_c",
-            "_Test__mangled_mod_c",
-            "_Test__mangled_var_c",
-            "_Test__method_c",
-            "_Test__number_c",
-            "_Test__var_c",
-            "__attribute_d",
-            "__function",
-            "__mangled_mod_d",
-            "__mangled_var_d",
-            "__not_mangled_a__",
-            "__not_mangled_b__",
-            "__not_mangled_c__",
-            "__not_mangled_d__",
-            "__number_d",
-            "__package__",
-            "__var_d",
+            "_Test__attribute",
+            "_Test__exception",
+            "_Test__mangled_var",
+            "_Test__var",
+            "__not_mangled__",
+            "func",
             "normal_var",
             "q",
+        }
+
+        # different context
+
+        assert result("class Test:", "def func():", "e.__a=5") == {
+            "Test",
+            "func",
+            "_Test__a",
+            "e",
+        }
+
+        assert result("class __Test:", "def func():", "e.__a=5") == {
+            "__Test",
+            "func",
+            "_Test__a",
+            "e",
+        }
+
+        assert result("class __Test:", "e.__a=5") == {
+            "__Test",
+            "_Test__a",
+            "e",
+        }
+
+        assert result("class __Test_:", "def func():", "e.__a=5") == {
+            "__Test_",
+            "func",
+            "_Test___a",
+            "e",
+        }
+
+        assert result("class ___Test_:", "def func():", "e.__a=5") == {
+            "___Test_",
+            "func",
+            "_Test___a",
+            "e",
+        }
+
+
+        assert result("class __Testa:","class __Testb:" ,"e.__a=5") == {
+            "__Testa",
+            "_Testa__Testb",
+            "_Testb__a",
+            "e",
         }

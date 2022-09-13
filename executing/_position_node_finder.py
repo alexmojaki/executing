@@ -40,6 +40,8 @@ def mangled_name(node):
         name = node.asname or node.name.split(".")[0]
     elif isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
         name = node.name
+    elif isinstance(node, ast.ExceptHandler):
+        name = node.name or "exc"
     else:
         raise TypeError("no node to mangle")
 
@@ -276,7 +278,7 @@ class PositionNodeFinder(object):
         #      print("Sorry:", msg, file=file)
 
         return any(
-            isinstance(n, ast.ExceptHandler) and (n.name or "exc") == inst.argval
+            isinstance(n, ast.ExceptHandler) and mangled_name(n) == inst.argval
             for n in parents(node)
         )
 
