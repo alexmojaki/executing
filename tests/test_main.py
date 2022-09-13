@@ -856,7 +856,7 @@ class TestFiles(unittest.TestCase):
                     p()
 
                     p("ast node:")
-                    if sys.version_info >= (3, 11):
+                    if sys.version_info >= (3, 9):
                         p(ast.dump(node, indent=4))
                     else:
                         p(ast.dump(node))
@@ -1051,7 +1051,7 @@ class TestFiles(unittest.TestCase):
                     # continue for every case where this can be an known issue
 
 
-                    if sys.version_info >= (3, 11):
+                    if py11:
                         exact_options = []
                         for node in ast.walk(source.tree):
                             if not hasattr(node, "lineno"):
@@ -1124,7 +1124,7 @@ class TestFiles(unittest.TestCase):
                     print("search bytecode", inst)
                     print("in file", source.filename)
 
-                    if sys.version_info >= (3,11):
+                    if py11:
                         print("at position", inst.positions)
 
                         with open(source.filename) as sourcefile:
