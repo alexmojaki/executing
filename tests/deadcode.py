@@ -97,7 +97,7 @@ class Deadcode:
             self.check_stmts(node.body, deadcode)
         elif isinstance(node, (ast.With, ast.AsyncWith)):
             self.check_childs(node.items, deadcode)
-            deadcode = self.check_stmts(node.body, deadcode)
+            self.check_stmts(node.body, deadcode)
 
         elif isinstance(node, (ast.Return, ast.Break, ast.Continue, ast.Raise)):
             if isinstance(node, ast.Raise):
@@ -113,13 +113,20 @@ class Deadcode:
             cnd = self.static_value(node.test, deadcode)
 
             if cnd == False:
-                deadcode = True
+                node.deadcode = deadcode
+                self.walk_deadcode(node.test, True)
                 self.walk_deadcode(node.msg, deadcode)
+                deadcode = True
 
             elif cnd == True:
-                node.deadcode = True
-                self.walk_deadcode(node.msg, True)
+                node.deadcode = deadcode
                 self.walk_deadcode(node.test, True)
+                self.walk_deadcode(node.msg, True)
+
+            else:
+                node.deadcode = deadcode
+                self.walk_deadcode(node.test, deadcode)
+                self.walk_deadcode(node.msg, deadcode)
 
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             self.walk_annotation(node.args.posonlyargs, deadcode)
@@ -154,9 +161,11 @@ class Deadcode:
             else_is_dead = self.check_stmts(
                 node.orelse, deadcode or (test_value == True)
             )
-            deadcode = if_is_dead and else_is_dead
 
-            self.walk_deadcode(node.test, (if_is_dead and not node.orelse) or deadcode)
+            # self.walk_deadcode(node.test, (if_is_dead and not node.orelse) or deadcode)
+            self.walk_deadcode(node.test, deadcode or test_value is not None)
+
+            deadcode = if_is_dead and else_is_dead
 
         elif isinstance(node, ast.Match):
             self.walk_deadcode(node.subject, deadcode)
@@ -197,7 +206,7 @@ class Deadcode:
             cnd = self.static_value(node.test, deadcode)
 
             self.check_stmts(node.body, deadcode or cnd == False)
-            self.check_stmts(node.orelse, deadcode or cnd == False or cnd == True)
+            self.check_stmts(node.orelse, deadcode or cnd == True)
 
             def contains_break(node):
                 "search all child nodes except other loops for a break statement"
@@ -211,9 +220,7 @@ class Deadcode:
 
                 return False
 
-            if self.static_value(node.test, deadcode) == True and not contains_break(
-                node
-            ):
+            if cnd == True and not contains_break(node):
                 # while True: ... no break
                 deadcode = True
 
@@ -221,6 +228,7 @@ class Deadcode:
             try_dead = self.check_stmts(node.body, deadcode)
 
             for handler in node.handlers:
+                handler.deadcode = deadcode
                 self.walk_deadcode(handler.type, deadcode)
 
             handlers_dead = all(
@@ -238,17 +246,9 @@ class Deadcode:
         return deadcode
 
 
-if __name__ == "__main__":
-    import sys
+def dump_deadcode(node):
     from rich import print as rprint
     from rich.tree import Tree
-
-    filename = sys.argv[1]
-    print(filename)
-    with open(filename) as file:
-        tree = ast.parse(file.read())
-
-    Deadcode.annotate(tree)
 
     def report(node, tree):
         if isinstance(node, (ast.expr_context, ast.operator, ast.unaryop, ast.cmpop)):
@@ -260,10 +260,38 @@ if __name__ == "__main__":
         else:
             deadcode = "[red]dead" if deadcode else "[blue]used"
 
-        t = tree.add("%s %s" % (type(node).__name__, deadcode))
+        name = type(node).__name__
+
+        if isinstance(node, ast.Constant):
+            name += "(%r)" % node.value
+
+        if isinstance(node, ast.Name):
+            name += "(%s)" % node.id
+
+        if isinstance(node, ast.Attribute):
+            name += "(.%s)" % node.attr
+
+        t = tree.add("%s %s" % (name, deadcode))
         for child in ast.iter_child_nodes(node):
             report(child, t)
 
-    rtree = Tree("ast")
-    report(tree, rtree)
-    rprint(rtree)
+    tree = Tree("ast")
+    report(node, tree)
+    rprint(tree)
+
+
+def main():
+    import sys
+
+    filename = sys.argv[1]
+    print(filename)
+    with open(filename) as file:
+        tree = ast.parse(file.read())
+
+    Deadcode.annotate(tree)
+
+    dump_deadcode(tree)
+
+
+if __name__ == "__main__":
+    main()

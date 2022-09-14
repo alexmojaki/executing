@@ -175,6 +175,9 @@ def start_position(obj):
     if isinstance(obj, dis.Instruction):
         obj = obj.positions
 
+    if isinstance(obj,ast.Module):
+        obj=obj.body[0]
+
     return SourcePosition(obj.lineno, obj.col_offset)
 
 
@@ -185,5 +188,8 @@ def end_position(obj):
     """
     if isinstance(obj, dis.Instruction):
         obj = obj.positions
+
+    if isinstance(obj,ast.Module):
+        obj=obj.body[-1]
 
     return SourcePosition(obj.end_lineno, obj.end_col_offset)
