@@ -169,18 +169,18 @@ class Deadcode:
 
         elif isinstance(node, ast.Match):
             self.walk_deadcode(node.subject, deadcode)
-            for _case in node.cases:
-                _case.deadcode = deadcode
-                self.walk_deadcode(_case.pattern, deadcode)
-                self.walk_deadcode(_case.guard, deadcode)
+            for case_ in node.cases:
+                case_.deadcode = deadcode
+                self.walk_deadcode(case_.pattern, deadcode)
+                self.walk_deadcode(case_.guard, deadcode)
 
             dead_cases = all(
-                [self.check_stmts(_case.body, deadcode) for _case in node.cases]
+                [self.check_stmts(case_.body, deadcode) for case_ in node.cases]
             )
 
             if any(
-                isinstance(_case.pattern, ast.MatchAs) and _case.pattern.pattern is None
-                for _case in node.cases
+                isinstance(case_.pattern, ast.MatchAs) and case_.pattern.pattern is None
+                for case_ in node.cases
             ):
                 # case _:
                 deadcode = dead_cases
