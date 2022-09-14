@@ -534,8 +534,8 @@ class TestStuff(unittest.TestCase):
             with tester:
                 pass
 
-            with tester as a ,tester as b:
-                pass
+            with tester as a, tester() as b, tester.tester() as c:
+                a(b(c()))
 
     def test_listcomp(self):
         if sys.version_info >= (3, 11):

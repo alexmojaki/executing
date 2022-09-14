@@ -380,7 +380,7 @@ class PositionNodeFinder(object):
         if inst_match("BUILD_STRING") and node_match(ast.JoinedStr):
             return
 
-        if inst_match("BEFORE_WITH") and node_match(ast.With):
+        if inst_match(("BEFORE_WITH","WITH_EXCEPT_START")) and node_match(ast.With):
             return
 
         if inst_match(("STORE_NAME", "STORE_GLOBAL"), argval="__doc__") and node_match(

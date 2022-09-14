@@ -12,6 +12,7 @@ executing.executing.TESTING = 1
 
 from executing import Source
 
+non_existing_argument=object()
 
 class Tester(object):
     def __init__(self):
@@ -46,14 +47,18 @@ class Tester(object):
         )
         assert result == value, (result, value)
 
-    def __call__(self, arg, check_func=True):
+    def __call__(self, arg=non_existing_argument, check_func=True):
         ex = self.get_executing(inspect.currentframe().f_back)
         if ex.decorator:
             assert {ex.node} == ex.statements
             self.decorators.append(ex.node.decorator_list.index(ex.decorator))
         else:
             call = ex.node
-            self.check(call.args[0], arg)
+            if arg is non_existing_argument:
+                assert len(call.args)==0
+            else:
+                self.check(call.args[0], arg)
+
             if check_func:
                 self.check(call.func, self)
             if (
@@ -61,7 +66,11 @@ class Tester(object):
                 and call in call.parent.decorator_list
             ):
                 return self
-        return arg
+
+        if arg is non_existing_argument:
+            return tester
+        else:
+            return arg
 
     def __getattr__(self, item):
         node = self.get_node(ast.Attribute)
