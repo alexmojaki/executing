@@ -195,10 +195,11 @@ class Deadcode:
 
             test_value = self.static_value(node.test, deadcode)
 
-            if_is_dead = self.walk_deadcode(
+            self.walk_deadcode(
                 node.body, deadcode or (test_value is False)
             )
-            else_is_dead = self.walk_deadcode(
+
+            self.walk_deadcode(
                 node.orelse, deadcode or (test_value is True)
             )
 
