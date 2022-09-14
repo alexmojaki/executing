@@ -16,7 +16,7 @@ class Deadcode:
         if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.And):
             result = None
             for v in node.values:
-                if self.static_value(v, deadcode) == False:
+                if self.static_value(v, deadcode) is False:
                     result = False
                     deadcode = True
             return result
@@ -24,7 +24,7 @@ class Deadcode:
         elif isinstance(node, ast.BoolOp) and isinstance(node.op, ast.Or):
             result = None
             for v in node.values:
-                if self.static_value(v, deadcode) == True:
+                if self.static_value(v, deadcode) is True:
                     result = True
                     deadcode = True
             return result
@@ -112,13 +112,13 @@ class Deadcode:
         elif isinstance(node, ast.Assert):
             cnd = self.static_value(node.test, deadcode)
 
-            if cnd == False:
+            if cnd is False:
                 node.deadcode = deadcode
                 self.walk_deadcode(node.test, True)
                 self.walk_deadcode(node.msg, deadcode)
                 deadcode = True
 
-            elif cnd == True:
+            elif cnd is True:
                 node.deadcode = deadcode
                 self.walk_deadcode(node.test, True)
                 self.walk_deadcode(node.msg, True)
@@ -157,9 +157,9 @@ class Deadcode:
 
             test_value = self.static_value(node.test, deadcode)
 
-            if_is_dead = self.check_stmts(node.body, deadcode or (test_value == False))
+            if_is_dead = self.check_stmts(node.body, deadcode or (test_value is False))
             else_is_dead = self.check_stmts(
-                node.orelse, deadcode or (test_value == True)
+                node.orelse, deadcode or (test_value is True)
             )
 
             # self.walk_deadcode(node.test, (if_is_dead and not node.orelse) or deadcode)
@@ -196,17 +196,17 @@ class Deadcode:
             test_value = self.static_value(node.test, deadcode)
 
             if_is_dead = self.walk_deadcode(
-                node.body, deadcode or (test_value == False)
+                node.body, deadcode or (test_value is False)
             )
             else_is_dead = self.walk_deadcode(
-                node.orelse, deadcode or (test_value == True)
+                node.orelse, deadcode or (test_value is True)
             )
 
         elif isinstance(node, (ast.While)):
             cnd = self.static_value(node.test, deadcode)
 
-            self.check_stmts(node.body, deadcode or cnd == False)
-            self.check_stmts(node.orelse, deadcode or cnd == True)
+            self.check_stmts(node.body, deadcode or cnd is False)
+            self.check_stmts(node.orelse, deadcode or cnd is True)
 
             def contains_break(node):
                 "search all child nodes except other loops for a break statement"
@@ -220,7 +220,7 @@ class Deadcode:
 
                 return False
 
-            if cnd == True and not contains_break(node):
+            if cnd is True and not contains_break(node):
                 # while True: ... no break
                 deadcode = True
 
