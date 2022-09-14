@@ -1,6 +1,19 @@
 import ast
 
 
+def contains_break(node):
+    "search all child nodes except other loops for a break statement"
+    for child in ast.iter_child_nodes(node):
+        if isinstance(child, (ast.For, ast.While, ast.AsyncFor)):
+            continue
+        if isinstance(child, ast.Break):
+            return True
+        if contains_break(child):
+            return True
+
+    return False
+
+
 class Deadcode:
     @staticmethod
     def annotate(tree):
@@ -209,17 +222,6 @@ class Deadcode:
             self.check_stmts(node.body, deadcode or cnd is False)
             self.check_stmts(node.orelse, deadcode or cnd is True)
 
-            def contains_break(node):
-                "search all child nodes except other loops for a break statement"
-                for child in ast.iter_child_nodes(node):
-                    if isinstance(child, (ast.For, ast.While, ast.AsyncFor)):
-                        continue
-                    if isinstance(child, ast.Break):
-                        return True
-                    if contains_break(child):
-                        return True
-
-                return False
 
             if cnd is True and not contains_break(node):
                 # while True: ... no break
