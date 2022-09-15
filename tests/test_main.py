@@ -782,11 +782,19 @@ class TestFiles(unittest.TestCase):
                         # because the compiler generates POP_JUMP_FORWARD_IF_TRUE which mapps to the `if` statement.
                         # only code like `a=not b` generates a UNARY_NOT
 
-                        first_node=node
-                        while is_unary_not(first_node.parent):
-                            # handles cases like
-                            # if not x is None: ...
-                            first_node=first_node.parent
+                        # handles cases like
+                        # if not x is None: ...
+                        # assert a if cnd else not b
+
+                        first_node = node
+                        while is_unary_not(first_node.parent) or (
+                            isinstance(first_node.parent, ast.IfExp)
+                            and first_node
+                            in (first_node.parent.body, first_node.parent.orelse)
+                        ):
+                            first_node = first_node.parent
+
+
 
                         if isinstance(first_node.parent,(ast.If,ast.Assert,ast.While,ast.IfExp)) and first_node is first_node.parent.test:
                             continue
