@@ -809,6 +809,9 @@ class TestFiles(unittest.TestCase):
                     if is_literal(node) and not isinstance(node, ast.Constant):
                         continue
 
+                    if isinstance(node,ast.Name) and node.id=="__debug__":
+                        continue
+
                     if isinstance(node, ast.Compare) and len(node.comparators) > 1:
                         continue
 
