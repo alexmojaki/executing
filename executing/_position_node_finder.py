@@ -46,14 +46,17 @@ def mangled_name(node):
         raise TypeError("no node to mangle")
 
     if name.startswith("__") and not name.endswith("__"):
-        name = next(
-            (
-                "_" + parent.name.lstrip("_") + name
-                for parent in parents(node)
-                if isinstance(parent, ast.ClassDef)
-            ),
-            name,
-        )
+
+        parent,child=node.parent,node
+
+        while not (isinstance(parent,ast.ClassDef) and child not in parent.bases):
+            if not hasattr(parent,"parent"):
+                break
+            parent,child=parent.parent,parent
+        else:
+            return "_" + parent.name.lstrip("_") + name
+
+            
 
     return name
 

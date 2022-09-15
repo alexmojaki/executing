@@ -371,3 +371,10 @@ for __var in [1]:
             "_Testb__a",
             "e",
         }
+
+        assert result(
+            "class Test:",
+            "def foo(self):",
+            "class Patched(self.__attr):",
+            "pass",
+        ) == {"Patched", "foo", "self", "Test", "_Test__attr"}
