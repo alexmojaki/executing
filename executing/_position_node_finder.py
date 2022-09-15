@@ -377,7 +377,9 @@ class PositionNodeFinder(object):
         ):
             return
 
-        if inst_match("BUILD_STRING") and node_match(ast.JoinedStr):
+        if inst_match("BUILD_STRING") and (
+            node_match(ast.JoinedStr) or node_match(ast.BinOp, op=ast.Mod)
+        ):
             return
 
         if inst_match(("BEFORE_WITH","WITH_EXCEPT_START")) and node_match(ast.With):
