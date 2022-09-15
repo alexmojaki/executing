@@ -175,8 +175,7 @@ class Deadcode:
                 node.orelse, deadcode or (test_value is True)
             )
 
-            # self.walk_deadcode(node.test, (if_is_dead and not node.orelse) or deadcode)
-            self.walk_deadcode(node.test, deadcode or test_value is not None)
+            self.walk_deadcode(node.test, deadcode)
 
             deadcode = if_is_dead and else_is_dead
 
