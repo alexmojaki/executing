@@ -766,7 +766,7 @@ class TestFiles(unittest.TestCase):
                     if is_literal(node):
                         continue
                 else:
-                    # (is/is not) None
+                    # x (is/is not) None
                     none_comparison = (
                         isinstance(node, ast.Compare)
                         and len(node.ops) == 1
@@ -780,17 +780,23 @@ class TestFiles(unittest.TestCase):
                         # some ast-nodes are transformed into control flow, if it is used at places like `if not a: ...`
                         # There are no bytecode instructions which can be mapped to this ast-node,
                         # because the compiler generates POP_JUMP_FORWARD_IF_TRUE which mapps to the `if` statement.
-                        # `a=not b` generates a UNARY_NOT
+                        # only code like `a=not b` generates a UNARY_NOT
 
-                        if isinstance(node.parent,(ast.If,ast.Assert,ast.While,ast.IfExp)) and node is node.parent.test:
+                        first_node=node
+                        while is_unary_not(first_node.parent):
+                            # handles cases like
+                            # if not x is None: ...
+                            first_node=first_node.parent
+
+                        if isinstance(first_node.parent,(ast.If,ast.Assert,ast.While,ast.IfExp)) and first_node is first_node.parent.test:
                             continue
-                        if isinstance(node.parent,(ast.match_case)) and node is node.parent.guard:
+                        if isinstance(first_node.parent,(ast.match_case)) and first_node is first_node.parent.guard:
                             continue
-                        if isinstance(node.parent,ast.BoolOp):
+                        if isinstance(first_node.parent,(ast.BoolOp,ast.Return)):
                             continue
-                        if isinstance(node.parent,(ast.comprehension)) and node in node.parent.ifs:
+                        if isinstance(first_node.parent,(ast.comprehension)) and first_node in first_node.parent.ifs:
                             continue
-                        if isinstance(node.parent,(ast.comprehension)) and node in node.parent.ifs:
+                        if isinstance(first_node.parent,(ast.comprehension)) and first_node in first_node.parent.ifs:
                             continue
                         
                     if (
@@ -798,7 +804,7 @@ class TestFiles(unittest.TestCase):
                         and isinstance(node.op, ast.Not)
                         and isinstance(node.operand, ast.Compare)
                         and len(node.operand.ops) == 1
-                        and isinstance(node.operand.ops[0], ast.In)
+                        and isinstance(node.operand.ops[0], (ast.In,ast.Is))
                     ):
                         # `not a in l` the not becomes part of the comparison
                         continue
