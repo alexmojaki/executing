@@ -1,14 +1,23 @@
 import ast
 
 
-def contains_break(node):
+def contains_break(node_or_list):
     "search all child nodes except other loops for a break statement"
-    for child in ast.iter_child_nodes(node):
+
+    if isinstance(node_or_list, ast.AST):
+        childs = ast.iter_child_nodes(node_or_list)
+    elif isinstance(node_or_list, list):
+        childs = node_or_list
+    else:
+        raise TypeError(node_or_list)
+
+    for child in childs:
         if isinstance(child, (ast.For, ast.While, ast.AsyncFor)):
-            continue
-        if isinstance(child, ast.Break):
+            if contains_break(child.orelse):
+                return True
+        elif isinstance(child, ast.Break):
             return True
-        if contains_break(child):
+        elif contains_break(child):
             return True
 
     return False
