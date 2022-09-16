@@ -397,8 +397,10 @@ class PositionNodeFinder(object):
             # store docstrings
             return
 
-        if inst_match(("STORE_NAME", "STORE_FAST", "STORE_DEREF")) and node_match(
-            ast.ExceptHandler, name=instruction.argval
+        if (
+            inst_match(("STORE_NAME", "STORE_FAST", "STORE_DEREF"))
+            and node_match(ast.ExceptHandler)
+            and instruction.argval == mangled_name(node)
         ):
             # store exception in variable
             return
@@ -458,7 +460,7 @@ class PositionNodeFinder(object):
             return
 
         if node_match(ast.Name, ctx=ast.Load) and inst_match(
-            ("LOAD_NAME", "LOAD_GLOBAL"), argval=mangled_name(node)
+            ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL"), argval=mangled_name(node)
         ):
             return
 
