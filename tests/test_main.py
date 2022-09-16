@@ -1256,6 +1256,11 @@ def is_literal(node):
         else:
             return is_literal(subscript_item(node))
 
+    if isinstance(node,ast.Tuple):
+        # pub_fields=(b"x" * 32,) * 2,
+        # generates on const element in the bytecode
+        return all(is_literal(e) for e in node.elts)
+
     try:
         ast.literal_eval(node)
         return True
