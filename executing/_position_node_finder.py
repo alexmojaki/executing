@@ -54,7 +54,9 @@ def mangled_name(node):
                 break
             parent,child=parent.parent,parent
         else:
-            return "_" + parent.name.lstrip("_") + name
+            class_name=parent.name.lstrip("_")
+            if class_name!="":
+                return "_" + class_name + name
 
             
 

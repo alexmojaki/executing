@@ -378,3 +378,24 @@ for __var in [1]:
             "class Patched(self.__attr):",
             "pass",
         ) == {"Patched", "foo", "self", "Test", "_Test__attr"}
+
+        assert result(
+            "class _:",
+            "def a(self):",
+            "self.__thing",
+        ) == {"_","a", "self", "__thing"}
+
+        assert result(
+            "class __:",
+            "def a(self):",
+            "self.__thing",
+        ) == {"__","a", "self", "__thing"}
+
+        assert result(
+            "class Test:",
+            "class _:",
+            "def a(self):",
+            "self.__thing",
+        ) == {"Test","_","a", "self", "__thing"}
+
+
