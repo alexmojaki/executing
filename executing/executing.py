@@ -150,7 +150,9 @@ TESTING = 0
 
 
 class NotOneValueFound(Exception):
-    pass
+    def __init__(self,msg,values=[]):
+        self.values=values
+        super(NotOneValueFound,self).__init__(msg)
 
 
 def only(it):
@@ -164,7 +166,7 @@ def only(it):
     if len(lst) == 0:
         raise NotOneValueFound('Expected one value, found 0')
     if len(lst) > 1:
-        raise NotOneValueFound('Expected one value, found several')
+        raise NotOneValueFound('Expected one value, found several',lst)
     return lst[0]
 
 

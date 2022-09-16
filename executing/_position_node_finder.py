@@ -184,8 +184,9 @@ class PositionNodeFinder(object):
                 while self.opname(index) in ("CACHE", "EXTENDED_ARG"):
                     index += 2
 
-                if self.find_node(index) == node_func and self.opname(index).startswith(
-                    "STORE_"
+                if (
+                    self.opname(index).startswith("STORE_")
+                    and self.find_node(index) == node_func
                 ):
                     self.result = node_func
                     self.decorator = node

@@ -38,6 +38,13 @@ def calling_expression():
     frame = inspect.currentframe().f_back.f_back
     return Source.executing(frame).node
 
+
+def ast_dump(*args, **kwargs):
+    if sys.version_info < (3, 9):
+        del kwargs["indent"]
+    return ast.dump(*args, **kwargs)
+
+
 class TestStuff(unittest.TestCase):
 
     # noinspection PyTrailingSemicolon
@@ -101,6 +108,16 @@ class TestStuff(unittest.TestCase):
             pass
 
         tester.check_decorators([5, 4, 2, 0])
+
+        # this checks a spectial case for 3.11
+        # TODO: format strings are not valid syntax before 3.6. how can it be tested?
+        # TODO: this test fails also for 3.6 3.7 3.8 and 3.9 for unknown reason
+        #
+        # @tester.qwe()
+        # def foo4(log_dir=f"test{tester.attr}"):
+        #     pass
+
+        # tester.check_decorators([0])
 
         class Foo(object):
             @tester
@@ -873,10 +890,7 @@ class TestFiles(unittest.TestCase):
                     p()
 
                     p("ast node:")
-                    if sys.version_info >= (3, 9):
-                        p(ast.dump(node, indent=4))
-                    else:
-                        p(ast.dump(node))
+                    p(ast_dump(node, indent=4))
 
                     parents = []
                     parent = node
@@ -1136,7 +1150,15 @@ class TestFiles(unittest.TestCase):
                     continue
 
                 # report more information for debugging
+                print("mapping failed")
+
                 print(e)
+                if isinstance(e, NotOneValueFound):
+                    for value in e.values:
+                        print(
+                            "value:", ast_dump(value, indent=4, include_attributes=True)
+                        )
+
                 print("search bytecode", inst)
                 print("in file", source.filename)
 
