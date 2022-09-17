@@ -229,7 +229,7 @@ class Source(object):
 
         try:
             self.tree = ast.parse(ast_text, filename=filename)
-        except SyntaxError:
+        except (SyntaxError, ValueError):
             pass
         else:
             for node in ast.walk(self.tree):
