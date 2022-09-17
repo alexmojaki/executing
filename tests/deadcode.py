@@ -1,4 +1,5 @@
 import ast
+import operator
 
 
 def contains_break(node_or_list):
@@ -23,48 +24,110 @@ def contains_break(node_or_list):
     return False
 
 
+
 class Deadcode:
     @staticmethod
     def annotate(tree):
-        Deadcode().walk_deadcode(tree, False)
+        deadcode = Deadcode()
+
+        deadcode.annotate_static_values(tree)
+        deadcode.walk_deadcode(tree, False)
 
     def __init__(self):
         self.future_annotations = False
 
+    operator_map = {
+        # binary
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.FloorDiv: operator.floordiv,
+        ast.Mod: operator.mod,
+        ast.Pow: operator.pow,
+        ast.LShift: operator.lshift,
+        ast.RShift: operator.rshift,
+        ast.BitOr: operator.or_,
+        ast.BitXor: operator.xor,
+        ast.BitAnd: operator.and_,
+        ast.MatMult: operator.matmul,
+        # unary
+        ast.UAdd: operator.pos,
+        ast.USub: operator.neg,
+        ast.Not: operator.not_,
+        ast.Invert: operator.invert,
+    }
+
+    def annotate_static_values(self, node):
+        for n in ast.iter_child_nodes(node):
+            self.annotate_static_values(n)
+
+        try:
+            if isinstance(node, ast.Constant):
+                node.__static_value = node.value
+
+            elif isinstance(node, ast.Name) and node.id == "__debug__":
+                node.__static_value = True
+
+            elif isinstance(node, ast.UnaryOp):
+                try:
+                    node.__static_value = self.operator_map[type(node.op)](
+                        node.operand.__static_value
+                    )
+                except Exception:
+                    pass
+
+            elif isinstance(node, ast.BinOp):
+                try:
+                    node.__static_value = self.operator_map[type(node.op)](
+                        node.left.__static_value, node.right.__static_value
+                    )
+                except Exception:
+                    pass
+
+            elif isinstance(node, ast.Subscript):
+                try:
+                    node.__static_value = node.value.__static_value[
+                        node.slice.__static_value
+                    ]
+                except Exception:
+                    pass
+
+            elif isinstance(node, ast.IfExp):
+                cnd = self.static_cnd(node.test)
+                if cnd is True:
+                    node.__static_value = node.body.__static_value
+
+                elif cnd is False:
+                    node.__static_value = node.orelse.__static_value
+
+            elif isinstance(node, ast.BoolOp) and isinstance(node.op, ast.And):
+                if all(self.static_cnd(n) is True for n in node.values):
+                    node.__static_value = True
+
+                if any(self.static_cnd(n) is False for n in node.values):
+                    node.__static_value = False
+
+            elif isinstance(node, ast.BoolOp) and isinstance(node.op, ast.Or):
+                if all(self.static_cnd(n) is False for n in node.values):
+                    node.__static_value = False
+
+                if any(self.static_cnd(n) is True for n in node.values):
+                    node.__static_value = True
+
+        except AttributeError as e:
+            if e.name != "_Deadcode__static_value":
+                raise
+
+    def static_cnd(self, node):
+        try:
+            return bool(node.__static_value)
+        except AttributeError:
+            return None
+
     def static_value(self, node, deadcode):
-
-        node.deadcode = deadcode or getattr(node, "deadcode", False)
-
-        if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.And):
-            result = None
-            for v in node.values:
-                if self.static_value(v, deadcode) is False:
-                    result = False
-                    deadcode = True
-            return result
-
-        elif isinstance(node, ast.BoolOp) and isinstance(node.op, ast.Or):
-            result = None
-            for v in node.values:
-                if self.static_value(v, deadcode) is True:
-                    result = True
-                    deadcode = True
-            return result
-
-        elif isinstance(node, ast.Constant):
-            return bool(node.value)
-        elif isinstance(node, ast.Name) and node.id == "__debug__":
-            return True
-
-        elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
-            v = self.static_value(node.operand, deadcode)
-            if isinstance(v, bool):
-                return not v
-        else:
-            for n in ast.iter_child_nodes(node):
-                self.walk_deadcode(n, deadcode)
-
-        return None
+        self.walk_deadcode(node, deadcode)
+        return self.static_cnd(node)
 
     def check_stmts(self, stmts, deadcode):
         """
@@ -136,18 +199,15 @@ class Deadcode:
 
             if cnd is False:
                 node.deadcode = deadcode
-                self.walk_deadcode(node.test, True)
                 self.walk_deadcode(node.msg, deadcode)
                 deadcode = True
 
             elif cnd is True:
                 node.deadcode = deadcode
-                self.walk_deadcode(node.test, True)
                 self.walk_deadcode(node.msg, True)
 
             else:
                 node.deadcode = deadcode
-                self.walk_deadcode(node.test, deadcode)
                 self.walk_deadcode(node.msg, deadcode)
 
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -210,7 +270,16 @@ class Deadcode:
             self.walk_deadcode(node.target, deadcode)
             self.walk_deadcode(node.iter, deadcode)
             self.check_stmts(node.body, deadcode)
-            self.check_stmts(node.orelse, deadcode)
+
+            else_is_dead = self.check_stmts(node.orelse, deadcode)
+
+            if else_is_dead and not contains_break(node.body):
+                # for a in l:
+                #     something()
+                # else:
+                #     return None
+                # deadcode()
+                deadcode = True
 
         elif isinstance(node, ast.IfExp):
 
@@ -228,11 +297,18 @@ class Deadcode:
             cnd = self.static_value(node.test, deadcode)
 
             self.check_stmts(node.body, deadcode or cnd is False)
-            self.check_stmts(node.orelse, deadcode or cnd is True)
-
+            else_is_dead = self.check_stmts(node.orelse, deadcode or cnd is True)
 
             if cnd is True and not contains_break(node):
                 # while True: ... no break
+                deadcode = True
+
+            if else_is_dead and not contains_break(node.body):
+                # for a in l:
+                #     something()
+                # else:
+                #     return None
+                # deadcode()
                 deadcode = True
 
         elif isinstance(node, (ast.Try, ast.TryStar)):
@@ -250,9 +326,22 @@ class Deadcode:
 
             deadcode = (handlers_dead and else_dead) or final_dead
 
+        elif isinstance(node, ast.BoolOp) and isinstance(node.op, ast.And):
+            dead_op = deadcode
+            for v in node.values:
+                if self.static_value(v, dead_op) is False:
+                    dead_op = True
+
+        elif isinstance(node, ast.BoolOp) and isinstance(node.op, ast.Or):
+            dead_op = deadcode
+            for v in node.values:
+                if self.static_value(v, dead_op) is True:
+                    dead_op = True
+
         else:
 
-            self.static_value(node, deadcode)
+            for n in ast.iter_child_nodes(node):
+                self.walk_deadcode(n, deadcode)
 
         return deadcode
 
@@ -273,14 +362,14 @@ def dump_deadcode(node):
 
         name = type(node).__name__
 
-        if isinstance(node, ast.Constant):
-            name += "(%r)" % node.value
-
         if isinstance(node, ast.Name):
             name += "(%s)" % node.id
 
         if isinstance(node, ast.Attribute):
             name += "(.%s)" % node.attr
+
+        if hasattr(node, "_Deadcode__static_value"):
+            name += " == %r" % getattr(node, "_Deadcode__static_value")
 
         t = tree.add("%s %s" % (name, deadcode))
         for child in ast.iter_child_nodes(node):
