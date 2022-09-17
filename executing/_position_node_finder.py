@@ -259,8 +259,10 @@ class PositionNodeFinder(object):
             "STORE_NAME",
             "STORE_FAST",
             "STORE_DEREF",
+            "STORE_GLOBAL",
             "DELETE_NAME",
             "DELETE_FAST",
+            "DELETE_GLOBAL",
         ):
             return False
 
@@ -398,7 +400,7 @@ class PositionNodeFinder(object):
             return
 
         if (
-            inst_match(("STORE_NAME", "STORE_FAST", "STORE_DEREF"))
+            inst_match(("STORE_NAME", "STORE_FAST", "STORE_GLOBAL", "STORE_DEREF"))
             and node_match(ast.ExceptHandler)
             and instruction.argval == mangled_name(node)
         ):
