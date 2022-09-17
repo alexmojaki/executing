@@ -853,9 +853,11 @@ class TestFiles(unittest.TestCase):
                         isinstance(node, ast.BinOp)
                         and isinstance(node.op, ast.Mod)
                         and isinstance(node.left, ast.Constant)
-                        and node.left.value in ("%s", "%r")
+                        and isinstance(node.right, ast.Tuple)
+                        and isinstance(node.left.value, str)
+                        and re.fullmatch(r"%(-?\d+)?[sr]", node.left.value)
                     ):
-                        # "%s"%(...) is missing an BUILD_STRING instruction which normally maps to BinOp
+                        # "%50s"%(a,) is missing an BUILD_STRING instruction which normally maps to BinOp
                         continue
 
                     if getattr(node, "deadcode", False):
