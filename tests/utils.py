@@ -73,9 +73,14 @@ class Tester(object):
             return arg
 
     def __getattr__(self, item):
-        node = self.get_node(ast.Attribute)
-        self.check(node.value, self)
-        assert node.attr == item
+        parent_frame=inspect.currentframe().f_back
+
+        # pytest is accessing tester to check if it is a test function
+        if "_pytest" not in parent_frame.f_code.co_filename:
+            node = self.get_node(ast.Attribute)
+            self.check(node.value, self)
+            assert node.attr == item
+
         return self
 
     def __getitem__(self, item):

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function, division
+"""
 
+assert rewriting will break executing
+PYTEST_DONT_REWRITE
+"""
+from __future__ import print_function, division
 import ast
 import contextlib
 import dis
