@@ -481,6 +481,16 @@ class TestStuff(unittest.TestCase):
                 5
             )
 
+            tester.a().b()\
+                .c().d()\
+                .e(tester.x1().x2()
+                .y1()
+                .y2()).foo.bar.spam()
+
+            assert 5== tester.a\
+                    (tester).\
+                    b(5)
+
     def test_call_things(self):
         # call things which are no methods or functions
         if sys.version_info >= (3,11):
