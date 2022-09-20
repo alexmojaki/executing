@@ -112,6 +112,10 @@ class PositionNodeFinder(object):
         self.source = source
         self.decorator = None
 
+        # work around for https://github.com/python/cpython/issues/96970
+        while self.opname(lasti) == "CACHE":
+            lasti -= 2
+
         try:
             # try to map with all match_positions
             self.result = self.find_node(lasti)

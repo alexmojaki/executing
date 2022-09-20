@@ -569,6 +569,19 @@ class TestStuff(unittest.TestCase):
             result = [calling_expression() for e in [1]]
             self.assertIsInstance(result[0], ast.ListComp)
 
+    def test_decorator_cache_instruction(self):
+        frame = inspect.currentframe()
+
+        def deco(f):
+            assert f.__name__ == "foo"
+            ex = Source.executing(frame)
+            assert isinstance(ex.node, ast.FunctionDef)
+            assert isinstance(ex.decorator, ast.Name)
+
+        @deco
+        def foo():
+            pass
+
 
 def is_unary_not(node):
     return isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)
