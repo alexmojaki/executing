@@ -1,13 +1,18 @@
 import sys
 import ast
+import dis
 import inspect
+from collections import namedtuple
+
 import executing.executing
+
 from executing.executing import attr_names_match
 
 executing.executing.TESTING = 1
 
 from executing import Source
 
+non_existing_argument=object()
 
 class Tester(object):
     def __init__(self):
@@ -42,14 +47,18 @@ class Tester(object):
         )
         assert result == value, (result, value)
 
-    def __call__(self, arg, check_func=True):
+    def __call__(self, arg=non_existing_argument, check_func=True):
         ex = self.get_executing(inspect.currentframe().f_back)
         if ex.decorator:
             assert {ex.node} == ex.statements
             self.decorators.append(ex.node.decorator_list.index(ex.decorator))
         else:
             call = ex.node
-            self.check(call.args[0], arg)
+            if arg is non_existing_argument:
+                assert len(call.args)==0
+            else:
+                self.check(call.args[0], arg)
+
             if check_func:
                 self.check(call.func, self)
             if (
@@ -57,7 +66,11 @@ class Tester(object):
                 and call in call.parent.decorator_list
             ):
                 return self
-        return arg
+
+        if arg is non_existing_argument:
+            return tester
+        else:
+            return arg
 
     def __getattr__(self, item):
         node = self.get_node(ast.Attribute)
@@ -85,6 +98,11 @@ class Tester(object):
             assert name == node.attr
         assert attr_names_match(node.attr, name)
         return self
+
+    def __delattr__(self, name):
+        node = self.get_node(ast.Attribute)
+        assert isinstance(node.ctx, ast.Del)
+        assert node.attr == name
 
     def __setitem__(self, key, value):
         node = self.get_node(ast.Subscript)
@@ -117,11 +135,22 @@ class Tester(object):
     __ne__ = __ge__ = __lt__
 
     def __bool__(self):
-        try:
-            self.get_node(None)
-        except RuntimeError:
+        if sys.version_info >= (3, 11):
+            self.get_node(ast.BoolOp)
             return False
-        assert 0
+        else:
+            try:
+                self.get_node(None)
+            except RuntimeError:
+                return False
+            assert 0
+
+    def __enter__(self):
+        self.get_node(ast.With)
+        return self
+
+    def __exit__(self, exc_typ, exc_value, exc_traceback):
+        self.get_node(ast.With)
 
     __nonzero__ = __bool__
 
@@ -142,3 +171,34 @@ def in_finally(node):
             return True
         node = node.parent
     return False
+
+
+SourcePosition = namedtuple("SourcePosition", ["lineno", "col_offset"])
+
+
+def start_position(obj):
+    """
+    returns the start source position as a (lineno,col_offset) tuple.
+    obj can be ast.AST or dis.Instruction.
+    """
+    if isinstance(obj, dis.Instruction):
+        obj = obj.positions
+
+    if isinstance(obj,ast.Module):
+        obj=obj.body[0]
+
+    return SourcePosition(obj.lineno, obj.col_offset)
+
+
+def end_position(obj):
+    """
+    returns the end source position as a (lineno,col_offset) tuple.
+    obj can be ast.AST or dis.Instruction.
+    """
+    if isinstance(obj, dis.Instruction):
+        obj = obj.positions
+
+    if isinstance(obj,ast.Module):
+        obj=obj.body[-1]
+
+    return SourcePosition(obj.end_lineno, obj.end_col_offset)
