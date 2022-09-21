@@ -25,7 +25,7 @@ jobs:
       env:
         EXECUTING_SLOW_TESTS: 1
       run: |
-        coverage run --include=executing/executing.py --append -m pytest tests/test_pytest.py
+        coverage run --include=executing/executing.py --append -m pytest tests
         coverage report -m
     - name: Coveralls Python
       uses: AndreMiras/coveralls-python-action@v20201129
