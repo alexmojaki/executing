@@ -399,3 +399,21 @@ for __var in [1]:
         ) == {"Test","_","a", "self", "__thing"}
 
 
+from executing.executing import is_rewritten_by_pytest,get_instructions
+import dis
+
+def test_pytest_rewrite():
+    frame=inspect.currentframe()
+    #dis.dis(frame.f_code)
+    for bc in get_instructions(frame.f_code):
+        print(bc)
+    
+    # check for assert statements rewrite caused by this assert
+    assert is_rewritten_by_pytest(frame.f_code)==True
+
+def test_no_pytest_rewrite():
+    frame=inspect.currentframe()
+
+    # no assert -> no rewrite
+    if is_rewritten_by_pytest(frame.f_code):
+        raise AssertionError("unexpected pytest assert rewrite")
