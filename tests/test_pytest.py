@@ -414,3 +414,13 @@ def test_no_pytest_rewrite():
     # no assert -> no rewrite
     if is_rewritten_by_pytest(frame.f_code):
         raise AssertionError("unexpected pytest assert rewrite")
+
+def test_no_pytest_rewrite_with_consts():
+    frame=inspect.currentframe()
+
+    # LOAD_CONST "@py_assert..." should not trigger a false positive
+    a="@py_assert..."
+
+    # no assert -> no rewrite
+    if is_rewritten_by_pytest(frame.f_code):
+        raise AssertionError("unexpected pytest assert rewrite")

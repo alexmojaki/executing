@@ -536,7 +536,7 @@ sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
 
 def is_rewritten_by_pytest(code):
     return any(
-        bc.opname.startswith("LOAD_") and isinstance(bc.argval,str) and bc.argval.startswith("@py_assert")
+        bc.opname != "LOAD_CONST" and isinstance(bc.argval,str) and bc.argval.startswith("@py")
         for bc in get_instructions(code)
     )
 
