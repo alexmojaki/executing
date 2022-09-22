@@ -1375,7 +1375,7 @@ def lambda_maker():
 lamb = lambda: 0
 
 
-def test_tester():
+def test_global_tester_calls():
     # tester calls should be tested at global scope
     from . import global_tester_calls
 
