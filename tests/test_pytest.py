@@ -403,13 +403,10 @@ from executing.executing import is_rewritten_by_pytest,get_instructions
 import dis
 
 def test_pytest_rewrite():
-    frame=inspect.currentframe()
-    #dis.dis(frame.f_code)
-    for bc in get_instructions(frame.f_code):
-        print(bc)
-    
+    frame = inspect.currentframe()
+
     # check for assert statements rewrite caused by this assert
-    assert is_rewritten_by_pytest(frame.f_code)==True
+    assert is_rewritten_by_pytest(frame.f_code)
 
 def test_no_pytest_rewrite():
     frame=inspect.currentframe()
