@@ -10,12 +10,15 @@ import pytest
 from littleutils import SimpleNamespace
 
 from executing import Source, NotOneValueFound
-from executing.executing import is_ipython_cell_code, attr_names_match
+from executing.executing import is_ipython_cell_code, attr_names_match, is_rewritten_by_pytest,get_instructions
+
 import executing.executing
 
 from executing._exceptions import KnownIssue
 
 from executing import Source,NotOneValueFound
+
+import dis
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -399,8 +402,6 @@ for __var in [1]:
         ) == {"Test","_","a", "self", "__thing"}
 
 
-from executing.executing import is_rewritten_by_pytest,get_instructions
-import dis
 
 def test_pytest_rewrite():
     frame = inspect.currentframe()
