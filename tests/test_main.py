@@ -781,7 +781,7 @@ class TestFiles:
                     if is_unary_not(node):
                         continue
 
-                    if sys.version_info >= (3, 8):
+                    if sys.version_info >= (3, 6):
                         if is_annotation(node):
                             continue
 
