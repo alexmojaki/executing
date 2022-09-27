@@ -713,6 +713,7 @@ class TestFiles:
                     'executing' in filename
                     # ignore pytest files because they break the SentinelNodeFinder
                     or '_pytest' in filename
+                    or 'enum' in filename
                     # A file that's particularly slow
                     or 'errorcodes.py' in filename
                     # Contains unreachable code which pypy removes
