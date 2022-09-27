@@ -81,6 +81,7 @@ else:
 if hasattr(dis, "get_instructions"):
     # noinspection PyUnresolvedReferences
     _get_instructions = dis.get_instructions
+    from dis import Instruction
 
 else:
     class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):

@@ -929,13 +929,17 @@ class TestFiles:
                         parents.append(parent)
                     p("parents:", parents)
 
-                    p(
-                        "node range:",
-                        "lineno=%s" % node.lineno,
-                        "end_lineno=%s" % node.end_lineno,
-                        "col_offset=%s" % node.col_offset,
-                        "end_col_offset=%s" % node.end_col_offset,
-                    )
+
+                    if sys.version_info >= (3,8):
+                        p(
+                            "node range:",
+                            "lineno=%s" % node.lineno,
+                            "end_lineno=%s" % node.end_lineno,
+                            "col_offset=%s" % node.col_offset,
+                            "end_col_offset=%s" % node.end_col_offset,
+                        )
+                    else:
+                        p("line:",node.lineno)
 
                     dump_source(
                         source.text,
