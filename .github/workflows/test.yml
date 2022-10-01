@@ -1,13 +1,13 @@
 name: Tests
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, pypy2, pypy-3.6]
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, '3.10', 3.11-dev, pypy2, pypy-3.6]
 
     steps:
     - uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
       run: |
         python --version
         pip install -U pip
-        pip install --upgrade coveralls asttokens pytest setuptools setuptools_scm pep517
+        pip install --upgrade coveralls setuptools setuptools_scm pep517 .[tests]
         pip install .
     - name: Mypy testing
       run: |

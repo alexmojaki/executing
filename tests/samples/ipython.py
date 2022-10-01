@@ -2,7 +2,7 @@ import inspect
 import socket
 import sys
 from io import BytesIO, StringIO
-from threading import currentThread, Thread
+from threading import current_thread, Thread
 from uuid import uuid4
 
 from IPython.core.display import HTML, display
@@ -27,7 +27,7 @@ def stream_proxy(original):
             if frame.f_code == ThreadingMixIn.process_request_thread.__code__:
                 return fake_stream()
             frame = frame.f_back
-        return thread_proxies.get(currentThread().ident,
+        return thread_proxies.get(current_thread().ident,
                                   original)
 
     return LocalProxy(p)
@@ -39,7 +39,7 @@ sys.stdout = stream_proxy(sys.stdout)
 
 def run_server(port, bind_host, show_server_output):
     if not show_server_output:
-        thread_proxies[currentThread().ident] = fake_stream()
+        thread_proxies[current_thread().ident] = fake_stream()
     try:
         server.app.run(
             debug=True,
