@@ -369,7 +369,7 @@ class Source(object):
                     stmts = source.statements_at_line(lineno)
                     if stmts:
                         if is_ipython_cell_code(code):
-                            decorator, node = find_node_ipython(frame, lasti, stmts)
+                            decorator, node = find_node_ipython(frame, lasti, stmts, None)
                         else:
                             node_finder = NodeFinder(frame, stmts, tree, lasti, source)
                             node = node_finder.result
