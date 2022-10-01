@@ -37,15 +37,22 @@ from copy import deepcopy
 from itertools import islice
 from operator import attrgetter
 from threading import RLock
-from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, List, Optional, Sequence, Set, Tuple, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, Iterable, List, Optional, Sequence, Set, Tuple, Type, TypeVar, Union, cast
 
 if TYPE_CHECKING:
     from asttokens import ASTTokens
 
-function_node_type = Tuple[Union[ast.FunctionDef, ast.AsyncFunctionDef], ...]
-function_node_types: function_node_type = cast(function_node_type, (ast.FunctionDef,))
-
 PY3 = sys.version_info[0] == 3
+
+if PY3:
+    function_node_type = Tuple[Union[ast.FunctionDef, ast.AsyncFunctionDef], ...]
+else:
+    function_node_type = Tuple[ast.FunctionDef, ...]
+
+function_node_types = cast(function_node_type, (ast.FunctionDef,)) # type: function_node_type
+if PY3:
+    function_node_types += cast(function_node_type, (ast.AsyncFunctionDef,))
+
 
 if PY3:
     # noinspection PyUnresolvedReferences
@@ -59,7 +66,7 @@ if PY3:
     cache = lru_cache(maxsize=None)
     text_type = str
 else:
-    from lib2to3.pgen2.tokenize import detect_encoding, cookie_re as encoding_pattern
+    from lib2to3.pgen2.tokenize import detect_encoding, cookie_re as encoding_pattern # type: ignore[attr-defined]
     from itertools import izip_longest as zip_longest
 
 
@@ -68,10 +75,11 @@ else:
 
 
     def cache(func):
-        d = {}
+        # type: (Callable) -> Callable
+        d = {} # type: Dict[Tuple, Callable]        
 
         @functools.wraps(func)
-        def wrapper(*args):
+        def wrapper(*args): # type: ignore[no-untyped-def]
             if args in d:
                 return d[args]
             result = d[args] = func(*args)
@@ -86,7 +94,7 @@ else:
 # Type class used to expand out the definition of AST to include fields added by this library
 # It's not actually used for anything other than type checking though!
 class EnhancedAST(ast.AST):
-    parent: ast.AST
+    parent = None # type: ast.AST
 
 if sys.version_info >= (3, 4):
     # noinspection PyUnresolvedReferences
@@ -101,6 +109,7 @@ else:
     # Left as similar as possible for easy diff
 
     def _get_instructions(co):
+        # type: (types.CodeType) -> Generator[Instruction, None, None]
         code = co.co_code
         linestarts = dict(findlinestarts(co))
         n = len(code)
@@ -132,17 +141,13 @@ else:
 # Type class used to expand out the definition of AST to include fields added by this library
 # It's not actually used for anything other than type checking though!
 class EnhancedInstruction(Instruction):
-    lineno: int = -1
-    _copied: bool
+    lineno = -1 # type: int
+    _copied = None # type: bool
 
 
-try:
-    function_node_types += cast(function_node_type, (ast.AsyncFunctionDef,))
-except AttributeError:
-    pass
 
-
-def assert_(condition: bool, message: str="") -> None:
+def assert_(condition, message=""):
+    # type: (bool, str) -> None
     """
     Like an assert statement, but unaffected by -O
     :param condition: value that is expected to be truthy
@@ -153,7 +158,8 @@ def assert_(condition: bool, message: str="") -> None:
         raise AssertionError(str(message))
 
 
-def get_instructions(co: types.CodeType) -> Generator[EnhancedInstruction, None, None]:
+def get_instructions(co):
+    # type: (types.CodeType) -> Generator[EnhancedInstruction, None, None]
     lineno = co.co_firstlineno
     for inst in _get_instructions(co):
         inst = cast(EnhancedInstruction, inst)
@@ -172,7 +178,8 @@ class NotOneValueFound(Exception):
 T = TypeVar('T')
 
 
-def only(it: Union[Iterable[T], Sequence[T]]) -> T:
+def only(it):
+    # type: (Union[Iterable[T], Sequence[T]]) -> T
     if hasattr(it, '__len__'):
         assert isinstance(it, Sequence)
         if len(it) != 1:
@@ -212,7 +219,8 @@ class Source(object):
         - code_qualname
     """
 
-    def __init__(self, filename: str, lines: Sequence[str]) -> None:
+    def __init__(self, filename, lines):
+        # type: (str, Sequence[str]) -> None
         """
         Don't call this constructor, see the class docstring.
         """
@@ -251,15 +259,17 @@ class Source(object):
             pass
         else:
             for node in ast.walk(self.tree):
-                for child in ast.iter_child_nodes(node):
-                    
+                for child in ast.iter_child_nodes(node):                    
                     cast(EnhancedAST, child).parent = node
                 if hasattr(node, "lineno"):
-                    linenos: Union[list[int], range]
-                    if hasattr(node, "end_lineno") and node.end_lineno is not None and isinstance(node, ast.expr):
+                    if PY3:
+                        linenos = [] # type: Union[List[int], range]
+                    else:
+                        linenos = [] # type: List[int]
+                    if sys.version_info >= (3, 8) and node.end_lineno is not None and isinstance(node, ast.expr):
                         linenos = range(node.lineno, node.end_lineno + 1)
                     else:
-                        linenos = [node.lineno]
+                        linenos = [node.lineno] # type: ignore[attr-defined]
                     for lineno in linenos:
                         self._nodes_by_line[lineno].append(node)
 
@@ -268,14 +278,16 @@ class Source(object):
             self._qualnames = visitor.qualnames
 
     @classmethod
-    def for_frame(cls, frame: types.FrameType, use_cache: bool=True) -> Any:
+    def for_frame(cls, frame, use_cache=True):
+        # type: (types.FrameType, bool) -> Any
         """
         Returns the `Source` object corresponding to the file the frame is executing in.
         """
         return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {}, use_cache)
 
     @classmethod
-    def for_filename(cls, filename: Union[str, Path], module_globals: Optional[dict[str, Any]] =None, use_cache: bool=True) -> Any:
+    def for_filename(cls, filename, module_globals, use_cache):
+        # type: (Union[str, Path], Optional[Dict[str, Any]], bool) -> Any
         if isinstance(filename, Path):
             filename = str(filename)
 
@@ -294,7 +306,8 @@ class Source(object):
         return result
 
     @classmethod
-    def _for_filename_and_lines(cls, filename: str, lines: Sequence[str]) -> "Source":
+    def _for_filename_and_lines(cls, filename, lines):
+        # type: (str, Sequence[str]) -> "Source"
         source_cache = cls._class_local('__source_cache_with_lines', {})
         try:
             return source_cache[(filename, lines)]
@@ -305,12 +318,14 @@ class Source(object):
         return result
 
     @classmethod
-    def lazycache(cls, frame: types.FrameType) -> None:
-        if hasattr(linecache, 'lazycache'):
+    def lazycache(cls, frame):
+        # type: (types.FrameType) -> None
+        if sys.version_info >= (3, 5):
             linecache.lazycache(frame.f_code.co_filename, frame.f_globals)
 
     @classmethod
-    def executing(cls, frame_or_tb: types.TracebackType) -> "Executing":
+    def executing(cls, frame_or_tb):
+        # type: (types.TracebackType) -> "Executing"
         """
         Returns an `Executing` object representing the operation
         currently executing in the given frame or traceback object.
@@ -339,7 +354,8 @@ class Source(object):
         try:
             args = executing_cache[key]
         except KeyError:
-            def find(source: Source, retry_cache: bool) -> Any:
+            def find(source, retry_cache):
+                # type: (Source, bool) -> Any
                 node = stmts = decorator = None
                 tree = source.tree
                 if tree:
@@ -369,7 +385,7 @@ class Source(object):
 
                     if node:
                         new_stmts = {statement_containing_node(node)}
-                        assert_(new_stmts <= cast(set[ast.AST], stmts))
+                        assert_(new_stmts <= cast(Set[ast.AST], stmts))
                         stmts = new_stmts
 
                 return source, node, stmts, decorator
@@ -380,7 +396,8 @@ class Source(object):
         return Executing(frame, *args)
 
     @classmethod
-    def _class_local(cls, name: str, default: Any) -> Any:
+    def _class_local(cls, name, default):
+        # type: (str, Any) -> Any
         """
         Returns an attribute directly associated with this class
         (as opposed to subclasses), setting default if necessary
@@ -391,7 +408,8 @@ class Source(object):
         return result
 
     @cache
-    def statements_at_line(self, lineno: int) -> set[EnhancedAST]:
+    def statements_at_line(self, lineno):
+        # type: (int) -> Set[EnhancedAST]
         """
         Returns the statement nodes overlapping the given line.
 
@@ -411,7 +429,8 @@ class Source(object):
         }
 
     @cache
-    def asttokens(self) -> ASTTokens:
+    def asttokens(self):
+        # type: () -> ASTTokens
         """
         Returns an ASTTokens object for getting the source of specific AST nodes.
 
@@ -425,17 +444,21 @@ class Source(object):
         )
 
     @staticmethod
-    def decode_source(source: Union[str, bytes]) -> str:
+    def decode_source(source):
+        # type: (Union[str, bytes]) -> text_type
         if isinstance(source, bytes):
             encoding = Source.detect_encoding(source)
-            source = source.decode(encoding)
-        return source
+            return source.decode(encoding)
+        else:
+            return source
 
     @staticmethod
-    def detect_encoding(source: bytes) -> str:
+    def detect_encoding(source):
+        # type: (bytes) -> str
         return cast(str, detect_encoding(io.BytesIO(source).readline)[0])
 
-    def code_qualname(self, code: types.CodeType) -> str:
+    def code_qualname(self, code):
+        # type: (types.CodeType) -> str
         """
         Imitates the __qualname__ attribute of functions for code objects.
         Given:
@@ -474,43 +497,50 @@ class Executing(object):
         - `statements == {node}`
     """
 
-    def __init__(self, frame: types.FrameType, source: Source, node: ast.AST, stmts: Sequence[ast.stmt], decorator: Any) -> None:
+    def __init__(self, frame, source, node, stmts, decorator):
+        # type: (types.FrameType, Source, ast.AST, Sequence[ast.stmt], Any) -> None
         self.frame = frame
         self.source = source
         self.node = node
         self.statements = stmts
         self.decorator = decorator
 
-    def code_qualname(self) -> str:
+    def code_qualname(self):
+        # type: () -> str
         return self.source.code_qualname(self.frame.f_code)
 
-    def text(self) -> str:
+    def text(self):
+        # type: () -> str
         return self.source.asttokens().get_text(self.node)
 
-    def text_range(self) -> tuple[int, int]:
+    def text_range(self):
+        # type: () -> Tuple[int, int]
         return self.source.asttokens().get_text_range(self.node)
 
 
 class QualnameVisitor(ast.NodeVisitor):
-    def __init__(self) -> None:
+    def __init__(self):
+        # type: () -> None
         super(QualnameVisitor, self).__init__()
-        self.stack: list[str] = []
-        self.qualnames: dict[tuple[str, int], str] = {}
+        self.stack = [] # type: List[str]
+        self.qualnames = {} # type: Dict[Tuple[str, int], str]
 
-    def add_qualname(self, node: ast.AST, name: Optional[str]=None) -> None:
+    def add_qualname(self, node, name=None):
+        # type: (ast.AST, Optional[str]) -> None
         name = name or node.name # type: ignore[attr-defined]
         self.stack.append(name)
         if getattr(node, 'decorator_list', ()):
-            lineno = node.decorator_list[0].lineno # type: ignore[attr-defined]
+            lineno = node.decorator_List[0].lineno # type: ignore[attr-defined]
         else:
-            lineno = node.lineno
+            lineno = node.lineno # type: ignore[attr-defined]
         self.qualnames.setdefault((name, lineno), ".".join(self.stack))
 
-    def visit_FunctionDef(self, node: ast.AST, name: Optional[str]=None) -> None:
+    def visit_FunctionDef(self, node, name):
+        # type: (ast.AST, Optional[str]) -> None
         assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.Lambda)
         self.add_qualname(node, name)
         self.stack.append('<locals>')
-        children: Sequence[ast.AST]
+        children = [] # type: Sequence[ast.AST]
         if isinstance(node, ast.Lambda):
             children = [node.body]
         else:
@@ -535,11 +565,13 @@ class QualnameVisitor(ast.NodeVisitor):
 
     visit_AsyncFunctionDef = visit_FunctionDef
 
-    def visit_Lambda(self, node: ast.AST) -> None:
+    def visit_Lambda(self, node):
+        # type: (ast.AST) -> None
         assert isinstance(node, ast.Lambda)
         self.visit_FunctionDef(node, '<lambda>')
 
-    def visit_ClassDef(self, node: ast.AST) -> None:
+    def visit_ClassDef(self, node):
+        # type: (ast.AST) -> None
         assert isinstance(node, ast.ClassDef)
         self.add_qualname(node)
         self.generic_visit(node)
@@ -552,7 +584,10 @@ future_flags = sum(
 )
 
 
-def compile_similar_to(source: ast.AST, matching_code: types.CodeType) -> Any:
+def compile_similar_to(source, matching_code):
+    # type: (Union[ast.AST, text_type], types.CodeType) -> Any
+    if not PY3:
+        assert type(source) == text_type
     return compile(
         source,
         matching_code.co_filename,
@@ -566,9 +601,10 @@ sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
 
 
 class NodeFinder(object):
-    result: EnhancedAST
+    result = None # type: EnhancedAST
 
-    def __init__(self, frame: types.FrameType, stmts: Set[EnhancedAST], tree: ast.AST, lasti: int):
+    def __init__(self, frame, stmts, tree, lasti):
+        # type: (types.FrameType, Set[EnhancedAST], ast.AST, int) -> None
         assert_(len(stmts) > 0)
         self.frame = frame
         self.tree = tree
@@ -588,9 +624,9 @@ class NodeFinder(object):
 
         self.instruction = instruction = self.get_actual_current_instruction(lasti)
         op_name = instruction.opname
-        extra_filter: Callable[[Any], bool] = lambda e: True
+        extra_filter = lambda e: True # type: Callable[[Any], bool]
 
-        typ: Type
+        typ = ast.Pass # type: Type
         if op_name.startswith('CALL_'):
             typ = ast.Call
         elif op_name.startswith(('BINARY_SUBSCR', 'SLICE+')):
@@ -653,7 +689,8 @@ class NodeFinder(object):
             else:
                 self.result = only(matching)
 
-    def find_decorator(self, stmts: Set[EnhancedAST]) -> None:
+    def find_decorator(self, stmts):
+        # type: (Set[EnhancedAST]) -> None
         stmt = only(stmts)
         assert_(isinstance(stmt, (ast.ClassDef, function_node_types)))
         decorators = stmt.decorator_list # type: ignore[attr-defined]
@@ -685,7 +722,8 @@ class NodeFinder(object):
         self.decorator = decorator
         self.result = stmt
 
-    def clean_instructions(self, code: types.CodeType) -> list[EnhancedInstruction]:
+    def clean_instructions(self, code):
+        # type: (types.CodeType) -> List[EnhancedInstruction]
         return [
             inst
             for inst in get_instructions(code)
@@ -693,7 +731,8 @@ class NodeFinder(object):
             if inst.lineno not in self.ignore_linenos
         ]
 
-    def get_original_clean_instructions(self) -> list[EnhancedInstruction]:
+    def get_original_clean_instructions(self):
+        # type: () -> List[EnhancedInstruction]
         result = self.clean_instructions(self.code)
 
         # pypy sometimes (when is not clear)
@@ -711,7 +750,8 @@ class NodeFinder(object):
 
         return result
 
-    def matching_nodes(self, exprs: Set[EnhancedAST]) -> Generator[EnhancedAST, None, None]:
+    def matching_nodes(self, exprs):
+        # type: (Set[EnhancedAST]) -> Generator[EnhancedAST, None, None]
         original_instructions = self.get_original_clean_instructions()
         original_index = only(
             i
@@ -775,7 +815,7 @@ class NodeFinder(object):
                 # changes a CONTAINS_OP(invert=1) to CONTAINS_OP(invert=0),<sentinel stuff>,UNARY_NOT
                 if (
                         original_inst.opname == new_inst.opname in ('CONTAINS_OP', 'IS_OP')
-                        and original_inst.arg != new_inst.arg
+                        and original_inst.arg != new_inst.arg # type: ignore[attr-defined]
                         and (
                         original_instructions[original_index + 1].opname
                         != instructions[new_index + 1].opname == 'UNARY_NOT'
@@ -793,12 +833,14 @@ class NodeFinder(object):
 
                 yield expr
 
-    def compile_instructions(self) -> List[EnhancedInstruction]:
+    def compile_instructions(self):
+        # type: () -> List[EnhancedInstruction]
         module_code = compile_similar_to(self.tree, self.code)
         code = only(self.find_codes(module_code))
         return self.clean_instructions(code)
 
-    def find_codes(self, root_code: types.CodeType) -> list:
+    def find_codes(self, root_code):
+        # type: (types.CodeType) -> list
         checks = [
             attrgetter('co_firstlineno'),
             attrgetter('co_name'),
@@ -811,7 +853,8 @@ class NodeFinder(object):
                 attrgetter('co_varnames'),
             ]
 
-        def matches(c: types.CodeType) -> bool:
+        def matches(c):
+            # type: (types.CodeType) -> bool
             return all(
                 f(c) == f(self.code)
                 for f in checks
@@ -821,7 +864,8 @@ class NodeFinder(object):
         if matches(root_code):
             code_options.append(root_code)
 
-        def finder(code: types.CodeType) -> None:
+        def finder(code):
+            # type: (types.CodeType) -> None
             for const in code.co_consts:
                 if not inspect.iscode(const):
                     continue
@@ -833,7 +877,8 @@ class NodeFinder(object):
         finder(root_code)
         return code_options
 
-    def get_actual_current_instruction(self, lasti: int) -> EnhancedInstruction:
+    def get_actual_current_instruction(self, lasti):
+        # type: (int) -> EnhancedInstruction
         """
         Get the instruction corresponding to the current
         frame offset, skipping EXTENDED_ARG instructions
@@ -855,7 +900,8 @@ class NodeFinder(object):
             index += 1
 
 
-def non_sentinel_instructions(instructions: List[EnhancedInstruction], start: int) -> Generator[Tuple[int, EnhancedInstruction], None, None]:
+def non_sentinel_instructions(instructions, start):
+    # type: (List[EnhancedInstruction], int) -> Generator[Tuple[int, EnhancedInstruction], None, None]
     """
     Yields (index, instruction) pairs excluding the basic
     instructions introduced by the sentinel transformation
@@ -873,7 +919,8 @@ def non_sentinel_instructions(instructions: List[EnhancedInstruction], start: in
         yield i, inst
 
 
-def walk_both_instructions(original_instructions: List[EnhancedInstruction], original_start: int, instructions: List[EnhancedInstruction], start: int) -> Generator[Tuple[int, EnhancedInstruction, int, EnhancedInstruction], None, None]:
+def walk_both_instructions(original_instructions, original_start, instructions, start):
+    # type: (List[EnhancedInstruction], int, List[EnhancedInstruction], int) -> Generator[Tuple[int, EnhancedInstruction, int, EnhancedInstruction], None, None]
     """
     Yields matching indices and instructions from the new and original instructions,
     leaving out changes made by the sentinel transformation.
@@ -894,12 +941,13 @@ def walk_both_instructions(original_instructions: List[EnhancedInstruction], ori
             new_i, new_inst = next(new_iter)
         inverted_comparison = (
             original_inst.opname == new_inst.opname in ("CONTAINS_OP", "IS_OP")
-            and original_inst.arg != new_inst.arg
+            and original_inst.arg != new_inst.arg # type: ignore[attr-defined]
         )
         yield original_i, original_inst, new_i, new_inst
 
 
-def handle_jumps(instructions: List[EnhancedInstruction], original_instructions: List[EnhancedInstruction]) -> None:
+def handle_jumps(instructions, original_instructions):
+    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> None
     """
     Transforms instructions in place until it looks more like original_instructions,
     replacing JUMP instructions that aren't also present in original_instructions
@@ -937,7 +985,8 @@ def handle_jumps(instructions: List[EnhancedInstruction], original_instructions:
             return
 
 
-def handle_jump(original_instructions: List[EnhancedInstruction], original_start: int, instructions: List[EnhancedInstruction], start: int) -> Optional[list[EnhancedInstruction]]:
+def handle_jump(original_instructions, original_start, instructions, start):
+    # type: (List[EnhancedInstruction], int, List[EnhancedInstruction], int) -> Optional[List[EnhancedInstruction]]
     """
     Returns the section of instructions starting at `start` and ending
     with a RETURN_VALUE or RAISE_VARARGS instruction.
@@ -963,7 +1012,8 @@ def handle_jump(original_instructions: List[EnhancedInstruction], original_start
     return None
 
 
-def check_duplicates(original_i: int, orig_section: List[EnhancedInstruction], original_instructions: List[EnhancedInstruction]) -> bool:
+def check_duplicates(original_i, orig_section, original_instructions):
+    # type: (int, List[EnhancedInstruction], List[EnhancedInstruction]) -> bool
     """
     Returns True if a section of original_instructions starting somewhere other
     than original_i and matching orig_section is found, i.e. orig_section is duplicated.
@@ -982,7 +1032,8 @@ def check_duplicates(original_i: int, orig_section: List[EnhancedInstruction], o
     
     return False
 
-def opnames_match(inst1: Instruction, inst2: Instruction) -> bool:
+def opnames_match(inst1, inst2):
+    # type: (Instruction, Instruction) -> bool
     return (
         inst1.opname == inst2.opname
         or "JUMP" in inst1.opname
@@ -996,16 +1047,18 @@ def opnames_match(inst1: Instruction, inst2: Instruction) -> bool:
     )
 
 
-def get_setter(node: EnhancedAST) -> Optional[Callable[[ast.AST], None]]:
+def get_setter(node):
+    # type: (EnhancedAST) -> Optional[Callable[[ast.AST], None]]
     parent = node.parent
     for name, field in ast.iter_fields(parent):
         if field is node:
-            ret_func: Callable[[ast.AST], None] = lambda new_node: setattr(parent, name, new_node)
+            ret_func = lambda new_node: setattr(parent, name, new_node) # type: Callable[[ast.AST], None]
             return ret_func
         elif isinstance(field, list):
             for i, item in enumerate(field):
                 if item is node:
-                    def setter(new_node: ast.AST) -> None:
+                    def setter(new_node):
+                        # type: (ast.AST) -> None
                         field[i] = new_node
 
                     return setter
@@ -1015,23 +1068,26 @@ lock = RLock()
 
 
 @cache
-def statement_containing_node(node: ast.AST) -> EnhancedAST:
+def statement_containing_node(node):
+    # type: (ast.AST) -> EnhancedAST
     while not isinstance(node, ast.stmt):
         node = cast(EnhancedAST, node).parent
     return cast(EnhancedAST, node)
 
 
-def assert_linenos(tree: ast.AST) -> Generator[int, None, None]:
+def assert_linenos(tree):
+    # type: (ast.AST) -> Generator[int, None, None]
     for node in ast.walk(tree):
         if (
                 hasattr(node, 'parent') and
                 hasattr(node, 'lineno') and
                 isinstance(statement_containing_node(node), ast.Assert)
         ):
-            yield node.lineno
+            yield node.lineno # type: ignore[attr-defined]
 
 
-def _extract_ipython_statement(stmts: Union[Sequence[EnhancedAST], Set[EnhancedAST]], tree: ast.Module) -> ast.Module:
+def _extract_ipython_statement(stmts, tree):
+    # type: (Union[Sequence[EnhancedAST], Set[EnhancedAST]], ast.Module) -> ast.Module
     # IPython separates each statement in a cell to be executed separately
     # So NodeFinder should only compile one statement at a time or it
     # will find a code mismatch.

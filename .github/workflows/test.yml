@@ -50,3 +50,23 @@ jobs:
         uses: AndreMiras/coveralls-python-action@v20201129
         with:
           parallel-finished: true
+
+  # Can't run mypy on Python 2.7, but can run it in Python 2 mode
+  mypy-py2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade setuptools setuptools_scm pep517
+          pip install .[test]
+          pip install mypy[python2]==0.971
+      - name: Mypy testing for Python 2
+        run: |
+          python -m mypy --py2 executing
