@@ -1297,7 +1297,7 @@ class TestFiles:
 
 
 def node_string(source, node):
-    return source.asttokens().get_text(node)
+    return source._asttext_base().get_text(node)
 
 
 def is_literal(node):
