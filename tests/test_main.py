@@ -274,7 +274,7 @@ class TestStuff(unittest.TestCase):
     def test_many_calls(self):
         node = None
         start = time.time()
-        for i in range(10000):
+        for i in range(5000):
             new_node = Source.executing(inspect.currentframe()).node
             if node is None:
                 node = new_node
@@ -285,7 +285,7 @@ class TestStuff(unittest.TestCase):
     def test_many_source_for_filename_calls(self):
         source = None
         start = time.time()
-        for i in range(10000):
+        for i in range(5000):
             new_source = Source.for_filename(__file__)
             if source is None:
                 source = new_source
