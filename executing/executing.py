@@ -522,7 +522,7 @@ class QualnameVisitor(ast.NodeVisitor):
         name = name or node.name # type: ignore[attr-defined]
         self.stack.append(name)
         if getattr(node, 'decorator_list', ()):
-            lineno = node.decorator_List[0].lineno # type: ignore[attr-defined]
+            lineno = node.decorator_list[0].lineno # type: ignore[attr-defined]
         else:
             lineno = node.lineno # type: ignore[attr-defined]
         self.qualnames.setdefault((name, lineno), ".".join(self.stack))
@@ -674,7 +674,7 @@ class SentinelNodeFinder(object):
             extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
         else:
             raise RuntimeError(op_name)
-        
+
         with lock:
             exprs = {
                 cast(EnhancedAST, node)
@@ -987,6 +987,11 @@ def handle_jumps(instructions, original_instructions):
                 # Replace the jump instruction with the jumped to section of instructions
                 # That section may also be deleted if it's not similarly duplicated
                 # in original_instructions
+                new_instructions = handle_jump(
+                    original_instructions, original_i, instructions, start
+                )
+                assert new_instructions is not None
+                instructions[new_i : new_i + 1] = new_instructions            
             else:
                 # Extract a section of original_instructions from original_i to return/raise
                 orig_section = []
