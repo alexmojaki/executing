@@ -65,9 +65,12 @@ if PY3:
 
     cache = lru_cache(maxsize=None)
     text_type = str
+    match_type = re.Match
 else:
     from lib2to3.pgen2.tokenize import detect_encoding, cookie_re as encoding_pattern # type: ignore[attr-defined]
     from itertools import izip_longest as zip_longest
+
+    match_type = re.MatchObject
 
 
     class Path(object):
@@ -174,6 +177,7 @@ TESTING = 0
 
 class NotOneValueFound(Exception):
     def __init__(self,msg,values=[]):
+        # type: (str, Sequence) -> None
         self.values=values
         super(NotOneValueFound,self).__init__(msg)
 
@@ -262,8 +266,8 @@ class Source(object):
         else:
             for node in ast.walk(self.tree):
                 for child in ast.iter_child_nodes(node):
-                    child.parent = node
-                for lineno in node_linenos(node):
+                    cast(EnhancedAST, child).parent = node
+                for lineno in node_linenos(cast(EnhancedAST, node)):
                     self._nodes_by_line[lineno].append(node)
 
             visitor = QualnameVisitor()
@@ -290,10 +294,11 @@ class Source(object):
             filename = str(filename)
 
         def get_lines():
-            return linecache.getlines(filename, module_globals)
+            # type: () -> List[str]
+            return linecache.getlines(cast(text_type, filename), module_globals)
 
         # Save the current linecache entry, then ensure the cache is up to date.
-        entry = linecache.cache.get(filename)
+        entry = linecache.cache.get(filename) # type: ignore[attr-defined]
         linecache.checkcache(filename)
         lines = get_lines()
         if entry is not None and not lines:
@@ -301,11 +306,10 @@ class Source(object):
             # This means the file wasn't simply changed (because the `lines` wouldn't be empty)
             # but rather the file was found not to exist, probably because `filename` was fake.
             # Restore the original entry so that we still have something.
-            linecache.cache[filename] = entry
+            linecache.cache[filename] = entry # type: ignore[attr-defined]
             lines = get_lines()
 
-        lines = tuple(lines)
-        return cls._for_filename_and_lines(filename, lines)
+        return cls._for_filename_and_lines(filename, tuple(lines))
 
     @classmethod
     def _for_filename_and_lines(cls, filename, lines):
@@ -374,7 +378,7 @@ class Source(object):
                     if TESTING:
                         raise
 
-                if node:
+                if node and stmts:
                     new_stmts = {statement_containing_node(node)}
                     assert_(new_stmts <= stmts)
                     stmts = new_stmts
@@ -594,7 +598,7 @@ class SentinelNodeFinder(object):
 
     def __init__(self, frame, stmts, tree, lasti, source):
         # type: (types.FrameType, Set[EnhancedAST], ast.AST, int, object) -> None
-        assert_(stmts)
+        assert_(len(stmts) > 0)
         self.frame = frame
         self.tree = tree
         self.code = code = frame.f_code
@@ -614,9 +618,9 @@ class SentinelNodeFinder(object):
         self.instruction = instruction = self.get_actual_current_instruction(lasti)
         op_name = instruction.opname
         extra_filter = lambda e: True # type: Callable[[Any], bool]
-        ctx = type(None)
+        ctx = type(None) # type: Type
 
-        typ = ast.Pass # type: Type
+        typ = type(None) # type: Type
         if op_name.startswith('CALL_'):
             typ = ast.Call
         elif op_name.startswith(('BINARY_SUBSCR', 'SLICE+')):
@@ -852,7 +856,7 @@ class SentinelNodeFinder(object):
             attrgetter('co_freevars'),
             attrgetter('co_cellvars'),
             lambda c: is_ipython_cell_code_name(c.co_name) or c.co_name,
-        ]
+        ] # type: List[Callable]
         if not self.is_pytest:
             checks += [
                 attrgetter('co_names'),
@@ -1005,6 +1009,7 @@ def handle_jumps(instructions, original_instructions):
 
 
 def find_new_matching(orig_section, instructions):
+    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> Generator[List[EnhancedInstruction], None, None]
     """
     Yields sections of `instructions` which match `orig_section`.
     The yielded sections include sentinel instructions, but these
@@ -1068,6 +1073,7 @@ def check_duplicates(original_i, orig_section, original_instructions):
     return False
 
 def sections_match(orig_section, dup_section):
+    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> bool
     """
     Returns True if the given lists of instructions have matching linenos and opnames.
     """
@@ -1132,11 +1138,12 @@ def assert_linenos(tree):
                 hasattr(node, 'parent') and
                 isinstance(statement_containing_node(node), ast.Assert)
         ):
-            for lineno in node_linenos(node):
+            for lineno in node_linenos(cast(EnhancedAST, node)):
                 yield lineno
 
 
 def _extract_ipython_statement(stmt):
+    # type: (EnhancedAST) -> ast.Module
     # IPython separates each statement in a cell to be executed separately
     # So NodeFinder should only compile one statement at a time or it
     # will find a code mismatch.
@@ -1152,14 +1159,17 @@ def _extract_ipython_statement(stmt):
 
 
 def is_ipython_cell_code_name(code_name):
+    # type: (str) -> bool
     return bool(re.match(r"(<module>|<cell line: \d+>)$", code_name))
 
 
 def is_ipython_cell_filename(filename):
+    # type: (str) -> match_type
     return re.search(r"<ipython-input-|[/\\]ipykernel_\d+[/\\]", filename)
 
 
 def is_ipython_cell_code(code_obj):
+    # type: (types.CodeType) -> bool
     return (
         is_ipython_cell_filename(code_obj.co_filename) and
         is_ipython_cell_code_name(code_obj.co_name)
@@ -1167,6 +1177,7 @@ def is_ipython_cell_code(code_obj):
 
 
 def find_node_ipython(frame, lasti, stmts, source):
+    # type: (types.FrameType, int, Set[EnhancedAST], object) -> Tuple[Optional[Any], Optional[Any]]
     node = decorator = None
     for stmt in stmts:
         tree = _extract_ipython_statement(stmt)
@@ -1185,6 +1196,7 @@ def find_node_ipython(frame, lasti, stmts, source):
 
 
 def attr_names_match(attr, argval):
+    # type: (str, str) -> bool
     """
     Checks that the user-visible attr (from ast) can correspond to
     the argval in the bytecode, i.e. the real attribute fetched internally,
@@ -1198,11 +1210,12 @@ def attr_names_match(attr, argval):
 
 
 def node_linenos(node):
+    # type: (EnhancedAST) -> Generator[int, None, None]
     if hasattr(node, "lineno"):
         if hasattr(node, "end_lineno") and isinstance(node, ast.expr):
-            linenos = range(node.lineno, node.end_lineno + 1)
+            linenos = range(node.lineno, node.end_lineno + 1) # type: ignore[attr-defined]
         else:
-            linenos = [node.lineno]
+            linenos = [node.lineno] # type: ignore[attr-defined]
         for lineno in linenos:
             yield lineno
 

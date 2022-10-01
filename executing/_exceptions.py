@@ -15,6 +15,7 @@ class VerifierFailure(Exception):
     """
 
     def __init__(self, title, node, instruction):
+        # type: (object, object, object) -> None
         self.node = node
         self.instruction = instruction
 

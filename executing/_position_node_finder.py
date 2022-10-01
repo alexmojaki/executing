@@ -16,7 +16,6 @@ def parents(node):
         else:
             break
 
-
 def node_and_parents(node):
     yield node
     yield from parents(node)
