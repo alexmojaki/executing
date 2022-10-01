@@ -21,6 +21,14 @@ jobs:
         pip install -U pip
         pip install --upgrade coveralls asttokens pytest setuptools setuptools_scm pep517
         pip install .
+    - name: Mypy testing
+      run: |
+        pip install mypy==0.971
+        python -m mypy executing
+      # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
+      if: ${{ !contains(fromJson('["2.7", "pypy2", "pypy3-6"]'), matrix.python-version) }}
+      # pypy < 3.8 very doesn't work
+      # 2.7 is tested separately in mypy-py2, as we need to run mypy under Python 3.x        
     - name: Test
       env:
         EXECUTING_SLOW_TESTS: 1

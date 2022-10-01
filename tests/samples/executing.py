@@ -237,7 +237,7 @@ class Source(object):
         return result
 
     @cache
-    def statements_at_line(self, lineno):
+    def statements_at_line(self, lineno: int) -> set[ast.AST]:
         """
         Returns the statement nodes overlapping the given line.
 
