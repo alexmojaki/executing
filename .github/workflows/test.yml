@@ -26,7 +26,7 @@ jobs:
         pip install mypy==0.910
         python -m mypy executing --exclude=executing/_position_node_finder.py
       # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
-      if: ${{ !contains(fromJson('["2.7", "pypy2", "pypy3-6", "3.11-dev"]'), matrix.python-version) }}
+      if: ${{ !contains(fromJson('["2.7", "pypy2", "pypy-3.6", "3.11-dev"]'), matrix.python-version) }}
       # pypy < 3.8 very doesn't work
       # 2.7 is tested separately in mypy-py2, as we need to run mypy under Python 3.x            
     - name: Mypy testing (3.11)
