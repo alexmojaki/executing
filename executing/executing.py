@@ -42,14 +42,9 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, Iterable, List
 if TYPE_CHECKING:
     from asttokens import ASTTokens
 
+function_node_types = (ast.FunctionDef,) # type: Tuple[Type, ...]
 if sys.version_info[0] == 3:
-    function_node_type = Tuple[Union[ast.FunctionDef, ast.AsyncFunctionDef], ...]
-else:
-    function_node_type = Tuple[ast.FunctionDef, ...]
-
-function_node_types = cast(function_node_type, (ast.FunctionDef,)) # type: function_node_type
-if sys.version_info[0] == 3:
-    function_node_types += cast(function_node_type, (ast.AsyncFunctionDef,))
+    function_node_types += (ast.AsyncFunctionDef,)
 
 
 if sys.version_info[0] == 3:
