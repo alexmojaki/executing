@@ -68,7 +68,7 @@ else:
     from lib2to3.pgen2.tokenize import detect_encoding, cookie_re as encoding_pattern # type: ignore[attr-defined]
     from itertools import izip_longest as zip_longest
 
-    match_type = re.MatchObject
+    match_type = re.MatchObject # type: ignore[attr-defined]
 
 
     class Path(object):
@@ -80,7 +80,8 @@ else:
         d = {} # type: Dict[Tuple, Callable]        
 
         @functools.wraps(func)
-        def wrapper(*args): # type: ignore[no-untyped-def]
+        def wrapper(*args):
+            # type: (Any) -> Any
             if args in d:
                 return d[args]
             result = d[args] = func(*args)
@@ -1217,7 +1218,7 @@ def node_linenos(node):
     if hasattr(node, "lineno"):
         linenos = [] # type: Sequence[int]
         if hasattr(node, "end_lineno") and isinstance(node, ast.expr):
-            assert node.end_lineno is not None
+            assert node.end_lineno is not None # type: ignore[attr-defined]
             linenos = range(node.lineno, node.end_lineno + 1) # type: ignore[attr-defined]
         else:
             linenos = [node.lineno] # type: ignore[attr-defined]

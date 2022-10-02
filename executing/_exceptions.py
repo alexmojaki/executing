@@ -19,4 +19,4 @@ class VerifierFailure(Exception):
         self.node = node
         self.instruction = instruction
 
-        super().__init__(title)
+        super().__init__(title) # type: ignore[call-arg]
