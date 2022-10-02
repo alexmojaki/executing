@@ -23,7 +23,7 @@ jobs:
         pip install .
     - name: Mypy testing (<3.11)
       run: |
-        pip install mypy==0.971
+        pip install mypy==0.910
         python -m mypy executing --exclude=executing/_position_node_finder.py
       # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
       if: ${{ !contains(fromJson('["2.7", "pypy2", "pypy3-6", "3.11-dev"]'), matrix.python-version) }}
@@ -73,7 +73,7 @@ jobs:
         run: |
           pip install --upgrade setuptools setuptools_scm pep517
           pip install .[test]
-          pip install mypy[python2]==0.971
+          pip install mypy[python2]==0.910
       - name: Mypy testing for Python 2
         run: |
           python -m mypy --py2 executing --exclude=executing/_position_node_finder.py
