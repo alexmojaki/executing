@@ -522,7 +522,7 @@ class QualnameVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node, name=None):
         # type: (ast.AST, Optional[str]) -> None
-        assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.Lambda)
+        assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.Lambda), node
         self.add_qualname(node, name)
         self.stack.append('<locals>')
         children = [] # type: Sequence[ast.AST]
