@@ -1,6 +1,9 @@
 import ast
 import dis
-from .executing import NotOneValueFound, only, function_node_types, assert_
+from enum import EnumMeta
+from types import CodeType, FrameType
+from typing import Any, Generator, Optional, Sequence, Type, Union, cast
+from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
 
 from functools import lru_cache
@@ -8,20 +11,20 @@ from functools import lru_cache
 # the code in this module can use all python>=3.11 features
 
 
-def parents(node):
+def parents(node: EnhancedAST) -> Generator[EnhancedAST, None, None]:
     while True:
         if hasattr(node, "parent"):
-            node = node.parent
+            node = cast(EnhancedAST, node.parent)
             yield node
         else:
             break
 
-def node_and_parents(node):
+def node_and_parents(node: EnhancedAST) -> Generator[EnhancedAST, None, None]:
     yield node
     yield from parents(node)
 
 
-def mangled_name(node):
+def mangled_name(node: EnhancedAST) -> str:
     """
 
     Parameters:
@@ -63,7 +66,7 @@ def mangled_name(node):
 
 
 @lru_cache(128)
-def get_instructions(code):
+def get_instructions(code: CodeType) -> list[dis.Instruction]:
     return list(dis.get_instructions(code, show_caches=True))
 
 
@@ -105,11 +108,11 @@ class PositionNodeFinder(object):
     There are only some exceptions for methods and attributes.
     """
 
-    def __init__(self, frame, stmts, tree, lasti, source):
+    def __init__(self, frame: FrameType, stmts: list[EnhancedAST], tree: object, lasti: int, source: Source):
         self.bc_list = get_instructions(frame.f_code)
 
         self.source = source
-        self.decorator = None
+        self.decorator: Optional[EnhancedAST] = None
 
         # work around for https://github.com/python/cpython/issues/96970
         while self.opname(lasti) == "CACHE":
@@ -119,6 +122,7 @@ class PositionNodeFinder(object):
             # try to map with all match_positions
             self.result = self.find_node(lasti)
         except NotOneValueFound:
+            typ: tuple[Type]
             # LOAD_METHOD could load "".join for long "..."%(...) BinOps
             # this can only be associated by using all positions
             if self.opname(lasti) in (
@@ -154,10 +158,10 @@ class PositionNodeFinder(object):
         if self.decorator is None:
             self.verify(self.result, self.instruction(lasti))
 
-    def test_for_decorator(self, node, index):
+    def test_for_decorator(self, node: EnhancedAST, index: int) -> None:
         if (
             isinstance(node.parent, (ast.ClassDef, function_node_types))
-            and node in node.parent.decorator_list
+            and node in node.parent.decorator_list # type: ignore[attr-defined]
         ):
             node_func = node.parent
 
@@ -197,7 +201,7 @@ class PositionNodeFinder(object):
 
                 index += 4
 
-    def known_issues(self, node, instruction):
+    def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
         if instruction.opname in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
             node, types_cmp_issue
         ):
@@ -216,10 +220,10 @@ class PositionNodeFinder(object):
                     if isinstance(n, ast.Compare) and len(n.ops) > 1
                 ]
 
-                assert_(comparisons, "expected at least one comparison")
+                assert_(len(comparisons) > 0, "expected at least one comparison")
 
                 if len(comparisons) == 1:
-                    node = self.result = comparisons[0]
+                    node = self.result = cast(EnhancedAST, comparisons[0])
                 else:
                     raise KnownIssue(
                         "multiple chain comparison inside %s can not be fixed" % (node)
@@ -293,16 +297,16 @@ class PositionNodeFinder(object):
             for n in parents(node)
         )
 
-    def verify(self, node, instruction):
+    def verify(self, node: EnhancedAST, instruction: dis.Instruction):
         """
         checks if this node could gererate this instruction
         """
 
         op_name = instruction.opname
         extra_filter = lambda e: True
-        ctx = type(None)
+        ctx: Type = type(None)
 
-        def inst_match(opnames, **kwargs):
+        def inst_match(opnames: Union[str, Sequence[str]], **kwargs: Any):
             """
             match instruction
 
@@ -321,7 +325,7 @@ class PositionNodeFinder(object):
                 k: getattr(instruction, k) for k in kwargs
             }
 
-        def node_match(node_type, **kwargs):
+        def node_match(node_type: Type, **kwargs: Any):
             """
             match the ast-node
 
@@ -476,7 +480,7 @@ class PositionNodeFinder(object):
 
         # old verifier
 
-        typ = type(None)
+        typ: Type = type(None)
 
         if op_name.startswith(("BINARY_SUBSCR", "SLICE+")):
             typ = ast.Subscript
@@ -540,17 +544,17 @@ class PositionNodeFinder(object):
 
         raise VerifierFailure(title, node, instruction)
 
-    def instruction(self, index):
+    def instruction(self, index: int) -> dis.Instruction:
         return self.bc_list[index // 2]
 
-    def opname(self, index):
+    def opname(self, index: int) -> str:
         return self.instruction(index).opname
 
     def find_node(
         self,
-        index,
-        match_positions=("lineno", "end_lineno", "col_offset", "end_col_offset"),
-        typ=(ast.expr, ast.stmt, ast.excepthandler, ast.pattern),
+        index: int,
+        match_positions: Sequence[str]=("lineno", "end_lineno", "col_offset", "end_col_offset"),
+        typ: Sequence[Type]=(ast.expr, ast.stmt, ast.excepthandler, ast.pattern),
     ):
         position = self.instruction(index).positions
 
@@ -560,7 +564,7 @@ class PositionNodeFinder(object):
             if isinstance(node, typ)
             if not isinstance(node, ast.Expr)
             # matchvalue.value has the same positions as matchvalue themself, so we exclude ast.MatchValue
-            if not isinstance(node, ast.MatchValue)
+            if not isinstance(node, ast.Match)
             if all(
                 getattr(position, attr) == getattr(node, attr)
                 for attr in match_positions

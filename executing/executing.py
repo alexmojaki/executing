@@ -42,19 +42,17 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, Iterable, List
 if TYPE_CHECKING:
     from asttokens import ASTTokens
 
-PY3 = sys.version_info[0] == 3
-
-if PY3:
+if sys.version_info[0] == 3:
     function_node_type = Tuple[Union[ast.FunctionDef, ast.AsyncFunctionDef], ...]
 else:
     function_node_type = Tuple[ast.FunctionDef, ...]
 
 function_node_types = cast(function_node_type, (ast.FunctionDef,)) # type: function_node_type
-if PY3:
+if sys.version_info[0] == 3:
     function_node_types += cast(function_node_type, (ast.AsyncFunctionDef,))
 
 
-if PY3:
+if sys.version_info[0] == 3:
     # noinspection PyUnresolvedReferences
     from functools import lru_cache
     # noinspection PyUnresolvedReferences
@@ -243,7 +241,7 @@ class Source(object):
         self.text = text
         self.lines = [line.rstrip('\r\n') for line in lines]
 
-        if PY3:
+        if sys.version_info[0] == 3:
             ast_text = text
         else:
             # In python 2 it's a syntax error to parse unicode
@@ -527,7 +525,7 @@ class QualnameVisitor(ast.NodeVisitor):
             lineno = node.lineno # type: ignore[attr-defined]
         self.qualnames.setdefault((name, lineno), ".".join(self.stack))
 
-    def visit_FunctionDef(self, node, name):
+    def visit_FunctionDef(self, node, name=None):
         # type: (ast.AST, Optional[str]) -> None
         assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.Lambda)
         self.add_qualname(node, name)
@@ -580,7 +578,7 @@ future_flags = sum(
 
 def compile_similar_to(source, matching_code):
     # type: (Union[ast.AST, text_type], types.CodeType) -> Any
-    if not PY3:
+    if not sys.version_info[0] == 3:
         assert type(source) == text_type
     return compile(
         source,
@@ -660,7 +658,7 @@ class SentinelNodeFinder(object):
         elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
             typ = ast.Name
             ctx = ast.Load
-            if PY3 or instruction.argval:
+            if sys.version_info[0] == 3 or instruction.argval:
                 extra_filter = lambda e: e.id == instruction.argval
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
@@ -1169,8 +1167,8 @@ def is_ipython_cell_code_name(code_name):
 
 
 def is_ipython_cell_filename(filename):
-    # type: (str) -> match_type
-    return re.search(r"<ipython-input-|[/\\]ipykernel_\d+[/\\]", filename)
+    # type: (str) -> bool
+    return bool(re.search(r"<ipython-input-|[/\\]ipykernel_\d+[/\\]", filename))
 
 
 def is_ipython_cell_code(code_obj):
@@ -1217,7 +1215,9 @@ def attr_names_match(attr, argval):
 def node_linenos(node):
     # type: (EnhancedAST) -> Generator[int, None, None]
     if hasattr(node, "lineno"):
+        linenos = [] # type: Sequence[int]
         if hasattr(node, "end_lineno") and isinstance(node, ast.expr):
+            assert node.end_lineno is not None
             linenos = range(node.lineno, node.end_lineno + 1) # type: ignore[attr-defined]
         else:
             linenos = [node.lineno] # type: ignore[attr-defined]
