@@ -368,7 +368,7 @@ class Source(object):
                     stmts = source.statements_at_line(lineno)
                     if stmts:
                         if is_ipython_cell_code(code):
-                            decorator, node = find_node_ipython(frame, lasti, stmts, None)
+                            decorator, node = find_node_ipython(frame, lasti, stmts, source)
                         else:
                             node_finder = NodeFinder(frame, stmts, tree, lasti, source)
                             node = node_finder.result
@@ -1181,7 +1181,7 @@ def is_ipython_cell_code(code_obj):
 
 
 def find_node_ipython(frame, lasti, stmts, source):
-    # type: (types.FrameType, int, Set[EnhancedAST], object) -> Tuple[Optional[Any], Optional[Any]]
+    # type: (types.FrameType, int, List[EnhancedAST], Source) -> Tuple[Optional[Any], Optional[Any]]
     node = decorator = None
     for stmt in stmts:
         tree = _extract_ipython_statement(stmt)
