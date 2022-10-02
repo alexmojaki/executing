@@ -63,13 +63,9 @@ if sys.version_info[0] == 3:
 
     cache = lru_cache(maxsize=None)
     text_type = str
-    match_type = re.Match
 else:
     from lib2to3.pgen2.tokenize import detect_encoding, cookie_re as encoding_pattern # type: ignore[attr-defined]
     from itertools import izip_longest as zip_longest
-
-    match_type = re.MatchObject # type: ignore[attr-defined]
-
 
     class Path(object):
         pass
@@ -101,9 +97,13 @@ class EnhancedAST(ast.AST):
 if sys.version_info >= (3, 4):
     # noinspection PyUnresolvedReferences
     _get_instructions = dis.get_instructions
-    from dis import Instruction
+    from dis import Instruction as _Instruction
+    
+    class Instruction(_Instruction):
+        lineno = None  # type: int
 else:
-    Instruction = namedtuple('Instruction', 'offset argval opname starts_line')
+    class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):
+        lineno = None # type: int
 
     from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts, hasname
 
@@ -143,7 +143,6 @@ else:
 # Type class used to expand out the definition of AST to include fields added by this library
 # It's not actually used for anything other than type checking though!
 class EnhancedInstruction(Instruction):
-    lineno = -1 # type: int
     _copied = None # type: bool
 
 
@@ -166,7 +165,7 @@ def get_instructions(co):
     for inst in _get_instructions(co):
         inst = cast(EnhancedInstruction, inst)
         lineno = inst.starts_line or lineno
-        assert_(lineno is not None)
+        assert_(bool(lineno))
         inst.lineno = lineno
         yield inst
 
@@ -184,9 +183,9 @@ T = TypeVar('T')
 
 
 def only(it):
-    # type: (Union[Iterable[T], Sequence[T]]) -> T
+    # type: (Union[Iterable[T], Sequence[T], Set[T]]) -> T
     if hasattr(it, '__len__'):
-        assert isinstance(it, Sequence)
+        assert isinstance(it, (Sequence, Set)), it
         if len(it) != 1:
             raise NotOneValueFound('Expected one value, found %s' % len(it))
         # noinspection PyTypeChecker
@@ -377,7 +376,7 @@ class Source(object):
                     if TESTING:
                         raise
 
-                if node and stmts:
+                if node and stmts is not None:
                     new_stmts = {statement_containing_node(node)}
                     assert_(new_stmts <= stmts)
                     stmts = new_stmts
@@ -578,9 +577,7 @@ future_flags = sum(
 
 
 def compile_similar_to(source, matching_code):
-    # type: (Union[ast.AST, text_type], types.CodeType) -> Any
-    if not sys.version_info[0] == 3:
-        assert type(source) == text_type
+    # type: (Union[ast.mod, text_type], types.CodeType) -> Any
     return compile(
         source,
         matching_code.co_filename,
@@ -596,8 +593,8 @@ class SentinelNodeFinder(object):
     result = None # type: EnhancedAST
 
     def __init__(self, frame, stmts, tree, lasti, source):
-        # type: (types.FrameType, Set[EnhancedAST], ast.AST, int, object) -> None
-        assert_(len(stmts) > 0)
+        # type: (types.FrameType, Union[List[EnhancedAST], Set[EnhancedAST]], ast.AST, int, object) -> None
+        assert_(bool(stmts))
         self.frame = frame
         self.tree = tree
         self.code = code = frame.f_code
@@ -699,7 +696,7 @@ class SentinelNodeFinder(object):
                 self.result = only(matching)
 
     def find_decorator(self, stmts):
-        # type: (Set[EnhancedAST]) -> None
+        # type: (Union[List[EnhancedAST], Set[EnhancedAST]]) -> None
         stmt = only(stmts)
         assert_(isinstance(stmt, (ast.ClassDef, function_node_types)))
         decorators = stmt.decorator_list # type: ignore[attr-defined]
@@ -844,7 +841,7 @@ class SentinelNodeFinder(object):
 
     def compile_instructions(self):
         # type: () -> List[EnhancedInstruction]
-        module_code = compile_similar_to(self.tree, self.code)
+        module_code = compile_similar_to(cast(ast.mod, self.tree), self.code)
         code = only(self.find_codes(module_code))
         return self.clean_instructions(code)
 

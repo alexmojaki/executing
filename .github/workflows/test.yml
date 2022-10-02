@@ -72,7 +72,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade setuptools setuptools_scm pep517
-          pip install .[test]
+          pip install .[tests]
           pip install mypy[python2]==0.910
       - name: Mypy testing for Python 2
         run: |

@@ -21,9 +21,10 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from tests.utils import tester, subscript_item, in_finally, start_position, end_position
 
 PYPY = 'pypy' in sys.version.lower()
+PY3 = sys.version_info[0] == 3
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions, function_node_types
+from executing.executing import get_instructions, function_node_types
 
 from executing._exceptions import VerifierFailure, KnownIssue
 
