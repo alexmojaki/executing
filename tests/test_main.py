@@ -711,13 +711,16 @@ class TestFiles:
             if (
                     # The sentinel actually appearing in code messes things up
                     'executing' in filename
-                    # ignore pytest files because they break the SentinelNodeFinder
-                    or '_pytest' in filename
-                    or 'enum' in filename
+                    # because of: {t[0] for t in lines2} - {t[0] for t in lines1}
+                    or 'pytester.py' in filename
                     # A file that's particularly slow
                     or 'errorcodes.py' in filename
                     # Contains unreachable code which pypy removes
-                    or PYPY and ('sysconfig.py' in filename or 'pyparsing.py' in filename)
+                    or PYPY and (
+                        'sysconfig.py' in filename
+                        or 'pyparsing.py' in filename
+                        or 'enum' in filename
+                    )
             ):
                 continue
     
