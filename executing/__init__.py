@@ -8,7 +8,7 @@ Get information about what a frame is currently doing. Typical usage:
 """
 
 from collections import namedtuple
-_VersionInfo = namedtuple('VersionInfo', ('major', 'minor', 'micro')) # type: ignore[name-match]
+_VersionInfo = namedtuple('_VersionInfo', ('major', 'minor', 'micro'))
 from .executing import Source, Executing, only, NotOneValueFound, cache, future_flags
 try:
     from .version import __version__ # type: ignore[import]
