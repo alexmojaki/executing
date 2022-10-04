@@ -723,6 +723,12 @@ class TestFiles:
                     )
             ):
                 continue
+
+            with open(filename) as source:
+                source_text = source.read()
+                if PYPY and "__debug__" in source_text:
+                    continue
+
     
             try:
                 self.check_filename(filename, check_names=False)
