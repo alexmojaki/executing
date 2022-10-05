@@ -10,12 +10,15 @@ import pytest
 from littleutils import SimpleNamespace
 
 from executing import Source, NotOneValueFound
-from executing.executing import is_ipython_cell_code, attr_names_match
+from executing.executing import is_ipython_cell_code, attr_names_match, is_rewritten_by_pytest,get_instructions
+
 import executing.executing
 
 from executing._exceptions import KnownIssue
 
 from executing import Source,NotOneValueFound
+
+import dis
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -399,3 +402,26 @@ for __var in [1]:
         ) == {"Test","_","a", "self", "__thing"}
 
 
+
+def test_pytest_rewrite():
+    frame = inspect.currentframe()
+
+    # check for assert statements rewrite caused by this assert
+    assert is_rewritten_by_pytest(frame.f_code)
+
+def test_no_pytest_rewrite():
+    frame=inspect.currentframe()
+
+    # no assert -> no rewrite
+    if is_rewritten_by_pytest(frame.f_code):
+        raise AssertionError("unexpected pytest assert rewrite")
+
+def test_no_pytest_rewrite_with_consts():
+    frame=inspect.currentframe()
+
+    # LOAD_CONST "@py_assert..." should not trigger a false positive
+    a="@py_assert..."
+
+    # no assert -> no rewrite
+    if is_rewritten_by_pytest(frame.f_code):
+        raise AssertionError("unexpected pytest assert rewrite")
