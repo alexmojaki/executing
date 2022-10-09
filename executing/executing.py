@@ -37,7 +37,7 @@ from copy import deepcopy
 from itertools import islice
 from operator import attrgetter
 from threading import RLock
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, Iterable, List, Optional, Sequence, Set, Tuple, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, Iterable, Iterator, List, Optional, Sequence, Set, Tuple, Type, TypeVar, Union, cast
 
 if TYPE_CHECKING:
     from asttokens import ASTTokens
@@ -259,7 +259,7 @@ class Source(object):
         else:
             for node in ast.walk(self.tree):
                 for child in ast.iter_child_nodes(node):
-                    cast(EnhancedAST, child).parent = node
+                    cast(EnhancedAST, child).parent = cast(EnhancedAST, node)
                 for lineno in node_linenos(cast(EnhancedAST, node)):
                     self._nodes_by_line[lineno].append(node)
 
@@ -307,7 +307,7 @@ class Source(object):
     @classmethod
     def _for_filename_and_lines(cls, filename, lines):
         # type: (str, Sequence[str]) -> "Source"
-        source_cache = cls._class_local('__source_cache_with_lines', {})
+        source_cache = cls._class_local('__source_cache_with_lines', {}) # type: Dict[Tuple[str, Sequence[str]], Source]
         try:
             return source_cache[(filename, lines)]
         except KeyError:
@@ -350,7 +350,7 @@ class Source(object):
 
         code = frame.f_code
         key = (code, id(code), lasti)
-        executing_cache = cls._class_local('__executing_cache', {})
+        executing_cache = cls._class_local('__executing_cache', {}) # type: Dict[Tuple[types.CodeType, int, int], Any]
 
         args = executing_cache.get(key)
         if not args:
@@ -522,7 +522,10 @@ class QualnameVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node, name=None):
         # type: (ast.AST, Optional[str]) -> None
-        assert isinstance(node, (ast.FunctionDef, ast.Lambda)) or sys.version_info[0] == 3 and isinstance(node, ast.AsyncFunctionDef), node
+        if sys.version_info[0] == 3:
+            assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef) or isinstance(node, ast.Lambda), node
+        else:
+            assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.Lambda), node
         self.add_qualname(node, name)
         self.stack.append('<locals>')
         children = [] # type: Sequence[ast.AST]
@@ -836,7 +839,7 @@ class SentinelNodeFinder(object):
 
     def compile_instructions(self):
         # type: () -> List[EnhancedInstruction]
-        module_code = compile_similar_to(cast(ast.mod, self.tree), self.code)
+        module_code = compile_similar_to(cast(ast.Module, self.tree), self.code)
         code = only(self.find_codes(module_code))
         return self.clean_instructions(code)
 
@@ -1173,7 +1176,7 @@ def is_ipython_cell_code(code_obj):
 
 
 def find_node_ipython(frame, lasti, stmts, source):
-    # type: (types.FrameType, int, List[EnhancedAST], Source) -> Tuple[Optional[Any], Optional[Any]]
+    # type: (types.FrameType, int, Set[EnhancedAST], Source) -> Tuple[Optional[Any], Optional[Any]]
     node = decorator = None
     for stmt in stmts:
         tree = _extract_ipython_statement(stmt)

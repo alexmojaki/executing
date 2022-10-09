@@ -2,7 +2,7 @@ import ast
 import dis
 from enum import EnumMeta
 from types import CodeType, FrameType
-from typing import Any, Callable, Generator, Optional, Sequence, Tuple, Type, Union, cast
+from typing import Any, Callable, Generator, Optional, Sequence, Set, Tuple, Type, Union, cast
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
 
@@ -108,7 +108,7 @@ class PositionNodeFinder(object):
     There are only some exceptions for methods and attributes.
     """
 
-    def __init__(self, frame: FrameType, stmts: list[EnhancedAST], tree: object, lasti: int, source: Source):
+    def __init__(self, frame: FrameType, stmts: Set[EnhancedAST], tree: object, lasti: int, source: Source):
         self.bc_list = get_instructions(frame.f_code)
 
         self.source = source
