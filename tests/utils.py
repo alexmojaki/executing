@@ -1,12 +1,11 @@
 import sys
 import ast
-import dis
 import inspect
 from collections import namedtuple
 
 import executing.executing
 
-from executing.executing import attr_names_match
+from executing.executing import attr_names_match,Instruction
 
 executing.executing.TESTING = 1
 
@@ -73,9 +72,14 @@ class Tester(object):
             return arg
 
     def __getattr__(self, item):
-        node = self.get_node(ast.Attribute)
-        self.check(node.value, self)
-        assert node.attr == item
+        parent_frame=inspect.currentframe().f_back
+
+        # pytest is accessing tester to check if it is a test function
+        if "_pytest" not in parent_frame.f_code.co_filename:
+            node = self.get_node(ast.Attribute)
+            self.check(node.value, self)
+            assert node.attr == item
+
         return self
 
     def __getitem__(self, item):
@@ -179,9 +183,9 @@ SourcePosition = namedtuple("SourcePosition", ["lineno", "col_offset"])
 def start_position(obj):
     """
     returns the start source position as a (lineno,col_offset) tuple.
-    obj can be ast.AST or dis.Instruction.
+    obj can be ast.AST or Instruction.
     """
-    if isinstance(obj, dis.Instruction):
+    if isinstance(obj, Instruction):
         obj = obj.positions
 
     if isinstance(obj,ast.Module):
@@ -193,9 +197,12 @@ def start_position(obj):
 def end_position(obj):
     """
     returns the end source position as a (lineno,col_offset) tuple.
-    obj can be ast.AST or dis.Instruction.
+    obj can be ast.AST or Instruction.
     """
-    if isinstance(obj, dis.Instruction):
+    if sys.version_info < (3, 8):
+        return start_position(obj)
+
+    if isinstance(obj, Instruction):
         obj = obj.positions
 
     if isinstance(obj,ast.Module):

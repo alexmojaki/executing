@@ -20,7 +20,7 @@ else
     fi
 fi
 
-tox -p auto
+tox -p 3
 
 export TAG="v${1}"
 git tag "${TAG}"

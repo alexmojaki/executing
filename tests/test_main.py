@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function, division
+"""
 
+assert rewriting will break executing
+PYTEST_DONT_REWRITE
+"""
+from __future__ import print_function, division
 import ast
 import contextlib
 import dis
@@ -15,6 +19,7 @@ import types
 import unittest
 from collections import defaultdict, namedtuple
 from random import shuffle
+import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -641,32 +646,43 @@ def is_annotation(node):
     return False
 
 
-@unittest.skipUnless(
-    os.getenv('EXECUTING_SLOW_TESTS'),
-    'These tests are very slow, enable them explicitly',
+
+
+def sample_files():
+    root_dir = os.path.dirname(__file__)
+    samples_dir = os.path.join(root_dir, "samples")
+
+    for filename in os.listdir(samples_dir):
+        full_filename = os.path.join(samples_dir, filename)
+        if filename.endswith(".py"):
+            stem=filename[:-3]
+        else:
+            continue
+
+        result_filename = (
+            stem
+            + ("-pypy-" if PYPY else "-py-")
+            + ".".join(map(str, sys.version_info[:2]))
+            + ".json"
+        )
+        result_filename = os.path.join(root_dir, "sample_results", result_filename)
+        yield pytest.param(full_filename, result_filename, id=filename)
+
+
+
+
+@pytest.mark.skipif(
+    not os.getenv("EXECUTING_SLOW_TESTS"),
+    reason="These tests are very slow, enable them explicitly",
 )
-class TestFiles(unittest.TestCase):
+class TestFiles:
 
-    maxDiff = None
+    @pytest.mark.parametrize("full_filename,result_filename", list(sample_files()))
+    def test_sample_files(self, full_filename, result_filename):
 
-    def test_sample_files(self):
-        """
-        * test all files in the samples folder
-        * if everything is ok create sample_results file or compare with an existing
-        """
         self.start_time = time.time()
-        root_dir = os.path.dirname(__file__)
-        samples_dir = os.path.join(root_dir, 'samples')
-        result_filename = PYPY * 'pypy' + '.'.join(map(str, sys.version_info[:2])) + '.json'
-        result_filename = os.path.join(root_dir, 'sample_results', result_filename)
-        result = {}
 
-        for filename in os.listdir(samples_dir):
-            full_filename = os.path.join(samples_dir, filename)
-            file_result= self.check_filename(full_filename, check_names=True)
-
-            if file_result is not None:
-                result[filename] = file_result
+        result = self.check_filename(full_filename, check_names=True)
 
         if os.getenv('FIX_EXECUTING_TESTS'):
             with open(result_filename, 'w') as outfile:
@@ -674,21 +690,8 @@ class TestFiles(unittest.TestCase):
             return
         else:
             with open(result_filename, "r") as infile:
-                old_results = json.load(infile)
+                assert result == json.load(infile)
 
-            for k, v in old_results.items():
-                self.assertEqual(result[k], v, "got different results for %s" % k)
-
-            if any(k not in old_results for k in result):
-                if os.getenv("ADD_EXECUTING_TESTS"):
-                    with open(result_filename, "w") as outfile:
-                        json.dump(result, outfile, indent=4, sort_keys=True)
-                    return
-                else:
-                    self.fail(
-                        msg="%s not in old results (set ADD_EXECUTING_TESTS=1 to add them)"
-                        % k,
-                    )
 
     def test_module_files(self):
         self.start_time = time.time()
@@ -709,12 +712,24 @@ class TestFiles(unittest.TestCase):
             if (
                     # The sentinel actually appearing in code messes things up
                     'executing' in filename
+                    # because of: {t[0] for t in lines2} - {t[0] for t in lines1}
+                    or 'pytester.py' in filename
                     # A file that's particularly slow
                     or 'errorcodes.py' in filename
                     # Contains unreachable code which pypy removes
-                    or PYPY and ('sysconfig.py' in filename or 'pyparsing.py' in filename)
+                    or PYPY and (
+                        'sysconfig.py' in filename
+                        or 'pyparsing.py' in filename
+                        or 'enum' in filename
+                    )
             ):
                 continue
+
+            with open(filename) as source:
+                source_text = source.read()
+                if PYPY and "__debug__" in source_text:
+                    continue
+
     
             try:
                 self.check_filename(filename, check_names=False)
@@ -740,7 +755,7 @@ class TestFiles(unittest.TestCase):
             for subcode, qualname in find_qualnames(code):
                 if not qualname.endswith(">"):
                     code_qualname = source.code_qualname(subcode)
-                    self.assertEqual(code_qualname, qualname)
+                    assert code_qualname == qualname
 
         nodes = defaultdict(list)
         decorators = defaultdict(list)
@@ -777,7 +792,7 @@ class TestFiles(unittest.TestCase):
                     if is_unary_not(node):
                         continue
 
-                    if sys.version_info >= (3, 8):
+                    if sys.version_info >= (3, 6):
                         if is_annotation(node):
                             continue
 
@@ -925,13 +940,17 @@ class TestFiles(unittest.TestCase):
                         parents.append(parent)
                     p("parents:", parents)
 
-                    p(
-                        "node range:",
-                        "lineno=%s" % node.lineno,
-                        "end_lineno=%s" % node.end_lineno,
-                        "col_offset=%s" % node.col_offset,
-                        "end_col_offset=%s" % node.end_col_offset,
-                    )
+
+                    if sys.version_info >= (3,8):
+                        p(
+                            "node range:",
+                            "lineno=%s" % node.lineno,
+                            "end_lineno=%s" % node.end_lineno,
+                            "col_offset=%s" % node.col_offset,
+                            "end_col_offset=%s" % node.end_col_offset,
+                        )
+                    else:
+                        p("line:",node.lineno)
 
                     dump_source(
                         source.text,
@@ -1261,7 +1280,7 @@ class TestFiles(unittest.TestCase):
             # The relation between `ast.Name` and `argval` is already
             # covered by the verifier and much more complex in python 3.11 
             if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
-                self.assertEqual(inst.argval, node.id, msg=(inst, ast.dump(node)))
+                assert inst.argval == node.id, (inst, ast.dump(node))
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)
@@ -1373,23 +1392,9 @@ def lambda_maker():
 lamb = lambda: 0
 
 
-assert tester([1, 2, 3]) == [1, 2, 3]
-
-assert tester.asd is tester
-assert tester[1 + 2] is tester
-assert tester ** 4 is tester
-assert tester * 3 is tester
-assert tester - 2 is tester
-assert tester + 1 is tester
-assert -tester is +tester is ~tester is tester
-assert (tester < 7) is tester
-assert (tester >= 78) is tester
-assert (tester != 79) is tester
-# assert (5 != tester != 6) is tester
-assert tester.foo(45, False) == 45
-
-assert (tester or 234) == 234
-assert (tester and 1123) is tester
+def test_global_tester_calls():
+    # tester calls should be tested at global scope
+    from . import global_tester_calls
 
 
 def empty_decorator(func):

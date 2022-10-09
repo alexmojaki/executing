@@ -587,6 +587,14 @@ def compile_similar_to(source, matching_code):
 
 sentinel = 'io8urthglkjdghvljusketgIYRFYUVGHFRTBGVHKGF78678957647698'
 
+def is_rewritten_by_pytest(code):
+    # type: (types.CodeType) -> bool
+    return any(
+        bc.opname != "LOAD_CONST" and isinstance(bc.argval,str) and bc.argval.startswith("@py")
+        for bc in get_instructions(code)
+    )
+
+
 class SentinelNodeFinder(object):
     result = None # type: EnhancedAST
 
@@ -596,11 +604,7 @@ class SentinelNodeFinder(object):
         self.frame = frame
         self.tree = tree
         self.code = code = frame.f_code
-        self.is_pytest = any(
-            'pytest' in name.lower()
-            for group in [code.co_names, code.co_varnames]
-            for name in group
-        )
+        self.is_pytest = is_rewritten_by_pytest(code)
 
         if self.is_pytest:
             self.ignore_linenos = frozenset(assert_linenos(tree))
