@@ -259,7 +259,7 @@ class Source(object):
             for node in ast.walk(self.tree):
                 for child in ast.iter_child_nodes(node):
                     cast(EnhancedAST, child).parent = cast(EnhancedAST, node)
-                for lineno in node_linenos(cast(EnhancedAST, node)):
+                for lineno in node_linenos(node):
                     self._nodes_by_line[lineno].append(node)
 
             visitor = QualnameVisitor()
@@ -1143,7 +1143,7 @@ def assert_linenos(tree):
                 hasattr(node, 'parent') and
                 isinstance(statement_containing_node(node), ast.Assert)
         ):
-            for lineno in node_linenos(cast(EnhancedAST, node)):
+            for lineno in node_linenos(node):
                 yield lineno
 
 
