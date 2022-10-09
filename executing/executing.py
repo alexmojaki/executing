@@ -37,7 +37,7 @@ from copy import deepcopy
 from itertools import islice
 from operator import attrgetter
 from threading import RLock
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Tuple, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 
 if TYPE_CHECKING:
     from asttokens import ASTTokens
@@ -178,8 +178,7 @@ T = TypeVar('T')
 
 def only(it):
     # type: (Iterable[T]) -> T
-    if hasattr(it, '__len__'):
-        assert isinstance(it, (Sequence, Set)), it
+    if isinstance(it, Sized):
         if len(it) != 1:
             raise NotOneValueFound('Expected one value, found %s' % len(it))
         # noinspection PyTypeChecker
