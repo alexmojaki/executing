@@ -2,7 +2,7 @@ import ast
 import dis
 from enum import EnumMeta
 from types import CodeType, FrameType
-from typing import Any, Callable, Generator, Optional, Sequence, Set, Tuple, Type, Union, cast
+from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
 
@@ -11,7 +11,7 @@ from functools import lru_cache
 # the code in this module can use all python>=3.11 features
 
 
-def parents(node: EnhancedAST) -> Generator[EnhancedAST, None, None]:
+def parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     while True:
         if hasattr(node, "parent"):
             node = cast(EnhancedAST, node.parent)
@@ -19,7 +19,7 @@ def parents(node: EnhancedAST) -> Generator[EnhancedAST, None, None]:
         else:
             break
 
-def node_and_parents(node: EnhancedAST) -> Generator[EnhancedAST, None, None]:
+def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     yield node
     yield from parents(node)
 
@@ -220,7 +220,7 @@ class PositionNodeFinder(object):
                     if isinstance(n, ast.Compare) and len(n.ops) > 1
                 ]
 
-                assert_(len(comparisons) > 0, "expected at least one comparison")
+                assert_(comparisons, "expected at least one comparison")
 
                 if len(comparisons) == 1:
                     node = self.result = cast(EnhancedAST, comparisons[0])

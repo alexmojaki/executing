@@ -37,7 +37,7 @@ from copy import deepcopy
 from itertools import islice
 from operator import attrgetter
 from threading import RLock
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, Iterable, Iterator, List, Optional, Sequence, Set, Tuple, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Tuple, Type, TypeVar, Union, cast
 
 if TYPE_CHECKING:
     from asttokens import ASTTokens
@@ -106,7 +106,7 @@ else:
     # Left as similar as possible for easy diff
 
     def _get_instructions(co):
-        # type: (types.CodeType) -> Generator[Instruction, None, None]
+        # type: (types.CodeType) -> Iterator[Instruction]
         code = co.co_code
         linestarts = dict(findlinestarts(co))
         n = len(code)
@@ -143,24 +143,23 @@ class EnhancedInstruction(Instruction):
 
 
 def assert_(condition, message=""):
-    # type: (bool, str) -> None
+    # type: (Any, str) -> None
     """
     Like an assert statement, but unaffected by -O
     :param condition: value that is expected to be truthy
     :type message: Any
     """
-    assert condition, message
     if not condition:
         raise AssertionError(str(message))
 
 
 def get_instructions(co):
-    # type: (types.CodeType) -> Generator[EnhancedInstruction, None, None]
+    # type: (types.CodeType) -> Iterator[EnhancedInstruction]
     lineno = co.co_firstlineno
     for inst in _get_instructions(co):
         inst = cast(EnhancedInstruction, inst)
         lineno = inst.starts_line or lineno
-        assert_(bool(lineno))
+        assert_(lineno)
         inst.lineno = lineno
         yield inst
 
@@ -178,7 +177,7 @@ T = TypeVar('T')
 
 
 def only(it):
-    # type: (Union[Iterable[T], Sequence[T], Set[T]]) -> T
+    # type: (Iterable[T]) -> T
     if hasattr(it, '__len__'):
         assert isinstance(it, (Sequence, Set)), it
         if len(it) != 1:
@@ -371,7 +370,8 @@ class Source(object):
                     if TESTING:
                         raise
 
-                if node and stmts is not None:
+                assert stmts is not None
+                if node:
                     new_stmts = {statement_containing_node(node)}
                     assert_(new_stmts <= stmts)
                     stmts = new_stmts
@@ -759,7 +759,7 @@ class SentinelNodeFinder(object):
         return result
 
     def matching_nodes(self, exprs):
-        # type: (Set[EnhancedAST]) -> Generator[EnhancedAST, None, None]
+        # type: (Set[EnhancedAST]) -> Iterator[EnhancedAST]
         original_instructions = self.get_original_clean_instructions()
         original_index = only(
             i
@@ -910,7 +910,7 @@ class SentinelNodeFinder(object):
 
 
 def non_sentinel_instructions(instructions, start):
-    # type: (List[EnhancedInstruction], int) -> Generator[Tuple[int, EnhancedInstruction], None, None]
+    # type: (List[EnhancedInstruction], int) -> Iterator[Tuple[int, EnhancedInstruction]]
     """
     Yields (index, instruction) pairs excluding the basic
     instructions introduced by the sentinel transformation
@@ -929,7 +929,7 @@ def non_sentinel_instructions(instructions, start):
 
 
 def walk_both_instructions(original_instructions, original_start, instructions, start):
-    # type: (List[EnhancedInstruction], int, List[EnhancedInstruction], int) -> Generator[Tuple[int, EnhancedInstruction, int, EnhancedInstruction], None, None]
+    # type: (List[EnhancedInstruction], int, List[EnhancedInstruction], int) -> Iterator[Tuple[int, EnhancedInstruction, int, EnhancedInstruction]]
     """
     Yields matching indices and instructions from the new and original instructions,
     leaving out changes made by the sentinel transformation.
@@ -1012,7 +1012,7 @@ def handle_jumps(instructions, original_instructions):
 
 
 def find_new_matching(orig_section, instructions):
-    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> Generator[List[EnhancedInstruction], None, None]
+    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> Iterator[List[EnhancedInstruction]]
     """
     Yields sections of `instructions` which match `orig_section`.
     The yielded sections include sentinel instructions, but these
@@ -1111,8 +1111,10 @@ def get_setter(node):
     parent = node.parent
     for name, field in ast.iter_fields(parent):
         if field is node:
-            ret_func = lambda new_node: setattr(parent, name, new_node) # type: Callable[[ast.AST], None]
-            return ret_func
+            def setter(new_node):
+                # type: (ast.AST) -> None
+                return setattr(parent, name, new_node)
+            return setter
         elif isinstance(field, list):
             for i, item in enumerate(field):
                 if item is node:
@@ -1135,7 +1137,7 @@ def statement_containing_node(node):
 
 
 def assert_linenos(tree):
-    # type: (ast.AST) -> Generator[int, None, None]
+    # type: (ast.AST) -> Iterator[int]
     for node in ast.walk(tree):
         if (
                 hasattr(node, 'parent') and
