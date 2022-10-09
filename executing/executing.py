@@ -281,7 +281,7 @@ class Source(object):
         module_globals=None,
         use_cache=True,  # noqa no longer used
     ):
-        # type: (Union[str, Path], Optional[Dict[str, Any]], bool) -> Any
+        # type: (Union[str, Path], Optional[Dict[str, Any]], bool) -> "Source"
         if isinstance(filename, Path):
             filename = str(filename)
 
@@ -600,7 +600,7 @@ class SentinelNodeFinder(object):
 
     def __init__(self, frame, stmts, tree, lasti, source):
         # type: (types.FrameType, Union[List[EnhancedAST], Set[EnhancedAST]], ast.AST, int, object) -> None
-        assert_(bool(stmts))
+        assert_(stmts)
         self.frame = frame
         self.tree = tree
         self.code = code = frame.f_code
