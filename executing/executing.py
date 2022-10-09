@@ -87,7 +87,7 @@ else:
 # Type class used to expand out the definition of AST to include fields added by this library
 # It's not actually used for anything other than type checking though!
 class EnhancedAST(ast.AST):
-    parent = None # type: ast.AST
+    parent = None  # type: EnhancedAST
 
 if sys.version_info >= (3, 4):
     # noinspection PyUnresolvedReferences
@@ -269,7 +269,7 @@ class Source(object):
 
     @classmethod
     def for_frame(cls, frame, use_cache=True):
-        # type: (types.FrameType, bool) -> Any
+        # type: (types.FrameType, bool) -> "Source"
         """
         Returns the `Source` object corresponding to the file the frame is executing in.
         """
@@ -324,7 +324,7 @@ class Source(object):
 
     @classmethod
     def executing(cls, frame_or_tb):
-        # type: (types.TracebackType) -> "Executing"
+        # type: (Union[types.TracebackType, types.FrameType]) -> "Executing"
         """
         Returns an `Executing` object representing the operation
         currently executing in the given frame or traceback object.
@@ -382,7 +382,7 @@ class Source(object):
 
     @classmethod
     def _class_local(cls, name, default):
-        # type: (str, Any) -> Any
+        # type: (str, T) -> T
         """
         Returns an attribute directly associated with this class
         (as opposed to subclasses), setting default if necessary
@@ -483,7 +483,7 @@ class Executing(object):
     """
 
     def __init__(self, frame, source, node, stmts, decorator):
-        # type: (types.FrameType, Source, ast.AST, Sequence[ast.stmt], Any) -> None
+        # type: (types.FrameType, Source, EnhancedAST, Set[ast.stmt], Optional[EnhancedAST]) -> None
         self.frame = frame
         self.source = source
         self.node = node
@@ -522,10 +522,7 @@ class QualnameVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node, name=None):
         # type: (ast.AST, Optional[str]) -> None
-        if sys.version_info[0] == 3:
-            assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef) or isinstance(node, ast.Lambda), node
-        else:
-            assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.Lambda), node
+        assert isinstance(node, (ast.FunctionDef, ast.Lambda)) or sys.version_info[0] == 3 and isinstance(node, ast.AsyncFunctionDef), node
         self.add_qualname(node, name)
         self.stack.append('<locals>')
         children = [] # type: Sequence[ast.AST]
@@ -575,7 +572,7 @@ future_flags = sum(
 
 
 def compile_similar_to(source, matching_code):
-    # type: (Union[ast.mod, text_type], types.CodeType) -> Any
+    # type: (ast.Module, types.CodeType) -> Any
     return compile(
         source,
         matching_code.co_filename,
@@ -1209,7 +1206,7 @@ def attr_names_match(attr, argval):
 
 
 def node_linenos(node):
-    # type: (EnhancedAST) -> Generator[int, None, None]
+    # type: (ast.AST) -> Iterator[int]
     if hasattr(node, "lineno"):
         linenos = [] # type: Sequence[int]
         if hasattr(node, "end_lineno") and isinstance(node, ast.expr):
