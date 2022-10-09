@@ -1,6 +1,5 @@
 import ast
 import dis
-from enum import EnumMeta
 from types import CodeType, FrameType
 from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
