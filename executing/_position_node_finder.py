@@ -566,7 +566,7 @@ class PositionNodeFinder(object):
             if isinstance(node, typ)
             if not isinstance(node, ast.Expr)
             # matchvalue.value has the same positions as matchvalue themself, so we exclude ast.MatchValue
-            if not isinstance(node, ast.Match)
+            if not isinstance(node, ast.MatchValue)
             if all(
                 getattr(position, attr) == getattr(node, attr)
                 for attr in match_positions
