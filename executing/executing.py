@@ -440,7 +440,7 @@ class Source(object):
     @staticmethod
     def detect_encoding(source):
         # type: (bytes) -> str
-        return cast(str, detect_encoding(io.BytesIO(source).readline)[0])
+        return detect_encoding(io.BytesIO(source).readline)[0]
 
     def code_qualname(self, code):
         # type: (types.CodeType) -> str
@@ -1153,7 +1153,7 @@ def _extract_ipython_statement(stmt):
     # So NodeFinder should only compile one statement at a time or it
     # will find a code mismatch.
     while not isinstance(stmt.parent, ast.Module):
-        stmt = cast(EnhancedAST, stmt.parent)
+        stmt = stmt.parent
     # use `ast.parse` instead of `ast.Module` for better portability
     # python3.8 changes the signature of `ast.Module`
     # Inspired by https://github.com/pallets/werkzeug/pull/1552/files
