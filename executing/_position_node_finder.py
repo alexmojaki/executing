@@ -108,7 +108,7 @@ class PositionNodeFinder(object):
     There are only some exceptions for methods and attributes.
     """
 
-    def __init__(self, frame: FrameType, stmts: Set[EnhancedAST], tree: object, lasti: int, source: Source):
+    def __init__(self, frame: FrameType, stmts: Set[EnhancedAST], tree: ast.Module, lasti: int, source: Source):
         self.bc_list = get_instructions(frame.f_code)
 
         self.source = source
