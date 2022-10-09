@@ -599,7 +599,7 @@ class SentinelNodeFinder(object):
     result = None # type: EnhancedAST
 
     def __init__(self, frame, stmts, tree, lasti, source):
-        # type: (types.FrameType, Union[List[EnhancedAST], Set[EnhancedAST]], ast.AST, int, object) -> None
+        # type: (types.FrameType, Set[EnhancedAST], ast.Module, int, Source) -> None
         assert_(stmts)
         self.frame = frame
         self.tree = tree
@@ -843,7 +843,7 @@ class SentinelNodeFinder(object):
 
     def compile_instructions(self):
         # type: () -> List[EnhancedInstruction]
-        module_code = compile_similar_to(cast(ast.Module, self.tree), self.code)
+        module_code = compile_similar_to(self.tree, self.code)
         code = only(self.find_codes(module_code))
         return self.clean_instructions(code)
 
