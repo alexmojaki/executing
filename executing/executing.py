@@ -523,9 +523,9 @@ class QualnameVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node, name=None):
         # type: (ast.AST, Optional[str]) -> None
         if sys.version_info[0] == 3:
-            assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef) or isinstance(node, ast.Lambda), node
+            assert isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)), node
         else:
-            assert isinstance(node, ast.FunctionDef) or isinstance(node, ast.Lambda), node
+            assert isinstance(node, (ast.FunctionDef, ast.Lambda)), node
         self.add_qualname(node, name)
         self.stack.append('<locals>')
         children = [] # type: Sequence[ast.AST]
