@@ -5,7 +5,11 @@ from collections import namedtuple
 
 import executing.executing
 
-from executing.executing import attr_names_match,Instruction
+from executing.executing import attr_names_match, Instruction
+try:
+    from dis import Instruction as DisInstruction
+except ImportError:
+    DisInstruction = None
 
 executing.executing.TESTING = 1
 
@@ -185,7 +189,7 @@ def start_position(obj):
     returns the start source position as a (lineno,col_offset) tuple.
     obj can be ast.AST or Instruction.
     """
-    if isinstance(obj, Instruction):
+    if isinstance(obj, Instruction) or (DisInstruction is not None and isinstance(obj, DisInstruction)):
         obj = obj.positions
 
     if isinstance(obj,ast.Module):
@@ -202,7 +206,7 @@ def end_position(obj):
     if sys.version_info < (3, 8):
         return start_position(obj)
 
-    if isinstance(obj, Instruction):
+    if isinstance(obj, Instruction) or (DisInstruction is not None and isinstance(obj, DisInstruction)):
         obj = obj.positions
 
     if isinstance(obj,ast.Module):

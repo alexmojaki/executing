@@ -26,9 +26,10 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from tests.utils import tester, subscript_item, in_finally, start_position, end_position
 
 PYPY = 'pypy' in sys.version.lower()
+PY3 = sys.version_info[0] == 3
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import PY3, get_instructions, function_node_types
+from executing.executing import get_instructions, function_node_types
 
 from executing._exceptions import VerifierFailure, KnownIssue
 
@@ -278,7 +279,7 @@ class TestStuff(unittest.TestCase):
     def test_many_calls(self):
         node = None
         start = time.time()
-        for i in range(10000):
+        for i in range(5000):
             new_node = Source.executing(inspect.currentframe()).node
             if node is None:
                 node = new_node
@@ -289,7 +290,7 @@ class TestStuff(unittest.TestCase):
     def test_many_source_for_filename_calls(self):
         source = None
         start = time.time()
-        for i in range(10000):
+        for i in range(5000):
             new_source = Source.for_filename(__file__)
             if source is None:
                 source = new_source

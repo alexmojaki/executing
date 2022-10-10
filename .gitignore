@@ -106,4 +106,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+.dmypy.json
 
+# VSCode
+.vscode/
