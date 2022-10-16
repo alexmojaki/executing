@@ -426,7 +426,7 @@ class Source(object):
         if self._asttext is None:
             self._asttext = ASTText(self.text, tree=self.tree, filename=self.filename)
 
-        return self._asttokens
+        return self._asttext
 
     def asttokens(self):
         # type: () -> ASTTokens
