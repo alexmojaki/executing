@@ -39,7 +39,7 @@ from operator import attrgetter
 from threading import RLock
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from asttokens import ASTTokens, ASTText
     from asttokens.asttokens import ASTTextBase
 
@@ -441,7 +441,7 @@ class Source(object):
         if self._asttokens is None:
             if hasattr(asttokens, 'ASTText'):
                 self._asttokens = self.asttext().asttokens
-            else:
+            else:  # pragma: no cover
                 self._asttokens = asttokens.ASTTokens(self.text, tree=self.tree, filename=self.filename)
         return self._asttokens
 
@@ -451,7 +451,7 @@ class Source(object):
 
         if hasattr(asttokens, 'ASTText'):
             return self.asttext()
-        else:
+        else:  # pragma: no cover
             return self.asttokens()
 
     @staticmethod
