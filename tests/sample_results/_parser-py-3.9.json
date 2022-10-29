@@ -1349,7 +1349,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "expect"
     ],
     [
         "CALL_FUNCTION",
@@ -1417,15 +1417,15 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "src"
     ],
     [
         "LOAD_FAST",
-        ""
+        "pos"
     ],
     [
         "BINARY_SUBSCR",
-        ""
+        "src[pos]"
     ],
     [
         "CALL_FUNCTION",
@@ -1649,7 +1649,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "key"
     ],
     [
         "CALL_FUNCTION",
@@ -1845,7 +1845,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "key"
     ],
     [
         "CALL_FUNCTION",
@@ -2097,7 +2097,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "cont_key"
     ],
     [
         "CALL_FUNCTION",
@@ -2173,7 +2173,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "abs_key_parent"
     ],
     [
         "CALL_FUNCTION",
@@ -3081,7 +3081,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "key"
     ],
     [
         "CALL_FUNCTION",
@@ -3149,7 +3149,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "key_stem"
     ],
     [
         "CALL_FUNCTION",
@@ -4121,7 +4121,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "char"
     ],
     [
         "CALL_FUNCTION",
@@ -4669,23 +4669,23 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "msg"
     ],
     [
         "LOAD_FAST",
-        ""
+        "coord_repr"
     ],
     [
         "LOAD_FAST",
-        ""
+        "src"
     ],
     [
         "LOAD_FAST",
-        ""
+        "pos"
     ],
     [
         "CALL_FUNCTION",
-        ""
+        "coord_repr(src, pos)"
     ],
     [
         "CALL_FUNCTION",
@@ -4773,11 +4773,11 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "line"
     ],
     [
         "LOAD_FAST",
-        ""
+        "column"
     ],
     [
         "LOAD_FAST",
