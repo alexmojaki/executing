@@ -40,7 +40,8 @@ from threading import RLock
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 
 if TYPE_CHECKING:
-    from asttokens import ASTTokens, ASTText, ASTTextBase
+    from asttokens import ASTTokens, ASTText
+    from asttokens.asttokens import ASTTextBase
 
 function_node_types = (ast.FunctionDef,) # type: Tuple[Type, ...]
 if sys.version_info[0] == 3:
@@ -249,8 +250,8 @@ class Source(object):
         self._nodes_by_line = defaultdict(list)
         self.tree = None
         self._qualnames = {}
-        self._asttokens = None
-        self._asttext = None
+        self._asttokens = None  # type: Optional[ASTTokens]
+        self._asttext = None  # type: Optional[ASTText]
 
         try:
             self.tree = ast.parse(ast_text, filename=filename)
