@@ -4161,7 +4161,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "year"
     ],
     [
         "CALL",
@@ -4253,7 +4253,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "week"
     ],
     [
         "CALL",
@@ -4277,7 +4277,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "day"
     ],
     [
         "CALL",
@@ -8713,7 +8713,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "date_string"
     ],
     [
         "CALL",
@@ -8749,7 +8749,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "date_string"
     ],
     [
         "CALL",
@@ -10601,39 +10601,39 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "self"
     ],
     [
         "LOAD_ATTR",
-        ""
+        "self.__class__"
     ],
     [
         "LOAD_ATTR",
-        ""
+        "self.__class__.__name__"
     ],
     [
         "LOAD_FAST",
-        ""
+        "self"
     ],
     [
         "BINARY_SUBSCR",
-        ""
+        "self[0]"
     ],
     [
         "LOAD_FAST",
-        ""
+        "self"
     ],
     [
         "BINARY_SUBSCR",
-        ""
+        "self[1]"
     ],
     [
         "LOAD_FAST",
-        ""
+        "self"
     ],
     [
         "BINARY_SUBSCR",
-        ""
+        "self[2]"
     ],
     [
         "STORE_NAME",
@@ -12433,7 +12433,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "time_string"
     ],
     [
         "CALL",
@@ -14853,7 +14853,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "date_string"
     ],
     [
         "CALL",
@@ -14937,7 +14937,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "date_string"
     ],
     [
         "CALL",
@@ -14973,7 +14973,7 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "date_string"
     ],
     [
         "CALL",
@@ -19945,23 +19945,15 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "sign"
     ],
     [
         "LOAD_FAST",
-        ""
+        "hours"
     ],
     [
         "LOAD_FAST",
-        ""
-    ],
-    [
-        "LOAD_FAST",
-        ""
-    ],
-    [
-        "LOAD_FAST",
-        ""
+        "minutes"
     ],
     [
         "LOAD_FAST",
@@ -19969,30 +19961,38 @@
     ],
     [
         "LOAD_FAST",
-        ""
+        "microseconds"
     ],
     [
         "LOAD_FAST",
-        ""
+        "seconds"
     ],
     [
         "LOAD_FAST",
-        ""
+        "sign"
     ],
     [
         "LOAD_FAST",
-        ""
+        "hours"
     ],
     [
         "LOAD_FAST",
-        ""
+        "minutes"
     ],
     [
         "LOAD_FAST",
-        ""
+        "seconds"
     ],
     [
         "LOAD_FAST",
-        ""
+        "sign"
+    ],
+    [
+        "LOAD_FAST",
+        "hours"
+    ],
+    [
+        "LOAD_FAST",
+        "minutes"
     ]
 ]

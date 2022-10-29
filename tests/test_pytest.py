@@ -1,24 +1,18 @@
+import ast
 import inspect
 import linecache
 import os
 import sys
-import inspect
-import ast
 from time import sleep
 
+import asttokens
 import pytest
 from littleutils import SimpleNamespace
 
-from executing import Source, NotOneValueFound
-from executing.executing import is_ipython_cell_code, attr_names_match, is_rewritten_by_pytest,get_instructions
-
 import executing.executing
-
+from executing import Source, NotOneValueFound
 from executing._exceptions import KnownIssue
-
-from executing import Source,NotOneValueFound
-
-import dis
+from executing.executing import is_ipython_cell_code, attr_names_match, is_rewritten_by_pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -402,12 +396,12 @@ for __var in [1]:
         ) == {"Test","_","a", "self", "__thing"}
 
 
-
 def test_pytest_rewrite():
     frame = inspect.currentframe()
 
     # check for assert statements rewrite caused by this assert
     assert is_rewritten_by_pytest(frame.f_code)
+
 
 def test_no_pytest_rewrite():
     frame=inspect.currentframe()
@@ -416,12 +410,24 @@ def test_no_pytest_rewrite():
     if is_rewritten_by_pytest(frame.f_code):
         raise AssertionError("unexpected pytest assert rewrite")
 
+
 def test_no_pytest_rewrite_with_consts():
-    frame=inspect.currentframe()
+    frame = inspect.currentframe()
 
     # LOAD_CONST "@py_assert..." should not trigger a false positive
-    a="@py_assert..."
+    a = "@py_assert..."
 
     # no assert -> no rewrite
     if is_rewritten_by_pytest(frame.f_code):
         raise AssertionError("unexpected pytest assert rewrite")
+
+
+def test_asttext():
+    source = Source("file.py", ["a", "b"])
+    assert source._asttext is None
+    assert source._asttokens is None
+    atext = source.asttext()
+    assert atext is source.asttext() is source._asttext is not None
+    assert source._asttokens is None
+    atokens = source.asttokens()
+    assert atext.asttokens is atokens is source.asttokens() is source._asttokens is not None

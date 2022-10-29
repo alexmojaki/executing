@@ -39,8 +39,9 @@ from operator import attrgetter
 from threading import RLock
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 
-if TYPE_CHECKING:
-    from asttokens import ASTTokens
+if TYPE_CHECKING:  # pragma: no cover
+    from asttokens import ASTTokens, ASTText
+    from asttokens.asttokens import ASTTextBase
 
 function_node_types = (ast.FunctionDef,) # type: Tuple[Type, ...]
 if sys.version_info[0] == 3:
@@ -249,6 +250,8 @@ class Source(object):
         self._nodes_by_line = defaultdict(list)
         self.tree = None
         self._qualnames = {}
+        self._asttokens = None  # type: Optional[ASTTokens]
+        self._asttext = None  # type: Optional[ASTText]
 
         try:
             self.tree = ast.parse(ast_text, filename=filename)
@@ -412,7 +415,20 @@ class Source(object):
             self._nodes_by_line[lineno]
         }
 
-    @cache
+    def asttext(self):
+        # type: () -> ASTText
+        """
+        Returns an ASTText object for getting the source of specific AST nodes.
+
+        See http://asttokens.readthedocs.io/en/latest/api-index.html
+        """
+        from asttokens import ASTText  # must be installed separately
+
+        if self._asttext is None:
+            self._asttext = ASTText(self.text, tree=self.tree, filename=self.filename)
+
+        return self._asttext
+
     def asttokens(self):
         # type: () -> ASTTokens
         """
@@ -420,12 +436,23 @@ class Source(object):
 
         See http://asttokens.readthedocs.io/en/latest/api-index.html
         """
-        from asttokens import ASTTokens  # must be installed separately
-        return ASTTokens(
-            self.text,
-            tree=self.tree,
-            filename=self.filename,
-        )
+        import asttokens  # must be installed separately
+
+        if self._asttokens is None:
+            if hasattr(asttokens, 'ASTText'):
+                self._asttokens = self.asttext().asttokens
+            else:  # pragma: no cover
+                self._asttokens = asttokens.ASTTokens(self.text, tree=self.tree, filename=self.filename)
+        return self._asttokens
+
+    def _asttext_base(self):
+        # type: () -> ASTTextBase
+        import asttokens  # must be installed separately
+
+        if hasattr(asttokens, 'ASTText'):
+            return self.asttext()
+        else:  # pragma: no cover
+            return self.asttokens()
 
     @staticmethod
     def decode_source(source):
@@ -495,11 +522,11 @@ class Executing(object):
 
     def text(self):
         # type: () -> str
-        return self.source.asttokens().get_text(self.node)
+        return self.source._asttext_base().get_text(self.node)
 
     def text_range(self):
         # type: () -> Tuple[int, int]
-        return self.source.asttokens().get_text_range(self.node)
+        return self.source._asttext_base().get_text_range(self.node)
 
 
 class QualnameVisitor(ast.NodeVisitor):
