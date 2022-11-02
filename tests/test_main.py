@@ -989,7 +989,7 @@ class TestFiles:
 
                     inspect(bc)
 
-                    self.fail()
+                    raise AssertionError()
 
         return result
 
@@ -1125,7 +1125,7 @@ class TestFiles:
                             )
                         )
 
-                self.fail()
+                raise
 
             except Exception as e:
                 # continue for every case where this can be an known issue
@@ -1279,7 +1279,7 @@ class TestFiles:
                 
                 dump_deadcode(non_dead_parent)
 
-                self.fail()
+                raise
 
             # `argval` isn't set for all relevant instructions in python 2
             # The relation between `ast.Name` and `argval` is already
