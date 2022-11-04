@@ -125,6 +125,14 @@ class Deadcode:
         except AttributeError:
             return None
 
+    def has_static_value(self,node):
+        try:
+            node.__static_value
+        except AttributeError:
+            return False
+        return True
+
+
     def static_value(self, node, deadcode):
         self.walk_deadcode(node, deadcode)
         return self.static_cnd(node)
@@ -337,6 +345,25 @@ class Deadcode:
             for v in node.values:
                 if self.static_value(v, dead_op) is True:
                     dead_op = True
+
+        elif isinstance(node, ast.Expr):
+            # dead expressions:
+            # > 5+5
+            # for example
+            dead_expr = self.has_static_value(node.value)
+            if (
+                isinstance(
+                    node.parent,
+                    (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef),
+                )
+                and node.parent.body[0] == node
+                and isinstance(node.value, ast.Constant)
+                and isinstance(node.value.value, str)
+            ):
+                # docstring
+                dead_expr = False
+
+            self.walk_deadcode(node.value, dead_expr or deadcode)
 
         else:
 
