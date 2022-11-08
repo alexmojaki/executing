@@ -43,7 +43,7 @@ def mangled_name(node: EnhancedAST) -> str:
     elif isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
         name = node.name
     elif isinstance(node, ast.ExceptHandler):
-        name = node.name or "exc"
+        name = node.name
     else:
         raise TypeError("no node to mangle")
 
@@ -244,6 +244,9 @@ class PositionNodeFinder(object):
             # TODO: investigate
             raise KnownIssue("pattern matching ranges seems to be wrong")
 
+        if self.is_except_cleanup(instruction, node):
+            raise KnownIssue("exeption cleanup does not belong to the last node in a except block")
+
         if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
             # handle stores to __classcell__ as KnownIssue,
             # because they get complicated if they are used in `if` or `for` loops
@@ -293,6 +296,24 @@ class PositionNodeFinder(object):
         # STORE_FAST of msg was mapped to print(...)
         #  except TypeError as msg:
         #      print("Sorry:", msg, file=file)
+
+        if (
+            isinstance(node, ast.Name)
+            and isinstance(node.ctx,ast.Store)
+            and inst.opname.startswith("STORE_")
+            and mangled_name(node) == inst.argval
+        ):
+            # This is a actually store to the variable
+            return False
+
+        if (
+            isinstance(node, ast.Name)
+            and isinstance(node.ctx,ast.Del)
+            and inst.opname.startswith("DELETE_")
+            and mangled_name(node) == inst.argval
+        ):
+            # This is a actually store to the variable
+            return False
 
         return any(
             isinstance(n, ast.ExceptHandler) and mangled_name(n) == inst.argval
@@ -386,8 +407,6 @@ class PositionNodeFinder(object):
             # data: int
             return
 
-        if self.is_except_cleanup(instruction, node):
-            return
 
         if inst_match(("DELETE_NAME", "DELETE_FAST")) and node_match(
             ast.Name, id=instruction.argval, ctx=ast.Del
