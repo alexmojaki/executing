@@ -1042,6 +1042,7 @@ class TestFiles:
                         "DELETE_NAME",
                         "DELETE_DEREF",
                         "DELETE_FAST",
+                        "DELETE_GLOBAL",
                         "STORE_SUBSCR",
                         "STORE_SLICE",
                         "DELETE_SUBSCR",
