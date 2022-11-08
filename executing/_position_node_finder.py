@@ -270,6 +270,7 @@ class PositionNodeFinder(object):
             "STORE_GLOBAL",
             "DELETE_NAME",
             "DELETE_FAST",
+            "DELETE_DEREF",
             "DELETE_GLOBAL",
         ):
             return False
@@ -475,7 +476,7 @@ class PositionNodeFinder(object):
             return
 
         if node_match(ast.Name, ctx=ast.Del) and inst_match(
-            ("DELETE_NAME", "DELETE_GLOBAL"), argval=mangled_name(node)
+            ("DELETE_NAME", "DELETE_GLOBAL", "DELETE_DEREF"), argval=mangled_name(node)
         ):
             return
 

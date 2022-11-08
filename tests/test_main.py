@@ -1040,6 +1040,7 @@ class TestFiles:
                         "STORE_ATTR",
                         "DELETE_ATTR",
                         "DELETE_NAME",
+                        "DELETE_DEREF",
                         "DELETE_FAST",
                         "STORE_SUBSCR",
                         "STORE_SLICE",
