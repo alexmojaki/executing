@@ -264,7 +264,7 @@ class Deadcode:
                 self.walk_deadcode(case_.guard, deadcode)
 
             dead_cases = all(
-                [self.check_stmts(case_.body, deadcode) for case_ in node.cases]
+                [self.check_stmts(case_.body, deadcode or self.static_cnd(case_.guard) is False ) for case_ in node.cases]
             )
 
             if any(
