@@ -497,7 +497,7 @@ class PositionNodeFinder(object):
                 and isinstance(node.parent, ast.AugAssign)
             )
         ) and inst_match(
-            ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL"), argval=mangled_name(node)
+            ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL", "LOAD_DEREF"), argval=mangled_name(node)
         ):
             return
 
