@@ -82,6 +82,14 @@ class Deadcode:
                     node.__static_value = self.operator_map[type(node.op)](
                         node.left.__static_value, node.right.__static_value
                     )
+
+                    if (
+                        isinstance(node.__static_value, (str, bytes))
+                        and len(node.__static_value) > 4000
+                    ):
+                        # do not perform big string operations
+                        # TODO: check if this constraint is correct
+                        del node.__static_value
                 except Exception:
                     pass
 

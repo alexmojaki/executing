@@ -58,6 +58,8 @@ def inspect_opcode(bytecode, index, lineno):
             result += "(" + ex.node.id + ")"
         elif hasattr(ex.node, "attr"):
             result += "(." + ex.node.attr + ")"
+        elif hasattr(ex.node, "value"):
+            result += f"({ex.node.value})"
 
         if ex.decorator:
             result += " @%s" % ex.decorator

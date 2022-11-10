@@ -1800,14 +1800,6 @@
         "method"
     ],
     [
-        "STORE_FAST",
-        "method"
-    ],
-    [
-        "DELETE_FAST",
-        "method"
-    ],
-    [
         "LOAD_FAST",
         "self"
     ],
