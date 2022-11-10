@@ -490,7 +490,13 @@ class PositionNodeFinder(object):
         if inst_match("DELETE_SUBSCR") and node_match(ast.Subscript, ctx=ast.Del):
             return
 
-        if node_match(ast.Name, ctx=ast.Load) and inst_match(
+        if (
+            node_match(ast.Name, ctx=ast.Load)
+            or (
+                node_match(ast.Name, ctx=ast.Store)
+                and isinstance(node.parent, ast.AugAssign)
+            )
+        ) and inst_match(
             ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL"), argval=mangled_name(node)
         ):
             return
