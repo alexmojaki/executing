@@ -1271,7 +1271,7 @@ class TestFiles:
                 print("line:",node.lineno)
 
                 non_dead_parent=node
-                while getattr(non_dead_parent,"deadcode",True)==True:
+                while getattr(non_dead_parent,"deadcode",True)==True and not hasattr(non_dead_parent,"lineno"):
                     non_dead_parent=non_dead_parent.parent
 
                 dump_source(source.text, start_position(non_dead_parent), end_position(non_dead_parent))

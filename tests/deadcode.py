@@ -297,6 +297,22 @@ class Deadcode:
                 # deadcode()
                 deadcode = True
 
+        elif isinstance(node, ast.comprehension):
+            self.walk_deadcode(node.target, deadcode)
+            self.walk_deadcode(node.iter, deadcode)
+
+            for if_ in node.ifs:
+                deadcode = self.static_value(if_, deadcode) is False or deadcode
+
+        elif isinstance(node, (ast.ListComp, ast.GeneratorExp, ast.SetComp)):
+            branch_dead = self.check_stmts(node.generators, deadcode)
+            self.walk_deadcode(node.elt, branch_dead)
+
+        elif isinstance(node, ast.DictComp):
+            branch_dead = self.check_stmts(node.generators, deadcode)
+            self.walk_deadcode(node.key, branch_dead)
+            self.walk_deadcode(node.value, branch_dead)
+
         elif isinstance(node, ast.IfExp):
 
             test_value = self.static_value(node.test, deadcode)
