@@ -16,7 +16,8 @@ def parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
             node = node.parent
             yield node
         else:
-            break
+            break  # pragma: no mutate
+
 
 def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     yield node
@@ -52,7 +53,8 @@ def mangled_name(node: EnhancedAST) -> str:
 
         while not (isinstance(parent,ast.ClassDef) and child not in parent.bases):
             if not hasattr(parent,"parent"):
-                break
+                break # pragma: no mutate
+
             parent,child=parent.parent,parent
         else:
             class_name=parent.name.lstrip("_")
@@ -64,7 +66,7 @@ def mangled_name(node: EnhancedAST) -> str:
     return name
 
 
-@lru_cache(128)
+@lru_cache(128) # pragma: no mutate
 def get_instructions(code: CodeType) -> list[dis.Instruction]:
     return list(dis.get_instructions(code, show_caches=True))
 
@@ -182,8 +184,8 @@ class PositionNodeFinder(object):
 
                 # index+x  STORE_*     the ast-node of this instruction points to the decorated thing
 
-                if self.opname(index - 4) != "PRECALL" or self.opname(index) != "CALL":
-                    break
+                if self.opname(index - 4) != "PRECALL" or self.opname(index) != "CALL": # pragma: no mutate
+                    break # pragma: no mutate
 
                 index += 2
 

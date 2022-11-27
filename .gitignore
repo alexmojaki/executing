@@ -110,3 +110,6 @@ venv.bak/
 
 # VSCode
 .vscode/
+
+# mutmut
+.mutmut-cache

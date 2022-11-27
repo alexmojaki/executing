@@ -648,9 +648,9 @@ def is_annotation(node):
 
 
 
-def sample_files():
+def sample_files(samples):
     root_dir = os.path.dirname(__file__)
-    samples_dir = os.path.join(root_dir, "samples")
+    samples_dir = os.path.join(root_dir, samples)
 
     for filename in os.listdir(samples_dir):
         full_filename = os.path.join(samples_dir, filename)
@@ -669,6 +669,11 @@ def sample_files():
         yield pytest.param(full_filename, result_filename, id=filename)
 
 
+@pytest.mark.parametrize("full_filename,result_filename", list(sample_files("small_samples")))
+def test_small_samples(full_filename,result_filename):
+     TestFiles().check_filename(full_filename, check_names=True)
+
+
 
 
 @pytest.mark.skipif(
@@ -677,7 +682,7 @@ def sample_files():
 )
 class TestFiles:
 
-    @pytest.mark.parametrize("full_filename,result_filename", list(sample_files()))
+    @pytest.mark.parametrize("full_filename,result_filename", list(sample_files("samples")))
     def test_sample_files(self, full_filename, result_filename):
 
         self.start_time = time.time()
