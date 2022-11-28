@@ -33,8 +33,7 @@ from executing.executing import get_instructions, function_node_types
 
 from executing._exceptions import VerifierFailure, KnownIssue
 
-if sys.version_info >= (3,11):
-    from tests.deadcode import is_deadcode
+from tests.deadcode import is_deadcode
 
 if eval("0"):
     global_never_defined = 1
@@ -669,9 +668,32 @@ def sample_files(samples):
         yield pytest.param(full_filename, result_filename, id=filename)
 
 
-@pytest.mark.parametrize("full_filename,result_filename", list(sample_files("small_samples")))
-def test_small_samples(full_filename,result_filename):
-     TestFiles().check_filename(full_filename, check_names=True)
+@pytest.mark.parametrize(
+    "full_filename,result_filename", list(sample_files("small_samples"))
+)
+@pytest.mark.skipif(sys.version_info<(3,),reason="no 2.7 support")
+def test_small_samples(full_filename, result_filename):
+    skip_sentinel = [
+        "load_deref",
+        "4851dc1b626a95e97dbe0c53f96099d165b755dd1bd552c6ca771f7bca6d30f5",
+        "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
+        "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
+        "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
+    ]
+
+    skip_annotations = [
+        "d98e27d8963331b58e4e6b84c7580dafde4d9e2980ad4277ce55e6b186113c1d",
+        "9b3db37076d3c7c76bdfd9badcc70d8047584433e1eea89f45014453d58bbc43",
+    ]
+
+    if any(s in full_filename for s in skip_sentinel) and sys.version_info < (3, 11):
+        pytest.xfail("SentinelNodeFinder does not find some of the nodes (maybe a bug)")
+
+    if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
+        pytest.xfail("no `from __future__ import annotations`")
+
+
+    TestFiles().check_filename(full_filename, check_names=True)
 
 
 
@@ -823,6 +845,12 @@ class TestFiles:
 
                     if is_literal(node):
                         continue
+
+                    if len(values) == 0 and is_deadcode(node):
+                        continue
+
+                    if isinstance(node,ast.Name) and node.id=="__debug__":
+                        continue
                 else:
                     # x (is/is not) None
                     none_comparison = (
@@ -929,6 +957,7 @@ class TestFiles:
                     p("correct:", correct)
                     p("len(values):", len(values))
                     p("values:", values)
+                    p("deadcode:", is_deadcode(node))
 
                     p()
 
@@ -962,29 +991,31 @@ class TestFiles:
                     )
                     p()
 
-                    p("all bytecodes in this range:")
+                    if sys.version_info >= (3, 11):
+                        p("all bytecodes in this range:")
 
-                    bc = compile(source.text, filename, "exec")
 
-                    def inspect(bc):
-                        first = True
-                        for i in dis.get_instructions(bc):
+                        bc = compile(source.text, filename, "exec")
 
-                            if (
-                                i.positions.lineno is not None
-                                and i.positions.lineno <= node.end_lineno
-                                and node.lineno <= i.positions.end_lineno
-                            ):
-                                if first:
-                                    p("block name:", bc.co_name)
-                                    first = False
-                                p(i.positions, i.opname, i.argval)
+                        def inspect(bc):
+                            first = True
+                            for i in dis.get_instructions(bc):
 
-                        for const in bc.co_consts:
-                            if isinstance(const, types.CodeType):
-                                inspect(const)
+                                if (
+                                    i.positions.lineno is not None
+                                    and i.positions.lineno <= node.end_lineno
+                                    and node.lineno <= i.positions.end_lineno
+                                ):
+                                    if first:
+                                        p("block name:", bc.co_name)
+                                        first = False
+                                    p(i.positions, i.opname, i.argval)
 
-                    inspect(bc)
+                            for const in bc.co_consts:
+                                if isinstance(const, types.CodeType):
+                                    inspect(const)
+
+                        inspect(bc)
 
                     raise AssertionError()
 

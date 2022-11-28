@@ -1,6 +1,7 @@
 import ast
 import copy
 import dis
+import sys
 
 
 sentinel_rep = 2
@@ -9,18 +10,42 @@ sentinel_rep = 2
 sentinel = "xsglegahghegflgfaih" * sentinel_rep
 
 
+def constant(value):
+    if sys.version_info >= (3, 6):
+        return ast.Constant(value=value)
+    elif isinstance(value, int):
+        return ast.Num(value)
+    elif isinstance(value, str):
+        return ast.Str(value)
+    else:
+        raise TypeError
+
+
+def index(value):
+    if sys.version_info >= (3, 9):
+        return constant(value)
+    else:
+        return ast.Index(constant(value))
+
+
 class DeadcodeTransformer(ast.NodeTransformer):
     def visit(self, node):
+        constant_type = (
+            ast.Constant
+            if sys.version_info >= (3, 6)
+            else (ast.Num, ast.Str, ast.Bytes, ast.NameConstant, ast.Ellipsis)
+        )
+
         if getattr(node, "_check_is_deadcode", False):
-            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            if isinstance(node, constant_type) and isinstance(node.value, str):
                 # docstring for example
-                return ast.Constant(value=sentinel)
+                return constant(sentinel)
 
             elif isinstance(node, ast.stmt):
                 return ast.Expr(
                     value=ast.Call(
                         func=ast.Name(id="foo", ctx=ast.Load()),
-                        args=[ast.Constant(value=sentinel)],
+                        args=[constant(sentinel)],
                         keywords=[],
                     )
                 )
@@ -28,7 +53,7 @@ class DeadcodeTransformer(ast.NodeTransformer):
                 if hasattr(node, "ctx") and isinstance(node.ctx, (ast.Store, ast.Del)):
                     return ast.Subscript(
                         value=ast.Name(id="foo", ctx=ast.Load()),
-                        slice=ast.Constant(value=sentinel),
+                        slice=index(sentinel),
                         ctx=node.ctx,
                     )
 
@@ -36,10 +61,10 @@ class DeadcodeTransformer(ast.NodeTransformer):
 
                     return ast.Subscript(
                         value=ast.Tuple(
-                            elts=[node, ast.Constant(value=sentinel)],
+                            elts=[node, constant(sentinel)],
                             ctx=ast.Load(),
                         ),
-                        slice=ast.Constant(value=0),
+                        slice=index(0),
                         ctx=ast.Load(),
                     )
             else:
@@ -57,7 +82,11 @@ def is_deadcode(node):
     if isinstance(node, ast.ExceptHandler):
         node = node.body[0]
 
-    if isinstance(node.parent, ast.AnnAssign) and node.parent.target is node:
+    if (
+        sys.version_info >= (3, 6)
+        and isinstance(node.parent, ast.AnnAssign)
+        and node.parent.target is node
+    ):
         # AnnAssign.target has to be ast.Name
         node = node.parent
 
@@ -81,7 +110,7 @@ def is_deadcode(node):
     try:
         code = compile(module2, "<filename>", "exec")
     except:
-        print(ast.dump(module2, indent=2))
+        print(ast.dump(module2))
         raise
 
     visited = set()
