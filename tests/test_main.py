@@ -765,6 +765,10 @@ class TestFiles:
 
 
     def check_filename(self, filename, check_names):
+
+        # increase the recursion limit in testing mode, because there are files out there with large ast-nodes
+        # example tests/small_samples/1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc.py
+        sys.setrecursionlimit(3000)
         source = Source.for_filename(filename)
 
         if source.tree is None:

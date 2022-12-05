@@ -48,7 +48,6 @@ def big_samples():
 
 
 def test_file(filename: Path):
-    sys.setrecursionlimit(3000)
 
     if filename.read_text().count("\n") > 50000:
         return True, filename
