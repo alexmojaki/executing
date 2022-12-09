@@ -307,7 +307,7 @@ class PositionNodeFinder(object):
             and inst.opname.startswith("STORE_")
             and mangled_name(node) == inst.argval
         ):
-            # This is a actually store to the variable
+            # Storing the variable is valid and no exception cleanup, if the name is correct
             return False
 
         if (
@@ -316,7 +316,7 @@ class PositionNodeFinder(object):
             and inst.opname.startswith("DELETE_")
             and mangled_name(node) == inst.argval
         ):
-            # This is a actually store to the variable
+            # Deleting the variable is valid and no exception cleanup, if the name is correct
             return False
 
         return any(
