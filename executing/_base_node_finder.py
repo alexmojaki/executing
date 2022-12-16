@@ -1,31 +1,27 @@
+
 import ast
 import sys
 import dis
-from types import CodeType, FrameType
-from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
+from types import FrameType
+from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast,List
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
+
+try:
+    from types import CodeType
+except ImportError:
+    CodeType=type((lambda:None).__code__) # type: ignore[misc]
 
 from functools import lru_cache
 
 # the code in this module can use all python>=3.11 features
 
+py11 = sys.version_info >= (3, 11)
 
-def parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
-    while True:
-        if hasattr(node, "parent"):
-            node = node.parent
-            yield node
-        else:
-            break  # pragma: no mutate
+from ._helper import node_and_parents, parents, before
 
 
-def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
-    yield node
-    yield from parents(node)
-
-
-def mangled_name(node: EnhancedAST) -> str:
+def mangled_name(node: Union[EnhancedAST,ast.ExceptHandler]) -> str:
     """
 
     Parameters:
@@ -35,14 +31,19 @@ def mangled_name(node: EnhancedAST) -> str:
     Returns:
         The mangled name of `node`
     """
+    name:str
     if isinstance(node, ast.Attribute):
         name = node.attr
     elif isinstance(node, ast.Name):
         name = node.id
     elif isinstance(node, (ast.alias)):
-        name = node.asname or node.name.split(".")[0]
+        name = node.asname or (node.name or "").split(".")[0]
+    elif isinstance(node, ast.AugAssign) and isinstance(node.target,ast.Name):
+        name = node.target.id
     elif isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
         name = node.name
+    elif sys.version_info >= (3,10) and isinstance(node, (ast.MatchStar, ast.MatchAs)):
+        name = node.name or ""
     elif isinstance(node, ast.ExceptHandler):
         assert node.name
         name = node.name
@@ -50,8 +51,10 @@ def mangled_name(node: EnhancedAST) -> str:
         raise TypeError("no node to mangle")
 
     if name.startswith("__") and not name.endswith("__"):
+        parent:EnhancedAST
+        child:EnhancedAST
 
-        parent,child=node.parent,node
+        parent,child=cast(EnhancedAST, node).parent,cast(EnhancedAST,node)
 
         while not (isinstance(parent,ast.ClassDef) and child not in parent.bases):
             if not hasattr(parent,"parent"):
@@ -69,25 +72,11 @@ def mangled_name(node: EnhancedAST) -> str:
 
 
 @lru_cache(128) # pragma: no mutate
-def get_instructions(code: CodeType) -> list[dis.Instruction]:
-    return list(dis.get_instructions(code, show_caches=True))
+def get_instructions(code: CodeType) -> List[dis.Instruction]:
+    return list(dis.get_instructions(code, show_caches=True))  # type: ignore[call-arg]
 
 
-types_cmp_issue_fix = (
-    ast.IfExp,
-    ast.If,
-    ast.Assert,
-    ast.While,
-)
-
-types_cmp_issue = types_cmp_issue_fix + (
-    ast.ListComp,
-    ast.SetComp,
-    ast.DictComp,
-    ast.GeneratorExp,
-)
-
-op_type_map = {
+op_type_map_py11 = {
     "**": ast.Pow,
     "*": ast.Mult,
     "@": ast.MatMult,
@@ -102,6 +91,24 @@ op_type_map = {
     "^": ast.BitXor,
     "|": ast.BitOr,
 }
+
+op_type_map = {
+    "POWER": ast.Pow,
+    "MULTIPLY": ast.Mult,
+    "MATRIX_MULTIPLY": ast.MatMult,
+    "FLOOR_DIVIDE": ast.FloorDiv,
+    "TRUE_DIVIDE": ast.Div,
+    "MODULO": ast.Mod,
+    "ADD": ast.Add,
+    "SUBTRACT": ast.Sub,
+    "LSHIFT": ast.LShift,
+    "RSHIFT": ast.RShift,
+    "AND": ast.BitAnd,
+    "XOR": ast.BitXor,
+    "OR": ast.BitOr,
+}
+
+
 
 
 class BaseNodeFinder(object):
@@ -158,6 +165,38 @@ class BaseNodeFinder(object):
             # Deleting the variable is valid and no exception cleanup, if the name is correct
             return False
 
+        if not py11:
+            tmp = node
+            if isinstance(tmp, ast.Name):
+                tmp = tmp.parent
+
+            if isinstance(tmp, ast.stmt):
+                for n in before(tmp):
+                    for child in ast.walk(n):
+                        if (
+                            isinstance(child, ast.ExceptHandler)
+                            and child.name
+                            and mangled_name(child) == inst.argval
+                        ):
+                            return True
+
+            for child in ast.walk(node):
+                if (
+                    isinstance(child, ast.ExceptHandler)
+                    and child.name
+                    and mangled_name(child) == inst.argval
+                ):
+                    return True
+
+            if any(
+                handler.name and mangled_name(handler) == inst.argval
+                for parent in parents(node)
+                if isinstance(parent, ast.Try)
+                for handler in ast.walk(parent)
+                if isinstance(handler,ast.ExceptHandler)
+            ):
+                return True
+
         return any(
             isinstance(n, ast.ExceptHandler) and n.name and mangled_name(n) == inst.argval
             for n in parents(node)
@@ -210,20 +249,57 @@ class BaseNodeFinder(object):
         if op_name == "CACHE":
             return
 
-        if inst_match("CALL") and node_match((ast.With, ast.AsyncWith)):
+        call_opname: Tuple[str, ...]
+        if py11:
+            call_opname = ("CALL",)
+        else:
+            call_opname = ("CALL_FUNCTION","SETUP_WITH")
+
+        if inst_match("RETURN_VALUE") and node_match(ast.Return):
+            return
+
+        if inst_match("LOAD_CONST") and node_match(ast.Constant):
+            return
+
+        if inst_match(call_opname) and node_match((ast.With, ast.AsyncWith)):
             # call to context.__exit__
             return
 
-        if inst_match(("CALL", "LOAD_FAST")) and node_match(
+        if inst_match((*call_opname, "LOAD_FAST")) and node_match(
             (ast.ListComp, ast.GeneratorExp, ast.SetComp, ast.DictComp)
         ):
             # call to the generator function
             return
 
-        if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(
-            (ast.ClassDef, ast.Call)
-        ):
-            return
+        if py11:
+            if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(
+                (ast.ClassDef, ast.Call)
+            ):
+                return
+        else:
+            if inst_match(
+                ("CALL", "CALL_FUNCTION_EX")
+                + ("CALL_FUNCTION_KW", "CALL_FUNCTION", "CALL_METHOD")
+            ) and node_match((ast.ClassDef, ast.Call)):
+                return
+
+            if inst_match(
+                (
+                    "CALL_FUNCTION_EX",
+                    "CALL_FUNCTION_KW",
+                    "CALL_FUNCTION",
+                    "CALL_METHOD",
+                    "LOAD_NAME",
+                )
+            ) and node_match((ast.ClassDef)):
+                return
+
+            if (
+                inst_match("STORE_NAME")
+                and instruction.argval in ("__module__", "__qualname__")
+                and node_match((ast.ClassDef))
+            ):
+                return
 
         if inst_match(("COMPARE_OP", "IS_OP", "CONTAINS_OP")) and node_match(
             ast.Compare
@@ -246,6 +322,17 @@ class BaseNodeFinder(object):
             # "..."%(...) uses "".join
             return
 
+        if (sys.version_info[:2]==(3,10) and(
+                inst_match(("LOAD_METHOD"), argval="join")
+                or inst_match("CALL_METHOD")
+  #              or inst_match(("CALL", "BUILD_STRING"))
+            )
+            and node_match(ast.JoinedStr)
+        ):
+            # large format strings  
+            return
+
+
         if inst_match("STORE_SUBSCR") and node_match(ast.AnnAssign):
             # data: int
             return
@@ -265,7 +352,7 @@ class BaseNodeFinder(object):
             return
 
         if inst_match(("STORE_NAME", "STORE_GLOBAL"), argval="__doc__") and node_match(
-            ast.Constant
+            ast.Constant if py11 else (ast.Constant, ast.Expr)
         ):
             # store docstrings
             return
@@ -276,6 +363,9 @@ class BaseNodeFinder(object):
             and instruction.argval == mangled_name(node)
         ):
             # store exception in variable
+            return
+
+        if inst_match("COMPARE_OP",argrepr="exception match") and node_match(ast.ExceptHandler):
             return
 
         if (
@@ -299,7 +389,7 @@ class BaseNodeFinder(object):
         ):
             return
 
-        if False:
+        if sys.version_info >= (3,10) and not py11:
             # TODO: match expressions are not supported for now
             if inst_match(("STORE_FAST", "STORE_NAME")) and node_match(
                 ast.MatchAs, name=instruction.argval
@@ -312,8 +402,28 @@ class BaseNodeFinder(object):
             if inst_match("COMPARE_OP", argval="==") and node_match(ast.MatchValue):
                 return
 
-        if inst_match("BINARY_OP") and node_match(
-            ast.AugAssign, op=op_type_map[instruction.argrepr.removesuffix("=")]
+            if (
+                inst_match(("STORE_FAST", "STORE_NAME", "STORE_GLOBAL"))
+                and isinstance(node.parent, ast.MatchAs)
+                and mangled_name(node.parent) == instruction.argval
+            ):
+                # TODO: bug? this should be map to the MatchAs directly
+                return
+
+            if (
+                inst_match(("STORE_FAST", "STORE_NAME", "STORE_GLOBAL"))
+                and isinstance(node, ast.MatchStar)
+                and mangled_name(node) == instruction.argval
+            ):
+                return
+
+            if inst_match("COMPARE_OP", argval=">=") and isinstance(
+                node, ast.MatchSequence
+            ):
+                return
+
+        if sys.version_info >= (3,11) and inst_match("BINARY_OP") and node_match(
+            ast.AugAssign, op=op_type_map_py11[instruction.argrepr.removesuffix("=")]
         ):
             # a+=5
             return
@@ -343,6 +453,22 @@ class BaseNodeFinder(object):
         ):
             return
 
+        if (node_match(ast.AugAssign)) and inst_match(
+            (
+                "LOAD_NAME",
+                "LOAD_FAST",
+                "LOAD_GLOBAL",
+                "LOAD_DEREF",
+                "LOAD_CLASSDEREF",
+                "STORE_NAME",
+                "STORE_FAST",
+                "STORE_GLOBAL",
+                "STORE_DEREF",
+            ),
+            argval=mangled_name(node),
+        ):
+            return
+
         if node_match(ast.Name, ctx=ast.Del) and inst_match(
             ("DELETE_NAME", "DELETE_GLOBAL", "DELETE_DEREF"), argval=mangled_name(node)
         ):
@@ -358,8 +484,17 @@ class BaseNodeFinder(object):
             ctx = ast.Load
         elif op_name.startswith("BINARY_"):
             typ = ast.BinOp
-            op_type = op_type_map[instruction.argrepr]
+            if py11:
+                op_type = op_type_map_py11[instruction.argrepr]
+            else:
+                op_type = op_type_map[op_name[7:]]
             extra_filter = lambda e: isinstance(cast(ast.BinOp, e).op, op_type)
+        elif op_name.startswith("INPLACE_"):
+            typ = ast.AugAssign
+            assert not py11
+            op_type = op_type_map[op_name[8:]]
+            extra_filter = lambda e: isinstance(cast(ast.BinOp, e).op, op_type)
+
         elif op_name.startswith("UNARY_"):
             typ = ast.UnaryOp
             op_type = dict(
@@ -414,4 +549,5 @@ class BaseNodeFinder(object):
         )
 
         raise VerifierFailure(title, node, instruction)
+
 

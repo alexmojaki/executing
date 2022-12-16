@@ -1,7 +1,75 @@
 [
     [
+        "STORE_NAME",
+        "import logging"
+    ],
+    [
+        "STORE_NAME",
+        "import sys"
+    ],
+    [
+        "STORE_NAME",
+        "from importlib.util import spec_from_loader"
+    ],
+    [
+        "STORE_NAME",
+        "import ast"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class BirdsEyeLoader:\n\n    def __init__(self, spec, source, deep):\n        self._spec = spec\n        self.source = source\n        self.deep = deep\n\n    def create_module(self, spec):\n        pass\n\n    def exec_module(self, module):\n        from birdseye.bird import eye\n        eye.exec_string(\n            source=self.source,\n            filename=self._spec.origin,\n            globs=module.__dict__,\n            locs=module.__dict__,\n            deep=self.deep,\n        )\n\n    def get_filename(self, fullname):\n        return self._spec.loader.get_filename(fullname)\n\n    def is_package(self, fullname):\n        return self._spec.loader.is_package(fullname)"
+    ],
+    [
+        "STORE_NAME",
+        "class BirdsEyeLoader:\n\n    def __init__(self, spec, source, deep):\n        self._spec = spec\n        self.source = source\n        self.deep = deep\n\n    def create_module(self, spec):\n        pass\n\n    def exec_module(self, module):\n        from birdseye.bird import eye\n        eye.exec_string(\n            source=self.source,\n            filename=self._spec.origin,\n            globs=module.__dict__,\n            locs=module.__dict__,\n            deep=self.deep,\n        )\n\n    def get_filename(self, fullname):\n        return self._spec.loader.get_filename(fullname)\n\n    def is_package(self, fullname):\n        return self._spec.loader.is_package(fullname)"
+    ],
+    [
         "LOAD_NAME",
         "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class BirdsEyeFinder(object):\n    \"\"\"Loads a module and looks for tracing inside, only providing a loader\n    if it finds some.\n    \"\"\"\n\n    def _find_plain_spec(self, fullname, path, target):\n        \"\"\"Try to find the original module using all the\n        remaining meta_path finders.\"\"\"\n        spec = None\n        for finder in sys.meta_path:\n            # when testing with pytest, it installs a finder that for\n            # some yet unknown reasons makes birdseye\n            # fail. For now it will just avoid using it and pass to\n            # the next one\n            if finder is self or 'pytest' in finder.__module__:\n                continue\n            if hasattr(finder, 'find_spec'):\n                spec = finder.find_spec(fullname, path, target=target)\n            elif hasattr(finder, 'load_module'):\n                spec = spec_from_loader(fullname, finder)\n\n            if spec is not None and spec.origin != 'builtin':\n                return spec\n\n    def find_spec(self, fullname, path, target=None):\n        spec = self._find_plain_spec(fullname, path, target)\n        if spec is None or not (hasattr(spec.loader, 'get_source') and\n                                callable(spec.loader.get_source)):  # noqa: E128\n            if fullname != 'org':\n                # stdlib pickle.py at line 94 contains a ``from\n                # org.python.core for Jython which is always failing,\n                # of course\n                logging.debug('Failed finding spec for %s', fullname)\n            return\n\n        try:\n            source = spec.loader.get_source(fullname)\n        except ImportError:\n            logging.debug('Loader for %s was unable to find the sources',\n                          fullname)\n            return\n        except Exception:\n            logging.exception('Loader for %s raised an error', fullname)\n            return\n\n        if not source or 'birdseye' not in source:\n            return\n\n        deep, trace_stmt = should_trace(source)\n\n        if not trace_stmt:\n            return\n\n        loader = BirdsEyeLoader(spec, source, deep)\n        return spec_from_loader(fullname, loader)"
+    ],
+    [
+        "STORE_NAME",
+        "class BirdsEyeFinder(object):\n    \"\"\"Loads a module and looks for tracing inside, only providing a loader\n    if it finds some.\n    \"\"\"\n\n    def _find_plain_spec(self, fullname, path, target):\n        \"\"\"Try to find the original module using all the\n        remaining meta_path finders.\"\"\"\n        spec = None\n        for finder in sys.meta_path:\n            # when testing with pytest, it installs a finder that for\n            # some yet unknown reasons makes birdseye\n            # fail. For now it will just avoid using it and pass to\n            # the next one\n            if finder is self or 'pytest' in finder.__module__:\n                continue\n            if hasattr(finder, 'find_spec'):\n                spec = finder.find_spec(fullname, path, target=target)\n            elif hasattr(finder, 'load_module'):\n                spec = spec_from_loader(fullname, finder)\n\n            if spec is not None and spec.origin != 'builtin':\n                return spec\n\n    def find_spec(self, fullname, path, target=None):\n        spec = self._find_plain_spec(fullname, path, target)\n        if spec is None or not (hasattr(spec.loader, 'get_source') and\n                                callable(spec.loader.get_source)):  # noqa: E128\n            if fullname != 'org':\n                # stdlib pickle.py at line 94 contains a ``from\n                # org.python.core for Jython which is always failing,\n                # of course\n                logging.debug('Failed finding spec for %s', fullname)\n            return\n\n        try:\n            source = spec.loader.get_source(fullname)\n        except ImportError:\n            logging.debug('Loader for %s was unable to find the sources',\n                          fullname)\n            return\n        except Exception:\n            logging.exception('Loader for %s raised an error', fullname)\n            return\n\n        if not source or 'birdseye' not in source:\n            return\n\n        deep, trace_stmt = should_trace(source)\n\n        if not trace_stmt:\n            return\n\n        loader = BirdsEyeLoader(spec, source, deep)\n        return spec_from_loader(fullname, loader)"
+    ],
+    [
+        "STORE_NAME",
+        "def should_trace(source):\n    trace_stmt = None\n    deep = False\n    for stmt in ast.parse(source).body:\n        if isinstance(stmt, ast.Import):\n            for alias in stmt.names:\n                if alias.name.startswith('birdseye.trace_module'):\n                    trace_stmt = stmt\n                    if alias.name.endswith('deep'):\n                        deep = True\n\n        if isinstance(stmt, ast.ImportFrom) and stmt.module == 'birdseye':\n            for alias in stmt.names:\n                if alias.name.startswith('trace_module'):\n                    trace_stmt = stmt\n                    if alias.name.endswith('deep'):\n                        deep = True\n    return deep, trace_stmt"
+    ],
+    [
+        "LOAD_NAME",
+        "class BirdsEyeLoader:\n\n    def __init__(self, spec, source, deep):\n        self._spec = spec\n        self.source = source\n        self.deep = deep\n\n    def create_module(self, spec):\n        pass\n\n    def exec_module(self, module):\n        from birdseye.bird import eye\n        eye.exec_string(\n            source=self.source,\n            filename=self._spec.origin,\n            globs=module.__dict__,\n            locs=module.__dict__,\n            deep=self.deep,\n        )\n\n    def get_filename(self, fullname):\n        return self._spec.loader.get_filename(fullname)\n\n    def is_package(self, fullname):\n        return self._spec.loader.is_package(fullname)"
+    ],
+    [
+        "STORE_NAME",
+        "class BirdsEyeLoader:\n\n    def __init__(self, spec, source, deep):\n        self._spec = spec\n        self.source = source\n        self.deep = deep\n\n    def create_module(self, spec):\n        pass\n\n    def exec_module(self, module):\n        from birdseye.bird import eye\n        eye.exec_string(\n            source=self.source,\n            filename=self._spec.origin,\n            globs=module.__dict__,\n            locs=module.__dict__,\n            deep=self.deep,\n        )\n\n    def get_filename(self, fullname):\n        return self._spec.loader.get_filename(fullname)\n\n    def is_package(self, fullname):\n        return self._spec.loader.is_package(fullname)"
+    ],
+    [
+        "STORE_NAME",
+        "class BirdsEyeLoader:\n\n    def __init__(self, spec, source, deep):\n        self._spec = spec\n        self.source = source\n        self.deep = deep\n\n    def create_module(self, spec):\n        pass\n\n    def exec_module(self, module):\n        from birdseye.bird import eye\n        eye.exec_string(\n            source=self.source,\n            filename=self._spec.origin,\n            globs=module.__dict__,\n            locs=module.__dict__,\n            deep=self.deep,\n        )\n\n    def get_filename(self, fullname):\n        return self._spec.loader.get_filename(fullname)\n\n    def is_package(self, fullname):\n        return self._spec.loader.is_package(fullname)"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self, spec, source, deep):\n        self._spec = spec\n        self.source = source\n        self.deep = deep"
+    ],
+    [
+        "STORE_NAME",
+        "    def create_module(self, spec):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "    def exec_module(self, module):\n        from birdseye.bird import eye\n        eye.exec_string(\n            source=self.source,\n            filename=self._spec.origin,\n            globs=module.__dict__,\n            locs=module.__dict__,\n            deep=self.deep,\n        )"
+    ],
+    [
+        "STORE_NAME",
+        "    def get_filename(self, fullname):\n        return self._spec.loader.get_filename(fullname)"
+    ],
+    [
+        "STORE_NAME",
+        "    def is_package(self, fullname):\n        return self._spec.loader.is_package(fullname)"
     ],
     [
         "LOAD_FAST",
@@ -38,6 +106,10 @@
     [
         "STORE_ATTR",
         "self.deep"
+    ],
+    [
+        "STORE_FAST",
+        "from birdseye.bird import eye"
     ],
     [
         "LOAD_FAST",
@@ -144,12 +216,44 @@
         "self._spec.loader.is_package(fullname)"
     ],
     [
+        "LOAD_NAME",
+        "class BirdsEyeFinder(object):\n    \"\"\"Loads a module and looks for tracing inside, only providing a loader\n    if it finds some.\n    \"\"\"\n\n    def _find_plain_spec(self, fullname, path, target):\n        \"\"\"Try to find the original module using all the\n        remaining meta_path finders.\"\"\"\n        spec = None\n        for finder in sys.meta_path:\n            # when testing with pytest, it installs a finder that for\n            # some yet unknown reasons makes birdseye\n            # fail. For now it will just avoid using it and pass to\n            # the next one\n            if finder is self or 'pytest' in finder.__module__:\n                continue\n            if hasattr(finder, 'find_spec'):\n                spec = finder.find_spec(fullname, path, target=target)\n            elif hasattr(finder, 'load_module'):\n                spec = spec_from_loader(fullname, finder)\n\n            if spec is not None and spec.origin != 'builtin':\n                return spec\n\n    def find_spec(self, fullname, path, target=None):\n        spec = self._find_plain_spec(fullname, path, target)\n        if spec is None or not (hasattr(spec.loader, 'get_source') and\n                                callable(spec.loader.get_source)):  # noqa: E128\n            if fullname != 'org':\n                # stdlib pickle.py at line 94 contains a ``from\n                # org.python.core for Jython which is always failing,\n                # of course\n                logging.debug('Failed finding spec for %s', fullname)\n            return\n\n        try:\n            source = spec.loader.get_source(fullname)\n        except ImportError:\n            logging.debug('Loader for %s was unable to find the sources',\n                          fullname)\n            return\n        except Exception:\n            logging.exception('Loader for %s raised an error', fullname)\n            return\n\n        if not source or 'birdseye' not in source:\n            return\n\n        deep, trace_stmt = should_trace(source)\n\n        if not trace_stmt:\n            return\n\n        loader = BirdsEyeLoader(spec, source, deep)\n        return spec_from_loader(fullname, loader)"
+    ],
+    [
+        "STORE_NAME",
+        "class BirdsEyeFinder(object):\n    \"\"\"Loads a module and looks for tracing inside, only providing a loader\n    if it finds some.\n    \"\"\"\n\n    def _find_plain_spec(self, fullname, path, target):\n        \"\"\"Try to find the original module using all the\n        remaining meta_path finders.\"\"\"\n        spec = None\n        for finder in sys.meta_path:\n            # when testing with pytest, it installs a finder that for\n            # some yet unknown reasons makes birdseye\n            # fail. For now it will just avoid using it and pass to\n            # the next one\n            if finder is self or 'pytest' in finder.__module__:\n                continue\n            if hasattr(finder, 'find_spec'):\n                spec = finder.find_spec(fullname, path, target=target)\n            elif hasattr(finder, 'load_module'):\n                spec = spec_from_loader(fullname, finder)\n\n            if spec is not None and spec.origin != 'builtin':\n                return spec\n\n    def find_spec(self, fullname, path, target=None):\n        spec = self._find_plain_spec(fullname, path, target)\n        if spec is None or not (hasattr(spec.loader, 'get_source') and\n                                callable(spec.loader.get_source)):  # noqa: E128\n            if fullname != 'org':\n                # stdlib pickle.py at line 94 contains a ``from\n                # org.python.core for Jython which is always failing,\n                # of course\n                logging.debug('Failed finding spec for %s', fullname)\n            return\n\n        try:\n            source = spec.loader.get_source(fullname)\n        except ImportError:\n            logging.debug('Loader for %s was unable to find the sources',\n                          fullname)\n            return\n        except Exception:\n            logging.exception('Loader for %s raised an error', fullname)\n            return\n\n        if not source or 'birdseye' not in source:\n            return\n\n        deep, trace_stmt = should_trace(source)\n\n        if not trace_stmt:\n            return\n\n        loader = BirdsEyeLoader(spec, source, deep)\n        return spec_from_loader(fullname, loader)"
+    ],
+    [
+        "STORE_NAME",
+        "class BirdsEyeFinder(object):\n    \"\"\"Loads a module and looks for tracing inside, only providing a loader\n    if it finds some.\n    \"\"\"\n\n    def _find_plain_spec(self, fullname, path, target):\n        \"\"\"Try to find the original module using all the\n        remaining meta_path finders.\"\"\"\n        spec = None\n        for finder in sys.meta_path:\n            # when testing with pytest, it installs a finder that for\n            # some yet unknown reasons makes birdseye\n            # fail. For now it will just avoid using it and pass to\n            # the next one\n            if finder is self or 'pytest' in finder.__module__:\n                continue\n            if hasattr(finder, 'find_spec'):\n                spec = finder.find_spec(fullname, path, target=target)\n            elif hasattr(finder, 'load_module'):\n                spec = spec_from_loader(fullname, finder)\n\n            if spec is not None and spec.origin != 'builtin':\n                return spec\n\n    def find_spec(self, fullname, path, target=None):\n        spec = self._find_plain_spec(fullname, path, target)\n        if spec is None or not (hasattr(spec.loader, 'get_source') and\n                                callable(spec.loader.get_source)):  # noqa: E128\n            if fullname != 'org':\n                # stdlib pickle.py at line 94 contains a ``from\n                # org.python.core for Jython which is always failing,\n                # of course\n                logging.debug('Failed finding spec for %s', fullname)\n            return\n\n        try:\n            source = spec.loader.get_source(fullname)\n        except ImportError:\n            logging.debug('Loader for %s was unable to find the sources',\n                          fullname)\n            return\n        except Exception:\n            logging.exception('Loader for %s raised an error', fullname)\n            return\n\n        if not source or 'birdseye' not in source:\n            return\n\n        deep, trace_stmt = should_trace(source)\n\n        if not trace_stmt:\n            return\n\n        loader = BirdsEyeLoader(spec, source, deep)\n        return spec_from_loader(fullname, loader)"
+    ],
+    [
+        "STORE_NAME",
+        "\"\"\"Loads a module and looks for tracing inside, only providing a loader\n    if it finds some.\n    \"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "    def _find_plain_spec(self, fullname, path, target):\n        \"\"\"Try to find the original module using all the\n        remaining meta_path finders.\"\"\"\n        spec = None\n        for finder in sys.meta_path:\n            # when testing with pytest, it installs a finder that for\n            # some yet unknown reasons makes birdseye\n            # fail. For now it will just avoid using it and pass to\n            # the next one\n            if finder is self or 'pytest' in finder.__module__:\n                continue\n            if hasattr(finder, 'find_spec'):\n                spec = finder.find_spec(fullname, path, target=target)\n            elif hasattr(finder, 'load_module'):\n                spec = spec_from_loader(fullname, finder)\n\n            if spec is not None and spec.origin != 'builtin':\n                return spec"
+    ],
+    [
+        "STORE_NAME",
+        "    def find_spec(self, fullname, path, target=None):\n        spec = self._find_plain_spec(fullname, path, target)\n        if spec is None or not (hasattr(spec.loader, 'get_source') and\n                                callable(spec.loader.get_source)):  # noqa: E128\n            if fullname != 'org':\n                # stdlib pickle.py at line 94 contains a ``from\n                # org.python.core for Jython which is always failing,\n                # of course\n                logging.debug('Failed finding spec for %s', fullname)\n            return\n\n        try:\n            source = spec.loader.get_source(fullname)\n        except ImportError:\n            logging.debug('Loader for %s was unable to find the sources',\n                          fullname)\n            return\n        except Exception:\n            logging.exception('Loader for %s raised an error', fullname)\n            return\n\n        if not source or 'birdseye' not in source:\n            return\n\n        deep, trace_stmt = should_trace(source)\n\n        if not trace_stmt:\n            return\n\n        loader = BirdsEyeLoader(spec, source, deep)\n        return spec_from_loader(fullname, loader)"
+    ],
+    [
+        "STORE_FAST",
+        "spec"
+    ],
+    [
         "LOAD_GLOBAL",
         "sys"
     ],
     [
         "LOAD_ATTR",
         "sys.meta_path"
+    ],
+    [
+        "STORE_FAST",
+        "finder"
     ],
     [
         "LOAD_FAST",
@@ -212,6 +316,10 @@
         "finder.find_spec(fullname, path, target=target)"
     ],
     [
+        "STORE_FAST",
+        "spec"
+    ],
+    [
         "LOAD_GLOBAL",
         "hasattr"
     ],
@@ -238,6 +346,10 @@
     [
         "CALL_FUNCTION",
         "spec_from_loader(fullname, finder)"
+    ],
+    [
+        "STORE_FAST",
+        "spec"
     ],
     [
         "LOAD_FAST",
@@ -286,6 +398,10 @@
     [
         "CALL_METHOD",
         "self._find_plain_spec(fullname, path, target)"
+    ],
+    [
+        "STORE_FAST",
+        "spec"
     ],
     [
         "LOAD_FAST",
@@ -376,6 +492,10 @@
         "spec.loader.get_source(fullname)"
     ],
     [
+        "STORE_FAST",
+        "source"
+    ],
+    [
         "LOAD_GLOBAL",
         "ImportError"
     ],
@@ -440,6 +560,14 @@
         "should_trace(source)"
     ],
     [
+        "STORE_FAST",
+        "deep"
+    ],
+    [
+        "STORE_FAST",
+        "trace_stmt"
+    ],
+    [
         "LOAD_FAST",
         "trace_stmt"
     ],
@@ -464,6 +592,10 @@
         "BirdsEyeLoader(spec, source, deep)"
     ],
     [
+        "STORE_FAST",
+        "loader"
+    ],
+    [
         "LOAD_GLOBAL",
         "spec_from_loader"
     ],
@@ -478,6 +610,14 @@
     [
         "CALL_FUNCTION",
         "spec_from_loader(fullname, loader)"
+    ],
+    [
+        "STORE_FAST",
+        "trace_stmt"
+    ],
+    [
+        "STORE_FAST",
+        "deep"
     ],
     [
         "LOAD_GLOBAL",
@@ -498,6 +638,10 @@
     [
         "LOAD_ATTR",
         "ast.parse(source).body"
+    ],
+    [
+        "STORE_FAST",
+        "stmt"
     ],
     [
         "LOAD_GLOBAL",
@@ -528,6 +672,10 @@
         "stmt.names"
     ],
     [
+        "STORE_FAST",
+        "alias"
+    ],
+    [
         "LOAD_FAST",
         "alias"
     ],
@@ -548,6 +696,10 @@
         "stmt"
     ],
     [
+        "STORE_FAST",
+        "trace_stmt"
+    ],
+    [
         "LOAD_FAST",
         "alias"
     ],
@@ -562,6 +714,10 @@
     [
         "CALL_METHOD",
         "alias.name.endswith('deep')"
+    ],
+    [
+        "STORE_FAST",
+        "deep"
     ],
     [
         "LOAD_GLOBAL",
@@ -604,6 +760,10 @@
         "stmt.names"
     ],
     [
+        "STORE_FAST",
+        "alias"
+    ],
+    [
         "LOAD_FAST",
         "alias"
     ],
@@ -624,6 +784,10 @@
         "stmt"
     ],
     [
+        "STORE_FAST",
+        "trace_stmt"
+    ],
+    [
         "LOAD_FAST",
         "alias"
     ],
@@ -638,6 +802,10 @@
     [
         "CALL_METHOD",
         "alias.name.endswith('deep')"
+    ],
+    [
+        "STORE_FAST",
+        "deep"
     ],
     [
         "LOAD_FAST",

@@ -10,8 +10,6 @@ from ._base_node_finder import BaseNodeFinder, node_and_parents, parents
 from functools import lru_cache
 
 
-from ._base_node_finder import node_and_parents, BaseNodeFinder, mangled_name
-
 assert sys.version_info >= (3,11), "the code in this module supports only python>=3.11"
 
 @lru_cache(128) # pragma: no mutate
@@ -33,21 +31,6 @@ types_cmp_issue = types_cmp_issue_fix + (
     ast.GeneratorExp,
 )
 
-op_type_map = {
-    "**": ast.Pow,
-    "*": ast.Mult,
-    "@": ast.MatMult,
-    "//": ast.FloorDiv,
-    "/": ast.Div,
-    "%": ast.Mod,
-    "+": ast.Add,
-    "-": ast.Sub,
-    "<<": ast.LShift,
-    ">>": ast.RShift,
-    "&": ast.BitAnd,
-    "^": ast.BitXor,
-    "|": ast.BitOr,
-}
 
 
 class PositionNodeFinder(BaseNodeFinder):

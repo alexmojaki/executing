@@ -163,7 +163,7 @@ ex = Source.executing(frame)
 
 
 if sys.version_info >= (3, 11):
-    from executing._position_node_finder import mangled_name
+    from executing._base_node_finder import mangled_name
     from textwrap import indent
     import dis
 

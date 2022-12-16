@@ -1,0 +1,1 @@
+(isinstance and parent or isinstance)

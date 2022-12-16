@@ -1,5 +1,97 @@
 [
     [
+        "STORE_NAME",
+        "import functools"
+    ],
+    [
+        "STORE_NAME",
+        "import inspect"
+    ],
+    [
+        "STORE_NAME",
+        "import os"
+    ],
+    [
+        "STORE_NAME",
+        "import re"
+    ],
+    [
+        "STORE_NAME",
+        "import sys"
+    ],
+    [
+        "STORE_NAME",
+        "import threading"
+    ],
+    [
+        "STORE_NAME",
+        "from collections import OrderedDict"
+    ],
+    [
+        "STORE_NAME",
+        "import six"
+    ],
+    [
+        "STORE_NAME",
+        "from cheap_repr import cheap_repr, find_repr_function"
+    ],
+    [
+        "STORE_NAME",
+        "from cheap_repr import cheap_repr, find_repr_function"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from snoop.utils import my_cheap_repr, NO_ASTTOKENS, ArgDefaultDict, iscoroutinefunction, \\\n    truncate_list, ensure_tuple, is_comprehension_frame, no_args_decorator"
+    ],
+    [
+        "STORE_NAME",
+        "from .formatting import Event, Source"
+    ],
+    [
+        "STORE_NAME",
+        "from .formatting import Event, Source"
+    ],
+    [
+        "STORE_NAME",
+        "from .variables import CommonVariable, Exploding, BaseVariable"
+    ],
+    [
+        "STORE_NAME",
+        "from .variables import CommonVariable, Exploding, BaseVariable"
+    ],
+    [
+        "STORE_NAME",
+        "from .variables import CommonVariable, Exploding, BaseVariable"
+    ],
+    [
         "LOAD_NAME",
         "find_repr_function"
     ],
@@ -84,6 +176,14 @@
         "object"
     ],
     [
+        "CALL_FUNCTION",
+        "class FrameInfo(object):\n    def __init__(self, frame):\n        self.frame = frame\n        self.local_reprs = {}\n        self.last_line_no = frame.f_lineno\n        self.comprehension_variables = OrderedDict()\n        self.source = Source.for_frame(frame)\n        self.is_generator = frame.f_code.co_flags & inspect.CO_GENERATOR\n        self.had_exception = False\n        if is_comprehension_frame(frame):\n            self.comprehension_type = (\n                    re.match(r'<(\\w+)comp>', frame.f_code.co_name).group(1).title()\n                    + u' comprehension'\n            )\n        else:\n            self.comprehension_type = ''\n\n    def update_variables(self, watch, watch_extras, event):\n        self.last_line_no = self.frame.f_lineno\n        old_local_reprs = self.local_reprs\n        self.local_reprs = OrderedDict(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )\n\n        if self.comprehension_type:\n            for name, value_repr in self.local_reprs.items():\n                values = self.comprehension_variables.setdefault(name, [])\n                if not values or values[-1] != value_repr:\n                    values.append(value_repr)\n                    values[:] = truncate_list(values, 11)\n            if event in ('return', 'exception'):\n                return [\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]\n            else:\n                return []\n\n        variables = []\n        for name, value_repr in self.local_reprs.items():\n            if name not in old_local_reprs or old_local_reprs[name] != value_repr:\n                variables.append((name, value_repr))\n        return variables\n\n    def get_local_reprs(self, watch, watch_extras):\n        frame = self.frame\n        code = frame.f_code\n        vars_order = code.co_varnames + code.co_cellvars + code.co_freevars + tuple(frame.f_locals.keys())\n\n        result_items = sorted(\n            frame.f_locals.items(),\n            key=lambda key_value: vars_order.index(key_value[0])\n        )\n\n        for variable in watch:\n            result_items += sorted(variable.items(frame))\n\n        for source, value in result_items:\n            yield source, value\n            for extra in watch_extras:\n                try:\n                    pair = extra(source, value)\n                except Exception:\n                    pass\n                else:\n                    if pair is not None:\n                        assert len(pair) == 2, \"Watch extra must return pair or None\"\n                        yield pair"
+    ],
+    [
+        "STORE_NAME",
+        "class FrameInfo(object):\n    def __init__(self, frame):\n        self.frame = frame\n        self.local_reprs = {}\n        self.last_line_no = frame.f_lineno\n        self.comprehension_variables = OrderedDict()\n        self.source = Source.for_frame(frame)\n        self.is_generator = frame.f_code.co_flags & inspect.CO_GENERATOR\n        self.had_exception = False\n        if is_comprehension_frame(frame):\n            self.comprehension_type = (\n                    re.match(r'<(\\w+)comp>', frame.f_code.co_name).group(1).title()\n                    + u' comprehension'\n            )\n        else:\n            self.comprehension_type = ''\n\n    def update_variables(self, watch, watch_extras, event):\n        self.last_line_no = self.frame.f_lineno\n        old_local_reprs = self.local_reprs\n        self.local_reprs = OrderedDict(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )\n\n        if self.comprehension_type:\n            for name, value_repr in self.local_reprs.items():\n                values = self.comprehension_variables.setdefault(name, [])\n                if not values or values[-1] != value_repr:\n                    values.append(value_repr)\n                    values[:] = truncate_list(values, 11)\n            if event in ('return', 'exception'):\n                return [\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]\n            else:\n                return []\n\n        variables = []\n        for name, value_repr in self.local_reprs.items():\n            if name not in old_local_reprs or old_local_reprs[name] != value_repr:\n                variables.append((name, value_repr))\n        return variables\n\n    def get_local_reprs(self, watch, watch_extras):\n        frame = self.frame\n        code = frame.f_code\n        vars_order = code.co_varnames + code.co_cellvars + code.co_freevars + tuple(frame.f_locals.keys())\n\n        result_items = sorted(\n            frame.f_locals.items(),\n            key=lambda key_value: vars_order.index(key_value[0])\n        )\n\n        for variable in watch:\n            result_items += sorted(variable.items(frame))\n\n        for source, value in result_items:\n            yield source, value\n            for extra in watch_extras:\n                try:\n                    pair = extra(source, value)\n                except Exception:\n                    pass\n                else:\n                    if pair is not None:\n                        assert len(pair) == 2, \"Watch extra must return pair or None\"\n                        yield pair"
+    ],
+    [
         "LOAD_NAME",
         "threading"
     ],
@@ -94,6 +194,10 @@
     [
         "CALL_METHOD",
         "threading.local()"
+    ],
+    [
+        "STORE_NAME",
+        "thread_global"
     ],
     [
         "LOAD_NAME",
@@ -120,8 +224,20 @@
         "os.path.dirname((lambda: 0).__code__.co_filename)"
     ],
     [
+        "STORE_NAME",
+        "internal_directories"
+    ],
+    [
+        "STORE_NAME",
+        "import birdseye"
+    ],
+    [
         "LOAD_NAME",
         "ImportError"
+    ],
+    [
+        "LOAD_NAME",
+        "internal_directories"
     ],
     [
         "LOAD_NAME",
@@ -148,8 +264,20 @@
         "os.path.dirname(birdseye.__file__)"
     ],
     [
+        "STORE_NAME",
+        "internal_directories"
+    ],
+    [
         "LOAD_NAME",
         "type"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class TracerMeta(type):\n    def __new__(mcs, *args, **kwargs):\n        result = super(TracerMeta, mcs).__new__(mcs, *args, **kwargs)\n        result.default = result()\n        return result\n\n    def __call__(cls, *args, **kwargs):\n        if no_args_decorator(args, kwargs):\n            return cls.default(args[0])\n        else:\n            return super(TracerMeta, cls).__call__(*args, **kwargs)\n\n    def __enter__(self):\n        return self.default.__enter__(context=1)\n\n    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
+    ],
+    [
+        "STORE_NAME",
+        "class TracerMeta(type):\n    def __new__(mcs, *args, **kwargs):\n        result = super(TracerMeta, mcs).__new__(mcs, *args, **kwargs)\n        result.default = result()\n        return result\n\n    def __call__(cls, *args, **kwargs):\n        if no_args_decorator(args, kwargs):\n            return cls.default(args[0])\n        else:\n            return super(TracerMeta, cls).__call__(*args, **kwargs)\n\n    def __enter__(self):\n        return self.default.__enter__(context=1)\n\n    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
     ],
     [
         "LOAD_NAME",
@@ -173,11 +301,51 @@
     ],
     [
         "CALL_FUNCTION",
+        "@six.add_metaclass(TracerMeta)\nclass Tracer(object):\n    def __init__(\n            self,\n            watch=(),\n            watch_explode=(),\n            depth=1,\n    ):\n        self.watch = [\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ] + [\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]\n        self.frame_infos = ArgDefaultDict(FrameInfo)\n        self.depth = depth\n        assert self.depth >= 1\n        self.target_codes = set()\n        self.target_frames = set()\n\n    def __call__(self, function):\n        if iscoroutinefunction(function):\n            raise NotImplementedError(\"coroutines are not supported, sorry!\")\n\n        self.target_codes.add(function.__code__)\n\n        @functools.wraps(function)\n        def simple_wrapper(*args, **kwargs):\n            with self:\n                return function(*args, **kwargs)\n\n        @functools.wraps(function)\n        def generator_wrapper(*args, **kwargs):\n            gen = function(*args, **kwargs)\n            method, incoming = gen.send, None\n            while True:\n                with self:\n                    try:\n                        outgoing = method(incoming)\n                    except StopIteration:\n                        return\n                try:\n                    method, incoming = gen.send, (yield outgoing)\n                except Exception as e:\n                    method, incoming = gen.throw, e\n\n        if inspect.isgeneratorfunction(function):\n            return generator_wrapper\n        else:\n            return simple_wrapper\n\n    def __enter__(self, context=0):\n        if not self.config.enabled:\n            return\n\n        calling_frame = sys._getframe(context + 1)\n        if not self._is_internal_frame(calling_frame):\n            calling_frame.f_trace = self.trace\n            self.target_frames.add(calling_frame)\n            self.config.last_frame = calling_frame\n            self.trace(calling_frame, 'enter', None)\n\n        stack = thread_global.__dict__.setdefault('original_trace_functions', [])\n        stack.append(sys.gettrace())\n        sys.settrace(self.trace)\n\n    def __exit__(self, exc_type, exc_value, exc_traceback, context=0):\n        if not self.config.enabled:\n            return\n\n        stack = thread_global.original_trace_functions\n        sys.settrace(stack.pop())\n        calling_frame = sys._getframe(context + 1)\n        self.trace(calling_frame, 'exit', None)\n        self.target_frames.discard(calling_frame)\n        self.frame_infos.pop(calling_frame, None)\n\n    def _is_internal_frame(self, frame):\n        return frame.f_code.co_filename.startswith(internal_directories)\n    \n    def _is_traced_frame(self, frame):\n        return frame.f_code in self.target_codes or frame in self.target_frames\n\n    def trace(self, frame, event, arg):\n        if not self._is_traced_frame(frame):\n            if (\n                    self.depth == 1\n                    or self._is_internal_frame(frame)\n            ) and not is_comprehension_frame(frame):\n                return None\n            else:\n                candidate = frame\n                i = 0\n                while True:\n                    if is_comprehension_frame(candidate):\n                        candidate = candidate.f_back\n                        continue\n                    i += 1\n                    if self._is_traced_frame(candidate):\n                        break\n                    candidate = candidate.f_back\n                    if i >= self.depth or candidate is None or self._is_internal_frame(candidate):\n                        return None\n\n        thread_local = self.config.thread_local\n        thread_local.__dict__.setdefault('depth', -1)\n        frame_info = self.frame_infos[frame]\n        if event in ('call', 'enter'):\n            thread_local.depth += 1\n        elif self.config.last_frame and self.config.last_frame is not frame:\n            line_no = frame_info.last_line_no\n            trace_event = Event(frame_info, event, arg, thread_local.depth, line_no=line_no)\n            line = self.config.formatter.format_line_only(trace_event)\n            self.config.write(line)\n\n        if event == 'exception':\n            frame_info.had_exception = True\n\n        self.config.last_frame = frame\n\n        trace_event = Event(frame_info, event, arg, thread_local.depth)\n        if not (frame.f_code.co_name == '<genexpr>' and event not in ('return', 'exception')):\n            trace_event.variables = frame_info.update_variables(\n                self.watch,\n                self.config.watch_extras,\n                event,\n            )\n\n        if event in ('return', 'exit'):\n            del self.frame_infos[frame]\n            thread_local.depth -= 1\n\n        formatted = self.config.formatter.format(trace_event)\n        self.config.write(formatted)\n\n        return self.trace"
+    ],
+    [
+        "CALL_FUNCTION",
         "six.add_metaclass(TracerMeta)"
+    ],
+    [
+        "STORE_NAME",
+        "@six.add_metaclass(TracerMeta)\nclass Tracer(object):\n    def __init__(\n            self,\n            watch=(),\n            watch_explode=(),\n            depth=1,\n    ):\n        self.watch = [\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ] + [\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]\n        self.frame_infos = ArgDefaultDict(FrameInfo)\n        self.depth = depth\n        assert self.depth >= 1\n        self.target_codes = set()\n        self.target_frames = set()\n\n    def __call__(self, function):\n        if iscoroutinefunction(function):\n            raise NotImplementedError(\"coroutines are not supported, sorry!\")\n\n        self.target_codes.add(function.__code__)\n\n        @functools.wraps(function)\n        def simple_wrapper(*args, **kwargs):\n            with self:\n                return function(*args, **kwargs)\n\n        @functools.wraps(function)\n        def generator_wrapper(*args, **kwargs):\n            gen = function(*args, **kwargs)\n            method, incoming = gen.send, None\n            while True:\n                with self:\n                    try:\n                        outgoing = method(incoming)\n                    except StopIteration:\n                        return\n                try:\n                    method, incoming = gen.send, (yield outgoing)\n                except Exception as e:\n                    method, incoming = gen.throw, e\n\n        if inspect.isgeneratorfunction(function):\n            return generator_wrapper\n        else:\n            return simple_wrapper\n\n    def __enter__(self, context=0):\n        if not self.config.enabled:\n            return\n\n        calling_frame = sys._getframe(context + 1)\n        if not self._is_internal_frame(calling_frame):\n            calling_frame.f_trace = self.trace\n            self.target_frames.add(calling_frame)\n            self.config.last_frame = calling_frame\n            self.trace(calling_frame, 'enter', None)\n\n        stack = thread_global.__dict__.setdefault('original_trace_functions', [])\n        stack.append(sys.gettrace())\n        sys.settrace(self.trace)\n\n    def __exit__(self, exc_type, exc_value, exc_traceback, context=0):\n        if not self.config.enabled:\n            return\n\n        stack = thread_global.original_trace_functions\n        sys.settrace(stack.pop())\n        calling_frame = sys._getframe(context + 1)\n        self.trace(calling_frame, 'exit', None)\n        self.target_frames.discard(calling_frame)\n        self.frame_infos.pop(calling_frame, None)\n\n    def _is_internal_frame(self, frame):\n        return frame.f_code.co_filename.startswith(internal_directories)\n    \n    def _is_traced_frame(self, frame):\n        return frame.f_code in self.target_codes or frame in self.target_frames\n\n    def trace(self, frame, event, arg):\n        if not self._is_traced_frame(frame):\n            if (\n                    self.depth == 1\n                    or self._is_internal_frame(frame)\n            ) and not is_comprehension_frame(frame):\n                return None\n            else:\n                candidate = frame\n                i = 0\n                while True:\n                    if is_comprehension_frame(candidate):\n                        candidate = candidate.f_back\n                        continue\n                    i += 1\n                    if self._is_traced_frame(candidate):\n                        break\n                    candidate = candidate.f_back\n                    if i >= self.depth or candidate is None or self._is_internal_frame(candidate):\n                        return None\n\n        thread_local = self.config.thread_local\n        thread_local.__dict__.setdefault('depth', -1)\n        frame_info = self.frame_infos[frame]\n        if event in ('call', 'enter'):\n            thread_local.depth += 1\n        elif self.config.last_frame and self.config.last_frame is not frame:\n            line_no = frame_info.last_line_no\n            trace_event = Event(frame_info, event, arg, thread_local.depth, line_no=line_no)\n            line = self.config.formatter.format_line_only(trace_event)\n            self.config.write(line)\n\n        if event == 'exception':\n            frame_info.had_exception = True\n\n        self.config.last_frame = frame\n\n        trace_event = Event(frame_info, event, arg, thread_local.depth)\n        if not (frame.f_code.co_name == '<genexpr>' and event not in ('return', 'exception')):\n            trace_event.variables = frame_info.update_variables(\n                self.watch,\n                self.config.watch_extras,\n                event,\n            )\n\n        if event in ('return', 'exit'):\n            del self.frame_infos[frame]\n            thread_local.depth -= 1\n\n        formatted = self.config.formatter.format(trace_event)\n        self.config.write(formatted)\n\n        return self.trace"
     ],
     [
         "LOAD_NAME",
         "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class Spy(object):\n    def __init__(self, config):\n        self.config = config\n\n    def __call__(self, *args, **kwargs):\n        if NO_ASTTOKENS:\n            raise Exception(\"birdseye doesn't support this version of Python\")\n\n        try:\n            import birdseye\n        except ImportError:\n            raise Exception(\"You must install birdseye separately to use spy: pip install birdseye\")\n\n        # Decorator without parentheses\n        if no_args_decorator(args, kwargs):\n            return self._trace(args[0])\n\n        # Decorator with parentheses and perhaps arguments\n        def decorator(func):\n            return self._trace(func, *args, **kwargs)\n\n        return decorator\n\n    def _trace(self, func, *args, **kwargs):\n        # noinspection PyUnresolvedReferences\n        from birdseye import eye\n\n        traced = eye(func)\n        traced = self.config.snoop(*args, **kwargs)(traced)\n\n        @functools.wraps(func)\n        def wrapper(*func_args, **func_kwargs):\n            if self.config.enabled:\n                final_func = traced\n            else:\n                final_func = func\n\n            return final_func(*func_args, **func_kwargs)\n\n        return wrapper"
+    ],
+    [
+        "STORE_NAME",
+        "class Spy(object):\n    def __init__(self, config):\n        self.config = config\n\n    def __call__(self, *args, **kwargs):\n        if NO_ASTTOKENS:\n            raise Exception(\"birdseye doesn't support this version of Python\")\n\n        try:\n            import birdseye\n        except ImportError:\n            raise Exception(\"You must install birdseye separately to use spy: pip install birdseye\")\n\n        # Decorator without parentheses\n        if no_args_decorator(args, kwargs):\n            return self._trace(args[0])\n\n        # Decorator with parentheses and perhaps arguments\n        def decorator(func):\n            return self._trace(func, *args, **kwargs)\n\n        return decorator\n\n    def _trace(self, func, *args, **kwargs):\n        # noinspection PyUnresolvedReferences\n        from birdseye import eye\n\n        traced = eye(func)\n        traced = self.config.snoop(*args, **kwargs)(traced)\n\n        @functools.wraps(func)\n        def wrapper(*func_args, **func_kwargs):\n            if self.config.enabled:\n                final_func = traced\n            else:\n                final_func = func\n\n            return final_func(*func_args, **func_kwargs)\n\n        return wrapper"
+    ],
+    [
+        "LOAD_NAME",
+        "class FrameInfo(object):\n    def __init__(self, frame):\n        self.frame = frame\n        self.local_reprs = {}\n        self.last_line_no = frame.f_lineno\n        self.comprehension_variables = OrderedDict()\n        self.source = Source.for_frame(frame)\n        self.is_generator = frame.f_code.co_flags & inspect.CO_GENERATOR\n        self.had_exception = False\n        if is_comprehension_frame(frame):\n            self.comprehension_type = (\n                    re.match(r'<(\\w+)comp>', frame.f_code.co_name).group(1).title()\n                    + u' comprehension'\n            )\n        else:\n            self.comprehension_type = ''\n\n    def update_variables(self, watch, watch_extras, event):\n        self.last_line_no = self.frame.f_lineno\n        old_local_reprs = self.local_reprs\n        self.local_reprs = OrderedDict(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )\n\n        if self.comprehension_type:\n            for name, value_repr in self.local_reprs.items():\n                values = self.comprehension_variables.setdefault(name, [])\n                if not values or values[-1] != value_repr:\n                    values.append(value_repr)\n                    values[:] = truncate_list(values, 11)\n            if event in ('return', 'exception'):\n                return [\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]\n            else:\n                return []\n\n        variables = []\n        for name, value_repr in self.local_reprs.items():\n            if name not in old_local_reprs or old_local_reprs[name] != value_repr:\n                variables.append((name, value_repr))\n        return variables\n\n    def get_local_reprs(self, watch, watch_extras):\n        frame = self.frame\n        code = frame.f_code\n        vars_order = code.co_varnames + code.co_cellvars + code.co_freevars + tuple(frame.f_locals.keys())\n\n        result_items = sorted(\n            frame.f_locals.items(),\n            key=lambda key_value: vars_order.index(key_value[0])\n        )\n\n        for variable in watch:\n            result_items += sorted(variable.items(frame))\n\n        for source, value in result_items:\n            yield source, value\n            for extra in watch_extras:\n                try:\n                    pair = extra(source, value)\n                except Exception:\n                    pass\n                else:\n                    if pair is not None:\n                        assert len(pair) == 2, \"Watch extra must return pair or None\"\n                        yield pair"
+    ],
+    [
+        "STORE_NAME",
+        "class FrameInfo(object):\n    def __init__(self, frame):\n        self.frame = frame\n        self.local_reprs = {}\n        self.last_line_no = frame.f_lineno\n        self.comprehension_variables = OrderedDict()\n        self.source = Source.for_frame(frame)\n        self.is_generator = frame.f_code.co_flags & inspect.CO_GENERATOR\n        self.had_exception = False\n        if is_comprehension_frame(frame):\n            self.comprehension_type = (\n                    re.match(r'<(\\w+)comp>', frame.f_code.co_name).group(1).title()\n                    + u' comprehension'\n            )\n        else:\n            self.comprehension_type = ''\n\n    def update_variables(self, watch, watch_extras, event):\n        self.last_line_no = self.frame.f_lineno\n        old_local_reprs = self.local_reprs\n        self.local_reprs = OrderedDict(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )\n\n        if self.comprehension_type:\n            for name, value_repr in self.local_reprs.items():\n                values = self.comprehension_variables.setdefault(name, [])\n                if not values or values[-1] != value_repr:\n                    values.append(value_repr)\n                    values[:] = truncate_list(values, 11)\n            if event in ('return', 'exception'):\n                return [\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]\n            else:\n                return []\n\n        variables = []\n        for name, value_repr in self.local_reprs.items():\n            if name not in old_local_reprs or old_local_reprs[name] != value_repr:\n                variables.append((name, value_repr))\n        return variables\n\n    def get_local_reprs(self, watch, watch_extras):\n        frame = self.frame\n        code = frame.f_code\n        vars_order = code.co_varnames + code.co_cellvars + code.co_freevars + tuple(frame.f_locals.keys())\n\n        result_items = sorted(\n            frame.f_locals.items(),\n            key=lambda key_value: vars_order.index(key_value[0])\n        )\n\n        for variable in watch:\n            result_items += sorted(variable.items(frame))\n\n        for source, value in result_items:\n            yield source, value\n            for extra in watch_extras:\n                try:\n                    pair = extra(source, value)\n                except Exception:\n                    pass\n                else:\n                    if pair is not None:\n                        assert len(pair) == 2, \"Watch extra must return pair or None\"\n                        yield pair"
+    ],
+    [
+        "STORE_NAME",
+        "class FrameInfo(object):\n    def __init__(self, frame):\n        self.frame = frame\n        self.local_reprs = {}\n        self.last_line_no = frame.f_lineno\n        self.comprehension_variables = OrderedDict()\n        self.source = Source.for_frame(frame)\n        self.is_generator = frame.f_code.co_flags & inspect.CO_GENERATOR\n        self.had_exception = False\n        if is_comprehension_frame(frame):\n            self.comprehension_type = (\n                    re.match(r'<(\\w+)comp>', frame.f_code.co_name).group(1).title()\n                    + u' comprehension'\n            )\n        else:\n            self.comprehension_type = ''\n\n    def update_variables(self, watch, watch_extras, event):\n        self.last_line_no = self.frame.f_lineno\n        old_local_reprs = self.local_reprs\n        self.local_reprs = OrderedDict(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )\n\n        if self.comprehension_type:\n            for name, value_repr in self.local_reprs.items():\n                values = self.comprehension_variables.setdefault(name, [])\n                if not values or values[-1] != value_repr:\n                    values.append(value_repr)\n                    values[:] = truncate_list(values, 11)\n            if event in ('return', 'exception'):\n                return [\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]\n            else:\n                return []\n\n        variables = []\n        for name, value_repr in self.local_reprs.items():\n            if name not in old_local_reprs or old_local_reprs[name] != value_repr:\n                variables.append((name, value_repr))\n        return variables\n\n    def get_local_reprs(self, watch, watch_extras):\n        frame = self.frame\n        code = frame.f_code\n        vars_order = code.co_varnames + code.co_cellvars + code.co_freevars + tuple(frame.f_locals.keys())\n\n        result_items = sorted(\n            frame.f_locals.items(),\n            key=lambda key_value: vars_order.index(key_value[0])\n        )\n\n        for variable in watch:\n            result_items += sorted(variable.items(frame))\n\n        for source, value in result_items:\n            yield source, value\n            for extra in watch_extras:\n                try:\n                    pair = extra(source, value)\n                except Exception:\n                    pass\n                else:\n                    if pair is not None:\n                        assert len(pair) == 2, \"Watch extra must return pair or None\"\n                        yield pair"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self, frame):\n        self.frame = frame\n        self.local_reprs = {}\n        self.last_line_no = frame.f_lineno\n        self.comprehension_variables = OrderedDict()\n        self.source = Source.for_frame(frame)\n        self.is_generator = frame.f_code.co_flags & inspect.CO_GENERATOR\n        self.had_exception = False\n        if is_comprehension_frame(frame):\n            self.comprehension_type = (\n                    re.match(r'<(\\w+)comp>', frame.f_code.co_name).group(1).title()\n                    + u' comprehension'\n            )\n        else:\n            self.comprehension_type = ''"
+    ],
+    [
+        "STORE_NAME",
+        "    def update_variables(self, watch, watch_extras, event):\n        self.last_line_no = self.frame.f_lineno\n        old_local_reprs = self.local_reprs\n        self.local_reprs = OrderedDict(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )\n\n        if self.comprehension_type:\n            for name, value_repr in self.local_reprs.items():\n                values = self.comprehension_variables.setdefault(name, [])\n                if not values or values[-1] != value_repr:\n                    values.append(value_repr)\n                    values[:] = truncate_list(values, 11)\n            if event in ('return', 'exception'):\n                return [\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]\n            else:\n                return []\n\n        variables = []\n        for name, value_repr in self.local_reprs.items():\n            if name not in old_local_reprs or old_local_reprs[name] != value_repr:\n                variables.append((name, value_repr))\n        return variables"
+    ],
+    [
+        "STORE_NAME",
+        "    def get_local_reprs(self, watch, watch_extras):\n        frame = self.frame\n        code = frame.f_code\n        vars_order = code.co_varnames + code.co_cellvars + code.co_freevars + tuple(frame.f_locals.keys())\n\n        result_items = sorted(\n            frame.f_locals.items(),\n            key=lambda key_value: vars_order.index(key_value[0])\n        )\n\n        for variable in watch:\n            result_items += sorted(variable.items(frame))\n\n        for source, value in result_items:\n            yield source, value\n            for extra in watch_extras:\n                try:\n                    pair = extra(source, value)\n                except Exception:\n                    pass\n                else:\n                    if pair is not None:\n                        assert len(pair) == 2, \"Watch extra must return pair or None\"\n                        yield pair"
     ],
     [
         "LOAD_FAST",
@@ -396,6 +564,10 @@
         "self.local_reprs"
     ],
     [
+        "STORE_FAST",
+        "old_local_reprs"
+    ],
+    [
         "LOAD_GLOBAL",
         "OrderedDict"
     ],
@@ -418,6 +590,10 @@
     [
         "CALL_METHOD",
         "self.get_local_reprs(watch, watch_extras)"
+    ],
+    [
+        "CALL_FUNCTION",
+        "(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )"
     ],
     [
         "CALL_FUNCTION",
@@ -456,6 +632,14 @@
         "self.local_reprs.items()"
     ],
     [
+        "STORE_FAST",
+        "name"
+    ],
+    [
+        "STORE_FAST",
+        "value_repr"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -474,6 +658,10 @@
     [
         "CALL_METHOD",
         "self.comprehension_variables.setdefault(name, [])"
+    ],
+    [
+        "STORE_FAST",
+        "values"
     ],
     [
         "LOAD_FAST",
@@ -556,6 +744,14 @@
         "self.comprehension_variables.items()"
     ],
     [
+        "CALL_FUNCTION",
+        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
+    ],
+    [
+        "STORE_FAST",
+        "variables"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -570,6 +766,14 @@
     [
         "CALL_METHOD",
         "self.local_reprs.items()"
+    ],
+    [
+        "STORE_FAST",
+        "name"
+    ],
+    [
+        "STORE_FAST",
+        "value_repr"
     ],
     [
         "LOAD_FAST",
@@ -629,6 +833,18 @@
     ],
     [
         "LOAD_FAST",
+        "(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )"
+    ],
+    [
+        "STORE_FAST",
+        "source"
+    ],
+    [
+        "STORE_FAST",
+        "value"
+    ],
+    [
+        "LOAD_FAST",
         "source"
     ],
     [
@@ -642,6 +858,18 @@
     [
         "CALL_FUNCTION",
         "my_cheap_repr(value)"
+    ],
+    [
+        "LOAD_FAST",
+        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
+    ],
+    [
+        "STORE_FAST",
+        "name"
+    ],
+    [
+        "STORE_FAST",
+        "values"
     ],
     [
         "LOAD_FAST",
@@ -668,12 +896,20 @@
         "self.frame"
     ],
     [
+        "STORE_FAST",
+        "frame"
+    ],
+    [
         "LOAD_FAST",
         "frame"
     ],
     [
         "LOAD_ATTR",
         "frame.f_code"
+    ],
+    [
+        "STORE_FAST",
+        "code"
     ],
     [
         "LOAD_FAST",
@@ -736,6 +972,10 @@
         "code.co_varnames + code.co_cellvars + code.co_freevars + tuple(frame.f_locals.keys())"
     ],
     [
+        "STORE_DEREF",
+        "vars_order"
+    ],
+    [
         "LOAD_GLOBAL",
         "sorted"
     ],
@@ -760,8 +1000,20 @@
         "sorted(\n            frame.f_locals.items(),\n            key=lambda key_value: vars_order.index(key_value[0])\n        )"
     ],
     [
+        "STORE_FAST",
+        "result_items"
+    ],
+    [
         "LOAD_FAST",
         "watch"
+    ],
+    [
+        "STORE_FAST",
+        "variable"
+    ],
+    [
+        "LOAD_FAST",
+        "result_items"
     ],
     [
         "LOAD_GLOBAL",
@@ -788,8 +1040,20 @@
         "sorted(variable.items(frame))"
     ],
     [
+        "STORE_FAST",
+        "result_items"
+    ],
+    [
         "LOAD_FAST",
         "result_items"
+    ],
+    [
+        "STORE_FAST",
+        "source"
+    ],
+    [
+        "STORE_FAST",
+        "value"
     ],
     [
         "LOAD_FAST",
@@ -802,6 +1066,10 @@
     [
         "LOAD_FAST",
         "watch_extras"
+    ],
+    [
+        "STORE_FAST",
+        "extra"
     ],
     [
         "LOAD_FAST",
@@ -818,6 +1086,10 @@
     [
         "CALL_FUNCTION",
         "extra(source, value)"
+    ],
+    [
+        "STORE_FAST",
+        "pair"
     ],
     [
         "LOAD_GLOBAL",
@@ -872,6 +1144,34 @@
         "vars_order.index(key_value[0])"
     ],
     [
+        "LOAD_NAME",
+        "class TracerMeta(type):\n    def __new__(mcs, *args, **kwargs):\n        result = super(TracerMeta, mcs).__new__(mcs, *args, **kwargs)\n        result.default = result()\n        return result\n\n    def __call__(cls, *args, **kwargs):\n        if no_args_decorator(args, kwargs):\n            return cls.default(args[0])\n        else:\n            return super(TracerMeta, cls).__call__(*args, **kwargs)\n\n    def __enter__(self):\n        return self.default.__enter__(context=1)\n\n    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
+    ],
+    [
+        "STORE_NAME",
+        "class TracerMeta(type):\n    def __new__(mcs, *args, **kwargs):\n        result = super(TracerMeta, mcs).__new__(mcs, *args, **kwargs)\n        result.default = result()\n        return result\n\n    def __call__(cls, *args, **kwargs):\n        if no_args_decorator(args, kwargs):\n            return cls.default(args[0])\n        else:\n            return super(TracerMeta, cls).__call__(*args, **kwargs)\n\n    def __enter__(self):\n        return self.default.__enter__(context=1)\n\n    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
+    ],
+    [
+        "STORE_NAME",
+        "class TracerMeta(type):\n    def __new__(mcs, *args, **kwargs):\n        result = super(TracerMeta, mcs).__new__(mcs, *args, **kwargs)\n        result.default = result()\n        return result\n\n    def __call__(cls, *args, **kwargs):\n        if no_args_decorator(args, kwargs):\n            return cls.default(args[0])\n        else:\n            return super(TracerMeta, cls).__call__(*args, **kwargs)\n\n    def __enter__(self):\n        return self.default.__enter__(context=1)\n\n    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
+    ],
+    [
+        "STORE_NAME",
+        "    def __new__(mcs, *args, **kwargs):\n        result = super(TracerMeta, mcs).__new__(mcs, *args, **kwargs)\n        result.default = result()\n        return result"
+    ],
+    [
+        "STORE_NAME",
+        "    def __call__(cls, *args, **kwargs):\n        if no_args_decorator(args, kwargs):\n            return cls.default(args[0])\n        else:\n            return super(TracerMeta, cls).__call__(*args, **kwargs)"
+    ],
+    [
+        "STORE_NAME",
+        "    def __enter__(self):\n        return self.default.__enter__(context=1)"
+    ],
+    [
+        "STORE_NAME",
+        "    def __exit__(self, *args):\n        return self.default.__exit__(*args, context=1)"
+    ],
+    [
         "LOAD_GLOBAL",
         "super"
     ],
@@ -906,6 +1206,10 @@
     [
         "CALL_FUNCTION_EX",
         "super(TracerMeta, mcs).__new__(mcs, *args, **kwargs)"
+    ],
+    [
+        "STORE_FAST",
+        "result"
     ],
     [
         "LOAD_FAST",
@@ -1032,6 +1336,34 @@
         "self.default.__exit__(*args, context=1)"
     ],
     [
+        "STORE_NAME",
+        "    def __init__(\n            self,\n            watch=(),\n            watch_explode=(),\n            depth=1,\n    ):\n        self.watch = [\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ] + [\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]\n        self.frame_infos = ArgDefaultDict(FrameInfo)\n        self.depth = depth\n        assert self.depth >= 1\n        self.target_codes = set()\n        self.target_frames = set()"
+    ],
+    [
+        "STORE_NAME",
+        "    def __call__(self, function):\n        if iscoroutinefunction(function):\n            raise NotImplementedError(\"coroutines are not supported, sorry!\")\n\n        self.target_codes.add(function.__code__)\n\n        @functools.wraps(function)\n        def simple_wrapper(*args, **kwargs):\n            with self:\n                return function(*args, **kwargs)\n\n        @functools.wraps(function)\n        def generator_wrapper(*args, **kwargs):\n            gen = function(*args, **kwargs)\n            method, incoming = gen.send, None\n            while True:\n                with self:\n                    try:\n                        outgoing = method(incoming)\n                    except StopIteration:\n                        return\n                try:\n                    method, incoming = gen.send, (yield outgoing)\n                except Exception as e:\n                    method, incoming = gen.throw, e\n\n        if inspect.isgeneratorfunction(function):\n            return generator_wrapper\n        else:\n            return simple_wrapper"
+    ],
+    [
+        "STORE_NAME",
+        "    def __enter__(self, context=0):\n        if not self.config.enabled:\n            return\n\n        calling_frame = sys._getframe(context + 1)\n        if not self._is_internal_frame(calling_frame):\n            calling_frame.f_trace = self.trace\n            self.target_frames.add(calling_frame)\n            self.config.last_frame = calling_frame\n            self.trace(calling_frame, 'enter', None)\n\n        stack = thread_global.__dict__.setdefault('original_trace_functions', [])\n        stack.append(sys.gettrace())\n        sys.settrace(self.trace)"
+    ],
+    [
+        "STORE_NAME",
+        "    def __exit__(self, exc_type, exc_value, exc_traceback, context=0):\n        if not self.config.enabled:\n            return\n\n        stack = thread_global.original_trace_functions\n        sys.settrace(stack.pop())\n        calling_frame = sys._getframe(context + 1)\n        self.trace(calling_frame, 'exit', None)\n        self.target_frames.discard(calling_frame)\n        self.frame_infos.pop(calling_frame, None)"
+    ],
+    [
+        "STORE_NAME",
+        "    def _is_internal_frame(self, frame):\n        return frame.f_code.co_filename.startswith(internal_directories)"
+    ],
+    [
+        "STORE_NAME",
+        "    def _is_traced_frame(self, frame):\n        return frame.f_code in self.target_codes or frame in self.target_frames"
+    ],
+    [
+        "STORE_NAME",
+        "    def trace(self, frame, event, arg):\n        if not self._is_traced_frame(frame):\n            if (\n                    self.depth == 1\n                    or self._is_internal_frame(frame)\n            ) and not is_comprehension_frame(frame):\n                return None\n            else:\n                candidate = frame\n                i = 0\n                while True:\n                    if is_comprehension_frame(candidate):\n                        candidate = candidate.f_back\n                        continue\n                    i += 1\n                    if self._is_traced_frame(candidate):\n                        break\n                    candidate = candidate.f_back\n                    if i >= self.depth or candidate is None or self._is_internal_frame(candidate):\n                        return None\n\n        thread_local = self.config.thread_local\n        thread_local.__dict__.setdefault('depth', -1)\n        frame_info = self.frame_infos[frame]\n        if event in ('call', 'enter'):\n            thread_local.depth += 1\n        elif self.config.last_frame and self.config.last_frame is not frame:\n            line_no = frame_info.last_line_no\n            trace_event = Event(frame_info, event, arg, thread_local.depth, line_no=line_no)\n            line = self.config.formatter.format_line_only(trace_event)\n            self.config.write(line)\n\n        if event == 'exception':\n            frame_info.had_exception = True\n\n        self.config.last_frame = frame\n\n        trace_event = Event(frame_info, event, arg, thread_local.depth)\n        if not (frame.f_code.co_name == '<genexpr>' and event not in ('return', 'exception')):\n            trace_event.variables = frame_info.update_variables(\n                self.watch,\n                self.config.watch_extras,\n                event,\n            )\n\n        if event in ('return', 'exit'):\n            del self.frame_infos[frame]\n            thread_local.depth -= 1\n\n        formatted = self.config.formatter.format(trace_event)\n        self.config.write(formatted)\n\n        return self.trace"
+    ],
+    [
         "LOAD_GLOBAL",
         "ensure_tuple"
     ],
@@ -1044,6 +1376,10 @@
         "ensure_tuple(watch)"
     ],
     [
+        "CALL_FUNCTION",
+        "[\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ]"
+    ],
+    [
         "LOAD_GLOBAL",
         "ensure_tuple"
     ],
@@ -1054,6 +1390,10 @@
     [
         "CALL_FUNCTION",
         "ensure_tuple(watch_explode)"
+    ],
+    [
+        "CALL_FUNCTION",
+        "[\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]"
     ],
     [
         "BINARY_ADD",
@@ -1144,6 +1484,14 @@
         "self.target_frames"
     ],
     [
+        "LOAD_FAST",
+        "[\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ]"
+    ],
+    [
+        "STORE_FAST",
+        "v"
+    ],
+    [
         "LOAD_GLOBAL",
         "isinstance"
     ],
@@ -1174,6 +1522,14 @@
     [
         "CALL_FUNCTION",
         "CommonVariable(v)"
+    ],
+    [
+        "LOAD_FAST",
+        "[\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]"
+    ],
+    [
+        "STORE_FAST",
+        "v"
     ],
     [
         "LOAD_GLOBAL",
@@ -1272,6 +1628,10 @@
         "functools.wraps(function)"
     ],
     [
+        "STORE_FAST",
+        "        @functools.wraps(function)\n        def simple_wrapper(*args, **kwargs):\n            with self:\n                return function(*args, **kwargs)"
+    ],
+    [
         "LOAD_GLOBAL",
         "functools"
     ],
@@ -1290,6 +1650,10 @@
     [
         "CALL_FUNCTION",
         "functools.wraps(function)"
+    ],
+    [
+        "STORE_FAST",
+        "        @functools.wraps(function)\n        def generator_wrapper(*args, **kwargs):\n            gen = function(*args, **kwargs)\n            method, incoming = gen.send, None\n            while True:\n                with self:\n                    try:\n                        outgoing = method(incoming)\n                    except StopIteration:\n                        return\n                try:\n                    method, incoming = gen.send, (yield outgoing)\n                except Exception as e:\n                    method, incoming = gen.throw, e"
     ],
     [
         "LOAD_GLOBAL",
@@ -1336,6 +1700,10 @@
         "function(*args, **kwargs)"
     ],
     [
+        "CALL_FUNCTION",
+        "            with self:\n                return function(*args, **kwargs)"
+    ],
+    [
         "LOAD_DEREF",
         "function"
     ],
@@ -1352,12 +1720,24 @@
         "function(*args, **kwargs)"
     ],
     [
+        "STORE_FAST",
+        "gen"
+    ],
+    [
         "LOAD_FAST",
         "gen"
     ],
     [
         "LOAD_ATTR",
         "gen.send"
+    ],
+    [
+        "STORE_FAST",
+        "method"
+    ],
+    [
+        "STORE_FAST",
+        "incoming"
     ],
     [
         "LOAD_DEREF",
@@ -1376,8 +1756,20 @@
         "method(incoming)"
     ],
     [
+        "STORE_FAST",
+        "outgoing"
+    ],
+    [
         "LOAD_GLOBAL",
         "StopIteration"
+    ],
+    [
+        "CALL_FUNCTION",
+        "                with self:\n                    try:\n                        outgoing = method(incoming)\n                    except StopIteration:\n                        return"
+    ],
+    [
+        "CALL_FUNCTION",
+        "                with self:\n                    try:\n                        outgoing = method(incoming)\n                    except StopIteration:\n                        return"
     ],
     [
         "LOAD_FAST",
@@ -1390,6 +1782,14 @@
     [
         "LOAD_FAST",
         "outgoing"
+    ],
+    [
+        "STORE_FAST",
+        "method"
+    ],
+    [
+        "STORE_FAST",
+        "incoming"
     ],
     [
         "LOAD_GLOBAL",
@@ -1406,6 +1806,14 @@
     [
         "LOAD_FAST",
         "e"
+    ],
+    [
+        "STORE_FAST",
+        "method"
+    ],
+    [
+        "STORE_FAST",
+        "incoming"
     ],
     [
         "LOAD_FAST",
@@ -1438,6 +1846,10 @@
     [
         "CALL_METHOD",
         "sys._getframe(context + 1)"
+    ],
+    [
+        "STORE_FAST",
+        "calling_frame"
     ],
     [
         "LOAD_FAST",
@@ -1540,6 +1952,10 @@
         "thread_global.__dict__.setdefault('original_trace_functions', [])"
     ],
     [
+        "STORE_FAST",
+        "stack"
+    ],
+    [
         "LOAD_FAST",
         "stack"
     ],
@@ -1604,6 +2020,10 @@
         "thread_global.original_trace_functions"
     ],
     [
+        "STORE_FAST",
+        "stack"
+    ],
+    [
         "LOAD_GLOBAL",
         "sys"
     ],
@@ -1646,6 +2066,10 @@
     [
         "CALL_METHOD",
         "sys._getframe(context + 1)"
+    ],
+    [
+        "STORE_FAST",
+        "calling_frame"
     ],
     [
         "LOAD_FAST",
@@ -1824,6 +2248,14 @@
         "frame"
     ],
     [
+        "STORE_FAST",
+        "candidate"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
         "LOAD_GLOBAL",
         "is_comprehension_frame"
     ],
@@ -1842,6 +2274,18 @@
     [
         "LOAD_ATTR",
         "candidate.f_back"
+    ],
+    [
+        "STORE_FAST",
+        "candidate"
+    ],
+    [
+        "LOAD_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "i"
     ],
     [
         "LOAD_FAST",
@@ -1866,6 +2310,10 @@
     [
         "LOAD_ATTR",
         "candidate.f_back"
+    ],
+    [
+        "STORE_FAST",
+        "candidate"
     ],
     [
         "LOAD_FAST",
@@ -1920,6 +2368,10 @@
         "self.config.thread_local"
     ],
     [
+        "STORE_FAST",
+        "thread_local"
+    ],
+    [
         "LOAD_FAST",
         "thread_local"
     ],
@@ -1952,6 +2404,10 @@
         "self.frame_infos[frame]"
     ],
     [
+        "STORE_FAST",
+        "frame_info"
+    ],
+    [
         "LOAD_FAST",
         "event"
     ],
@@ -1962,6 +2418,10 @@
     [
         "LOAD_FAST",
         "thread_local"
+    ],
+    [
+        "LOAD_ATTR",
+        "thread_local.depth"
     ],
     [
         "STORE_ATTR",
@@ -2008,6 +2468,10 @@
         "frame_info.last_line_no"
     ],
     [
+        "STORE_FAST",
+        "line_no"
+    ],
+    [
         "LOAD_GLOBAL",
         "Event"
     ],
@@ -2040,6 +2504,10 @@
         "Event(frame_info, event, arg, thread_local.depth, line_no=line_no)"
     ],
     [
+        "STORE_FAST",
+        "trace_event"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -2062,6 +2530,10 @@
     [
         "CALL_METHOD",
         "self.config.formatter.format_line_only(trace_event)"
+    ],
+    [
+        "STORE_FAST",
+        "line"
     ],
     [
         "LOAD_FAST",
@@ -2142,6 +2614,10 @@
     [
         "CALL_FUNCTION",
         "Event(frame_info, event, arg, thread_local.depth)"
+    ],
+    [
+        "STORE_FAST",
+        "trace_event"
     ],
     [
         "LOAD_FAST",
@@ -2232,8 +2708,16 @@
         "frame"
     ],
     [
+        "DELETE_SUBSCR",
+        "self.frame_infos[frame]"
+    ],
+    [
         "LOAD_FAST",
         "thread_local"
+    ],
+    [
+        "LOAD_ATTR",
+        "thread_local.depth"
     ],
     [
         "STORE_ATTR",
@@ -2264,6 +2748,10 @@
         "self.config.formatter.format(trace_event)"
     ],
     [
+        "STORE_FAST",
+        "formatted"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -2292,6 +2780,30 @@
         "self.trace"
     ],
     [
+        "LOAD_NAME",
+        "class Spy(object):\n    def __init__(self, config):\n        self.config = config\n\n    def __call__(self, *args, **kwargs):\n        if NO_ASTTOKENS:\n            raise Exception(\"birdseye doesn't support this version of Python\")\n\n        try:\n            import birdseye\n        except ImportError:\n            raise Exception(\"You must install birdseye separately to use spy: pip install birdseye\")\n\n        # Decorator without parentheses\n        if no_args_decorator(args, kwargs):\n            return self._trace(args[0])\n\n        # Decorator with parentheses and perhaps arguments\n        def decorator(func):\n            return self._trace(func, *args, **kwargs)\n\n        return decorator\n\n    def _trace(self, func, *args, **kwargs):\n        # noinspection PyUnresolvedReferences\n        from birdseye import eye\n\n        traced = eye(func)\n        traced = self.config.snoop(*args, **kwargs)(traced)\n\n        @functools.wraps(func)\n        def wrapper(*func_args, **func_kwargs):\n            if self.config.enabled:\n                final_func = traced\n            else:\n                final_func = func\n\n            return final_func(*func_args, **func_kwargs)\n\n        return wrapper"
+    ],
+    [
+        "STORE_NAME",
+        "class Spy(object):\n    def __init__(self, config):\n        self.config = config\n\n    def __call__(self, *args, **kwargs):\n        if NO_ASTTOKENS:\n            raise Exception(\"birdseye doesn't support this version of Python\")\n\n        try:\n            import birdseye\n        except ImportError:\n            raise Exception(\"You must install birdseye separately to use spy: pip install birdseye\")\n\n        # Decorator without parentheses\n        if no_args_decorator(args, kwargs):\n            return self._trace(args[0])\n\n        # Decorator with parentheses and perhaps arguments\n        def decorator(func):\n            return self._trace(func, *args, **kwargs)\n\n        return decorator\n\n    def _trace(self, func, *args, **kwargs):\n        # noinspection PyUnresolvedReferences\n        from birdseye import eye\n\n        traced = eye(func)\n        traced = self.config.snoop(*args, **kwargs)(traced)\n\n        @functools.wraps(func)\n        def wrapper(*func_args, **func_kwargs):\n            if self.config.enabled:\n                final_func = traced\n            else:\n                final_func = func\n\n            return final_func(*func_args, **func_kwargs)\n\n        return wrapper"
+    ],
+    [
+        "STORE_NAME",
+        "class Spy(object):\n    def __init__(self, config):\n        self.config = config\n\n    def __call__(self, *args, **kwargs):\n        if NO_ASTTOKENS:\n            raise Exception(\"birdseye doesn't support this version of Python\")\n\n        try:\n            import birdseye\n        except ImportError:\n            raise Exception(\"You must install birdseye separately to use spy: pip install birdseye\")\n\n        # Decorator without parentheses\n        if no_args_decorator(args, kwargs):\n            return self._trace(args[0])\n\n        # Decorator with parentheses and perhaps arguments\n        def decorator(func):\n            return self._trace(func, *args, **kwargs)\n\n        return decorator\n\n    def _trace(self, func, *args, **kwargs):\n        # noinspection PyUnresolvedReferences\n        from birdseye import eye\n\n        traced = eye(func)\n        traced = self.config.snoop(*args, **kwargs)(traced)\n\n        @functools.wraps(func)\n        def wrapper(*func_args, **func_kwargs):\n            if self.config.enabled:\n                final_func = traced\n            else:\n                final_func = func\n\n            return final_func(*func_args, **func_kwargs)\n\n        return wrapper"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self, config):\n        self.config = config"
+    ],
+    [
+        "STORE_NAME",
+        "    def __call__(self, *args, **kwargs):\n        if NO_ASTTOKENS:\n            raise Exception(\"birdseye doesn't support this version of Python\")\n\n        try:\n            import birdseye\n        except ImportError:\n            raise Exception(\"You must install birdseye separately to use spy: pip install birdseye\")\n\n        # Decorator without parentheses\n        if no_args_decorator(args, kwargs):\n            return self._trace(args[0])\n\n        # Decorator with parentheses and perhaps arguments\n        def decorator(func):\n            return self._trace(func, *args, **kwargs)\n\n        return decorator"
+    ],
+    [
+        "STORE_NAME",
+        "    def _trace(self, func, *args, **kwargs):\n        # noinspection PyUnresolvedReferences\n        from birdseye import eye\n\n        traced = eye(func)\n        traced = self.config.snoop(*args, **kwargs)(traced)\n\n        @functools.wraps(func)\n        def wrapper(*func_args, **func_kwargs):\n            if self.config.enabled:\n                final_func = traced\n            else:\n                final_func = func\n\n            return final_func(*func_args, **func_kwargs)\n\n        return wrapper"
+    ],
+    [
         "LOAD_FAST",
         "config"
     ],
@@ -2314,6 +2826,10 @@
     [
         "CALL_FUNCTION",
         "Exception(\"birdseye doesn't support this version of Python\")"
+    ],
+    [
+        "STORE_FAST",
+        "import birdseye"
     ],
     [
         "LOAD_GLOBAL",
@@ -2364,6 +2880,10 @@
         "self._trace(args[0])"
     ],
     [
+        "STORE_FAST",
+        "        def decorator(func):\n            return self._trace(func, *args, **kwargs)"
+    ],
+    [
         "LOAD_FAST",
         "decorator"
     ],
@@ -2392,6 +2912,10 @@
         "self._trace(func, *args, **kwargs)"
     ],
     [
+        "STORE_FAST",
+        "from birdseye import eye"
+    ],
+    [
         "LOAD_FAST",
         "eye"
     ],
@@ -2402,6 +2926,10 @@
     [
         "CALL_FUNCTION",
         "eye(func)"
+    ],
+    [
+        "STORE_DEREF",
+        "traced"
     ],
     [
         "LOAD_DEREF",
@@ -2436,6 +2964,10 @@
         "self.config.snoop(*args, **kwargs)(traced)"
     ],
     [
+        "STORE_DEREF",
+        "traced"
+    ],
+    [
         "LOAD_GLOBAL",
         "functools"
     ],
@@ -2454,6 +2986,10 @@
     [
         "CALL_FUNCTION",
         "functools.wraps(func)"
+    ],
+    [
+        "STORE_FAST",
+        "        @functools.wraps(func)\n        def wrapper(*func_args, **func_kwargs):\n            if self.config.enabled:\n                final_func = traced\n            else:\n                final_func = func\n\n            return final_func(*func_args, **func_kwargs)"
     ],
     [
         "LOAD_FAST",
@@ -2476,8 +3012,16 @@
         "traced"
     ],
     [
+        "STORE_FAST",
+        "final_func"
+    ],
+    [
         "LOAD_DEREF",
         "func"
+    ],
+    [
+        "STORE_FAST",
+        "final_func"
     ],
     [
         "LOAD_FAST",

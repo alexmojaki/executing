@@ -1,0 +1,1 @@
+path if '__DECODE_PATH__' else path

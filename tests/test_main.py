@@ -29,15 +29,17 @@ PYPY = 'pypy' in sys.version.lower()
 PY3 = sys.version_info[0] == 3
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import NodeFinder, get_instructions, function_node_types
+from executing.executing import NodeFinder, get_instructions, function_node_types, use_new_algo
 
-from executing._exceptions import VerifierFailure, KnownIssue
+from executing._exceptions import VerifierFailure, KnownIssue, MultipleMatches, NoMatch
+from executing._helper import py11
 
 from tests.deadcode import is_deadcode
 
 if eval("0"):
     global_never_defined = 1
 
+only_new_algo=pytest.mark.skipif( not use_new_algo, reason="Not supported by the SentinelNodeFinder")
 
 def calling_expression():
     frame = inspect.currentframe().f_back.f_back
@@ -144,8 +146,8 @@ class TestStuff(unittest.TestCase):
         Foo().foo()
         tester.check_decorators([3, 1, 0, 2, 0])
 
-    def not_found_prior_311(self):
-        if sys.version_info >= (3, 11):
+    def not_found_prior_new_algo(self):
+        if use_new_algo:
             from contextlib import nullcontext
 
             return nullcontext()
@@ -163,10 +165,10 @@ class TestStuff(unittest.TestCase):
 
         str([None for tester.a, (tester.b, tester.c) in [(1, (2, 3))]])
 
-        with self.not_found_prior_311():
+        with self.not_found_prior_new_algo():
             tester.a = tester.a = 1
 
-        with self.not_found_prior_311():
+        with self.not_found_prior_new_algo():
             tester.a, tester.a = 1, 2
 
     def test_setitem(self):
@@ -174,10 +176,10 @@ class TestStuff(unittest.TestCase):
         tester[:2] = 3
         tester['a'], tester.b = 8, 9
 
-        with self.not_found_prior_311():
+        with self.not_found_prior_new_algo():
             tester['a'] = tester['b'] = 1
 
-        with self.not_found_prior_311():
+        with self.not_found_prior_new_algo():
             tester['a'], tester['b'] = 1, 2
 
     def test_comprehensions(self):
@@ -193,7 +195,7 @@ class TestStuff(unittest.TestCase):
         if sys.version_info >= (3, 11):
             str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
         else:
-            with self.assertRaises(NotOneValueFound):
+            with self.assertRaises((NotOneValueFound,MultipleMatches)):
                 str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
 
     def test_lambda(self):
@@ -284,7 +286,7 @@ class TestStuff(unittest.TestCase):
                 node = new_node
             else:
                 self.assertIs(node, new_node)
-        self.assertLess(time.time() - start, 1)
+        self.assertLess(time.time() - start, 2)
 
     def test_many_source_for_filename_calls(self):
         source = None
@@ -395,6 +397,7 @@ class TestStuff(unittest.TestCase):
     def test_extended_arg(self):
         source = 'tester(6)\n%s\ntester(9)' % list(range(66000))
         _, filename = tempfile.mkstemp()
+        print(filename)
         code = compile(source, filename, 'exec')
         with open(filename, 'w') as outfile:
             outfile.write(source)
@@ -428,84 +431,87 @@ class TestStuff(unittest.TestCase):
         c.x = c.y = tester
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
+    @only_new_algo
     def test_store_attr_multiline(self):
-        if sys.version_info >= (3,11):
-            tester.x \
-            .y = 1
+        tester.x \
+        .y = 1
 
-            tester.x. \
-            y = 2
+        tester.x. \
+        y = 2
 
-            tester \
-            .x.y = 3
+        tester \
+        .x.y = 3
 
-            tester. \
-            x.y = 4
+        tester. \
+        x.y = 4
 
-            tester \
-            . \
-            x \
-            . \
-            y \
-            = \
-            4
-
-            tester \
-           . \
-          x \
-         . \
+        tester \
+        . \
+        x \
+        . \
         y \
-       = \
-      4
-            (tester
-           .
-          x
-         .
-        y
-       ) = 4
+        = \
+        4
 
+        tester \
+       . \
+      x \
+     . \
+    y \
+   = \
+  4
+        (tester
+       .
+      x
+     .
+    y
+   ) = 4
+
+    @only_new_algo
     def test_del_attr_multiline(self):
-        if sys.version_info >= (3,11):
-            del tester.x \
-            .y
 
-            del tester.x. \
-            y
+        del tester.x \
+        .y
 
-            del tester \
-            .x.y
+        del tester.x. \
+        y
 
-            del tester. \
-            x.y
+        del tester \
+        .x.y
 
+        del tester. \
+        x.y
+
+    @only_new_algo
     def test_method_call_multiline(self):
-        if sys.version_info >= (3,11):
-            tester.method(
-                tester,
-            ).other_method(
-                5
-            )
 
-            tester.a().b()\
-                .c().d()\
-                .e(tester.x1().x2()
-                .y1()
-                .y2()).foo.bar.spam()
+        tester.method(
+            tester,
+        ).other_method(
+            5
+        )
 
-            assert 5== tester.a\
-                    (tester).\
-                    b(5)
+        tester.a().b()\
+            .c().d()\
+            .e(tester.x1().x2()
+            .y1()
+            .y2()).foo.bar.spam()
 
+        assert 5== tester.a\
+                (tester).\
+                b(5)
+
+    @only_new_algo
     def test_call_things(self):
         # call things which are no methods or functions
-        if sys.version_info >= (3,11):
-            tester[5](5)
-            tester.some[5](5)
 
-            (tester+tester)(2)
+        tester[5](5)
+        tester.some[5](5)
 
-            tester(tester)(5)
-            tester.some(tester)(5)
+        (tester+tester)(2)
+
+        tester(tester)(5)
+        tester.some(tester)(5)
 
     def test_traceback(self):
         try:
@@ -561,18 +567,22 @@ class TestStuff(unittest.TestCase):
         foo()
         closure_not_defined_yet = 1  # noqa
 
+    @only_new_algo
     def test_with(self):
-        if sys.version_info >= (3, 11):
-            with tester:
-                pass
+        #TODO only __exit__ does not work
+        if sys.version_info >= (3,8) and not sys.version_info >= (3,10):
+            pytest.xfail()
 
-            with tester as a, tester() as b, tester.tester() as c:
-                a(b(c()))
+        with tester:
+            pass
 
+        with tester as a, tester() as b, tester.tester() as c:
+            a(b(c()))
+
+    @only_new_algo
     def test_listcomp(self):
-        if sys.version_info >= (3, 11):
-            result = [calling_expression() for e in [1]]
-            self.assertIsInstance(result[0], ast.ListComp)
+        result = [calling_expression() for e in [1]]
+        self.assertIsInstance(result[0], ast.ListComp)
 
     def test_decorator_cache_instruction(self):
         frame = inspect.currentframe()
@@ -586,6 +596,36 @@ class TestStuff(unittest.TestCase):
         @deco
         def foo():
             pass
+
+    def test_cpython_issue_100537(self):
+        def executing_working():
+            frame = inspect.currentframe().f_back
+            ex = Source.executing(frame)
+            return (
+                isinstance(ex.node, ast.Call)
+                and ex.node.func.id == executing_working.__name__
+            )
+
+        assert executing_working()
+
+        def broken_code():
+            # this breaks executing in 3.7 - 3.10
+            # see: https://github.com/python/cpython/issues/100537
+
+            # fmt: off
+            #unused = [v for v in [5]] == [
+            #    v  for v in [5]
+            #]
+            # fmt: on
+
+            #assert not executing_working()
+
+            def something():
+                assert executing_working()
+
+            something()
+
+        broken_code()
 
 
 def is_unary_not(node):
@@ -682,6 +722,9 @@ def test_small_samples(full_filename, result_filename):
         "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
         "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
         "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
+        "acc1d8132f178c485aa2238b87ad8831b1c4b3cd3a4189ae3e82399edfb45903",
+        "8fe94ee74887b182542b2781c81e4bbb90e9db6e923f453f53f12dd33bf35c70",
+        "469d6657206073f52501ca7a3376add6c909057479278dcd6b0453bd6da0fd76",
     ]
 
     skip_annotations = [
@@ -689,7 +732,7 @@ def test_small_samples(full_filename, result_filename):
         "9b3db37076d3c7c76bdfd9badcc70d8047584433e1eea89f45014453d58bbc43",
     ]
 
-    if any(s in full_filename for s in skip_sentinel) and sys.version_info < (3, 11):
+    if any(s in full_filename for s in skip_sentinel) and not use_new_algo:
         pytest.xfail("SentinelNodeFinder does not find some of the nodes (maybe a bug)")
 
     if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
@@ -701,6 +744,8 @@ def test_small_samples(full_filename, result_filename):
         in full_filename
     ):
         pytest.skip("recursion takes to long in 3.5")
+
+
 
     TestFiles().check_filename(full_filename, check_names=True)
 
@@ -782,7 +827,11 @@ class TestFiles:
         # increase the recursion limit in testing mode, because there are files out there with large ast-nodes
         # example: tests/small_samples/1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc.py
         sys.setrecursionlimit(3000)
-        source = Source.for_filename(filename)
+        try:
+            source = Source.for_filename(filename)
+        except SyntaxError:
+            print("skip %s" % filename)
+            return
 
         if source.tree is None:
             # we could not parse this file (maybe wrong python version)
@@ -791,8 +840,15 @@ class TestFiles:
 
         print("check %s"%filename)
 
-        if PY3 and sys.version_info < (3, 11):
-            code = compile(source.text, filename, "exec", dont_inherit=True)
+        # TODO: try to fix this later for the new_algo case
+        if PY3 and not use_new_algo:
+            try:
+                code = compile(source.text, filename, "exec", dont_inherit=True)
+            except SyntaxError:
+                print("skip %s" % filename)
+                return
+            
+
             for subcode, qualname in find_qualnames(code):
                 if not qualname.endswith(">"):
                     code_qualname = source.code_qualname(subcode)
@@ -829,7 +885,7 @@ class TestFiles:
             for node, values in nodes.items():
 
                 # skip some cases cases 
-                if sys.version_info < (3, 11):
+                if not use_new_algo:
                     if is_unary_not(node):
                         continue
 
@@ -841,7 +897,7 @@ class TestFiles:
                     if isinstance(ctx, ast.Store):
                         # Assignment to attributes and subscripts is less magical
                         # but can also fail fairly easily, so we can't guarantee
-                        # that every node can be identified with some instruction.
+                        # that every node can identified with some instruction.
                         continue
 
                     if isinstance(ctx, (ast.Del, getattr(ast, 'Param', ()))):
@@ -901,7 +957,7 @@ class TestFiles:
 
                         if isinstance(first_node.parent,(ast.If,ast.Assert,ast.While,ast.IfExp)) and first_node is first_node.parent.test:
                             continue
-                        if isinstance(first_node.parent,(ast.match_case)) and first_node is first_node.parent.guard:
+                        if sys.version_info >= (3,10) and isinstance(first_node.parent,(ast.match_case)) and first_node is first_node.parent.guard:
                             continue
                         if isinstance(first_node.parent,(ast.BoolOp,ast.Return)):
                             continue
@@ -956,7 +1012,18 @@ class TestFiles:
                     ):
                         continue
 
-                if sys.version_info >= (3, 10):
+                if sys.version_info >= (3,9):
+                    if isinstance(node,ast.Compare):
+                        # Compare is often mapped to if
+                        continue
+
+                if sys.version_info >= (3,8) and not sys.version_info >= (3,9) and isinstance(node, ast.Name) and isinstance(node.parent,ast.AugAssign):
+                    continue
+                    
+
+                if use_new_algo:
+                    correct = len(values) >= 1
+                elif sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
                     correct = len(values) > 1
@@ -973,7 +1040,9 @@ class TestFiles:
                     p("in file:", filename)
                     p("correct:", correct)
                     p("len(values):", len(values))
-                    p("values:", values)
+                    p("values:")
+                    for v in values:
+                        p(v[0])
                     p("deadcode:", is_deadcode(node))
 
                     p()
@@ -1038,19 +1107,75 @@ class TestFiles:
 
         return result
 
+    if sys.version_info >= (3,8) and not sys.version_info >= (3,10):
+
+        def instructions(self, instructions):
+            # python <3.10 generates deadcode
+            # this code reports only reachable instructions
+            # this would otherwise be a problem, because the index_node_finder can not map unreachable instructions
+            from executing._index_node_finder import end_of_block
+
+            instructions = list(instructions)
+            todo = [0]
+            done = set()
+            result=[]
+
+            jump_opcodes = dis.hasjrel + dis.hasjabs
+
+            while todo:
+                offset = todo.pop()
+                if offset in done:
+                    continue
+                done.add(offset)
+
+                index = offset // 2
+
+                if index >= len(instructions):
+                    continue
+
+                inst = instructions[index]
+
+                if inst.opcode in jump_opcodes:
+                    if inst.argval not in done:
+                        todo.append(inst.argval)
+
+                result.append((index, inst))
+
+                if inst.opcode in end_of_block:
+                    continue
+
+                if inst.opname in ("JUMP_ABSOLUTE", "JUMP_FORWARD"):
+                    continue
+
+                next_offset = offset + 2
+                if next_offset not in done:
+                    todo.append(next_offset)
+
+            return sorted(result)
+
+    else:
+
+        def instructions(self, instructions):
+            return enumerate(instructions)
+
     def check_code(self, code, nodes, decorators, check_names):
         linestarts = dict(dis.findlinestarts(code))
         instructions = list(get_instructions(code))
         lineno = None
-        for inst_index, inst in enumerate(instructions):
+
+        child_codes = []
+        for inst_index, inst in self.instructions(instructions):
             if hasattr(self, "start_time"):
                 if time.time() - self.start_time > 45 * 60:
                     # Avoid travis time limit of 50 minutes
                     raise TimeOut
 
-            py11 = sys.version_info >= (3, 11)
 
             lineno = linestarts.get(inst.offset, lineno)
+
+            if isinstance(inst.argval, type(code)):
+                child_codes.append(inst.argval)
+            
             if not (
                 inst.opname.startswith(
                     (
@@ -1078,7 +1203,7 @@ class TestFiles:
                     * check_names
                 )
                 or (
-                    py11
+                    use_new_algo
                     and inst.opname
                     in (
                         "LOAD_GLOBAL",
@@ -1122,6 +1247,7 @@ class TestFiles:
                 if inst.positions.lineno == None:
                     continue
 
+
             frame = C()
             frame.f_lasti = inst.offset
             frame.f_code = code
@@ -1135,6 +1261,20 @@ class TestFiles:
                 node = ex.node
 
             except KnownIssue:
+                continue
+
+            except OverflowError as e:
+                if str(e)=="line number table is too long":
+                    pytest.skip()
+
+            except MultipleMatches as matches:
+
+                # this safes us from "node without associated Bytecode" error
+                for node in matches.nodes:
+                    nodes[node].append((inst, frame.__dict__))
+                continue
+
+            except NoMatch:
                 continue
 
             except VerifierFailure as e:
@@ -1174,9 +1314,8 @@ class TestFiles:
 
                 raise
 
-            except Exception as e:
+            except (NotOneValueFound if use_new_algo else Exception) as e:
                 # continue for every case where this can be an known issue
-
 
                 if py11:
                     exact_options = []
@@ -1246,6 +1385,8 @@ class TestFiles:
                 ):
                     continue
 
+                    
+
                 # report more information for debugging
                 print("mapping failed")
 
@@ -1309,7 +1450,7 @@ class TestFiles:
             # `argval` isn't set for all relevant instructions in python 2
             # The relation between `ast.Name` and `argval` is already
             # covered by the verifier and much more complex in python 3.11 
-            if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
+            if isinstance(node, ast.Name) and (PY3 or inst.argval) and not use_new_algo:
                 assert inst.argval == node.id, (inst, ast.dump(node))
 
             if ex.decorator:
@@ -1320,10 +1461,9 @@ class TestFiles:
             yield [inst.opname, node_string(source, ex.decorator or node)]
 
         # do not use code.co_consts because they can contain deadcode https://github.com/python/cpython/issues/96833
-        for inst in instructions:
-            if isinstance(inst.argval, type(code)):
-                for x in self.check_code(inst.argval, nodes, decorators, check_names=check_names):
-                    yield x
+        for code in child_codes:
+            for x in self.check_code(code, nodes, decorators, check_names=check_names):
+                yield x
 
 
 def node_string(source, node):
@@ -1366,6 +1506,9 @@ def is_literal(node):
 
 
 def is_pattern(node):
+    if not sys.version_info >= (3,10):
+        return False
+
     while not isinstance(node, ast.pattern):
         if hasattr(node, "parent"):
             node = node.parent

@@ -1,5 +1,73 @@
 [
     [
+        "STORE_NAME",
+        "\"\"\"\nGet information about what a frame is currently doing. Typical usage:\n\n    import executing\n\n    node = executing.Source.executing(frame).node\n    # node will be an AST node or None\n\"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "import __future__"
+    ],
+    [
+        "STORE_NAME",
+        "import ast"
+    ],
+    [
+        "STORE_NAME",
+        "import dis"
+    ],
+    [
+        "STORE_NAME",
+        "import functools"
+    ],
+    [
+        "STORE_NAME",
+        "import inspect"
+    ],
+    [
+        "STORE_NAME",
+        "import io"
+    ],
+    [
+        "STORE_NAME",
+        "import linecache"
+    ],
+    [
+        "STORE_NAME",
+        "import sys"
+    ],
+    [
+        "STORE_NAME",
+        "from collections import defaultdict, namedtuple, Sized"
+    ],
+    [
+        "STORE_NAME",
+        "from collections import defaultdict, namedtuple, Sized"
+    ],
+    [
+        "STORE_NAME",
+        "from collections import defaultdict, namedtuple, Sized"
+    ],
+    [
+        "STORE_NAME",
+        "from itertools import islice"
+    ],
+    [
+        "STORE_NAME",
+        "from lib2to3.pgen2.tokenize import cookie_re as encoding_pattern"
+    ],
+    [
+        "STORE_NAME",
+        "from operator import attrgetter"
+    ],
+    [
+        "STORE_NAME",
+        "from threading import RLock"
+    ],
+    [
+        "STORE_NAME",
+        "__all__"
+    ],
+    [
         "LOAD_NAME",
         "sys"
     ],
@@ -16,8 +84,20 @@
         "sys.version_info[0] == 3"
     ],
     [
+        "STORE_NAME",
+        "PY3"
+    ],
+    [
         "LOAD_NAME",
         "PY3"
+    ],
+    [
+        "STORE_NAME",
+        "from functools import lru_cache"
+    ],
+    [
+        "STORE_NAME",
+        "from tokenize import detect_encoding"
     ],
     [
         "LOAD_NAME",
@@ -28,12 +108,32 @@
         "lru_cache(maxsize=None)"
     ],
     [
+        "STORE_NAME",
+        "cache"
+    ],
+    [
         "LOAD_NAME",
         "str"
     ],
     [
+        "STORE_NAME",
+        "text_type"
+    ],
+    [
+        "STORE_NAME",
+        "from lib2to3.pgen2.tokenize import detect_encoding"
+    ],
+    [
+        "STORE_NAME",
+        "    def cache(func):\n        d = {}\n\n        @functools.wraps(func)\n        def wrapper(*args):\n            if args in d:\n                return d[args]\n            result = d[args] = func(*args)\n            return result\n\n        return wrapper"
+    ],
+    [
         "LOAD_NAME",
         "unicode"
+    ],
+    [
+        "STORE_NAME",
+        "text_type"
     ],
     [
         "LOAD_NAME",
@@ -42,6 +142,10 @@
     [
         "LOAD_ATTR",
         "dis.get_instructions"
+    ],
+    [
+        "STORE_NAME",
+        "get_instructions"
     ],
     [
         "LOAD_NAME",
@@ -56,16 +160,68 @@
         "namedtuple('Instruction', 'offset argval opname')"
     ],
     [
+        "STORE_NAME",
+        "Instruction"
+    ],
+    [
+        "STORE_NAME",
+        "from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname"
+    ],
+    [
+        "STORE_NAME",
+        "from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname"
+    ],
+    [
+        "STORE_NAME",
+        "from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname"
+    ],
+    [
+        "STORE_NAME",
+        "from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname"
+    ],
+    [
+        "STORE_NAME",
+        "    def get_instructions(co):\n        code = co.co_code\n        n = len(code)\n        i = 0\n        extended_arg = 0\n        while i < n:\n            offset = i\n            c = code[i]\n            op = ord(c)\n            argval = None\n            i = i + 1\n            if op >= HAVE_ARGUMENT:\n                oparg = ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg\n                extended_arg = 0\n                i = i + 2\n                if op == EXTENDED_ARG:\n                    extended_arg = oparg * 65536\n\n                if op in hasconst:\n                    argval = co.co_consts[oparg]\n            yield Instruction(offset, argval, opname[op])"
+    ],
+    [
         "LOAD_NAME",
         "Exception"
     ],
     [
-        "LOAD_NAME",
-        "object"
+        "CALL_FUNCTION",
+        "class NotOneValueFound(Exception):\n    pass"
+    ],
+    [
+        "STORE_NAME",
+        "class NotOneValueFound(Exception):\n    pass"
+    ],
+    [
+        "STORE_NAME",
+        "def only(it):\n    if isinstance(it, Sized):\n        if len(it) != 1:\n            raise NotOneValueFound('Expected one value, found %s' % len(it))\n        # noinspection PyTypeChecker\n        return list(it)[0]\n\n    lst = tuple(islice(it, 2))\n    if len(lst) == 0:\n        raise NotOneValueFound('Expected one value, found 0')\n    if len(lst) > 1:\n        raise NotOneValueFound('Expected one value, found several')\n    return lst[0]"
     ],
     [
         "LOAD_NAME",
         "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class Source(object):\n    \"\"\"\n    The source code of a single file and associated metadata.\n\n    The main method of interest is the classmethod `executing(frame)`.\n\n    If you want an instance of this class, don't construct it.\n    Ideally use the classmethod `for_frame(frame)`.\n    If you don't have a frame, use `for_filename(filename [, module_globals])`.\n    These methods cache instances by filename, so at most one instance exists per filename.\n\n    Attributes:\n        - filename\n        - text\n        - tree: AST parsed from text, or None if text is not valid Python\n            All nodes in the tree have an extra `parent` attribute\n\n    Other methods of interest:\n        - statements_at_line\n        - asttokens\n        - code_qualname\n    \"\"\"\n\n    def __init__(self, filename, text):\n        \"\"\"\n        Don't call this constructor, see the class docstring.\n        \"\"\"\n\n        self.filename = filename\n\n        if not isinstance(text, text_type):\n            text = self.decode_source(text)\n        self.text = text\n\n        if PY3:\n            ast_text = text\n        else:\n            # In python 2 it's a syntax error to parse unicode\n            # with an encoding declaration, so we remove it but\n            # leave empty lines in its place to keep line numbers the same\n            ast_text = ''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])\n\n        self._nodes_by_line = defaultdict(list)\n        self.tree = None\n        self._qualnames = {}\n\n        if text:\n            try:\n                self.tree = ast.parse(ast_text, filename=filename)\n            except SyntaxError:\n                pass\n            else:\n                for node in ast.walk(self.tree):\n                    for child in ast.iter_child_nodes(node):\n                        child.parent = node\n                    if hasattr(node, 'lineno'):\n                        self._nodes_by_line[node.lineno].append(node)\n\n                visitor = QualnameVisitor()\n                visitor.visit(self.tree)\n                self._qualnames = visitor.qualnames\n\n    @classmethod\n    def for_frame(cls, frame):\n        \"\"\"\n        Returns the `Source` object corresponding to the file the frame is executing in.\n        \"\"\"\n        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})\n\n    @classmethod\n    def for_filename(cls, filename, module_globals=None):\n        source_cache = cls._class_local('__source_cache', {})\n        try:\n            return source_cache[filename]\n        except KeyError:\n            pass\n\n        lines = linecache.getlines(filename, module_globals)\n        result = source_cache[filename] = cls(filename, ''.join(lines))\n        return result\n\n    @classmethod\n    def lazycache(cls, frame):\n        if hasattr(linecache, 'lazycache'):\n            linecache.lazycache(frame.f_code.co_filename, frame.f_globals)\n\n    @classmethod\n    def executing(cls, frame):\n        \"\"\"\n        Returns an `Executing` object representing the operation\n        currently executing in the given frame.\n        \"\"\"\n        key = (frame.f_code, frame.f_lasti)\n        executing_cache = cls._class_local('__executing_cache', {})\n\n        try:\n            args = executing_cache[key]\n        except KeyError:\n            source = cls.for_frame(frame)\n            node = stmts = None\n            if source.tree:\n                stmts = source.statements_at_line(frame.f_lineno)\n                try:\n                    node = NodeFinder(frame, stmts, source.tree).result\n                except Exception:\n                    raise\n                else:\n                    new_stmts = {statement_containing_node(node)}\n                    assert new_stmts <= stmts\n                    stmts = new_stmts\n\n            args = source, node, stmts\n            executing_cache[key] = args\n\n        return Executing(frame, *args)\n\n    @classmethod\n    def _class_local(cls, name, default):\n        \"\"\"\n        Returns an attribute directly associated with this class\n        (as opposed to subclasses), setting default if necessary\n        \"\"\"\n        # classes have a mappingproxy preventing us from using setdefault\n        result = cls.__dict__.get(name, default)\n        setattr(cls, name, result)\n        return result\n\n    @cache\n    def statements_at_line(self, lineno):\n        \"\"\"\n        Returns the statement nodes overlapping the given line.\n\n        Returns at most one statement unless semicolons are present.\n\n        If the `text` attribute is not valid python, meaning\n        `tree` is None, returns an empty set.\n\n        Otherwise, `Source.for_frame(frame).statements_at_line(frame.f_lineno)`\n        should return at least one statement.\n        \"\"\"\n\n        return {\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }\n\n    @cache\n    def asttokens(self):\n        \"\"\"\n        Returns an ASTTokens object for getting the source of specific AST nodes.\n\n        See http://asttokens.readthedocs.io/en/latest/api-index.html\n        \"\"\"\n        from asttokens import ASTTokens  # must be installed separately\n        return ASTTokens(\n            self.text,\n            tree=self.tree,\n            filename=self.filename,\n        )\n\n    @staticmethod\n    def decode_source(source):\n        if isinstance(source, bytes):\n            encoding, _ = detect_encoding(io.BytesIO(source).readline)\n            source = source.decode(encoding)\n        return source\n\n    def code_qualname(self, code):\n        \"\"\"\n        Imitates the __qualname__ attribute of functions for code objects.\n        Given:\n\n            - A function `func`\n            - A frame `frame` for an execution of `func`, meaning:\n                `frame.f_code is func.__code__`\n\n        `Source.for_frame(frame).code_qualname(frame.f_code)`\n        will be equal to `func.__qualname__`*. Works for Python 2 as well,\n        where of course no `__qualname__` attribute exists.\n\n        Falls back to `code.co_name` if there is no appropriate qualname.\n\n        Based on https://github.com/wbolster/qualname\n\n        (* unless `func` is a lambda\n        nested inside another lambda on the same line, in which case\n        the outer lambda's qualname will be returned for the codes\n        of both lambdas)\n        \"\"\"\n        assert code.co_filename == self.filename\n        return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
+    ],
+    [
+        "STORE_NAME",
+        "class Source(object):\n    \"\"\"\n    The source code of a single file and associated metadata.\n\n    The main method of interest is the classmethod `executing(frame)`.\n\n    If you want an instance of this class, don't construct it.\n    Ideally use the classmethod `for_frame(frame)`.\n    If you don't have a frame, use `for_filename(filename [, module_globals])`.\n    These methods cache instances by filename, so at most one instance exists per filename.\n\n    Attributes:\n        - filename\n        - text\n        - tree: AST parsed from text, or None if text is not valid Python\n            All nodes in the tree have an extra `parent` attribute\n\n    Other methods of interest:\n        - statements_at_line\n        - asttokens\n        - code_qualname\n    \"\"\"\n\n    def __init__(self, filename, text):\n        \"\"\"\n        Don't call this constructor, see the class docstring.\n        \"\"\"\n\n        self.filename = filename\n\n        if not isinstance(text, text_type):\n            text = self.decode_source(text)\n        self.text = text\n\n        if PY3:\n            ast_text = text\n        else:\n            # In python 2 it's a syntax error to parse unicode\n            # with an encoding declaration, so we remove it but\n            # leave empty lines in its place to keep line numbers the same\n            ast_text = ''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])\n\n        self._nodes_by_line = defaultdict(list)\n        self.tree = None\n        self._qualnames = {}\n\n        if text:\n            try:\n                self.tree = ast.parse(ast_text, filename=filename)\n            except SyntaxError:\n                pass\n            else:\n                for node in ast.walk(self.tree):\n                    for child in ast.iter_child_nodes(node):\n                        child.parent = node\n                    if hasattr(node, 'lineno'):\n                        self._nodes_by_line[node.lineno].append(node)\n\n                visitor = QualnameVisitor()\n                visitor.visit(self.tree)\n                self._qualnames = visitor.qualnames\n\n    @classmethod\n    def for_frame(cls, frame):\n        \"\"\"\n        Returns the `Source` object corresponding to the file the frame is executing in.\n        \"\"\"\n        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})\n\n    @classmethod\n    def for_filename(cls, filename, module_globals=None):\n        source_cache = cls._class_local('__source_cache', {})\n        try:\n            return source_cache[filename]\n        except KeyError:\n            pass\n\n        lines = linecache.getlines(filename, module_globals)\n        result = source_cache[filename] = cls(filename, ''.join(lines))\n        return result\n\n    @classmethod\n    def lazycache(cls, frame):\n        if hasattr(linecache, 'lazycache'):\n            linecache.lazycache(frame.f_code.co_filename, frame.f_globals)\n\n    @classmethod\n    def executing(cls, frame):\n        \"\"\"\n        Returns an `Executing` object representing the operation\n        currently executing in the given frame.\n        \"\"\"\n        key = (frame.f_code, frame.f_lasti)\n        executing_cache = cls._class_local('__executing_cache', {})\n\n        try:\n            args = executing_cache[key]\n        except KeyError:\n            source = cls.for_frame(frame)\n            node = stmts = None\n            if source.tree:\n                stmts = source.statements_at_line(frame.f_lineno)\n                try:\n                    node = NodeFinder(frame, stmts, source.tree).result\n                except Exception:\n                    raise\n                else:\n                    new_stmts = {statement_containing_node(node)}\n                    assert new_stmts <= stmts\n                    stmts = new_stmts\n\n            args = source, node, stmts\n            executing_cache[key] = args\n\n        return Executing(frame, *args)\n\n    @classmethod\n    def _class_local(cls, name, default):\n        \"\"\"\n        Returns an attribute directly associated with this class\n        (as opposed to subclasses), setting default if necessary\n        \"\"\"\n        # classes have a mappingproxy preventing us from using setdefault\n        result = cls.__dict__.get(name, default)\n        setattr(cls, name, result)\n        return result\n\n    @cache\n    def statements_at_line(self, lineno):\n        \"\"\"\n        Returns the statement nodes overlapping the given line.\n\n        Returns at most one statement unless semicolons are present.\n\n        If the `text` attribute is not valid python, meaning\n        `tree` is None, returns an empty set.\n\n        Otherwise, `Source.for_frame(frame).statements_at_line(frame.f_lineno)`\n        should return at least one statement.\n        \"\"\"\n\n        return {\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }\n\n    @cache\n    def asttokens(self):\n        \"\"\"\n        Returns an ASTTokens object for getting the source of specific AST nodes.\n\n        See http://asttokens.readthedocs.io/en/latest/api-index.html\n        \"\"\"\n        from asttokens import ASTTokens  # must be installed separately\n        return ASTTokens(\n            self.text,\n            tree=self.tree,\n            filename=self.filename,\n        )\n\n    @staticmethod\n    def decode_source(source):\n        if isinstance(source, bytes):\n            encoding, _ = detect_encoding(io.BytesIO(source).readline)\n            source = source.decode(encoding)\n        return source\n\n    def code_qualname(self, code):\n        \"\"\"\n        Imitates the __qualname__ attribute of functions for code objects.\n        Given:\n\n            - A function `func`\n            - A frame `frame` for an execution of `func`, meaning:\n                `frame.f_code is func.__code__`\n\n        `Source.for_frame(frame).code_qualname(frame.f_code)`\n        will be equal to `func.__qualname__`*. Works for Python 2 as well,\n        where of course no `__qualname__` attribute exists.\n\n        Falls back to `code.co_name` if there is no appropriate qualname.\n\n        Based on https://github.com/wbolster/qualname\n\n        (* unless `func` is a lambda\n        nested inside another lambda on the same line, in which case\n        the outer lambda's qualname will be returned for the codes\n        of both lambdas)\n        \"\"\"\n        assert code.co_filename == self.filename\n        return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
+    ],
+    [
+        "LOAD_NAME",
+        "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class Executing(object):\n    \"\"\"\n    Information about the operation a frame is currently executing.\n\n    Generally you will just want `node`, which is the AST node being executed,\n    or None if it's unknown.\n    Currently `node` can only be an `ast.Call` object, other operations\n    will be supported in future.\n    \"\"\"\n\n    def __init__(self, frame, source, node, stmts):\n        self.frame = frame\n        self.source = source\n        self.node = node\n        self.statements = stmts\n\n    def code_qualname(self):\n        return self.source.code_qualname(self.frame.f_code)\n\n    def text(self):\n        return self.source.asttokens().get_text(self.node)\n\n    def text_range(self):\n        return self.source.asttokens().get_text_range(self.node)"
+    ],
+    [
+        "STORE_NAME",
+        "class Executing(object):\n    \"\"\"\n    Information about the operation a frame is currently executing.\n\n    Generally you will just want `node`, which is the AST node being executed,\n    or None if it's unknown.\n    Currently `node` can only be an `ast.Call` object, other operations\n    will be supported in future.\n    \"\"\"\n\n    def __init__(self, frame, source, node, stmts):\n        self.frame = frame\n        self.source = source\n        self.node = node\n        self.statements = stmts\n\n    def code_qualname(self):\n        return self.source.code_qualname(self.frame.f_code)\n\n    def text(self):\n        return self.source.asttokens().get_text(self.node)\n\n    def text_range(self):\n        return self.source.asttokens().get_text_range(self.node)"
     ],
     [
         "LOAD_NAME",
@@ -74,6 +230,14 @@
     [
         "LOAD_ATTR",
         "ast.NodeVisitor"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class QualnameVisitor(ast.NodeVisitor):\n    def __init__(self):\n        super(QualnameVisitor, self).__init__()\n        self.stack = []\n        self.qualnames = {}\n\n    def visit_FunctionDef(self, node, name=None):\n        name = name or node.name\n        self.stack.append(name)\n        self.qualnames.setdefault((name, node.lineno), \".\".join(self.stack))\n\n        self.stack.append('<locals>')\n        if isinstance(node, ast.Lambda):\n            children = [node.body]\n        else:\n            children = node.body\n        for child in children:\n            self.visit(child)\n        self.stack.pop()\n        self.stack.pop()\n\n        # Find lambdas in the function definition outside the body,\n        # e.g. decorators or default arguments\n        # Based on iter_child_nodes\n        for field, child in ast.iter_fields(node):\n            if field == 'body':\n                continue\n            if isinstance(child, ast.AST):\n                self.visit(child)\n            elif isinstance(child, list):\n                for grandchild in child:\n                    if isinstance(grandchild, ast.AST):\n                        self.visit(grandchild)\n\n    def visit_Lambda(self, node):\n        self.visit_FunctionDef(node, '<lambda>')\n\n    def visit_ClassDef(self, node):\n        self.stack.append(node.name)\n        self.generic_visit(node)\n        self.stack.pop()"
+    ],
+    [
+        "STORE_NAME",
+        "class QualnameVisitor(ast.NodeVisitor):\n    def __init__(self):\n        super(QualnameVisitor, self).__init__()\n        self.stack = []\n        self.qualnames = {}\n\n    def visit_FunctionDef(self, node, name=None):\n        name = name or node.name\n        self.stack.append(name)\n        self.qualnames.setdefault((name, node.lineno), \".\".join(self.stack))\n\n        self.stack.append('<locals>')\n        if isinstance(node, ast.Lambda):\n            children = [node.body]\n        else:\n            children = node.body\n        for child in children:\n            self.visit(child)\n        self.stack.pop()\n        self.stack.pop()\n\n        # Find lambdas in the function definition outside the body,\n        # e.g. decorators or default arguments\n        # Based on iter_child_nodes\n        for field, child in ast.iter_fields(node):\n            if field == 'body':\n                continue\n            if isinstance(child, ast.AST):\n                self.visit(child)\n            elif isinstance(child, list):\n                for grandchild in child:\n                    if isinstance(grandchild, ast.AST):\n                        self.visit(grandchild)\n\n    def visit_Lambda(self, node):\n        self.visit_FunctionDef(node, '<lambda>')\n\n    def visit_ClassDef(self, node):\n        self.stack.append(node.name)\n        self.generic_visit(node)\n        self.stack.pop()"
     ],
     [
         "LOAD_NAME",
@@ -89,11 +253,39 @@
     ],
     [
         "CALL_FUNCTION",
+        "(\n    getattr(__future__, fname).compiler_flag\n    for fname in __future__.all_feature_names\n)"
+    ],
+    [
+        "CALL_FUNCTION",
         "sum(\n    getattr(__future__, fname).compiler_flag\n    for fname in __future__.all_feature_names\n)"
+    ],
+    [
+        "STORE_NAME",
+        "future_flags"
+    ],
+    [
+        "STORE_NAME",
+        "def compile_similar_to(source, matching_code):\n    return compile(\n        source,\n        matching_code.co_filename,\n        'exec',\n        flags=future_flags & matching_code.co_flags,\n        dont_inherit=True,\n    )"
+    ],
+    [
+        "STORE_NAME",
+        "sentinel"
     ],
     [
         "LOAD_NAME",
         "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class NodeFinder(object):\n    def __init__(self, frame, stmts, tree):\n        self.frame = frame\n        self.tree = tree\n\n        b = frame.f_code.co_code[frame.f_lasti]\n        if not PY3:\n            b = ord(b)\n        op_name = dis.opname[b]\n\n        if op_name.startswith('CALL_'):\n            typ = ast.Call\n        elif op_name == 'BINARY_SUBSCR':\n            typ = ast.Subscript\n        elif op_name.startswith('BINARY_'):\n            typ = ast.BinOp\n        elif op_name.startswith('UNARY_'):\n            typ = ast.UnaryOp\n        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):\n            typ = ast.Attribute\n        elif op_name == 'COMPARE_OP':\n            typ = ast.Compare\n        else:\n            raise RuntimeError(op_name)\n\n        with lock:\n            exprs = {\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }\n\n            self.result = only(list(self.matching_nodes(exprs)))\n\n    def matching_nodes(self, exprs):\n        for i, expr in enumerate(exprs):\n            setter = get_setter(expr)\n            replacement = ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )\n            ast.fix_missing_locations(replacement)\n            setter(replacement)\n            try:\n                instructions = self.compile_instructions()\n            except SyntaxError:\n                continue\n            finally:\n                setter(expr)\n            indices = [\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]\n            if not indices:\n                continue\n            arg_index = only(indices) - 1\n            while instructions[arg_index].opname == 'EXTENDED_ARG':\n                arg_index -= 1\n\n            if instructions[arg_index].offset == self.frame.f_lasti:\n                yield expr\n\n    def compile_instructions(self):\n        module_code = compile_similar_to(self.tree, self.frame.f_code)\n        code = only(find_codes(module_code, self.frame.f_code))\n        return list(get_instructions(code))"
+    ],
+    [
+        "STORE_NAME",
+        "class NodeFinder(object):\n    def __init__(self, frame, stmts, tree):\n        self.frame = frame\n        self.tree = tree\n\n        b = frame.f_code.co_code[frame.f_lasti]\n        if not PY3:\n            b = ord(b)\n        op_name = dis.opname[b]\n\n        if op_name.startswith('CALL_'):\n            typ = ast.Call\n        elif op_name == 'BINARY_SUBSCR':\n            typ = ast.Subscript\n        elif op_name.startswith('BINARY_'):\n            typ = ast.BinOp\n        elif op_name.startswith('UNARY_'):\n            typ = ast.UnaryOp\n        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):\n            typ = ast.Attribute\n        elif op_name == 'COMPARE_OP':\n            typ = ast.Compare\n        else:\n            raise RuntimeError(op_name)\n\n        with lock:\n            exprs = {\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }\n\n            self.result = only(list(self.matching_nodes(exprs)))\n\n    def matching_nodes(self, exprs):\n        for i, expr in enumerate(exprs):\n            setter = get_setter(expr)\n            replacement = ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )\n            ast.fix_missing_locations(replacement)\n            setter(replacement)\n            try:\n                instructions = self.compile_instructions()\n            except SyntaxError:\n                continue\n            finally:\n                setter(expr)\n            indices = [\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]\n            if not indices:\n                continue\n            arg_index = only(indices) - 1\n            while instructions[arg_index].opname == 'EXTENDED_ARG':\n                arg_index -= 1\n\n            if instructions[arg_index].offset == self.frame.f_lasti:\n                yield expr\n\n    def compile_instructions(self):\n        module_code = compile_similar_to(self.tree, self.frame.f_code)\n        code = only(find_codes(module_code, self.frame.f_code))\n        return list(get_instructions(code))"
+    ],
+    [
+        "STORE_NAME",
+        "def get_setter(node):\n    parent = node.parent\n    for name, field in ast.iter_fields(parent):\n        if field is node:\n            return lambda new_node: setattr(parent, name, new_node)\n        elif isinstance(field, list):\n            for i, item in enumerate(field):\n                if item is node:\n                    def setter(new_node):\n                        field[i] = new_node\n\n                    return setter"
     ],
     [
         "LOAD_NAME",
@@ -104,12 +296,32 @@
         "RLock()"
     ],
     [
+        "STORE_NAME",
+        "lock"
+    ],
+    [
+        "STORE_NAME",
+        "def find_codes(root_code, matching):\n    def matches(c):\n        return all(\n            f(c) == f(matching)\n            for f in [\n                attrgetter('co_firstlineno'),\n                attrgetter('co_name'),\n                code_names,\n            ]\n        )\n\n    code_options = []\n    if matches(root_code):\n        code_options.append(root_code)\n\n    def finder(code):\n        for const in code.co_consts:\n            if not inspect.iscode(const):\n                continue\n\n            if matches(const):\n                code_options.append(const)\n            finder(const)\n\n    finder(root_code)\n    return code_options"
+    ],
+    [
+        "STORE_NAME",
+        "def code_names(code):\n    return frozenset().union(\n        code.co_names,\n        code.co_varnames,\n        code.co_freevars,\n        code.co_cellvars,\n    )"
+    ],
+    [
         "LOAD_NAME",
         "cache"
     ],
     [
         "CALL_FUNCTION",
         "cache"
+    ],
+    [
+        "STORE_NAME",
+        "@cache\ndef statement_containing_node(node):\n    while not isinstance(node, ast.stmt):\n        node = node.parent\n    return node"
+    ],
+    [
+        "STORE_DEREF",
+        "d"
     ],
     [
         "LOAD_GLOBAL",
@@ -130,6 +342,10 @@
     [
         "CALL_FUNCTION",
         "functools.wraps(func)"
+    ],
+    [
+        "STORE_FAST",
+        "        @functools.wraps(func)\n        def wrapper(*args):\n            if args in d:\n                return d[args]\n            result = d[args] = func(*args)\n            return result"
     ],
     [
         "LOAD_FAST",
@@ -172,6 +388,10 @@
         "func(*args)"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_DEREF",
         "d"
     ],
@@ -196,6 +416,10 @@
         "co.co_code"
     ],
     [
+        "STORE_FAST",
+        "code"
+    ],
+    [
         "LOAD_GLOBAL",
         "len"
     ],
@@ -206,6 +430,18 @@
     [
         "CALL_FUNCTION",
         "len(code)"
+    ],
+    [
+        "STORE_FAST",
+        "n"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "extended_arg"
     ],
     [
         "LOAD_FAST",
@@ -224,6 +460,10 @@
         "i"
     ],
     [
+        "STORE_FAST",
+        "offset"
+    ],
+    [
         "LOAD_FAST",
         "code"
     ],
@@ -234,6 +474,10 @@
     [
         "BINARY_SUBSCR",
         "code[i]"
+    ],
+    [
+        "STORE_FAST",
+        "c"
     ],
     [
         "LOAD_GLOBAL",
@@ -248,12 +492,24 @@
         "ord(c)"
     ],
     [
+        "STORE_FAST",
+        "op"
+    ],
+    [
+        "STORE_FAST",
+        "argval"
+    ],
+    [
         "LOAD_FAST",
         "i"
     ],
     [
         "BINARY_ADD",
         "i + 1"
+    ],
+    [
+        "STORE_FAST",
+        "i"
     ],
     [
         "LOAD_FAST",
@@ -328,12 +584,24 @@
         "ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg"
     ],
     [
+        "STORE_FAST",
+        "oparg"
+    ],
+    [
+        "STORE_FAST",
+        "extended_arg"
+    ],
+    [
         "LOAD_FAST",
         "i"
     ],
     [
         "BINARY_ADD",
         "i + 2"
+    ],
+    [
+        "STORE_FAST",
+        "i"
     ],
     [
         "LOAD_FAST",
@@ -354,6 +622,10 @@
     [
         "BINARY_MULTIPLY",
         "oparg * 65536"
+    ],
+    [
+        "STORE_FAST",
+        "extended_arg"
     ],
     [
         "LOAD_FAST",
@@ -384,6 +656,10 @@
         "co.co_consts[oparg]"
     ],
     [
+        "STORE_FAST",
+        "argval"
+    ],
+    [
         "LOAD_GLOBAL",
         "Instruction"
     ],
@@ -410,6 +686,18 @@
     [
         "CALL_FUNCTION",
         "Instruction(offset, argval, opname[op])"
+    ],
+    [
+        "LOAD_NAME",
+        "class NotOneValueFound(Exception):\n    pass"
+    ],
+    [
+        "STORE_NAME",
+        "class NotOneValueFound(Exception):\n    pass"
+    ],
+    [
+        "STORE_NAME",
+        "class NotOneValueFound(Exception):\n    pass"
     ],
     [
         "LOAD_GLOBAL",
@@ -504,6 +792,10 @@
         "tuple(islice(it, 2))"
     ],
     [
+        "STORE_FAST",
+        "lst"
+    ],
+    [
         "LOAD_GLOBAL",
         "len"
     ],
@@ -561,27 +853,23 @@
     ],
     [
         "LOAD_NAME",
-        "classmethod"
+        "class Source(object):\n    \"\"\"\n    The source code of a single file and associated metadata.\n\n    The main method of interest is the classmethod `executing(frame)`.\n\n    If you want an instance of this class, don't construct it.\n    Ideally use the classmethod `for_frame(frame)`.\n    If you don't have a frame, use `for_filename(filename [, module_globals])`.\n    These methods cache instances by filename, so at most one instance exists per filename.\n\n    Attributes:\n        - filename\n        - text\n        - tree: AST parsed from text, or None if text is not valid Python\n            All nodes in the tree have an extra `parent` attribute\n\n    Other methods of interest:\n        - statements_at_line\n        - asttokens\n        - code_qualname\n    \"\"\"\n\n    def __init__(self, filename, text):\n        \"\"\"\n        Don't call this constructor, see the class docstring.\n        \"\"\"\n\n        self.filename = filename\n\n        if not isinstance(text, text_type):\n            text = self.decode_source(text)\n        self.text = text\n\n        if PY3:\n            ast_text = text\n        else:\n            # In python 2 it's a syntax error to parse unicode\n            # with an encoding declaration, so we remove it but\n            # leave empty lines in its place to keep line numbers the same\n            ast_text = ''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])\n\n        self._nodes_by_line = defaultdict(list)\n        self.tree = None\n        self._qualnames = {}\n\n        if text:\n            try:\n                self.tree = ast.parse(ast_text, filename=filename)\n            except SyntaxError:\n                pass\n            else:\n                for node in ast.walk(self.tree):\n                    for child in ast.iter_child_nodes(node):\n                        child.parent = node\n                    if hasattr(node, 'lineno'):\n                        self._nodes_by_line[node.lineno].append(node)\n\n                visitor = QualnameVisitor()\n                visitor.visit(self.tree)\n                self._qualnames = visitor.qualnames\n\n    @classmethod\n    def for_frame(cls, frame):\n        \"\"\"\n        Returns the `Source` object corresponding to the file the frame is executing in.\n        \"\"\"\n        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})\n\n    @classmethod\n    def for_filename(cls, filename, module_globals=None):\n        source_cache = cls._class_local('__source_cache', {})\n        try:\n            return source_cache[filename]\n        except KeyError:\n            pass\n\n        lines = linecache.getlines(filename, module_globals)\n        result = source_cache[filename] = cls(filename, ''.join(lines))\n        return result\n\n    @classmethod\n    def lazycache(cls, frame):\n        if hasattr(linecache, 'lazycache'):\n            linecache.lazycache(frame.f_code.co_filename, frame.f_globals)\n\n    @classmethod\n    def executing(cls, frame):\n        \"\"\"\n        Returns an `Executing` object representing the operation\n        currently executing in the given frame.\n        \"\"\"\n        key = (frame.f_code, frame.f_lasti)\n        executing_cache = cls._class_local('__executing_cache', {})\n\n        try:\n            args = executing_cache[key]\n        except KeyError:\n            source = cls.for_frame(frame)\n            node = stmts = None\n            if source.tree:\n                stmts = source.statements_at_line(frame.f_lineno)\n                try:\n                    node = NodeFinder(frame, stmts, source.tree).result\n                except Exception:\n                    raise\n                else:\n                    new_stmts = {statement_containing_node(node)}\n                    assert new_stmts <= stmts\n                    stmts = new_stmts\n\n            args = source, node, stmts\n            executing_cache[key] = args\n\n        return Executing(frame, *args)\n\n    @classmethod\n    def _class_local(cls, name, default):\n        \"\"\"\n        Returns an attribute directly associated with this class\n        (as opposed to subclasses), setting default if necessary\n        \"\"\"\n        # classes have a mappingproxy preventing us from using setdefault\n        result = cls.__dict__.get(name, default)\n        setattr(cls, name, result)\n        return result\n\n    @cache\n    def statements_at_line(self, lineno):\n        \"\"\"\n        Returns the statement nodes overlapping the given line.\n\n        Returns at most one statement unless semicolons are present.\n\n        If the `text` attribute is not valid python, meaning\n        `tree` is None, returns an empty set.\n\n        Otherwise, `Source.for_frame(frame).statements_at_line(frame.f_lineno)`\n        should return at least one statement.\n        \"\"\"\n\n        return {\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }\n\n    @cache\n    def asttokens(self):\n        \"\"\"\n        Returns an ASTTokens object for getting the source of specific AST nodes.\n\n        See http://asttokens.readthedocs.io/en/latest/api-index.html\n        \"\"\"\n        from asttokens import ASTTokens  # must be installed separately\n        return ASTTokens(\n            self.text,\n            tree=self.tree,\n            filename=self.filename,\n        )\n\n    @staticmethod\n    def decode_source(source):\n        if isinstance(source, bytes):\n            encoding, _ = detect_encoding(io.BytesIO(source).readline)\n            source = source.decode(encoding)\n        return source\n\n    def code_qualname(self, code):\n        \"\"\"\n        Imitates the __qualname__ attribute of functions for code objects.\n        Given:\n\n            - A function `func`\n            - A frame `frame` for an execution of `func`, meaning:\n                `frame.f_code is func.__code__`\n\n        `Source.for_frame(frame).code_qualname(frame.f_code)`\n        will be equal to `func.__qualname__`*. Works for Python 2 as well,\n        where of course no `__qualname__` attribute exists.\n\n        Falls back to `code.co_name` if there is no appropriate qualname.\n\n        Based on https://github.com/wbolster/qualname\n\n        (* unless `func` is a lambda\n        nested inside another lambda on the same line, in which case\n        the outer lambda's qualname will be returned for the codes\n        of both lambdas)\n        \"\"\"\n        assert code.co_filename == self.filename\n        return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
     ],
     [
-        "CALL_FUNCTION",
-        "classmethod"
+        "STORE_NAME",
+        "class Source(object):\n    \"\"\"\n    The source code of a single file and associated metadata.\n\n    The main method of interest is the classmethod `executing(frame)`.\n\n    If you want an instance of this class, don't construct it.\n    Ideally use the classmethod `for_frame(frame)`.\n    If you don't have a frame, use `for_filename(filename [, module_globals])`.\n    These methods cache instances by filename, so at most one instance exists per filename.\n\n    Attributes:\n        - filename\n        - text\n        - tree: AST parsed from text, or None if text is not valid Python\n            All nodes in the tree have an extra `parent` attribute\n\n    Other methods of interest:\n        - statements_at_line\n        - asttokens\n        - code_qualname\n    \"\"\"\n\n    def __init__(self, filename, text):\n        \"\"\"\n        Don't call this constructor, see the class docstring.\n        \"\"\"\n\n        self.filename = filename\n\n        if not isinstance(text, text_type):\n            text = self.decode_source(text)\n        self.text = text\n\n        if PY3:\n            ast_text = text\n        else:\n            # In python 2 it's a syntax error to parse unicode\n            # with an encoding declaration, so we remove it but\n            # leave empty lines in its place to keep line numbers the same\n            ast_text = ''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])\n\n        self._nodes_by_line = defaultdict(list)\n        self.tree = None\n        self._qualnames = {}\n\n        if text:\n            try:\n                self.tree = ast.parse(ast_text, filename=filename)\n            except SyntaxError:\n                pass\n            else:\n                for node in ast.walk(self.tree):\n                    for child in ast.iter_child_nodes(node):\n                        child.parent = node\n                    if hasattr(node, 'lineno'):\n                        self._nodes_by_line[node.lineno].append(node)\n\n                visitor = QualnameVisitor()\n                visitor.visit(self.tree)\n                self._qualnames = visitor.qualnames\n\n    @classmethod\n    def for_frame(cls, frame):\n        \"\"\"\n        Returns the `Source` object corresponding to the file the frame is executing in.\n        \"\"\"\n        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})\n\n    @classmethod\n    def for_filename(cls, filename, module_globals=None):\n        source_cache = cls._class_local('__source_cache', {})\n        try:\n            return source_cache[filename]\n        except KeyError:\n            pass\n\n        lines = linecache.getlines(filename, module_globals)\n        result = source_cache[filename] = cls(filename, ''.join(lines))\n        return result\n\n    @classmethod\n    def lazycache(cls, frame):\n        if hasattr(linecache, 'lazycache'):\n            linecache.lazycache(frame.f_code.co_filename, frame.f_globals)\n\n    @classmethod\n    def executing(cls, frame):\n        \"\"\"\n        Returns an `Executing` object representing the operation\n        currently executing in the given frame.\n        \"\"\"\n        key = (frame.f_code, frame.f_lasti)\n        executing_cache = cls._class_local('__executing_cache', {})\n\n        try:\n            args = executing_cache[key]\n        except KeyError:\n            source = cls.for_frame(frame)\n            node = stmts = None\n            if source.tree:\n                stmts = source.statements_at_line(frame.f_lineno)\n                try:\n                    node = NodeFinder(frame, stmts, source.tree).result\n                except Exception:\n                    raise\n                else:\n                    new_stmts = {statement_containing_node(node)}\n                    assert new_stmts <= stmts\n                    stmts = new_stmts\n\n            args = source, node, stmts\n            executing_cache[key] = args\n\n        return Executing(frame, *args)\n\n    @classmethod\n    def _class_local(cls, name, default):\n        \"\"\"\n        Returns an attribute directly associated with this class\n        (as opposed to subclasses), setting default if necessary\n        \"\"\"\n        # classes have a mappingproxy preventing us from using setdefault\n        result = cls.__dict__.get(name, default)\n        setattr(cls, name, result)\n        return result\n\n    @cache\n    def statements_at_line(self, lineno):\n        \"\"\"\n        Returns the statement nodes overlapping the given line.\n\n        Returns at most one statement unless semicolons are present.\n\n        If the `text` attribute is not valid python, meaning\n        `tree` is None, returns an empty set.\n\n        Otherwise, `Source.for_frame(frame).statements_at_line(frame.f_lineno)`\n        should return at least one statement.\n        \"\"\"\n\n        return {\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }\n\n    @cache\n    def asttokens(self):\n        \"\"\"\n        Returns an ASTTokens object for getting the source of specific AST nodes.\n\n        See http://asttokens.readthedocs.io/en/latest/api-index.html\n        \"\"\"\n        from asttokens import ASTTokens  # must be installed separately\n        return ASTTokens(\n            self.text,\n            tree=self.tree,\n            filename=self.filename,\n        )\n\n    @staticmethod\n    def decode_source(source):\n        if isinstance(source, bytes):\n            encoding, _ = detect_encoding(io.BytesIO(source).readline)\n            source = source.decode(encoding)\n        return source\n\n    def code_qualname(self, code):\n        \"\"\"\n        Imitates the __qualname__ attribute of functions for code objects.\n        Given:\n\n            - A function `func`\n            - A frame `frame` for an execution of `func`, meaning:\n                `frame.f_code is func.__code__`\n\n        `Source.for_frame(frame).code_qualname(frame.f_code)`\n        will be equal to `func.__qualname__`*. Works for Python 2 as well,\n        where of course no `__qualname__` attribute exists.\n\n        Falls back to `code.co_name` if there is no appropriate qualname.\n\n        Based on https://github.com/wbolster/qualname\n\n        (* unless `func` is a lambda\n        nested inside another lambda on the same line, in which case\n        the outer lambda's qualname will be returned for the codes\n        of both lambdas)\n        \"\"\"\n        assert code.co_filename == self.filename\n        return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
     ],
     [
-        "LOAD_NAME",
-        "classmethod"
+        "STORE_NAME",
+        "class Source(object):\n    \"\"\"\n    The source code of a single file and associated metadata.\n\n    The main method of interest is the classmethod `executing(frame)`.\n\n    If you want an instance of this class, don't construct it.\n    Ideally use the classmethod `for_frame(frame)`.\n    If you don't have a frame, use `for_filename(filename [, module_globals])`.\n    These methods cache instances by filename, so at most one instance exists per filename.\n\n    Attributes:\n        - filename\n        - text\n        - tree: AST parsed from text, or None if text is not valid Python\n            All nodes in the tree have an extra `parent` attribute\n\n    Other methods of interest:\n        - statements_at_line\n        - asttokens\n        - code_qualname\n    \"\"\"\n\n    def __init__(self, filename, text):\n        \"\"\"\n        Don't call this constructor, see the class docstring.\n        \"\"\"\n\n        self.filename = filename\n\n        if not isinstance(text, text_type):\n            text = self.decode_source(text)\n        self.text = text\n\n        if PY3:\n            ast_text = text\n        else:\n            # In python 2 it's a syntax error to parse unicode\n            # with an encoding declaration, so we remove it but\n            # leave empty lines in its place to keep line numbers the same\n            ast_text = ''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])\n\n        self._nodes_by_line = defaultdict(list)\n        self.tree = None\n        self._qualnames = {}\n\n        if text:\n            try:\n                self.tree = ast.parse(ast_text, filename=filename)\n            except SyntaxError:\n                pass\n            else:\n                for node in ast.walk(self.tree):\n                    for child in ast.iter_child_nodes(node):\n                        child.parent = node\n                    if hasattr(node, 'lineno'):\n                        self._nodes_by_line[node.lineno].append(node)\n\n                visitor = QualnameVisitor()\n                visitor.visit(self.tree)\n                self._qualnames = visitor.qualnames\n\n    @classmethod\n    def for_frame(cls, frame):\n        \"\"\"\n        Returns the `Source` object corresponding to the file the frame is executing in.\n        \"\"\"\n        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})\n\n    @classmethod\n    def for_filename(cls, filename, module_globals=None):\n        source_cache = cls._class_local('__source_cache', {})\n        try:\n            return source_cache[filename]\n        except KeyError:\n            pass\n\n        lines = linecache.getlines(filename, module_globals)\n        result = source_cache[filename] = cls(filename, ''.join(lines))\n        return result\n\n    @classmethod\n    def lazycache(cls, frame):\n        if hasattr(linecache, 'lazycache'):\n            linecache.lazycache(frame.f_code.co_filename, frame.f_globals)\n\n    @classmethod\n    def executing(cls, frame):\n        \"\"\"\n        Returns an `Executing` object representing the operation\n        currently executing in the given frame.\n        \"\"\"\n        key = (frame.f_code, frame.f_lasti)\n        executing_cache = cls._class_local('__executing_cache', {})\n\n        try:\n            args = executing_cache[key]\n        except KeyError:\n            source = cls.for_frame(frame)\n            node = stmts = None\n            if source.tree:\n                stmts = source.statements_at_line(frame.f_lineno)\n                try:\n                    node = NodeFinder(frame, stmts, source.tree).result\n                except Exception:\n                    raise\n                else:\n                    new_stmts = {statement_containing_node(node)}\n                    assert new_stmts <= stmts\n                    stmts = new_stmts\n\n            args = source, node, stmts\n            executing_cache[key] = args\n\n        return Executing(frame, *args)\n\n    @classmethod\n    def _class_local(cls, name, default):\n        \"\"\"\n        Returns an attribute directly associated with this class\n        (as opposed to subclasses), setting default if necessary\n        \"\"\"\n        # classes have a mappingproxy preventing us from using setdefault\n        result = cls.__dict__.get(name, default)\n        setattr(cls, name, result)\n        return result\n\n    @cache\n    def statements_at_line(self, lineno):\n        \"\"\"\n        Returns the statement nodes overlapping the given line.\n\n        Returns at most one statement unless semicolons are present.\n\n        If the `text` attribute is not valid python, meaning\n        `tree` is None, returns an empty set.\n\n        Otherwise, `Source.for_frame(frame).statements_at_line(frame.f_lineno)`\n        should return at least one statement.\n        \"\"\"\n\n        return {\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }\n\n    @cache\n    def asttokens(self):\n        \"\"\"\n        Returns an ASTTokens object for getting the source of specific AST nodes.\n\n        See http://asttokens.readthedocs.io/en/latest/api-index.html\n        \"\"\"\n        from asttokens import ASTTokens  # must be installed separately\n        return ASTTokens(\n            self.text,\n            tree=self.tree,\n            filename=self.filename,\n        )\n\n    @staticmethod\n    def decode_source(source):\n        if isinstance(source, bytes):\n            encoding, _ = detect_encoding(io.BytesIO(source).readline)\n            source = source.decode(encoding)\n        return source\n\n    def code_qualname(self, code):\n        \"\"\"\n        Imitates the __qualname__ attribute of functions for code objects.\n        Given:\n\n            - A function `func`\n            - A frame `frame` for an execution of `func`, meaning:\n                `frame.f_code is func.__code__`\n\n        `Source.for_frame(frame).code_qualname(frame.f_code)`\n        will be equal to `func.__qualname__`*. Works for Python 2 as well,\n        where of course no `__qualname__` attribute exists.\n\n        Falls back to `code.co_name` if there is no appropriate qualname.\n\n        Based on https://github.com/wbolster/qualname\n\n        (* unless `func` is a lambda\n        nested inside another lambda on the same line, in which case\n        the outer lambda's qualname will be returned for the codes\n        of both lambdas)\n        \"\"\"\n        assert code.co_filename == self.filename\n        return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
     ],
     [
-        "CALL_FUNCTION",
-        "classmethod"
+        "STORE_NAME",
+        "\"\"\"\n    The source code of a single file and associated metadata.\n\n    The main method of interest is the classmethod `executing(frame)`.\n\n    If you want an instance of this class, don't construct it.\n    Ideally use the classmethod `for_frame(frame)`.\n    If you don't have a frame, use `for_filename(filename [, module_globals])`.\n    These methods cache instances by filename, so at most one instance exists per filename.\n\n    Attributes:\n        - filename\n        - text\n        - tree: AST parsed from text, or None if text is not valid Python\n            All nodes in the tree have an extra `parent` attribute\n\n    Other methods of interest:\n        - statements_at_line\n        - asttokens\n        - code_qualname\n    \"\"\""
     ],
     [
-        "LOAD_NAME",
-        "classmethod"
-    ],
-    [
-        "CALL_FUNCTION",
-        "classmethod"
+        "STORE_NAME",
+        "    def __init__(self, filename, text):\n        \"\"\"\n        Don't call this constructor, see the class docstring.\n        \"\"\"\n\n        self.filename = filename\n\n        if not isinstance(text, text_type):\n            text = self.decode_source(text)\n        self.text = text\n\n        if PY3:\n            ast_text = text\n        else:\n            # In python 2 it's a syntax error to parse unicode\n            # with an encoding declaration, so we remove it but\n            # leave empty lines in its place to keep line numbers the same\n            ast_text = ''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])\n\n        self._nodes_by_line = defaultdict(list)\n        self.tree = None\n        self._qualnames = {}\n\n        if text:\n            try:\n                self.tree = ast.parse(ast_text, filename=filename)\n            except SyntaxError:\n                pass\n            else:\n                for node in ast.walk(self.tree):\n                    for child in ast.iter_child_nodes(node):\n                        child.parent = node\n                    if hasattr(node, 'lineno'):\n                        self._nodes_by_line[node.lineno].append(node)\n\n                visitor = QualnameVisitor()\n                visitor.visit(self.tree)\n                self._qualnames = visitor.qualnames"
     ],
     [
         "LOAD_NAME",
@@ -592,12 +880,56 @@
         "classmethod"
     ],
     [
+        "STORE_NAME",
+        "    @classmethod\n    def for_frame(cls, frame):\n        \"\"\"\n        Returns the `Source` object corresponding to the file the frame is executing in.\n        \"\"\"\n        return cls.for_filename(frame.f_code.co_filename, frame.f_globals or {})"
+    ],
+    [
         "LOAD_NAME",
         "classmethod"
     ],
     [
         "CALL_FUNCTION",
         "classmethod"
+    ],
+    [
+        "STORE_NAME",
+        "    @classmethod\n    def for_filename(cls, filename, module_globals=None):\n        source_cache = cls._class_local('__source_cache', {})\n        try:\n            return source_cache[filename]\n        except KeyError:\n            pass\n\n        lines = linecache.getlines(filename, module_globals)\n        result = source_cache[filename] = cls(filename, ''.join(lines))\n        return result"
+    ],
+    [
+        "LOAD_NAME",
+        "classmethod"
+    ],
+    [
+        "CALL_FUNCTION",
+        "classmethod"
+    ],
+    [
+        "STORE_NAME",
+        "    @classmethod\n    def lazycache(cls, frame):\n        if hasattr(linecache, 'lazycache'):\n            linecache.lazycache(frame.f_code.co_filename, frame.f_globals)"
+    ],
+    [
+        "LOAD_NAME",
+        "classmethod"
+    ],
+    [
+        "CALL_FUNCTION",
+        "classmethod"
+    ],
+    [
+        "STORE_NAME",
+        "    @classmethod\n    def executing(cls, frame):\n        \"\"\"\n        Returns an `Executing` object representing the operation\n        currently executing in the given frame.\n        \"\"\"\n        key = (frame.f_code, frame.f_lasti)\n        executing_cache = cls._class_local('__executing_cache', {})\n\n        try:\n            args = executing_cache[key]\n        except KeyError:\n            source = cls.for_frame(frame)\n            node = stmts = None\n            if source.tree:\n                stmts = source.statements_at_line(frame.f_lineno)\n                try:\n                    node = NodeFinder(frame, stmts, source.tree).result\n                except Exception:\n                    raise\n                else:\n                    new_stmts = {statement_containing_node(node)}\n                    assert new_stmts <= stmts\n                    stmts = new_stmts\n\n            args = source, node, stmts\n            executing_cache[key] = args\n\n        return Executing(frame, *args)"
+    ],
+    [
+        "LOAD_NAME",
+        "classmethod"
+    ],
+    [
+        "CALL_FUNCTION",
+        "classmethod"
+    ],
+    [
+        "STORE_NAME",
+        "    @classmethod\n    def _class_local(cls, name, default):\n        \"\"\"\n        Returns an attribute directly associated with this class\n        (as opposed to subclasses), setting default if necessary\n        \"\"\"\n        # classes have a mappingproxy preventing us from using setdefault\n        result = cls.__dict__.get(name, default)\n        setattr(cls, name, result)\n        return result"
     ],
     [
         "LOAD_NAME",
@@ -608,12 +940,20 @@
         "cache"
     ],
     [
+        "STORE_NAME",
+        "    @cache\n    def statements_at_line(self, lineno):\n        \"\"\"\n        Returns the statement nodes overlapping the given line.\n\n        Returns at most one statement unless semicolons are present.\n\n        If the `text` attribute is not valid python, meaning\n        `tree` is None, returns an empty set.\n\n        Otherwise, `Source.for_frame(frame).statements_at_line(frame.f_lineno)`\n        should return at least one statement.\n        \"\"\"\n\n        return {\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }"
+    ],
+    [
         "LOAD_NAME",
         "cache"
     ],
     [
         "CALL_FUNCTION",
         "cache"
+    ],
+    [
+        "STORE_NAME",
+        "    @cache\n    def asttokens(self):\n        \"\"\"\n        Returns an ASTTokens object for getting the source of specific AST nodes.\n\n        See http://asttokens.readthedocs.io/en/latest/api-index.html\n        \"\"\"\n        from asttokens import ASTTokens  # must be installed separately\n        return ASTTokens(\n            self.text,\n            tree=self.tree,\n            filename=self.filename,\n        )"
     ],
     [
         "LOAD_NAME",
@@ -622,6 +962,14 @@
     [
         "CALL_FUNCTION",
         "staticmethod"
+    ],
+    [
+        "STORE_NAME",
+        "    @staticmethod\n    def decode_source(source):\n        if isinstance(source, bytes):\n            encoding, _ = detect_encoding(io.BytesIO(source).readline)\n            source = source.decode(encoding)\n        return source"
+    ],
+    [
+        "STORE_NAME",
+        "    def code_qualname(self, code):\n        \"\"\"\n        Imitates the __qualname__ attribute of functions for code objects.\n        Given:\n\n            - A function `func`\n            - A frame `frame` for an execution of `func`, meaning:\n                `frame.f_code is func.__code__`\n\n        `Source.for_frame(frame).code_qualname(frame.f_code)`\n        will be equal to `func.__qualname__`*. Works for Python 2 as well,\n        where of course no `__qualname__` attribute exists.\n\n        Falls back to `code.co_name` if there is no appropriate qualname.\n\n        Based on https://github.com/wbolster/qualname\n\n        (* unless `func` is a lambda\n        nested inside another lambda on the same line, in which case\n        the outer lambda's qualname will be returned for the codes\n        of both lambdas)\n        \"\"\"\n        assert code.co_filename == self.filename\n        return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
     ],
     [
         "LOAD_FAST",
@@ -668,6 +1016,10 @@
         "self.decode_source(text)"
     ],
     [
+        "STORE_FAST",
+        "text"
+    ],
+    [
         "LOAD_FAST",
         "text"
     ],
@@ -686,6 +1038,10 @@
     [
         "LOAD_FAST",
         "text"
+    ],
+    [
+        "STORE_FAST",
+        "ast_text"
     ],
     [
         "LOAD_METHOD",
@@ -712,8 +1068,16 @@
         "enumerate(text.splitlines(True))"
     ],
     [
+        "CALL_FUNCTION",
+        "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
+    ],
+    [
         "CALL_METHOD",
         "''.join([\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ])"
+    ],
+    [
+        "STORE_FAST",
+        "ast_text"
     ],
     [
         "LOAD_GLOBAL",
@@ -808,6 +1172,10 @@
         "ast.walk(self.tree)"
     ],
     [
+        "STORE_FAST",
+        "node"
+    ],
+    [
         "LOAD_GLOBAL",
         "ast"
     ],
@@ -822,6 +1190,10 @@
     [
         "CALL_METHOD",
         "ast.iter_child_nodes(node)"
+    ],
+    [
+        "STORE_FAST",
+        "child"
     ],
     [
         "LOAD_FAST",
@@ -888,6 +1260,10 @@
         "QualnameVisitor()"
     ],
     [
+        "STORE_FAST",
+        "visitor"
+    ],
+    [
         "LOAD_FAST",
         "visitor"
     ],
@@ -922,6 +1298,18 @@
     [
         "STORE_ATTR",
         "self._qualnames"
+    ],
+    [
+        "LOAD_FAST",
+        "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "line"
     ],
     [
         "LOAD_FAST",
@@ -996,6 +1384,10 @@
         "cls._class_local('__source_cache', {})"
     ],
     [
+        "STORE_FAST",
+        "source_cache"
+    ],
+    [
         "LOAD_FAST",
         "source_cache"
     ],
@@ -1032,6 +1424,10 @@
         "linecache.getlines(filename, module_globals)"
     ],
     [
+        "STORE_FAST",
+        "lines"
+    ],
+    [
         "LOAD_FAST",
         "cls"
     ],
@@ -1054,6 +1450,10 @@
     [
         "CALL_FUNCTION",
         "cls(filename, ''.join(lines))"
+    ],
+    [
+        "STORE_FAST",
+        "result"
     ],
     [
         "LOAD_FAST",
@@ -1132,6 +1532,10 @@
         "frame.f_lasti"
     ],
     [
+        "STORE_FAST",
+        "key"
+    ],
+    [
         "LOAD_FAST",
         "cls"
     ],
@@ -1144,6 +1548,10 @@
         "cls._class_local('__executing_cache', {})"
     ],
     [
+        "STORE_FAST",
+        "executing_cache"
+    ],
+    [
         "LOAD_FAST",
         "executing_cache"
     ],
@@ -1154,6 +1562,10 @@
     [
         "BINARY_SUBSCR",
         "executing_cache[key]"
+    ],
+    [
+        "STORE_FAST",
+        "args"
     ],
     [
         "LOAD_GLOBAL",
@@ -1174,6 +1586,18 @@
     [
         "CALL_METHOD",
         "cls.for_frame(frame)"
+    ],
+    [
+        "STORE_FAST",
+        "source"
+    ],
+    [
+        "STORE_FAST",
+        "node"
+    ],
+    [
+        "STORE_FAST",
+        "stmts"
     ],
     [
         "LOAD_FAST",
@@ -1204,6 +1628,10 @@
         "source.statements_at_line(frame.f_lineno)"
     ],
     [
+        "STORE_FAST",
+        "stmts"
+    ],
+    [
         "LOAD_GLOBAL",
         "NodeFinder"
     ],
@@ -1232,6 +1660,10 @@
         "NodeFinder(frame, stmts, source.tree).result"
     ],
     [
+        "STORE_FAST",
+        "node"
+    ],
+    [
         "LOAD_GLOBAL",
         "Exception"
     ],
@@ -1246,6 +1678,10 @@
     [
         "CALL_FUNCTION",
         "statement_containing_node(node)"
+    ],
+    [
+        "STORE_FAST",
+        "new_stmts"
     ],
     [
         "LOAD_FAST",
@@ -1264,6 +1700,10 @@
         "new_stmts"
     ],
     [
+        "STORE_FAST",
+        "stmts"
+    ],
+    [
         "LOAD_FAST",
         "source"
     ],
@@ -1274,6 +1714,10 @@
     [
         "LOAD_FAST",
         "stmts"
+    ],
+    [
+        "STORE_FAST",
+        "args"
     ],
     [
         "LOAD_FAST",
@@ -1332,6 +1776,10 @@
         "cls.__dict__.get(name, default)"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_GLOBAL",
         "setattr"
     ],
@@ -1372,6 +1820,18 @@
         "self._nodes_by_line[lineno]"
     ],
     [
+        "CALL_FUNCTION",
+        "{\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }"
+    ],
+    [
+        "LOAD_FAST",
+        "{\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }"
+    ],
+    [
+        "STORE_FAST",
+        "node"
+    ],
+    [
         "LOAD_GLOBAL",
         "statement_containing_node"
     ],
@@ -1382,6 +1842,10 @@
     [
         "CALL_FUNCTION",
         "statement_containing_node(node)"
+    ],
+    [
+        "STORE_FAST",
+        "from asttokens import ASTTokens"
     ],
     [
         "LOAD_FAST",
@@ -1460,6 +1924,14 @@
         "detect_encoding(io.BytesIO(source).readline)"
     ],
     [
+        "STORE_FAST",
+        "encoding"
+    ],
+    [
+        "STORE_FAST",
+        "_"
+    ],
+    [
         "LOAD_FAST",
         "source"
     ],
@@ -1474,6 +1946,10 @@
     [
         "CALL_METHOD",
         "source.decode(encoding)"
+    ],
+    [
+        "STORE_FAST",
+        "source"
     ],
     [
         "LOAD_FAST",
@@ -1538,6 +2014,38 @@
     [
         "CALL_METHOD",
         "self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)"
+    ],
+    [
+        "LOAD_NAME",
+        "class Executing(object):\n    \"\"\"\n    Information about the operation a frame is currently executing.\n\n    Generally you will just want `node`, which is the AST node being executed,\n    or None if it's unknown.\n    Currently `node` can only be an `ast.Call` object, other operations\n    will be supported in future.\n    \"\"\"\n\n    def __init__(self, frame, source, node, stmts):\n        self.frame = frame\n        self.source = source\n        self.node = node\n        self.statements = stmts\n\n    def code_qualname(self):\n        return self.source.code_qualname(self.frame.f_code)\n\n    def text(self):\n        return self.source.asttokens().get_text(self.node)\n\n    def text_range(self):\n        return self.source.asttokens().get_text_range(self.node)"
+    ],
+    [
+        "STORE_NAME",
+        "class Executing(object):\n    \"\"\"\n    Information about the operation a frame is currently executing.\n\n    Generally you will just want `node`, which is the AST node being executed,\n    or None if it's unknown.\n    Currently `node` can only be an `ast.Call` object, other operations\n    will be supported in future.\n    \"\"\"\n\n    def __init__(self, frame, source, node, stmts):\n        self.frame = frame\n        self.source = source\n        self.node = node\n        self.statements = stmts\n\n    def code_qualname(self):\n        return self.source.code_qualname(self.frame.f_code)\n\n    def text(self):\n        return self.source.asttokens().get_text(self.node)\n\n    def text_range(self):\n        return self.source.asttokens().get_text_range(self.node)"
+    ],
+    [
+        "STORE_NAME",
+        "class Executing(object):\n    \"\"\"\n    Information about the operation a frame is currently executing.\n\n    Generally you will just want `node`, which is the AST node being executed,\n    or None if it's unknown.\n    Currently `node` can only be an `ast.Call` object, other operations\n    will be supported in future.\n    \"\"\"\n\n    def __init__(self, frame, source, node, stmts):\n        self.frame = frame\n        self.source = source\n        self.node = node\n        self.statements = stmts\n\n    def code_qualname(self):\n        return self.source.code_qualname(self.frame.f_code)\n\n    def text(self):\n        return self.source.asttokens().get_text(self.node)\n\n    def text_range(self):\n        return self.source.asttokens().get_text_range(self.node)"
+    ],
+    [
+        "STORE_NAME",
+        "\"\"\"\n    Information about the operation a frame is currently executing.\n\n    Generally you will just want `node`, which is the AST node being executed,\n    or None if it's unknown.\n    Currently `node` can only be an `ast.Call` object, other operations\n    will be supported in future.\n    \"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self, frame, source, node, stmts):\n        self.frame = frame\n        self.source = source\n        self.node = node\n        self.statements = stmts"
+    ],
+    [
+        "STORE_NAME",
+        "    def code_qualname(self):\n        return self.source.code_qualname(self.frame.f_code)"
+    ],
+    [
+        "STORE_NAME",
+        "    def text(self):\n        return self.source.asttokens().get_text(self.node)"
+    ],
+    [
+        "STORE_NAME",
+        "    def text_range(self):\n        return self.source.asttokens().get_text_range(self.node)"
     ],
     [
         "LOAD_FAST",
@@ -1680,6 +2188,34 @@
         "self.source.asttokens().get_text_range(self.node)"
     ],
     [
+        "LOAD_NAME",
+        "class QualnameVisitor(ast.NodeVisitor):\n    def __init__(self):\n        super(QualnameVisitor, self).__init__()\n        self.stack = []\n        self.qualnames = {}\n\n    def visit_FunctionDef(self, node, name=None):\n        name = name or node.name\n        self.stack.append(name)\n        self.qualnames.setdefault((name, node.lineno), \".\".join(self.stack))\n\n        self.stack.append('<locals>')\n        if isinstance(node, ast.Lambda):\n            children = [node.body]\n        else:\n            children = node.body\n        for child in children:\n            self.visit(child)\n        self.stack.pop()\n        self.stack.pop()\n\n        # Find lambdas in the function definition outside the body,\n        # e.g. decorators or default arguments\n        # Based on iter_child_nodes\n        for field, child in ast.iter_fields(node):\n            if field == 'body':\n                continue\n            if isinstance(child, ast.AST):\n                self.visit(child)\n            elif isinstance(child, list):\n                for grandchild in child:\n                    if isinstance(grandchild, ast.AST):\n                        self.visit(grandchild)\n\n    def visit_Lambda(self, node):\n        self.visit_FunctionDef(node, '<lambda>')\n\n    def visit_ClassDef(self, node):\n        self.stack.append(node.name)\n        self.generic_visit(node)\n        self.stack.pop()"
+    ],
+    [
+        "STORE_NAME",
+        "class QualnameVisitor(ast.NodeVisitor):\n    def __init__(self):\n        super(QualnameVisitor, self).__init__()\n        self.stack = []\n        self.qualnames = {}\n\n    def visit_FunctionDef(self, node, name=None):\n        name = name or node.name\n        self.stack.append(name)\n        self.qualnames.setdefault((name, node.lineno), \".\".join(self.stack))\n\n        self.stack.append('<locals>')\n        if isinstance(node, ast.Lambda):\n            children = [node.body]\n        else:\n            children = node.body\n        for child in children:\n            self.visit(child)\n        self.stack.pop()\n        self.stack.pop()\n\n        # Find lambdas in the function definition outside the body,\n        # e.g. decorators or default arguments\n        # Based on iter_child_nodes\n        for field, child in ast.iter_fields(node):\n            if field == 'body':\n                continue\n            if isinstance(child, ast.AST):\n                self.visit(child)\n            elif isinstance(child, list):\n                for grandchild in child:\n                    if isinstance(grandchild, ast.AST):\n                        self.visit(grandchild)\n\n    def visit_Lambda(self, node):\n        self.visit_FunctionDef(node, '<lambda>')\n\n    def visit_ClassDef(self, node):\n        self.stack.append(node.name)\n        self.generic_visit(node)\n        self.stack.pop()"
+    ],
+    [
+        "STORE_NAME",
+        "class QualnameVisitor(ast.NodeVisitor):\n    def __init__(self):\n        super(QualnameVisitor, self).__init__()\n        self.stack = []\n        self.qualnames = {}\n\n    def visit_FunctionDef(self, node, name=None):\n        name = name or node.name\n        self.stack.append(name)\n        self.qualnames.setdefault((name, node.lineno), \".\".join(self.stack))\n\n        self.stack.append('<locals>')\n        if isinstance(node, ast.Lambda):\n            children = [node.body]\n        else:\n            children = node.body\n        for child in children:\n            self.visit(child)\n        self.stack.pop()\n        self.stack.pop()\n\n        # Find lambdas in the function definition outside the body,\n        # e.g. decorators or default arguments\n        # Based on iter_child_nodes\n        for field, child in ast.iter_fields(node):\n            if field == 'body':\n                continue\n            if isinstance(child, ast.AST):\n                self.visit(child)\n            elif isinstance(child, list):\n                for grandchild in child:\n                    if isinstance(grandchild, ast.AST):\n                        self.visit(grandchild)\n\n    def visit_Lambda(self, node):\n        self.visit_FunctionDef(node, '<lambda>')\n\n    def visit_ClassDef(self, node):\n        self.stack.append(node.name)\n        self.generic_visit(node)\n        self.stack.pop()"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self):\n        super(QualnameVisitor, self).__init__()\n        self.stack = []\n        self.qualnames = {}"
+    ],
+    [
+        "STORE_NAME",
+        "    def visit_FunctionDef(self, node, name=None):\n        name = name or node.name\n        self.stack.append(name)\n        self.qualnames.setdefault((name, node.lineno), \".\".join(self.stack))\n\n        self.stack.append('<locals>')\n        if isinstance(node, ast.Lambda):\n            children = [node.body]\n        else:\n            children = node.body\n        for child in children:\n            self.visit(child)\n        self.stack.pop()\n        self.stack.pop()\n\n        # Find lambdas in the function definition outside the body,\n        # e.g. decorators or default arguments\n        # Based on iter_child_nodes\n        for field, child in ast.iter_fields(node):\n            if field == 'body':\n                continue\n            if isinstance(child, ast.AST):\n                self.visit(child)\n            elif isinstance(child, list):\n                for grandchild in child:\n                    if isinstance(grandchild, ast.AST):\n                        self.visit(grandchild)"
+    ],
+    [
+        "STORE_NAME",
+        "    def visit_Lambda(self, node):\n        self.visit_FunctionDef(node, '<lambda>')"
+    ],
+    [
+        "STORE_NAME",
+        "    def visit_ClassDef(self, node):\n        self.stack.append(node.name)\n        self.generic_visit(node)\n        self.stack.pop()"
+    ],
+    [
         "LOAD_GLOBAL",
         "super"
     ],
@@ -1730,6 +2266,10 @@
     [
         "LOAD_ATTR",
         "node.name"
+    ],
+    [
+        "STORE_FAST",
+        "name"
     ],
     [
         "LOAD_FAST",
@@ -1840,6 +2380,10 @@
         "node.body"
     ],
     [
+        "STORE_FAST",
+        "children"
+    ],
+    [
         "LOAD_FAST",
         "node"
     ],
@@ -1848,8 +2392,16 @@
         "node.body"
     ],
     [
+        "STORE_FAST",
+        "children"
+    ],
+    [
         "LOAD_FAST",
         "children"
+    ],
+    [
+        "STORE_FAST",
+        "child"
     ],
     [
         "LOAD_FAST",
@@ -1916,6 +2468,14 @@
         "ast.iter_fields(node)"
     ],
     [
+        "STORE_FAST",
+        "field"
+    ],
+    [
+        "STORE_FAST",
+        "child"
+    ],
+    [
         "LOAD_FAST",
         "field"
     ],
@@ -1978,6 +2538,10 @@
     [
         "LOAD_FAST",
         "child"
+    ],
+    [
+        "STORE_FAST",
+        "grandchild"
     ],
     [
         "LOAD_GLOBAL",
@@ -2088,6 +2652,14 @@
         "self.stack.pop()"
     ],
     [
+        "LOAD_FAST",
+        "(\n    getattr(__future__, fname).compiler_flag\n    for fname in __future__.all_feature_names\n)"
+    ],
+    [
+        "STORE_FAST",
+        "fname"
+    ],
+    [
         "LOAD_GLOBAL",
         "getattr"
     ],
@@ -2144,6 +2716,30 @@
         "compile(\n        source,\n        matching_code.co_filename,\n        'exec',\n        flags=future_flags & matching_code.co_flags,\n        dont_inherit=True,\n    )"
     ],
     [
+        "LOAD_NAME",
+        "class NodeFinder(object):\n    def __init__(self, frame, stmts, tree):\n        self.frame = frame\n        self.tree = tree\n\n        b = frame.f_code.co_code[frame.f_lasti]\n        if not PY3:\n            b = ord(b)\n        op_name = dis.opname[b]\n\n        if op_name.startswith('CALL_'):\n            typ = ast.Call\n        elif op_name == 'BINARY_SUBSCR':\n            typ = ast.Subscript\n        elif op_name.startswith('BINARY_'):\n            typ = ast.BinOp\n        elif op_name.startswith('UNARY_'):\n            typ = ast.UnaryOp\n        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):\n            typ = ast.Attribute\n        elif op_name == 'COMPARE_OP':\n            typ = ast.Compare\n        else:\n            raise RuntimeError(op_name)\n\n        with lock:\n            exprs = {\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }\n\n            self.result = only(list(self.matching_nodes(exprs)))\n\n    def matching_nodes(self, exprs):\n        for i, expr in enumerate(exprs):\n            setter = get_setter(expr)\n            replacement = ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )\n            ast.fix_missing_locations(replacement)\n            setter(replacement)\n            try:\n                instructions = self.compile_instructions()\n            except SyntaxError:\n                continue\n            finally:\n                setter(expr)\n            indices = [\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]\n            if not indices:\n                continue\n            arg_index = only(indices) - 1\n            while instructions[arg_index].opname == 'EXTENDED_ARG':\n                arg_index -= 1\n\n            if instructions[arg_index].offset == self.frame.f_lasti:\n                yield expr\n\n    def compile_instructions(self):\n        module_code = compile_similar_to(self.tree, self.frame.f_code)\n        code = only(find_codes(module_code, self.frame.f_code))\n        return list(get_instructions(code))"
+    ],
+    [
+        "STORE_NAME",
+        "class NodeFinder(object):\n    def __init__(self, frame, stmts, tree):\n        self.frame = frame\n        self.tree = tree\n\n        b = frame.f_code.co_code[frame.f_lasti]\n        if not PY3:\n            b = ord(b)\n        op_name = dis.opname[b]\n\n        if op_name.startswith('CALL_'):\n            typ = ast.Call\n        elif op_name == 'BINARY_SUBSCR':\n            typ = ast.Subscript\n        elif op_name.startswith('BINARY_'):\n            typ = ast.BinOp\n        elif op_name.startswith('UNARY_'):\n            typ = ast.UnaryOp\n        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):\n            typ = ast.Attribute\n        elif op_name == 'COMPARE_OP':\n            typ = ast.Compare\n        else:\n            raise RuntimeError(op_name)\n\n        with lock:\n            exprs = {\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }\n\n            self.result = only(list(self.matching_nodes(exprs)))\n\n    def matching_nodes(self, exprs):\n        for i, expr in enumerate(exprs):\n            setter = get_setter(expr)\n            replacement = ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )\n            ast.fix_missing_locations(replacement)\n            setter(replacement)\n            try:\n                instructions = self.compile_instructions()\n            except SyntaxError:\n                continue\n            finally:\n                setter(expr)\n            indices = [\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]\n            if not indices:\n                continue\n            arg_index = only(indices) - 1\n            while instructions[arg_index].opname == 'EXTENDED_ARG':\n                arg_index -= 1\n\n            if instructions[arg_index].offset == self.frame.f_lasti:\n                yield expr\n\n    def compile_instructions(self):\n        module_code = compile_similar_to(self.tree, self.frame.f_code)\n        code = only(find_codes(module_code, self.frame.f_code))\n        return list(get_instructions(code))"
+    ],
+    [
+        "STORE_NAME",
+        "class NodeFinder(object):\n    def __init__(self, frame, stmts, tree):\n        self.frame = frame\n        self.tree = tree\n\n        b = frame.f_code.co_code[frame.f_lasti]\n        if not PY3:\n            b = ord(b)\n        op_name = dis.opname[b]\n\n        if op_name.startswith('CALL_'):\n            typ = ast.Call\n        elif op_name == 'BINARY_SUBSCR':\n            typ = ast.Subscript\n        elif op_name.startswith('BINARY_'):\n            typ = ast.BinOp\n        elif op_name.startswith('UNARY_'):\n            typ = ast.UnaryOp\n        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):\n            typ = ast.Attribute\n        elif op_name == 'COMPARE_OP':\n            typ = ast.Compare\n        else:\n            raise RuntimeError(op_name)\n\n        with lock:\n            exprs = {\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }\n\n            self.result = only(list(self.matching_nodes(exprs)))\n\n    def matching_nodes(self, exprs):\n        for i, expr in enumerate(exprs):\n            setter = get_setter(expr)\n            replacement = ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )\n            ast.fix_missing_locations(replacement)\n            setter(replacement)\n            try:\n                instructions = self.compile_instructions()\n            except SyntaxError:\n                continue\n            finally:\n                setter(expr)\n            indices = [\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]\n            if not indices:\n                continue\n            arg_index = only(indices) - 1\n            while instructions[arg_index].opname == 'EXTENDED_ARG':\n                arg_index -= 1\n\n            if instructions[arg_index].offset == self.frame.f_lasti:\n                yield expr\n\n    def compile_instructions(self):\n        module_code = compile_similar_to(self.tree, self.frame.f_code)\n        code = only(find_codes(module_code, self.frame.f_code))\n        return list(get_instructions(code))"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self, frame, stmts, tree):\n        self.frame = frame\n        self.tree = tree\n\n        b = frame.f_code.co_code[frame.f_lasti]\n        if not PY3:\n            b = ord(b)\n        op_name = dis.opname[b]\n\n        if op_name.startswith('CALL_'):\n            typ = ast.Call\n        elif op_name == 'BINARY_SUBSCR':\n            typ = ast.Subscript\n        elif op_name.startswith('BINARY_'):\n            typ = ast.BinOp\n        elif op_name.startswith('UNARY_'):\n            typ = ast.UnaryOp\n        elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):\n            typ = ast.Attribute\n        elif op_name == 'COMPARE_OP':\n            typ = ast.Compare\n        else:\n            raise RuntimeError(op_name)\n\n        with lock:\n            exprs = {\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }\n\n            self.result = only(list(self.matching_nodes(exprs)))"
+    ],
+    [
+        "STORE_NAME",
+        "    def matching_nodes(self, exprs):\n        for i, expr in enumerate(exprs):\n            setter = get_setter(expr)\n            replacement = ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )\n            ast.fix_missing_locations(replacement)\n            setter(replacement)\n            try:\n                instructions = self.compile_instructions()\n            except SyntaxError:\n                continue\n            finally:\n                setter(expr)\n            indices = [\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]\n            if not indices:\n                continue\n            arg_index = only(indices) - 1\n            while instructions[arg_index].opname == 'EXTENDED_ARG':\n                arg_index -= 1\n\n            if instructions[arg_index].offset == self.frame.f_lasti:\n                yield expr"
+    ],
+    [
+        "STORE_NAME",
+        "    def compile_instructions(self):\n        module_code = compile_similar_to(self.tree, self.frame.f_code)\n        code = only(find_codes(module_code, self.frame.f_code))\n        return list(get_instructions(code))"
+    ],
+    [
         "LOAD_FAST",
         "frame"
     ],
@@ -2192,6 +2788,10 @@
         "frame.f_code.co_code[frame.f_lasti]"
     ],
     [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "PY3"
     ],
@@ -2208,6 +2808,10 @@
         "ord(b)"
     ],
     [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "dis"
     ],
@@ -2222,6 +2826,10 @@
     [
         "BINARY_SUBSCR",
         "dis.opname[b]"
+    ],
+    [
+        "STORE_FAST",
+        "op_name"
     ],
     [
         "LOAD_FAST",
@@ -2244,6 +2852,10 @@
         "ast.Call"
     ],
     [
+        "STORE_DEREF",
+        "typ"
+    ],
+    [
         "LOAD_FAST",
         "op_name"
     ],
@@ -2258,6 +2870,10 @@
     [
         "LOAD_ATTR",
         "ast.Subscript"
+    ],
+    [
+        "STORE_DEREF",
+        "typ"
     ],
     [
         "LOAD_FAST",
@@ -2280,6 +2896,10 @@
         "ast.BinOp"
     ],
     [
+        "STORE_DEREF",
+        "typ"
+    ],
+    [
         "LOAD_FAST",
         "op_name"
     ],
@@ -2300,6 +2920,10 @@
         "ast.UnaryOp"
     ],
     [
+        "STORE_DEREF",
+        "typ"
+    ],
+    [
         "LOAD_FAST",
         "op_name"
     ],
@@ -2316,6 +2940,10 @@
         "ast.Attribute"
     ],
     [
+        "STORE_DEREF",
+        "typ"
+    ],
+    [
         "LOAD_FAST",
         "op_name"
     ],
@@ -2330,6 +2958,10 @@
     [
         "LOAD_ATTR",
         "ast.Compare"
+    ],
+    [
+        "STORE_DEREF",
+        "typ"
     ],
     [
         "LOAD_GLOBAL",
@@ -2350,6 +2982,14 @@
     [
         "LOAD_FAST",
         "stmts"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "exprs"
     ],
     [
         "LOAD_GLOBAL",
@@ -2392,6 +3032,14 @@
         "self.result"
     ],
     [
+        "LOAD_FAST",
+        "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "stmt"
+    ],
+    [
         "LOAD_GLOBAL",
         "ast"
     ],
@@ -2406,6 +3054,10 @@
     [
         "CALL_METHOD",
         "ast.walk(stmt)"
+    ],
+    [
+        "STORE_FAST",
+        "node"
     ],
     [
         "LOAD_GLOBAL",
@@ -2476,6 +3128,14 @@
         "enumerate(exprs)"
     ],
     [
+        "STORE_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "expr"
+    ],
+    [
         "LOAD_GLOBAL",
         "get_setter"
     ],
@@ -2486,6 +3146,10 @@
     [
         "CALL_FUNCTION",
         "get_setter(expr)"
+    ],
+    [
+        "STORE_FAST",
+        "setter"
     ],
     [
         "LOAD_GLOBAL",
@@ -2532,6 +3196,10 @@
         "ast.BinOp(\n                left=expr,\n                op=ast.Pow(),\n                right=ast.Str(s=sentinel),\n            )"
     ],
     [
+        "STORE_FAST",
+        "replacement"
+    ],
+    [
         "LOAD_GLOBAL",
         "ast"
     ],
@@ -2570,6 +3238,10 @@
     [
         "CALL_METHOD",
         "self.compile_instructions()"
+    ],
+    [
+        "STORE_FAST",
+        "instructions"
     ],
     [
         "LOAD_GLOBAL",
@@ -2624,6 +3296,14 @@
         "enumerate(instructions)"
     ],
     [
+        "CALL_FUNCTION",
+        "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
+    ],
+    [
+        "STORE_FAST",
+        "indices"
+    ],
+    [
         "LOAD_FAST",
         "indices"
     ],
@@ -2644,6 +3324,10 @@
         "only(indices) - 1"
     ],
     [
+        "STORE_FAST",
+        "arg_index"
+    ],
+    [
         "LOAD_FAST",
         "instructions"
     ],
@@ -2662,6 +3346,14 @@
     [
         "COMPARE_OP",
         "instructions[arg_index].opname == 'EXTENDED_ARG'"
+    ],
+    [
+        "LOAD_FAST",
+        "arg_index"
+    ],
+    [
+        "STORE_FAST",
+        "arg_index"
     ],
     [
         "LOAD_FAST",
@@ -2698,6 +3390,18 @@
     [
         "LOAD_FAST",
         "expr"
+    ],
+    [
+        "LOAD_FAST",
+        "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "instruction"
     ],
     [
         "LOAD_FAST",
@@ -2748,6 +3452,10 @@
         "compile_similar_to(self.tree, self.frame.f_code)"
     ],
     [
+        "STORE_FAST",
+        "module_code"
+    ],
+    [
         "LOAD_GLOBAL",
         "only"
     ],
@@ -2780,6 +3488,10 @@
         "only(find_codes(module_code, self.frame.f_code))"
     ],
     [
+        "STORE_FAST",
+        "code"
+    ],
+    [
         "LOAD_GLOBAL",
         "list"
     ],
@@ -2808,6 +3520,10 @@
         "node.parent"
     ],
     [
+        "STORE_DEREF",
+        "parent"
+    ],
+    [
         "LOAD_GLOBAL",
         "ast"
     ],
@@ -2822,6 +3538,14 @@
     [
         "CALL_METHOD",
         "ast.iter_fields(parent)"
+    ],
+    [
+        "STORE_DEREF",
+        "name"
+    ],
+    [
+        "STORE_DEREF",
+        "field"
     ],
     [
         "LOAD_DEREF",
@@ -2864,6 +3588,14 @@
         "enumerate(field)"
     ],
     [
+        "STORE_DEREF",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "item"
+    ],
+    [
         "LOAD_FAST",
         "item"
     ],
@@ -2874,6 +3606,10 @@
     [
         "IS_OP",
         "item is node"
+    ],
+    [
+        "STORE_FAST",
+        "                    def setter(new_node):\n                        field[i] = new_node"
     ],
     [
         "LOAD_FAST",
@@ -2916,6 +3652,14 @@
         "field[i]"
     ],
     [
+        "STORE_DEREF",
+        "    def matches(c):\n        return all(\n            f(c) == f(matching)\n            for f in [\n                attrgetter('co_firstlineno'),\n                attrgetter('co_name'),\n                code_names,\n            ]\n        )"
+    ],
+    [
+        "STORE_DEREF",
+        "code_options"
+    ],
+    [
         "LOAD_DEREF",
         "matches"
     ],
@@ -2942,6 +3686,10 @@
     [
         "CALL_METHOD",
         "code_options.append(root_code)"
+    ],
+    [
+        "STORE_DEREF",
+        "    def finder(code):\n        for const in code.co_consts:\n            if not inspect.iscode(const):\n                continue\n\n            if matches(const):\n                code_options.append(const)\n            finder(const)"
     ],
     [
         "LOAD_DEREF",
@@ -2985,7 +3733,19 @@
     ],
     [
         "CALL_FUNCTION",
+        "(\n            f(c) == f(matching)\n            for f in [\n                attrgetter('co_firstlineno'),\n                attrgetter('co_name'),\n                code_names,\n            ]\n        )"
+    ],
+    [
+        "CALL_FUNCTION",
         "all(\n            f(c) == f(matching)\n            for f in [\n                attrgetter('co_firstlineno'),\n                attrgetter('co_name'),\n                code_names,\n            ]\n        )"
+    ],
+    [
+        "LOAD_FAST",
+        "(\n            f(c) == f(matching)\n            for f in [\n                attrgetter('co_firstlineno'),\n                attrgetter('co_name'),\n                code_names,\n            ]\n        )"
+    ],
+    [
+        "STORE_FAST",
+        "f"
     ],
     [
         "LOAD_FAST",
@@ -3022,6 +3782,10 @@
     [
         "LOAD_ATTR",
         "code.co_consts"
+    ],
+    [
+        "STORE_FAST",
+        "const"
     ],
     [
         "LOAD_GLOBAL",
@@ -3154,6 +3918,10 @@
     [
         "LOAD_ATTR",
         "node.parent"
+    ],
+    [
+        "STORE_FAST",
+        "node"
     ],
     [
         "LOAD_FAST",

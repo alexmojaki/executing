@@ -1,5 +1,69 @@
 [
     [
+        "STORE_NAME",
+        "from __future__ import annotations"
+    ],
+    [
+        "STORE_NAME",
+        "from collections.abc import Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "import string"
+    ],
+    [
+        "STORE_NAME",
+        "from types import MappingProxyType"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import Any, BinaryIO, NamedTuple"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import Any, BinaryIO, NamedTuple"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import Any, BinaryIO, NamedTuple"
+    ],
+    [
+        "STORE_NAME",
+        "from ._re import (\n    RE_DATETIME,\n    RE_LOCALTIME,\n    RE_NUMBER,\n    match_to_datetime,\n    match_to_localtime,\n    match_to_number,\n)"
+    ],
+    [
+        "STORE_NAME",
+        "from ._re import (\n    RE_DATETIME,\n    RE_LOCALTIME,\n    RE_NUMBER,\n    match_to_datetime,\n    match_to_localtime,\n    match_to_number,\n)"
+    ],
+    [
+        "STORE_NAME",
+        "from ._re import (\n    RE_DATETIME,\n    RE_LOCALTIME,\n    RE_NUMBER,\n    match_to_datetime,\n    match_to_localtime,\n    match_to_number,\n)"
+    ],
+    [
+        "STORE_NAME",
+        "from ._re import (\n    RE_DATETIME,\n    RE_LOCALTIME,\n    RE_NUMBER,\n    match_to_datetime,\n    match_to_localtime,\n    match_to_number,\n)"
+    ],
+    [
+        "STORE_NAME",
+        "from ._re import (\n    RE_DATETIME,\n    RE_LOCALTIME,\n    RE_NUMBER,\n    match_to_datetime,\n    match_to_localtime,\n    match_to_number,\n)"
+    ],
+    [
+        "STORE_NAME",
+        "from ._re import (\n    RE_DATETIME,\n    RE_LOCALTIME,\n    RE_NUMBER,\n    match_to_datetime,\n    match_to_localtime,\n    match_to_number,\n)"
+    ],
+    [
+        "STORE_NAME",
+        "from ._types import Key, ParseFloat, Pos"
+    ],
+    [
+        "STORE_NAME",
+        "from ._types import Key, ParseFloat, Pos"
+    ],
+    [
+        "STORE_NAME",
+        "from ._types import Key, ParseFloat, Pos"
+    ],
+    [
         "LOAD_NAME",
         "frozenset"
     ],
@@ -10,6 +74,10 @@
     [
         "CALL_FUNCTION",
         "range(32)"
+    ],
+    [
+        "CALL_FUNCTION",
+        "(chr(i) for i in range(32))"
     ],
     [
         "CALL_FUNCTION",
@@ -36,6 +104,10 @@
         "frozenset(chr(i) for i in range(32)) | frozenset(chr(127))"
     ],
     [
+        "STORE_NAME",
+        "ASCII_CTRL"
+    ],
+    [
         "LOAD_NAME",
         "ASCII_CTRL"
     ],
@@ -50,6 +122,10 @@
     [
         "BINARY_SUBTRACT",
         "ASCII_CTRL - frozenset(\"\\t\")"
+    ],
+    [
+        "STORE_NAME",
+        "ILLEGAL_BASIC_STR_CHARS"
     ],
     [
         "LOAD_NAME",
@@ -68,16 +144,32 @@
         "ASCII_CTRL - frozenset(\"\\t\\n\")"
     ],
     [
+        "STORE_NAME",
+        "ILLEGAL_MULTILINE_BASIC_STR_CHARS"
+    ],
+    [
         "LOAD_NAME",
         "ILLEGAL_BASIC_STR_CHARS"
+    ],
+    [
+        "STORE_NAME",
+        "ILLEGAL_LITERAL_STR_CHARS"
     ],
     [
         "LOAD_NAME",
         "ILLEGAL_MULTILINE_BASIC_STR_CHARS"
     ],
     [
+        "STORE_NAME",
+        "ILLEGAL_MULTILINE_LITERAL_STR_CHARS"
+    ],
+    [
         "LOAD_NAME",
         "ILLEGAL_BASIC_STR_CHARS"
+    ],
+    [
+        "STORE_NAME",
+        "ILLEGAL_COMMENT_CHARS"
     ],
     [
         "LOAD_NAME",
@@ -86,6 +178,10 @@
     [
         "CALL_FUNCTION",
         "frozenset(\" \\t\")"
+    ],
+    [
+        "STORE_NAME",
+        "TOML_WS"
     ],
     [
         "LOAD_NAME",
@@ -102,6 +198,10 @@
     [
         "BINARY_OR",
         "TOML_WS | frozenset(\"\\n\")"
+    ],
+    [
+        "STORE_NAME",
+        "TOML_WS_AND_NEWLINE"
     ],
     [
         "LOAD_NAME",
@@ -136,6 +236,10 @@
         "frozenset(string.ascii_letters + string.digits + \"-_\")"
     ],
     [
+        "STORE_NAME",
+        "BARE_KEY_CHARS"
+    ],
+    [
         "LOAD_NAME",
         "BARE_KEY_CHARS"
     ],
@@ -150,6 +254,10 @@
     [
         "BINARY_OR",
         "BARE_KEY_CHARS | frozenset(\"\\\"'\")"
+    ],
+    [
+        "STORE_NAME",
+        "KEY_INITIAL_CHARS"
     ],
     [
         "LOAD_NAME",
@@ -168,6 +276,10 @@
         "frozenset(string.hexdigits)"
     ],
     [
+        "STORE_NAME",
+        "HEXDIGIT_CHARS"
+    ],
+    [
         "LOAD_NAME",
         "MappingProxyType"
     ],
@@ -176,20 +288,164 @@
         "MappingProxyType(\n    {\n        \"\\\\b\": \"\\u0008\",  # backspace\n        \"\\\\t\": \"\\u0009\",  # tab\n        \"\\\\n\": \"\\u000A\",  # linefeed\n        \"\\\\f\": \"\\u000C\",  # form feed\n        \"\\\\r\": \"\\u000D\",  # carriage return\n        '\\\\\"': \"\\u0022\",  # quote\n        \"\\\\\\\\\": \"\\u005C\",  # backslash\n    }\n)"
     ],
     [
+        "STORE_NAME",
+        "BASIC_STR_ESCAPE_REPLACEMENTS"
+    ],
+    [
         "LOAD_NAME",
         "ValueError"
     ],
     [
-        "LOAD_NAME",
-        "float"
+        "CALL_FUNCTION",
+        "class TOMLDecodeError(ValueError):\n    \"\"\"An error raised if a document is not valid TOML.\"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "class TOMLDecodeError(ValueError):\n    \"\"\"An error raised if a document is not valid TOML.\"\"\""
     ],
     [
         "LOAD_NAME",
         "float"
+    ],
+    [
+        "STORE_NAME",
+        "def load(fp: BinaryIO, /, *, parse_float: ParseFloat = float) -> dict[str, Any]:\n    \"\"\"Parse TOML from a binary file object.\"\"\"\n    b = fp.read()\n    try:\n        s = b.decode()\n    except AttributeError:\n        raise TypeError(\n            \"File must be opened in binary mode, e.g. use `open('foo.toml', 'rb')`\"\n        ) from None\n    return loads(s, parse_float=parse_float)"
+    ],
+    [
+        "LOAD_NAME",
+        "float"
+    ],
+    [
+        "STORE_NAME",
+        "def loads(s: str, /, *, parse_float: ParseFloat = float) -> dict[str, Any]:  # noqa: C901\n    \"\"\"Parse TOML from a string.\"\"\"\n\n    # The spec allows converting \"\\r\\n\" to \"\\n\", even in string\n    # literals. Let's do so to simplify parsing.\n    src = s.replace(\"\\r\\n\", \"\\n\")\n    pos = 0\n    out = Output(NestedDict(), Flags())\n    header: Key = ()\n    parse_float = make_safe_parse_float(parse_float)\n\n    # Parse one statement at a time\n    # (typically means one line in TOML source)\n    while True:\n        # 1. Skip line leading whitespace\n        pos = skip_chars(src, pos, TOML_WS)\n\n        # 2. Parse rules. Expect one of the following:\n        #    - end of file\n        #    - end of line\n        #    - comment\n        #    - key/value pair\n        #    - append dict to list (and move to its namespace)\n        #    - create dict (and move to its namespace)\n        # Skip trailing whitespace when applicable.\n        try:\n            char = src[pos]\n        except IndexError:\n            break\n        if char == \"\\n\":\n            pos += 1\n            continue\n        if char in KEY_INITIAL_CHARS:\n            pos = key_value_rule(src, pos, out, header, parse_float)\n            pos = skip_chars(src, pos, TOML_WS)\n        elif char == \"[\":\n            try:\n                second_char: str | None = src[pos + 1]\n            except IndexError:\n                second_char = None\n            out.flags.finalize_pending()\n            if second_char == \"[\":\n                pos, header = create_list_rule(src, pos, out)\n            else:\n                pos, header = create_dict_rule(src, pos, out)\n            pos = skip_chars(src, pos, TOML_WS)\n        elif char != \"#\":\n            raise suffixed_err(src, pos, \"Invalid statement\")\n\n        # 3. Skip comment\n        pos = skip_comment(src, pos)\n\n        # 4. Expect end of line or end of file\n        try:\n            char = src[pos]\n        except IndexError:\n            break\n        if char != \"\\n\":\n            raise suffixed_err(\n                src, pos, \"Expected newline or end of document after a statement\"\n            )\n        pos += 1\n\n    return out.data.dict"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class Flags:\n    \"\"\"Flags that map to parsed keys/namespaces.\"\"\"\n\n    # Marks an immutable namespace (inline array or inline table).\n    FROZEN = 0\n    # Marks a nest that has been explicitly created and can no longer\n    # be opened using the \"[table]\" syntax.\n    EXPLICIT_NEST = 1\n\n    def __init__(self) -> None:\n        self._flags: dict[str, dict] = {}\n        self._pending_flags: set[tuple[Key, int]] = set()\n\n    def add_pending(self, key: Key, flag: int) -> None:\n        self._pending_flags.add((key, flag))\n\n    def finalize_pending(self) -> None:\n        for key, flag in self._pending_flags:\n            self.set(key, flag, recursive=False)\n        self._pending_flags.clear()\n\n    def unset_all(self, key: Key) -> None:\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return\n            cont = cont[k][\"nested\"]\n        cont.pop(key[-1], None)\n\n    def set(self, key: Key, flag: int, *, recursive: bool) -> None:  # noqa: A003\n        cont = self._flags\n        key_parent, key_stem = key[:-1], key[-1]\n        for k in key_parent:\n            if k not in cont:\n                cont[k] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n            cont = cont[k][\"nested\"]\n        if key_stem not in cont:\n            cont[key_stem] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n        cont[key_stem][\"recursive_flags\" if recursive else \"flags\"].add(flag)\n\n    def is_(self, key: Key, flag: int) -> bool:\n        if not key:\n            return False  # document root has no flags\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return False\n            inner_cont = cont[k]\n            if flag in inner_cont[\"recursive_flags\"]:\n                return True\n            cont = inner_cont[\"nested\"]\n        key_stem = key[-1]\n        if key_stem in cont:\n            cont = cont[key_stem]\n            return flag in cont[\"flags\"] or flag in cont[\"recursive_flags\"]\n        return False"
+    ],
+    [
+        "STORE_NAME",
+        "class Flags:\n    \"\"\"Flags that map to parsed keys/namespaces.\"\"\"\n\n    # Marks an immutable namespace (inline array or inline table).\n    FROZEN = 0\n    # Marks a nest that has been explicitly created and can no longer\n    # be opened using the \"[table]\" syntax.\n    EXPLICIT_NEST = 1\n\n    def __init__(self) -> None:\n        self._flags: dict[str, dict] = {}\n        self._pending_flags: set[tuple[Key, int]] = set()\n\n    def add_pending(self, key: Key, flag: int) -> None:\n        self._pending_flags.add((key, flag))\n\n    def finalize_pending(self) -> None:\n        for key, flag in self._pending_flags:\n            self.set(key, flag, recursive=False)\n        self._pending_flags.clear()\n\n    def unset_all(self, key: Key) -> None:\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return\n            cont = cont[k][\"nested\"]\n        cont.pop(key[-1], None)\n\n    def set(self, key: Key, flag: int, *, recursive: bool) -> None:  # noqa: A003\n        cont = self._flags\n        key_parent, key_stem = key[:-1], key[-1]\n        for k in key_parent:\n            if k not in cont:\n                cont[k] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n            cont = cont[k][\"nested\"]\n        if key_stem not in cont:\n            cont[key_stem] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n        cont[key_stem][\"recursive_flags\" if recursive else \"flags\"].add(flag)\n\n    def is_(self, key: Key, flag: int) -> bool:\n        if not key:\n            return False  # document root has no flags\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return False\n            inner_cont = cont[k]\n            if flag in inner_cont[\"recursive_flags\"]:\n                return True\n            cont = inner_cont[\"nested\"]\n        key_stem = key[-1]\n        if key_stem in cont:\n            cont = cont[key_stem]\n            return flag in cont[\"flags\"] or flag in cont[\"recursive_flags\"]\n        return False"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class NestedDict:\n    def __init__(self) -> None:\n        # The parsed content of the TOML document\n        self.dict: dict[str, Any] = {}\n\n    def get_or_create_nest(\n        self,\n        key: Key,\n        *,\n        access_lists: bool = True,\n    ) -> dict:\n        cont: Any = self.dict\n        for k in key:\n            if k not in cont:\n                cont[k] = {}\n            cont = cont[k]\n            if access_lists and isinstance(cont, list):\n                cont = cont[-1]\n            if not isinstance(cont, dict):\n                raise KeyError(\"There is no nest behind this key\")\n        return cont\n\n    def append_nest_to_list(self, key: Key) -> None:\n        cont = self.get_or_create_nest(key[:-1])\n        last_key = key[-1]\n        if last_key in cont:\n            list_ = cont[last_key]\n            if not isinstance(list_, list):\n                raise KeyError(\"An object other than list found behind this key\")\n            list_.append({})\n        else:\n            cont[last_key] = [{}]"
+    ],
+    [
+        "STORE_NAME",
+        "class NestedDict:\n    def __init__(self) -> None:\n        # The parsed content of the TOML document\n        self.dict: dict[str, Any] = {}\n\n    def get_or_create_nest(\n        self,\n        key: Key,\n        *,\n        access_lists: bool = True,\n    ) -> dict:\n        cont: Any = self.dict\n        for k in key:\n            if k not in cont:\n                cont[k] = {}\n            cont = cont[k]\n            if access_lists and isinstance(cont, list):\n                cont = cont[-1]\n            if not isinstance(cont, dict):\n                raise KeyError(\"There is no nest behind this key\")\n        return cont\n\n    def append_nest_to_list(self, key: Key) -> None:\n        cont = self.get_or_create_nest(key[:-1])\n        last_key = key[-1]\n        if last_key in cont:\n            list_ = cont[last_key]\n            if not isinstance(list_, list):\n                raise KeyError(\"An object other than list found behind this key\")\n            list_.append({})\n        else:\n            cont[last_key] = [{}]"
     ],
     [
         "LOAD_NAME",
         "NamedTuple"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class Output(NamedTuple):\n    data: NestedDict\n    flags: Flags"
+    ],
+    [
+        "STORE_NAME",
+        "class Output(NamedTuple):\n    data: NestedDict\n    flags: Flags"
+    ],
+    [
+        "STORE_NAME",
+        "def skip_chars(src: str, pos: Pos, chars: Iterable[str]) -> Pos:\n    try:\n        while src[pos] in chars:\n            pos += 1\n    except IndexError:\n        pass\n    return pos"
+    ],
+    [
+        "STORE_NAME",
+        "def skip_until(\n    src: str,\n    pos: Pos,\n    expect: str,\n    *,\n    error_on: frozenset[str],\n    error_on_eof: bool,\n) -> Pos:\n    try:\n        new_pos = src.index(expect, pos)\n    except ValueError:\n        new_pos = len(src)\n        if error_on_eof:\n            raise suffixed_err(src, new_pos, f\"Expected {expect!r}\") from None\n\n    if not error_on.isdisjoint(src[pos:new_pos]):\n        while src[pos] not in error_on:\n            pos += 1\n        raise suffixed_err(src, pos, f\"Found invalid character {src[pos]!r}\")\n    return new_pos"
+    ],
+    [
+        "STORE_NAME",
+        "def skip_comment(src: str, pos: Pos) -> Pos:\n    try:\n        char: str | None = src[pos]\n    except IndexError:\n        char = None\n    if char == \"#\":\n        return skip_until(\n            src, pos + 1, \"\\n\", error_on=ILLEGAL_COMMENT_CHARS, error_on_eof=False\n        )\n    return pos"
+    ],
+    [
+        "STORE_NAME",
+        "def skip_comments_and_array_ws(src: str, pos: Pos) -> Pos:\n    while True:\n        pos_before_skip = pos\n        pos = skip_chars(src, pos, TOML_WS_AND_NEWLINE)\n        pos = skip_comment(src, pos)\n        if pos == pos_before_skip:\n            return pos"
+    ],
+    [
+        "STORE_NAME",
+        "def create_dict_rule(src: str, pos: Pos, out: Output) -> tuple[Pos, Key]:\n    pos += 1  # Skip \"[\"\n    pos = skip_chars(src, pos, TOML_WS)\n    pos, key = parse_key(src, pos)\n\n    if out.flags.is_(key, Flags.EXPLICIT_NEST) or out.flags.is_(key, Flags.FROZEN):\n        raise suffixed_err(src, pos, f\"Cannot declare {key} twice\")\n    out.flags.set(key, Flags.EXPLICIT_NEST, recursive=False)\n    try:\n        out.data.get_or_create_nest(key)\n    except KeyError:\n        raise suffixed_err(src, pos, \"Cannot overwrite a value\") from None\n\n    if not src.startswith(\"]\", pos):\n        raise suffixed_err(src, pos, \"Expected ']' at the end of a table declaration\")\n    return pos + 1, key"
+    ],
+    [
+        "STORE_NAME",
+        "def create_list_rule(src: str, pos: Pos, out: Output) -> tuple[Pos, Key]:\n    pos += 2  # Skip \"[[\"\n    pos = skip_chars(src, pos, TOML_WS)\n    pos, key = parse_key(src, pos)\n\n    if out.flags.is_(key, Flags.FROZEN):\n        raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\n    # Free the namespace now that it points to another empty list item...\n    out.flags.unset_all(key)\n    # ...but this key precisely is still prohibited from table declaration\n    out.flags.set(key, Flags.EXPLICIT_NEST, recursive=False)\n    try:\n        out.data.append_nest_to_list(key)\n    except KeyError:\n        raise suffixed_err(src, pos, \"Cannot overwrite a value\") from None\n\n    if not src.startswith(\"]]\", pos):\n        raise suffixed_err(src, pos, \"Expected ']]' at the end of an array declaration\")\n    return pos + 2, key"
+    ],
+    [
+        "STORE_NAME",
+        "def key_value_rule(\n    src: str, pos: Pos, out: Output, header: Key, parse_float: ParseFloat\n) -> Pos:\n    pos, key, value = parse_key_value_pair(src, pos, parse_float)\n    key_parent, key_stem = key[:-1], key[-1]\n    abs_key_parent = header + key_parent\n\n    relative_path_cont_keys = (header + key[:i] for i in range(1, len(key)))\n    for cont_key in relative_path_cont_keys:\n        # Check that dotted key syntax does not redefine an existing table\n        if out.flags.is_(cont_key, Flags.EXPLICIT_NEST):\n            raise suffixed_err(src, pos, f\"Cannot redefine namespace {cont_key}\")\n        # Containers in the relative path can't be opened with the table syntax or\n        # dotted key/value syntax in following table sections.\n        out.flags.add_pending(cont_key, Flags.EXPLICIT_NEST)\n\n    if out.flags.is_(abs_key_parent, Flags.FROZEN):\n        raise suffixed_err(\n            src, pos, f\"Cannot mutate immutable namespace {abs_key_parent}\"\n        )\n\n    try:\n        nest = out.data.get_or_create_nest(abs_key_parent)\n    except KeyError:\n        raise suffixed_err(src, pos, \"Cannot overwrite a value\") from None\n    if key_stem in nest:\n        raise suffixed_err(src, pos, \"Cannot overwrite a value\")\n    # Mark inline table and array namespaces recursively immutable\n    if isinstance(value, (dict, list)):\n        out.flags.set(header + key, Flags.FROZEN, recursive=True)\n    nest[key_stem] = value\n    return pos"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_key_value_pair(\n    src: str, pos: Pos, parse_float: ParseFloat\n) -> tuple[Pos, Key, Any]:\n    pos, key = parse_key(src, pos)\n    try:\n        char: str | None = src[pos]\n    except IndexError:\n        char = None\n    if char != \"=\":\n        raise suffixed_err(src, pos, \"Expected '=' after a key in a key/value pair\")\n    pos += 1\n    pos = skip_chars(src, pos, TOML_WS)\n    pos, value = parse_value(src, pos, parse_float)\n    return pos, key, value"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_key(src: str, pos: Pos) -> tuple[Pos, Key]:\n    pos, key_part = parse_key_part(src, pos)\n    key: Key = (key_part,)\n    pos = skip_chars(src, pos, TOML_WS)\n    while True:\n        try:\n            char: str | None = src[pos]\n        except IndexError:\n            char = None\n        if char != \".\":\n            return pos, key\n        pos += 1\n        pos = skip_chars(src, pos, TOML_WS)\n        pos, key_part = parse_key_part(src, pos)\n        key += (key_part,)\n        pos = skip_chars(src, pos, TOML_WS)"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_key_part(src: str, pos: Pos) -> tuple[Pos, str]:\n    try:\n        char: str | None = src[pos]\n    except IndexError:\n        char = None\n    if char in BARE_KEY_CHARS:\n        start_pos = pos\n        pos = skip_chars(src, pos, BARE_KEY_CHARS)\n        return pos, src[start_pos:pos]\n    if char == \"'\":\n        return parse_literal_str(src, pos)\n    if char == '\"':\n        return parse_one_line_basic_str(src, pos)\n    raise suffixed_err(src, pos, \"Invalid initial character for a key part\")"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_one_line_basic_str(src: str, pos: Pos) -> tuple[Pos, str]:\n    pos += 1\n    return parse_basic_str(src, pos, multiline=False)"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_array(src: str, pos: Pos, parse_float: ParseFloat) -> tuple[Pos, list]:\n    pos += 1\n    array: list = []\n\n    pos = skip_comments_and_array_ws(src, pos)\n    if src.startswith(\"]\", pos):\n        return pos + 1, array\n    while True:\n        pos, val = parse_value(src, pos, parse_float)\n        array.append(val)\n        pos = skip_comments_and_array_ws(src, pos)\n\n        c = src[pos : pos + 1]\n        if c == \"]\":\n            return pos + 1, array\n        if c != \",\":\n            raise suffixed_err(src, pos, \"Unclosed array\")\n        pos += 1\n\n        pos = skip_comments_and_array_ws(src, pos)\n        if src.startswith(\"]\", pos):\n            return pos + 1, array"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_inline_table(src: str, pos: Pos, parse_float: ParseFloat) -> tuple[Pos, dict]:\n    pos += 1\n    nested_dict = NestedDict()\n    flags = Flags()\n\n    pos = skip_chars(src, pos, TOML_WS)\n    if src.startswith(\"}\", pos):\n        return pos + 1, nested_dict.dict\n    while True:\n        pos, key, value = parse_key_value_pair(src, pos, parse_float)\n        key_parent, key_stem = key[:-1], key[-1]\n        if flags.is_(key, Flags.FROZEN):\n            raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\n        try:\n            nest = nested_dict.get_or_create_nest(key_parent, access_lists=False)\n        except KeyError:\n            raise suffixed_err(src, pos, \"Cannot overwrite a value\") from None\n        if key_stem in nest:\n            raise suffixed_err(src, pos, f\"Duplicate inline table key {key_stem!r}\")\n        nest[key_stem] = value\n        pos = skip_chars(src, pos, TOML_WS)\n        c = src[pos : pos + 1]\n        if c == \"}\":\n            return pos + 1, nested_dict.dict\n        if c != \",\":\n            raise suffixed_err(src, pos, \"Unclosed inline table\")\n        if isinstance(value, (dict, list)):\n            flags.set(key, Flags.FROZEN, recursive=True)\n        pos += 1\n        pos = skip_chars(src, pos, TOML_WS)"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_basic_str_escape(\n    src: str, pos: Pos, *, multiline: bool = False\n) -> tuple[Pos, str]:\n    escape_id = src[pos : pos + 2]\n    pos += 2\n    if multiline and escape_id in {\"\\\\ \", \"\\\\\\t\", \"\\\\\\n\"}:\n        # Skip whitespace until next non-whitespace character or end of\n        # the doc. Error if non-whitespace is found before newline.\n        if escape_id != \"\\\\\\n\":\n            pos = skip_chars(src, pos, TOML_WS)\n            try:\n                char = src[pos]\n            except IndexError:\n                return pos, \"\"\n            if char != \"\\n\":\n                raise suffixed_err(src, pos, \"Unescaped '\\\\' in a string\")\n            pos += 1\n        pos = skip_chars(src, pos, TOML_WS_AND_NEWLINE)\n        return pos, \"\"\n    if escape_id == \"\\\\u\":\n        return parse_hex_char(src, pos, 4)\n    if escape_id == \"\\\\U\":\n        return parse_hex_char(src, pos, 8)\n    try:\n        return pos, BASIC_STR_ESCAPE_REPLACEMENTS[escape_id]\n    except KeyError:\n        raise suffixed_err(src, pos, \"Unescaped '\\\\' in a string\") from None"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_basic_str_escape_multiline(src: str, pos: Pos) -> tuple[Pos, str]:\n    return parse_basic_str_escape(src, pos, multiline=True)"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_hex_char(src: str, pos: Pos, hex_len: int) -> tuple[Pos, str]:\n    hex_str = src[pos : pos + hex_len]\n    if len(hex_str) != hex_len or not HEXDIGIT_CHARS.issuperset(hex_str):\n        raise suffixed_err(src, pos, \"Invalid hex value\")\n    pos += hex_len\n    hex_int = int(hex_str, 16)\n    if not is_unicode_scalar_value(hex_int):\n        raise suffixed_err(src, pos, \"Escaped character is not a Unicode scalar value\")\n    return pos, chr(hex_int)"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_literal_str(src: str, pos: Pos) -> tuple[Pos, str]:\n    pos += 1  # Skip starting apostrophe\n    start_pos = pos\n    pos = skip_until(\n        src, pos, \"'\", error_on=ILLEGAL_LITERAL_STR_CHARS, error_on_eof=True\n    )\n    return pos + 1, src[start_pos:pos]"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_multiline_str(src: str, pos: Pos, *, literal: bool) -> tuple[Pos, str]:\n    pos += 3\n    if src.startswith(\"\\n\", pos):\n        pos += 1\n\n    if literal:\n        delim = \"'\"\n        end_pos = skip_until(\n            src,\n            pos,\n            \"'''\",\n            error_on=ILLEGAL_MULTILINE_LITERAL_STR_CHARS,\n            error_on_eof=True,\n        )\n        result = src[pos:end_pos]\n        pos = end_pos + 3\n    else:\n        delim = '\"'\n        pos, result = parse_basic_str(src, pos, multiline=True)\n\n    # Add at maximum two extra apostrophes/quotes if the end sequence\n    # is 4 or 5 chars long instead of just 3.\n    if not src.startswith(delim, pos):\n        return pos, result\n    pos += 1\n    if not src.startswith(delim, pos):\n        return pos, result + delim\n    pos += 1\n    return pos, result + (delim * 2)"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_basic_str(src: str, pos: Pos, *, multiline: bool) -> tuple[Pos, str]:\n    if multiline:\n        error_on = ILLEGAL_MULTILINE_BASIC_STR_CHARS\n        parse_escapes = parse_basic_str_escape_multiline\n    else:\n        error_on = ILLEGAL_BASIC_STR_CHARS\n        parse_escapes = parse_basic_str_escape\n    result = \"\"\n    start_pos = pos\n    while True:\n        try:\n            char = src[pos]\n        except IndexError:\n            raise suffixed_err(src, pos, \"Unterminated string\") from None\n        if char == '\"':\n            if not multiline:\n                return pos + 1, result + src[start_pos:pos]\n            if src.startswith('\"\"\"', pos):\n                return pos + 3, result + src[start_pos:pos]\n            pos += 1\n            continue\n        if char == \"\\\\\":\n            result += src[start_pos:pos]\n            pos, parsed_escape = parse_escapes(src, pos)\n            result += parsed_escape\n            start_pos = pos\n            continue\n        if char in error_on:\n            raise suffixed_err(src, pos, f\"Illegal character {char!r}\")\n        pos += 1"
+    ],
+    [
+        "STORE_NAME",
+        "def parse_value(  # noqa: C901\n    src: str, pos: Pos, parse_float: ParseFloat\n) -> tuple[Pos, Any]:\n    try:\n        char: str | None = src[pos]\n    except IndexError:\n        char = None\n\n    # IMPORTANT: order conditions based on speed of checking and likelihood\n\n    # Basic strings\n    if char == '\"':\n        if src.startswith('\"\"\"', pos):\n            return parse_multiline_str(src, pos, literal=False)\n        return parse_one_line_basic_str(src, pos)\n\n    # Literal strings\n    if char == \"'\":\n        if src.startswith(\"'''\", pos):\n            return parse_multiline_str(src, pos, literal=True)\n        return parse_literal_str(src, pos)\n\n    # Booleans\n    if char == \"t\":\n        if src.startswith(\"true\", pos):\n            return pos + 4, True\n    if char == \"f\":\n        if src.startswith(\"false\", pos):\n            return pos + 5, False\n\n    # Arrays\n    if char == \"[\":\n        return parse_array(src, pos, parse_float)\n\n    # Inline tables\n    if char == \"{\":\n        return parse_inline_table(src, pos, parse_float)\n\n    # Dates and times\n    datetime_match = RE_DATETIME.match(src, pos)\n    if datetime_match:\n        try:\n            datetime_obj = match_to_datetime(datetime_match)\n        except ValueError as e:\n            raise suffixed_err(src, pos, \"Invalid date or datetime\") from e\n        return datetime_match.end(), datetime_obj\n    localtime_match = RE_LOCALTIME.match(src, pos)\n    if localtime_match:\n        return localtime_match.end(), match_to_localtime(localtime_match)\n\n    # Integers and \"normal\" floats.\n    # The regex will greedily match any type starting with a decimal\n    # char, so needs to be located after handling of dates and times.\n    number_match = RE_NUMBER.match(src, pos)\n    if number_match:\n        return number_match.end(), match_to_number(number_match, parse_float)\n\n    # Special floats\n    first_three = src[pos : pos + 3]\n    if first_three in {\"inf\", \"nan\"}:\n        return pos + 3, parse_float(first_three)\n    first_four = src[pos : pos + 4]\n    if first_four in {\"-inf\", \"+inf\", \"-nan\", \"+nan\"}:\n        return pos + 4, parse_float(first_four)\n\n    raise suffixed_err(src, pos, \"Invalid value\")"
+    ],
+    [
+        "STORE_NAME",
+        "def suffixed_err(src: str, pos: Pos, msg: str) -> TOMLDecodeError:\n    \"\"\"Return a `TOMLDecodeError` where error message is suffixed with\n    coordinates in source.\"\"\"\n\n    def coord_repr(src: str, pos: Pos) -> str:\n        if pos >= len(src):\n            return \"end of document\"\n        line = src.count(\"\\n\", 0, pos) + 1\n        if line == 1:\n            column = pos + 1\n        else:\n            column = pos - src.rindex(\"\\n\", 0, pos)\n        return f\"line {line}, column {column}\"\n\n    return TOMLDecodeError(f\"{msg} (at {coord_repr(src, pos)})\")"
+    ],
+    [
+        "STORE_NAME",
+        "def is_unicode_scalar_value(codepoint: int) -> bool:\n    return (0 <= codepoint <= 55295) or (57344 <= codepoint <= 1114111)"
+    ],
+    [
+        "STORE_NAME",
+        "def make_safe_parse_float(parse_float: ParseFloat) -> ParseFloat:\n    \"\"\"A decorator to make `parse_float` safe.\n\n    `parse_float` must not return dicts or lists, because these types\n    would be mixed with parsed TOML tables and arrays, thus confusing\n    the parser. The returned decorated callable raises `ValueError`\n    instead of returning illegal types.\n    \"\"\"\n    # The default `float` callable never returns illegal types. Optimize it.\n    if parse_float is float:  # type: ignore[comparison-overlap]\n        return float\n\n    def safe_parse_float(float_str: str) -> Any:\n        float_value = parse_float(float_str)\n        if isinstance(float_value, (dict, list)):\n            raise ValueError(\"parse_float must not return dicts or lists\")\n        return float_value\n\n    return safe_parse_float"
+    ],
+    [
+        "LOAD_FAST",
+        "(chr(i) for i in range(32))"
+    ],
+    [
+        "STORE_FAST",
+        "i"
     ],
     [
         "LOAD_GLOBAL",
@@ -204,6 +460,22 @@
         "chr(i)"
     ],
     [
+        "LOAD_NAME",
+        "class TOMLDecodeError(ValueError):\n    \"\"\"An error raised if a document is not valid TOML.\"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "class TOMLDecodeError(ValueError):\n    \"\"\"An error raised if a document is not valid TOML.\"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "class TOMLDecodeError(ValueError):\n    \"\"\"An error raised if a document is not valid TOML.\"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "\"\"\"An error raised if a document is not valid TOML.\"\"\""
+    ],
+    [
         "LOAD_FAST",
         "fp"
     ],
@@ -216,6 +488,10 @@
         "fp.read()"
     ],
     [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_FAST",
         "b"
     ],
@@ -226,6 +502,10 @@
     [
         "CALL_METHOD",
         "b.decode()"
+    ],
+    [
+        "STORE_FAST",
+        "s"
     ],
     [
         "LOAD_GLOBAL",
@@ -268,6 +548,14 @@
         "s.replace(\"\\r\\n\", \"\\n\")"
     ],
     [
+        "STORE_FAST",
+        "src"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "Output"
     ],
@@ -292,6 +580,14 @@
         "Output(NestedDict(), Flags())"
     ],
     [
+        "STORE_FAST",
+        "out"
+    ],
+    [
+        "STORE_FAST",
+        "header"
+    ],
+    [
         "LOAD_GLOBAL",
         "make_safe_parse_float"
     ],
@@ -302,6 +598,10 @@
     [
         "CALL_FUNCTION",
         "make_safe_parse_float(parse_float)"
+    ],
+    [
+        "STORE_FAST",
+        "parse_float"
     ],
     [
         "LOAD_GLOBAL",
@@ -324,6 +624,10 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -334,6 +638,10 @@
     [
         "BINARY_SUBSCR",
         "src[pos]"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_GLOBAL",
@@ -358,6 +666,14 @@
     [
         "COMPARE_OP",
         "char == \"\\n\""
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -400,6 +716,10 @@
         "key_value_rule(src, pos, out, header, parse_float)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_chars"
     ],
@@ -418,6 +738,10 @@
     [
         "CALL_FUNCTION",
         "skip_chars(src, pos, TOML_WS)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -444,8 +768,16 @@
         "src[pos + 1]"
     ],
     [
+        "STORE_FAST",
+        "second_char"
+    ],
+    [
         "LOAD_GLOBAL",
         "IndexError"
+    ],
+    [
+        "STORE_FAST",
+        "second_char"
     ],
     [
         "LOAD_FAST",
@@ -492,6 +824,14 @@
         "create_list_rule(src, pos, out)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "header"
+    ],
+    [
         "LOAD_GLOBAL",
         "create_dict_rule"
     ],
@@ -512,6 +852,14 @@
         "create_dict_rule(src, pos, out)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "header"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_chars"
     ],
@@ -530,6 +878,10 @@
     [
         "CALL_FUNCTION",
         "skip_chars(src, pos, TOML_WS)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -572,6 +924,10 @@
         "skip_comment(src, pos)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -582,6 +938,10 @@
     [
         "BINARY_SUBSCR",
         "src[pos]"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_GLOBAL",
@@ -622,6 +982,62 @@
     [
         "CALL_FUNCTION",
         "suffixed_err(\n                src, pos, \"Expected newline or end of document after a statement\"\n            )"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_NAME",
+        "class Flags:\n    \"\"\"Flags that map to parsed keys/namespaces.\"\"\"\n\n    # Marks an immutable namespace (inline array or inline table).\n    FROZEN = 0\n    # Marks a nest that has been explicitly created and can no longer\n    # be opened using the \"[table]\" syntax.\n    EXPLICIT_NEST = 1\n\n    def __init__(self) -> None:\n        self._flags: dict[str, dict] = {}\n        self._pending_flags: set[tuple[Key, int]] = set()\n\n    def add_pending(self, key: Key, flag: int) -> None:\n        self._pending_flags.add((key, flag))\n\n    def finalize_pending(self) -> None:\n        for key, flag in self._pending_flags:\n            self.set(key, flag, recursive=False)\n        self._pending_flags.clear()\n\n    def unset_all(self, key: Key) -> None:\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return\n            cont = cont[k][\"nested\"]\n        cont.pop(key[-1], None)\n\n    def set(self, key: Key, flag: int, *, recursive: bool) -> None:  # noqa: A003\n        cont = self._flags\n        key_parent, key_stem = key[:-1], key[-1]\n        for k in key_parent:\n            if k not in cont:\n                cont[k] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n            cont = cont[k][\"nested\"]\n        if key_stem not in cont:\n            cont[key_stem] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n        cont[key_stem][\"recursive_flags\" if recursive else \"flags\"].add(flag)\n\n    def is_(self, key: Key, flag: int) -> bool:\n        if not key:\n            return False  # document root has no flags\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return False\n            inner_cont = cont[k]\n            if flag in inner_cont[\"recursive_flags\"]:\n                return True\n            cont = inner_cont[\"nested\"]\n        key_stem = key[-1]\n        if key_stem in cont:\n            cont = cont[key_stem]\n            return flag in cont[\"flags\"] or flag in cont[\"recursive_flags\"]\n        return False"
+    ],
+    [
+        "STORE_NAME",
+        "class Flags:\n    \"\"\"Flags that map to parsed keys/namespaces.\"\"\"\n\n    # Marks an immutable namespace (inline array or inline table).\n    FROZEN = 0\n    # Marks a nest that has been explicitly created and can no longer\n    # be opened using the \"[table]\" syntax.\n    EXPLICIT_NEST = 1\n\n    def __init__(self) -> None:\n        self._flags: dict[str, dict] = {}\n        self._pending_flags: set[tuple[Key, int]] = set()\n\n    def add_pending(self, key: Key, flag: int) -> None:\n        self._pending_flags.add((key, flag))\n\n    def finalize_pending(self) -> None:\n        for key, flag in self._pending_flags:\n            self.set(key, flag, recursive=False)\n        self._pending_flags.clear()\n\n    def unset_all(self, key: Key) -> None:\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return\n            cont = cont[k][\"nested\"]\n        cont.pop(key[-1], None)\n\n    def set(self, key: Key, flag: int, *, recursive: bool) -> None:  # noqa: A003\n        cont = self._flags\n        key_parent, key_stem = key[:-1], key[-1]\n        for k in key_parent:\n            if k not in cont:\n                cont[k] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n            cont = cont[k][\"nested\"]\n        if key_stem not in cont:\n            cont[key_stem] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n        cont[key_stem][\"recursive_flags\" if recursive else \"flags\"].add(flag)\n\n    def is_(self, key: Key, flag: int) -> bool:\n        if not key:\n            return False  # document root has no flags\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return False\n            inner_cont = cont[k]\n            if flag in inner_cont[\"recursive_flags\"]:\n                return True\n            cont = inner_cont[\"nested\"]\n        key_stem = key[-1]\n        if key_stem in cont:\n            cont = cont[key_stem]\n            return flag in cont[\"flags\"] or flag in cont[\"recursive_flags\"]\n        return False"
+    ],
+    [
+        "STORE_NAME",
+        "class Flags:\n    \"\"\"Flags that map to parsed keys/namespaces.\"\"\"\n\n    # Marks an immutable namespace (inline array or inline table).\n    FROZEN = 0\n    # Marks a nest that has been explicitly created and can no longer\n    # be opened using the \"[table]\" syntax.\n    EXPLICIT_NEST = 1\n\n    def __init__(self) -> None:\n        self._flags: dict[str, dict] = {}\n        self._pending_flags: set[tuple[Key, int]] = set()\n\n    def add_pending(self, key: Key, flag: int) -> None:\n        self._pending_flags.add((key, flag))\n\n    def finalize_pending(self) -> None:\n        for key, flag in self._pending_flags:\n            self.set(key, flag, recursive=False)\n        self._pending_flags.clear()\n\n    def unset_all(self, key: Key) -> None:\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return\n            cont = cont[k][\"nested\"]\n        cont.pop(key[-1], None)\n\n    def set(self, key: Key, flag: int, *, recursive: bool) -> None:  # noqa: A003\n        cont = self._flags\n        key_parent, key_stem = key[:-1], key[-1]\n        for k in key_parent:\n            if k not in cont:\n                cont[k] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n            cont = cont[k][\"nested\"]\n        if key_stem not in cont:\n            cont[key_stem] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n        cont[key_stem][\"recursive_flags\" if recursive else \"flags\"].add(flag)\n\n    def is_(self, key: Key, flag: int) -> bool:\n        if not key:\n            return False  # document root has no flags\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return False\n            inner_cont = cont[k]\n            if flag in inner_cont[\"recursive_flags\"]:\n                return True\n            cont = inner_cont[\"nested\"]\n        key_stem = key[-1]\n        if key_stem in cont:\n            cont = cont[key_stem]\n            return flag in cont[\"flags\"] or flag in cont[\"recursive_flags\"]\n        return False"
+    ],
+    [
+        "STORE_NAME",
+        "\"\"\"Flags that map to parsed keys/namespaces.\"\"\""
+    ],
+    [
+        "STORE_NAME",
+        "FROZEN"
+    ],
+    [
+        "STORE_NAME",
+        "EXPLICIT_NEST"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self) -> None:\n        self._flags: dict[str, dict] = {}\n        self._pending_flags: set[tuple[Key, int]] = set()"
+    ],
+    [
+        "STORE_NAME",
+        "    def add_pending(self, key: Key, flag: int) -> None:\n        self._pending_flags.add((key, flag))"
+    ],
+    [
+        "STORE_NAME",
+        "    def finalize_pending(self) -> None:\n        for key, flag in self._pending_flags:\n            self.set(key, flag, recursive=False)\n        self._pending_flags.clear()"
+    ],
+    [
+        "STORE_NAME",
+        "    def unset_all(self, key: Key) -> None:\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return\n            cont = cont[k][\"nested\"]\n        cont.pop(key[-1], None)"
+    ],
+    [
+        "STORE_NAME",
+        "    def set(self, key: Key, flag: int, *, recursive: bool) -> None:  # noqa: A003\n        cont = self._flags\n        key_parent, key_stem = key[:-1], key[-1]\n        for k in key_parent:\n            if k not in cont:\n                cont[k] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n            cont = cont[k][\"nested\"]\n        if key_stem not in cont:\n            cont[key_stem] = {\"flags\": set(), \"recursive_flags\": set(), \"nested\": {}}\n        cont[key_stem][\"recursive_flags\" if recursive else \"flags\"].add(flag)"
+    ],
+    [
+        "STORE_NAME",
+        "    def is_(self, key: Key, flag: int) -> bool:\n        if not key:\n            return False  # document root has no flags\n        cont = self._flags\n        for k in key[:-1]:\n            if k not in cont:\n                return False\n            inner_cont = cont[k]\n            if flag in inner_cont[\"recursive_flags\"]:\n                return True\n            cont = inner_cont[\"nested\"]\n        key_stem = key[-1]\n        if key_stem in cont:\n            cont = cont[key_stem]\n            return flag in cont[\"flags\"] or flag in cont[\"recursive_flags\"]\n        return False"
     ],
     [
         "LOAD_FAST",
@@ -680,6 +1096,14 @@
         "self._pending_flags"
     ],
     [
+        "STORE_FAST",
+        "key"
+    ],
+    [
+        "STORE_FAST",
+        "flag"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -724,12 +1148,20 @@
         "self._flags"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "key"
     ],
     [
         "BINARY_SUBSCR",
         "key[:-1]"
+    ],
+    [
+        "STORE_FAST",
+        "k"
     ],
     [
         "LOAD_FAST",
@@ -760,6 +1192,10 @@
         "cont[k][\"nested\"]"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "cont"
     ],
@@ -788,6 +1224,10 @@
         "self._flags"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "key"
     ],
@@ -804,8 +1244,20 @@
         "key[-1]"
     ],
     [
+        "STORE_FAST",
+        "key_parent"
+    ],
+    [
+        "STORE_FAST",
+        "key_stem"
+    ],
+    [
         "LOAD_FAST",
         "key_parent"
+    ],
+    [
+        "STORE_FAST",
+        "k"
     ],
     [
         "LOAD_FAST",
@@ -862,6 +1314,10 @@
     [
         "BINARY_SUBSCR",
         "cont[k][\"nested\"]"
+    ],
+    [
+        "STORE_FAST",
+        "cont"
     ],
     [
         "LOAD_FAST",
@@ -948,12 +1404,20 @@
         "self._flags"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "key"
     ],
     [
         "BINARY_SUBSCR",
         "key[:-1]"
+    ],
+    [
+        "STORE_FAST",
+        "k"
     ],
     [
         "LOAD_FAST",
@@ -980,6 +1444,10 @@
         "cont[k]"
     ],
     [
+        "STORE_FAST",
+        "inner_cont"
+    ],
+    [
         "LOAD_FAST",
         "flag"
     ],
@@ -1004,12 +1472,20 @@
         "inner_cont[\"nested\"]"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "key"
     ],
     [
         "BINARY_SUBSCR",
         "key[-1]"
+    ],
+    [
+        "STORE_FAST",
+        "key_stem"
     ],
     [
         "LOAD_FAST",
@@ -1034,6 +1510,10 @@
     [
         "BINARY_SUBSCR",
         "cont[key_stem]"
+    ],
+    [
+        "STORE_FAST",
+        "cont"
     ],
     [
         "LOAD_FAST",
@@ -1068,6 +1548,30 @@
         "flag in cont[\"recursive_flags\"]"
     ],
     [
+        "LOAD_NAME",
+        "class NestedDict:\n    def __init__(self) -> None:\n        # The parsed content of the TOML document\n        self.dict: dict[str, Any] = {}\n\n    def get_or_create_nest(\n        self,\n        key: Key,\n        *,\n        access_lists: bool = True,\n    ) -> dict:\n        cont: Any = self.dict\n        for k in key:\n            if k not in cont:\n                cont[k] = {}\n            cont = cont[k]\n            if access_lists and isinstance(cont, list):\n                cont = cont[-1]\n            if not isinstance(cont, dict):\n                raise KeyError(\"There is no nest behind this key\")\n        return cont\n\n    def append_nest_to_list(self, key: Key) -> None:\n        cont = self.get_or_create_nest(key[:-1])\n        last_key = key[-1]\n        if last_key in cont:\n            list_ = cont[last_key]\n            if not isinstance(list_, list):\n                raise KeyError(\"An object other than list found behind this key\")\n            list_.append({})\n        else:\n            cont[last_key] = [{}]"
+    ],
+    [
+        "STORE_NAME",
+        "class NestedDict:\n    def __init__(self) -> None:\n        # The parsed content of the TOML document\n        self.dict: dict[str, Any] = {}\n\n    def get_or_create_nest(\n        self,\n        key: Key,\n        *,\n        access_lists: bool = True,\n    ) -> dict:\n        cont: Any = self.dict\n        for k in key:\n            if k not in cont:\n                cont[k] = {}\n            cont = cont[k]\n            if access_lists and isinstance(cont, list):\n                cont = cont[-1]\n            if not isinstance(cont, dict):\n                raise KeyError(\"There is no nest behind this key\")\n        return cont\n\n    def append_nest_to_list(self, key: Key) -> None:\n        cont = self.get_or_create_nest(key[:-1])\n        last_key = key[-1]\n        if last_key in cont:\n            list_ = cont[last_key]\n            if not isinstance(list_, list):\n                raise KeyError(\"An object other than list found behind this key\")\n            list_.append({})\n        else:\n            cont[last_key] = [{}]"
+    ],
+    [
+        "STORE_NAME",
+        "class NestedDict:\n    def __init__(self) -> None:\n        # The parsed content of the TOML document\n        self.dict: dict[str, Any] = {}\n\n    def get_or_create_nest(\n        self,\n        key: Key,\n        *,\n        access_lists: bool = True,\n    ) -> dict:\n        cont: Any = self.dict\n        for k in key:\n            if k not in cont:\n                cont[k] = {}\n            cont = cont[k]\n            if access_lists and isinstance(cont, list):\n                cont = cont[-1]\n            if not isinstance(cont, dict):\n                raise KeyError(\"There is no nest behind this key\")\n        return cont\n\n    def append_nest_to_list(self, key: Key) -> None:\n        cont = self.get_or_create_nest(key[:-1])\n        last_key = key[-1]\n        if last_key in cont:\n            list_ = cont[last_key]\n            if not isinstance(list_, list):\n                raise KeyError(\"An object other than list found behind this key\")\n            list_.append({})\n        else:\n            cont[last_key] = [{}]"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self) -> None:\n        # The parsed content of the TOML document\n        self.dict: dict[str, Any] = {}"
+    ],
+    [
+        "STORE_NAME",
+        "    def get_or_create_nest(\n        self,\n        key: Key,\n        *,\n        access_lists: bool = True,\n    ) -> dict:\n        cont: Any = self.dict\n        for k in key:\n            if k not in cont:\n                cont[k] = {}\n            cont = cont[k]\n            if access_lists and isinstance(cont, list):\n                cont = cont[-1]\n            if not isinstance(cont, dict):\n                raise KeyError(\"There is no nest behind this key\")\n        return cont"
+    ],
+    [
+        "STORE_NAME",
+        "    def append_nest_to_list(self, key: Key) -> None:\n        cont = self.get_or_create_nest(key[:-1])\n        last_key = key[-1]\n        if last_key in cont:\n            list_ = cont[last_key]\n            if not isinstance(list_, list):\n                raise KeyError(\"An object other than list found behind this key\")\n            list_.append({})\n        else:\n            cont[last_key] = [{}]"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -1084,8 +1588,16 @@
         "self.dict"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "key"
+    ],
+    [
+        "STORE_FAST",
+        "k"
     ],
     [
         "LOAD_FAST",
@@ -1124,6 +1636,10 @@
         "cont[k]"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "access_lists"
     ],
@@ -1150,6 +1666,10 @@
     [
         "BINARY_SUBSCR",
         "cont[-1]"
+    ],
+    [
+        "STORE_FAST",
+        "cont"
     ],
     [
         "LOAD_GLOBAL",
@@ -1200,12 +1720,20 @@
         "self.get_or_create_nest(key[:-1])"
     ],
     [
+        "STORE_FAST",
+        "cont"
+    ],
+    [
         "LOAD_FAST",
         "key"
     ],
     [
         "BINARY_SUBSCR",
         "key[-1]"
+    ],
+    [
+        "STORE_FAST",
+        "last_key"
     ],
     [
         "LOAD_FAST",
@@ -1230,6 +1758,10 @@
     [
         "BINARY_SUBSCR",
         "cont[last_key]"
+    ],
+    [
+        "STORE_FAST",
+        "list_"
     ],
     [
         "LOAD_GLOBAL",
@@ -1280,6 +1812,34 @@
         "cont[last_key]"
     ],
     [
+        "LOAD_NAME",
+        "class Output(NamedTuple):\n    data: NestedDict\n    flags: Flags"
+    ],
+    [
+        "STORE_NAME",
+        "class Output(NamedTuple):\n    data: NestedDict\n    flags: Flags"
+    ],
+    [
+        "STORE_NAME",
+        "class Output(NamedTuple):\n    data: NestedDict\n    flags: Flags"
+    ],
+    [
+        "LOAD_NAME",
+        "data: NestedDict"
+    ],
+    [
+        "STORE_SUBSCR",
+        "data: NestedDict"
+    ],
+    [
+        "LOAD_NAME",
+        "flags: Flags"
+    ],
+    [
+        "STORE_SUBSCR",
+        "flags: Flags"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -1298,6 +1858,14 @@
     [
         "CONTAINS_OP",
         "src[pos] in chars"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -1356,6 +1924,10 @@
         "src.index(expect, pos)"
     ],
     [
+        "STORE_FAST",
+        "new_pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "ValueError"
     ],
@@ -1370,6 +1942,10 @@
     [
         "CALL_FUNCTION",
         "len(src)"
+    ],
+    [
+        "STORE_FAST",
+        "new_pos"
     ],
     [
         "LOAD_FAST",
@@ -1390,6 +1966,10 @@
     [
         "LOAD_FAST",
         "expect"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Expected {expect!r}\""
     ],
     [
         "CALL_FUNCTION",
@@ -1445,6 +2025,14 @@
     ],
     [
         "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
         "src"
     ],
     [
@@ -1488,6 +2076,10 @@
         "src[pos]"
     ],
     [
+        "BUILD_STRING",
+        "f\"Found invalid character {src[pos]!r}\""
+    ],
+    [
         "CALL_FUNCTION",
         "suffixed_err(src, pos, f\"Found invalid character {src[pos]!r}\")"
     ],
@@ -1508,8 +2100,16 @@
         "src[pos]"
     ],
     [
+        "STORE_FAST",
+        "char"
+    ],
+    [
         "LOAD_GLOBAL",
         "IndexError"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_FAST",
@@ -1552,6 +2152,10 @@
         "pos"
     ],
     [
+        "STORE_FAST",
+        "pos_before_skip"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_chars"
     ],
@@ -1572,6 +2176,10 @@
         "skip_chars(src, pos, TOML_WS_AND_NEWLINE)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_comment"
     ],
@@ -1588,6 +2196,10 @@
         "skip_comment(src, pos)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "pos"
     ],
@@ -1601,6 +2213,14 @@
     ],
     [
         "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
         "pos"
     ],
     [
@@ -1624,6 +2244,10 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "parse_key"
     ],
@@ -1638,6 +2262,14 @@
     [
         "CALL_FUNCTION",
         "parse_key(src, pos)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "key"
     ],
     [
         "LOAD_FAST",
@@ -1710,6 +2342,10 @@
     [
         "LOAD_FAST",
         "key"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Cannot declare {key} twice\""
     ],
     [
         "CALL_FUNCTION",
@@ -1828,6 +2464,14 @@
         "key"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_chars"
     ],
@@ -1848,6 +2492,10 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "parse_key"
     ],
@@ -1862,6 +2510,14 @@
     [
         "CALL_FUNCTION",
         "parse_key(src, pos)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "key"
     ],
     [
         "LOAD_FAST",
@@ -1906,6 +2562,10 @@
     [
         "LOAD_FAST",
         "key"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Cannot mutate immutable namespace {key}\""
     ],
     [
         "CALL_FUNCTION",
@@ -2064,6 +2724,18 @@
         "parse_key_value_pair(src, pos, parse_float)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_DEREF",
+        "key"
+    ],
+    [
+        "STORE_FAST",
+        "value"
+    ],
+    [
         "LOAD_DEREF",
         "key"
     ],
@@ -2080,6 +2752,14 @@
         "key[-1]"
     ],
     [
+        "STORE_FAST",
+        "key_parent"
+    ],
+    [
+        "STORE_FAST",
+        "key_stem"
+    ],
+    [
         "LOAD_DEREF",
         "header"
     ],
@@ -2090,6 +2770,10 @@
     [
         "BINARY_ADD",
         "header + key_parent"
+    ],
+    [
+        "STORE_FAST",
+        "abs_key_parent"
     ],
     [
         "LOAD_GLOBAL",
@@ -2112,8 +2796,20 @@
         "range(1, len(key))"
     ],
     [
+        "CALL_FUNCTION",
+        "(header + key[:i] for i in range(1, len(key)))"
+    ],
+    [
+        "STORE_FAST",
+        "relative_path_cont_keys"
+    ],
+    [
         "LOAD_FAST",
         "relative_path_cont_keys"
+    ],
+    [
+        "STORE_FAST",
+        "cont_key"
     ],
     [
         "LOAD_FAST",
@@ -2158,6 +2854,10 @@
     [
         "LOAD_FAST",
         "cont_key"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Cannot redefine namespace {cont_key}\""
     ],
     [
         "CALL_FUNCTION",
@@ -2236,6 +2936,10 @@
         "abs_key_parent"
     ],
     [
+        "BUILD_STRING",
+        "f\"Cannot mutate immutable namespace {abs_key_parent}\""
+    ],
+    [
         "CALL_FUNCTION",
         "suffixed_err(\n            src, pos, f\"Cannot mutate immutable namespace {abs_key_parent}\"\n        )"
     ],
@@ -2258,6 +2962,10 @@
     [
         "CALL_METHOD",
         "out.data.get_or_create_nest(abs_key_parent)"
+    ],
+    [
+        "STORE_FAST",
+        "nest"
     ],
     [
         "LOAD_GLOBAL",
@@ -2384,6 +3092,14 @@
         "pos"
     ],
     [
+        "LOAD_FAST",
+        "(header + key[:i] for i in range(1, len(key)))"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
         "LOAD_DEREF",
         "header"
     ],
@@ -2420,6 +3136,14 @@
         "parse_key(src, pos)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "key"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -2432,8 +3156,16 @@
         "src[pos]"
     ],
     [
+        "STORE_FAST",
+        "char"
+    ],
+    [
         "LOAD_GLOBAL",
         "IndexError"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_FAST",
@@ -2460,6 +3192,14 @@
         "suffixed_err(src, pos, \"Expected '=' after a key in a key/value pair\")"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_chars"
     ],
@@ -2480,6 +3220,10 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "parse_value"
     ],
@@ -2498,6 +3242,14 @@
     [
         "CALL_FUNCTION",
         "parse_value(src, pos, parse_float)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "value"
     ],
     [
         "LOAD_FAST",
@@ -2528,59 +3280,19 @@
         "parse_key_part(src, pos)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "key_part"
+    ],
+    [
         "LOAD_FAST",
         "key_part"
     ],
     [
-        "LOAD_GLOBAL",
-        "skip_chars"
-    ],
-    [
-        "LOAD_FAST",
-        "src"
-    ],
-    [
-        "LOAD_FAST",
-        "pos"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "TOML_WS"
-    ],
-    [
-        "CALL_FUNCTION",
-        "skip_chars(src, pos, TOML_WS)"
-    ],
-    [
-        "LOAD_FAST",
-        "src"
-    ],
-    [
-        "LOAD_FAST",
-        "pos"
-    ],
-    [
-        "BINARY_SUBSCR",
-        "src[pos]"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "IndexError"
-    ],
-    [
-        "LOAD_FAST",
-        "char"
-    ],
-    [
-        "COMPARE_OP",
-        "char != \".\""
-    ],
-    [
-        "LOAD_FAST",
-        "pos"
-    ],
-    [
-        "LOAD_FAST",
+        "STORE_FAST",
         "key"
     ],
     [
@@ -2604,8 +3316,8 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
-        "LOAD_GLOBAL",
-        "parse_key_part"
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -2616,12 +3328,44 @@
         "pos"
     ],
     [
-        "CALL_FUNCTION",
-        "parse_key_part(src, pos)"
+        "BINARY_SUBSCR",
+        "src[pos]"
+    ],
+    [
+        "STORE_FAST",
+        "char"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "IndexError"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_FAST",
-        "key_part"
+        "char"
+    ],
+    [
+        "COMPARE_OP",
+        "char != \".\""
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
+        "key"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_GLOBAL",
@@ -2644,6 +3388,70 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "parse_key_part"
+    ],
+    [
+        "LOAD_FAST",
+        "src"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "CALL_FUNCTION",
+        "parse_key_part(src, pos)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "key_part"
+    ],
+    [
+        "LOAD_FAST",
+        "key"
+    ],
+    [
+        "LOAD_FAST",
+        "key_part"
+    ],
+    [
+        "STORE_FAST",
+        "key"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "skip_chars"
+    ],
+    [
+        "LOAD_FAST",
+        "src"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "TOML_WS"
+    ],
+    [
+        "CALL_FUNCTION",
+        "skip_chars(src, pos, TOML_WS)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -2656,8 +3464,16 @@
         "src[pos]"
     ],
     [
+        "STORE_FAST",
+        "char"
+    ],
+    [
         "LOAD_GLOBAL",
         "IndexError"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_FAST",
@@ -2674,6 +3490,10 @@
     [
         "LOAD_FAST",
         "pos"
+    ],
+    [
+        "STORE_FAST",
+        "start_pos"
     ],
     [
         "LOAD_GLOBAL",
@@ -2694,6 +3514,10 @@
     [
         "CALL_FUNCTION",
         "skip_chars(src, pos, BARE_KEY_CHARS)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -2780,6 +3604,14 @@
         "suffixed_err(src, pos, \"Invalid initial character for a key part\")"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "parse_basic_str"
     ],
@@ -2796,6 +3628,18 @@
         "parse_basic_str(src, pos, multiline=False)"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "array"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_comments_and_array_ws"
     ],
@@ -2810,6 +3654,10 @@
     [
         "CALL_FUNCTION",
         "skip_comments_and_array_ws(src, pos)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -2860,6 +3708,14 @@
         "parse_value(src, pos, parse_float)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "val"
+    ],
+    [
         "LOAD_FAST",
         "array"
     ],
@@ -2892,6 +3748,10 @@
         "skip_comments_and_array_ws(src, pos)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -2910,6 +3770,10 @@
     [
         "BINARY_SUBSCR",
         "src[pos : pos + 1]"
+    ],
+    [
+        "STORE_FAST",
+        "c"
     ],
     [
         "LOAD_FAST",
@@ -2956,6 +3820,14 @@
         "suffixed_err(src, pos, \"Unclosed array\")"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_comments_and_array_ws"
     ],
@@ -2970,6 +3842,10 @@
     [
         "CALL_FUNCTION",
         "skip_comments_and_array_ws(src, pos)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -3000,6 +3876,14 @@
         "array"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "NestedDict"
     ],
@@ -3008,12 +3892,20 @@
         "NestedDict()"
     ],
     [
+        "STORE_FAST",
+        "nested_dict"
+    ],
+    [
         "LOAD_GLOBAL",
         "Flags"
     ],
     [
         "CALL_FUNCTION",
         "Flags()"
+    ],
+    [
+        "STORE_FAST",
+        "flags"
     ],
     [
         "LOAD_GLOBAL",
@@ -3034,6 +3926,10 @@
     [
         "CALL_FUNCTION",
         "skip_chars(src, pos, TOML_WS)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -3088,6 +3984,18 @@
         "parse_key_value_pair(src, pos, parse_float)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "key"
+    ],
+    [
+        "STORE_FAST",
+        "value"
+    ],
+    [
         "LOAD_FAST",
         "key"
     ],
@@ -3102,6 +4010,14 @@
     [
         "BINARY_SUBSCR",
         "key[-1]"
+    ],
+    [
+        "STORE_FAST",
+        "key_parent"
+    ],
+    [
+        "STORE_FAST",
+        "key_stem"
     ],
     [
         "LOAD_FAST",
@@ -3144,6 +4060,10 @@
         "key"
     ],
     [
+        "BUILD_STRING",
+        "f\"Cannot mutate immutable namespace {key}\""
+    ],
+    [
         "CALL_FUNCTION",
         "suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")"
     ],
@@ -3162,6 +4082,10 @@
     [
         "CALL_FUNCTION_KW",
         "nested_dict.get_or_create_nest(key_parent, access_lists=False)"
+    ],
+    [
+        "STORE_FAST",
+        "nest"
     ],
     [
         "LOAD_GLOBAL",
@@ -3212,6 +4136,10 @@
         "key_stem"
     ],
     [
+        "BUILD_STRING",
+        "f\"Duplicate inline table key {key_stem!r}\""
+    ],
+    [
         "CALL_FUNCTION",
         "suffixed_err(src, pos, f\"Duplicate inline table key {key_stem!r}\")"
     ],
@@ -3252,6 +4180,10 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -3270,6 +4202,10 @@
     [
         "BINARY_SUBSCR",
         "src[pos : pos + 1]"
+    ],
+    [
+        "STORE_FAST",
+        "c"
     ],
     [
         "LOAD_FAST",
@@ -3364,6 +4300,14 @@
         "flags.set(key, Flags.FROZEN, recursive=True)"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_chars"
     ],
@@ -3384,6 +4328,10 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -3402,6 +4350,18 @@
     [
         "BINARY_SUBSCR",
         "src[pos : pos + 2]"
+    ],
+    [
+        "STORE_FAST",
+        "escape_id"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -3444,6 +4404,10 @@
         "skip_chars(src, pos, TOML_WS)"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -3454,6 +4418,10 @@
     [
         "BINARY_SUBSCR",
         "src[pos]"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_GLOBAL",
@@ -3488,6 +4456,14 @@
         "suffixed_err(src, pos, \"Unescaped '\\\\' in a string\")"
     ],
     [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_chars"
     ],
@@ -3506,6 +4482,10 @@
     [
         "CALL_FUNCTION",
         "skip_chars(src, pos, TOML_WS_AND_NEWLINE)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -3636,6 +4616,10 @@
         "src[pos : pos + hex_len]"
     ],
     [
+        "STORE_FAST",
+        "hex_str"
+    ],
+    [
         "LOAD_GLOBAL",
         "len"
     ],
@@ -3689,7 +4673,15 @@
     ],
     [
         "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
         "hex_len"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_GLOBAL",
@@ -3702,6 +4694,10 @@
     [
         "CALL_FUNCTION",
         "int(hex_str, 16)"
+    ],
+    [
+        "STORE_FAST",
+        "hex_int"
     ],
     [
         "LOAD_GLOBAL",
@@ -3752,6 +4748,18 @@
         "pos"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "start_pos"
+    ],
+    [
         "LOAD_GLOBAL",
         "skip_until"
     ],
@@ -3770,6 +4778,10 @@
     [
         "CALL_FUNCTION_KW",
         "skip_until(\n        src, pos, \"'\", error_on=ILLEGAL_LITERAL_STR_CHARS, error_on_eof=True\n    )"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -3797,6 +4809,14 @@
     ],
     [
         "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
         "src"
     ],
     [
@@ -3813,7 +4833,19 @@
     ],
     [
         "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
         "literal"
+    ],
+    [
+        "STORE_FAST",
+        "delim"
     ],
     [
         "LOAD_GLOBAL",
@@ -3836,6 +4868,10 @@
         "skip_until(\n            src,\n            pos,\n            \"'''\",\n            error_on=ILLEGAL_MULTILINE_LITERAL_STR_CHARS,\n            error_on_eof=True,\n        )"
     ],
     [
+        "STORE_FAST",
+        "end_pos"
+    ],
+    [
         "LOAD_FAST",
         "src"
     ],
@@ -3852,12 +4888,24 @@
         "src[pos:end_pos]"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_FAST",
         "end_pos"
     ],
     [
         "BINARY_ADD",
         "end_pos + 3"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "delim"
     ],
     [
         "LOAD_GLOBAL",
@@ -3874,6 +4922,14 @@
     [
         "CALL_FUNCTION_KW",
         "parse_basic_str(src, pos, multiline=True)"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "result"
     ],
     [
         "LOAD_FAST",
@@ -3902,6 +4958,14 @@
     [
         "LOAD_FAST",
         "result"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -3944,6 +5008,14 @@
         "pos"
     ],
     [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
         "LOAD_FAST",
         "result"
     ],
@@ -3968,20 +5040,44 @@
         "ILLEGAL_MULTILINE_BASIC_STR_CHARS"
     ],
     [
+        "STORE_FAST",
+        "error_on"
+    ],
+    [
         "LOAD_GLOBAL",
         "parse_basic_str_escape_multiline"
+    ],
+    [
+        "STORE_FAST",
+        "parse_escapes"
     ],
     [
         "LOAD_GLOBAL",
         "ILLEGAL_BASIC_STR_CHARS"
     ],
     [
+        "STORE_FAST",
+        "error_on"
+    ],
+    [
         "LOAD_GLOBAL",
         "parse_basic_str_escape"
     ],
     [
+        "STORE_FAST",
+        "parse_escapes"
+    ],
+    [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_FAST",
         "pos"
+    ],
+    [
+        "STORE_FAST",
+        "start_pos"
     ],
     [
         "LOAD_FAST",
@@ -3994,6 +5090,10 @@
     [
         "BINARY_SUBSCR",
         "src[pos]"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_GLOBAL",
@@ -4109,11 +5209,23 @@
     ],
     [
         "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "LOAD_FAST",
         "char"
     ],
     [
         "COMPARE_OP",
         "char == \"\\\\\""
+    ],
+    [
+        "LOAD_FAST",
+        "result"
     ],
     [
         "LOAD_FAST",
@@ -4132,6 +5244,10 @@
         "src[start_pos:pos]"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_FAST",
         "parse_escapes"
     ],
@@ -4148,12 +5264,32 @@
         "parse_escapes(src, pos)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
         "parsed_escape"
     ],
     [
         "LOAD_FAST",
+        "result"
+    ],
+    [
+        "LOAD_FAST",
+        "parsed_escape"
+    ],
+    [
+        "STORE_FAST",
+        "result"
+    ],
+    [
+        "LOAD_FAST",
         "pos"
+    ],
+    [
+        "STORE_FAST",
+        "start_pos"
     ],
     [
         "LOAD_FAST",
@@ -4184,8 +5320,20 @@
         "char"
     ],
     [
+        "BUILD_STRING",
+        "f\"Illegal character {char!r}\""
+    ],
+    [
         "CALL_FUNCTION",
         "suffixed_err(src, pos, f\"Illegal character {char!r}\")"
+    ],
+    [
+        "LOAD_FAST",
+        "pos"
+    ],
+    [
+        "STORE_FAST",
+        "pos"
     ],
     [
         "LOAD_FAST",
@@ -4200,8 +5348,16 @@
         "src[pos]"
     ],
     [
+        "STORE_FAST",
+        "char"
+    ],
+    [
         "LOAD_GLOBAL",
         "IndexError"
+    ],
+    [
+        "STORE_FAST",
+        "char"
     ],
     [
         "LOAD_FAST",
@@ -4456,6 +5612,10 @@
         "RE_DATETIME.match(src, pos)"
     ],
     [
+        "STORE_FAST",
+        "datetime_match"
+    ],
+    [
         "LOAD_FAST",
         "datetime_match"
     ],
@@ -4470,6 +5630,10 @@
     [
         "CALL_FUNCTION",
         "match_to_datetime(datetime_match)"
+    ],
+    [
+        "STORE_FAST",
+        "datetime_obj"
     ],
     [
         "LOAD_GLOBAL",
@@ -4532,6 +5696,10 @@
         "RE_LOCALTIME.match(src, pos)"
     ],
     [
+        "STORE_FAST",
+        "localtime_match"
+    ],
+    [
         "LOAD_FAST",
         "localtime_match"
     ],
@@ -4578,6 +5746,10 @@
     [
         "CALL_METHOD",
         "RE_NUMBER.match(src, pos)"
+    ],
+    [
+        "STORE_FAST",
+        "number_match"
     ],
     [
         "LOAD_FAST",
@@ -4632,6 +5804,10 @@
         "src[pos : pos + 3]"
     ],
     [
+        "STORE_FAST",
+        "first_three"
+    ],
+    [
         "LOAD_FAST",
         "first_three"
     ],
@@ -4680,6 +5856,10 @@
         "src[pos : pos + 4]"
     ],
     [
+        "STORE_FAST",
+        "first_four"
+    ],
+    [
         "LOAD_FAST",
         "first_four"
     ],
@@ -4724,6 +5904,10 @@
         "suffixed_err(src, pos, \"Invalid value\")"
     ],
     [
+        "STORE_FAST",
+        "    def coord_repr(src: str, pos: Pos) -> str:\n        if pos >= len(src):\n            return \"end of document\"\n        line = src.count(\"\\n\", 0, pos) + 1\n        if line == 1:\n            column = pos + 1\n        else:\n            column = pos - src.rindex(\"\\n\", 0, pos)\n        return f\"line {line}, column {column}\""
+    ],
+    [
         "LOAD_GLOBAL",
         "TOMLDecodeError"
     ],
@@ -4746,6 +5930,10 @@
     [
         "CALL_FUNCTION",
         "coord_repr(src, pos)"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"{msg} (at {coord_repr(src, pos)})\""
     ],
     [
         "CALL_FUNCTION",
@@ -4792,6 +5980,10 @@
         "src.count(\"\\n\", 0, pos) + 1"
     ],
     [
+        "STORE_FAST",
+        "line"
+    ],
+    [
         "LOAD_FAST",
         "line"
     ],
@@ -4806,6 +5998,10 @@
     [
         "BINARY_ADD",
         "pos + 1"
+    ],
+    [
+        "STORE_FAST",
+        "column"
     ],
     [
         "LOAD_FAST",
@@ -4832,6 +6028,10 @@
         "pos - src.rindex(\"\\n\", 0, pos)"
     ],
     [
+        "STORE_FAST",
+        "column"
+    ],
+    [
         "LOAD_FAST",
         "line"
     ],
@@ -4840,12 +6040,32 @@
         "column"
     ],
     [
-        "LOAD_FAST",
-        "codepoint"
+        "BUILD_STRING",
+        "f\"line {line}, column {column}\""
     ],
     [
         "LOAD_FAST",
         "codepoint"
+    ],
+    [
+        "COMPARE_OP",
+        "0 <= codepoint <= 55295"
+    ],
+    [
+        "COMPARE_OP",
+        "0 <= codepoint <= 55295"
+    ],
+    [
+        "LOAD_FAST",
+        "codepoint"
+    ],
+    [
+        "COMPARE_OP",
+        "57344 <= codepoint <= 1114111"
+    ],
+    [
+        "COMPARE_OP",
+        "57344 <= codepoint <= 1114111"
     ],
     [
         "LOAD_DEREF",
@@ -4864,6 +6084,10 @@
         "float"
     ],
     [
+        "STORE_FAST",
+        "    def safe_parse_float(float_str: str) -> Any:\n        float_value = parse_float(float_str)\n        if isinstance(float_value, (dict, list)):\n            raise ValueError(\"parse_float must not return dicts or lists\")\n        return float_value"
+    ],
+    [
         "LOAD_FAST",
         "safe_parse_float"
     ],
@@ -4878,6 +6102,10 @@
     [
         "CALL_FUNCTION",
         "parse_float(float_str)"
+    ],
+    [
+        "STORE_FAST",
+        "float_value"
     ],
     [
         "LOAD_GLOBAL",

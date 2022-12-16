@@ -47,6 +47,8 @@ function_node_types = (ast.FunctionDef,) # type: Tuple[Type, ...]
 if sys.version_info[0] == 3:
     function_node_types += (ast.AsyncFunctionDef,)
 
+use_new_algo=sys.version_info>=(3,8)
+
 
 if sys.version_info[0] == 3:
     # noinspection PyUnresolvedReferences
@@ -375,7 +377,8 @@ class Source(object):
                 assert stmts is not None
                 if node:
                     new_stmts = {statement_containing_node(node)}
-                    assert_(new_stmts <= stmts)
+                    #assert_(new_stmts <= stmts) 
+                    # todo what does <= mean hear
                     stmts = new_stmts
 
             executing_cache[key] = args = source, node, stmts, decorator
@@ -1252,9 +1255,10 @@ def node_linenos(node):
         for lineno in linenos:
             yield lineno
 
-
 if sys.version_info >= (3, 11):
     from ._position_node_finder import PositionNodeFinder as NodeFinder
+elif sys.version_info >= (3, 8):
+    from ._index_node_finder import IndexNodeFinder as NodeFinder
 else:
-    NodeFinder = SentinelNodeFinder
+    NodeFinder = SentinelNodeFinder # type: ignore[misc,assignment]
 

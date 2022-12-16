@@ -1,0 +1,1 @@
+assert Mul == Mul in []

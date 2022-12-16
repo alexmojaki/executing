@@ -1,5 +1,29 @@
 [
     [
+        "STORE_NAME",
+        "from __future__ import print_function, division, absolute_import"
+    ],
+    [
+        "STORE_NAME",
+        "from __future__ import print_function, division, absolute_import"
+    ],
+    [
+        "STORE_NAME",
+        "from __future__ import print_function, division, absolute_import"
+    ],
+    [
+        "STORE_NAME",
+        "import ast"
+    ],
+    [
+        "STORE_NAME",
+        "import json"
+    ],
+    [
+        "STORE_NAME",
+        "from future import standard_library"
+    ],
+    [
         "LOAD_NAME",
         "standard_library"
     ],
@@ -12,6 +36,62 @@
         "standard_library.install_aliases()"
     ],
     [
+        "STORE_NAME",
+        "import token"
+    ],
+    [
+        "STORE_NAME",
+        "from future.utils import raise_from"
+    ],
+    [
+        "STORE_NAME",
+        "import ntpath"
+    ],
+    [
+        "STORE_NAME",
+        "import os"
+    ],
+    [
+        "STORE_NAME",
+        "import types"
+    ],
+    [
+        "STORE_NAME",
+        "from sys import version_info"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import TypeVar, Union, List, Any, Iterator, Tuple, Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import TypeVar, Union, List, Any, Iterator, Tuple, Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import TypeVar, Union, List, Any, Iterator, Tuple, Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import TypeVar, Union, List, Any, Iterator, Tuple, Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import TypeVar, Union, List, Any, Iterator, Tuple, Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import TypeVar, Union, List, Any, Iterator, Tuple, Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import TypeVar, Union, List, Any, Iterator, Tuple, Iterable"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import Type"
+    ],
+    [
         "LOAD_NAME",
         "ImportError"
     ],
@@ -20,12 +100,36 @@
         "type"
     ],
     [
-        "LOAD_NAME",
-        "ImportError"
+        "STORE_NAME",
+        "Type"
+    ],
+    [
+        "STORE_NAME",
+        "from typing import Deque"
     ],
     [
         "LOAD_NAME",
         "ImportError"
+    ],
+    [
+        "STORE_NAME",
+        "from collections import deque as Deque"
+    ],
+    [
+        "STORE_NAME",
+        "from functools import lru_cache"
+    ],
+    [
+        "LOAD_NAME",
+        "ImportError"
+    ],
+    [
+        "STORE_NAME",
+        "from backports.functools_lru_cache import lru_cache"
+    ],
+    [
+        "STORE_NAME",
+        "from littleutils import strip_required_prefix"
     ],
     [
         "LOAD_NAME",
@@ -40,12 +144,20 @@
         "version_info.major == 2"
     ],
     [
+        "STORE_NAME",
+        "PY2"
+    ],
+    [
         "LOAD_NAME",
         "PY2"
     ],
     [
         "UNARY_NOT",
         "not PY2"
+    ],
+    [
+        "STORE_NAME",
+        "PY3"
     ],
     [
         "LOAD_NAME",
@@ -56,12 +168,28 @@
         "TypeVar('T')"
     ],
     [
+        "STORE_NAME",
+        "T"
+    ],
+    [
         "LOAD_NAME",
         "TypeVar"
     ],
     [
         "CALL_FUNCTION",
         "TypeVar('RT')"
+    ],
+    [
+        "STORE_NAME",
+        "RT"
+    ],
+    [
+        "STORE_NAME",
+        "IPYTHON_FILE_PATH"
+    ],
+    [
+        "STORE_NAME",
+        "FILE_SENTINEL_NAME"
     ],
     [
         "LOAD_NAME",
@@ -72,16 +200,68 @@
         "unicode"
     ],
     [
+        "STORE_NAME",
+        "Text"
+    ],
+    [
         "LOAD_NAME",
         "str"
+    ],
+    [
+        "STORE_NAME",
+        "Text"
+    ],
+    [
+        "STORE_NAME",
+        "def path_leaf(path):\n    # type: (str) -> str\n    # http://stackoverflow.com/a/8384788/2482744\n    head, tail = ntpath.split(path)\n    return tail or ntpath.basename(head)"
+    ],
+    [
+        "STORE_NAME",
+        "def common_ancestor(paths):\n    # type: (List[str]) -> str\n    \"\"\"\n    Returns a path to a directory that contains all the given absolute paths\n    \"\"\"\n    prefix = os.path.commonprefix(paths)\n\n    # Ensure that the prefix doesn't end in part of the name of a file/directory\n    prefix = ntpath.split(prefix)[0]\n\n    # Ensure that it ends with a slash\n    first_char_after = paths[0][len(prefix)]\n    if first_char_after in r'\\/':\n        prefix += first_char_after\n\n    return prefix"
+    ],
+    [
+        "STORE_NAME",
+        "def short_path(path, all_paths):\n    # type: (str, List[str]) -> str\n    if path == IPYTHON_FILE_PATH:\n        return path\n\n    all_paths = [f for f in all_paths\n                 if f != IPYTHON_FILE_PATH]\n    prefix = common_ancestor(all_paths)\n    if prefix in r'\\/':\n        prefix = ''\n    return strip_required_prefix(path, prefix) or path_leaf(path)"
+    ],
+    [
+        "STORE_NAME",
+        "def fix_abs_path(path):\n    if path == IPYTHON_FILE_PATH:\n        return path\n    if os.path.sep == '/' and not path.startswith('/'):\n        path = '/' + path\n    return path"
     ],
     [
         "LOAD_NAME",
         "PY2"
     ],
     [
+        "STORE_NAME",
+        "    def correct_type(obj):\n        \"\"\"\n        Returns the correct type of obj, regardless of __class__ assignment\n        or old-style classes:\n\n        >>> class A:\n        ...     pass\n        ...\n        ...\n        ... class B(object):\n        ...     pass\n        ...\n        ...\n        ... class C(object):\n        ...     __class__ = A\n        ...\n        >>> correct_type(A()) is A\n        True\n        >>> correct_type(B()) is B\n        True\n        >>> correct_type(C()) is C\n        True\n        \"\"\"\n        t = type(obj)\n        # noinspection PyUnresolvedReferences\n        if t is types.InstanceType:\n            return obj.__class__\n        return t"
+    ],
+    [
         "LOAD_NAME",
         "type"
+    ],
+    [
+        "STORE_NAME",
+        "correct_type"
+    ],
+    [
+        "STORE_NAME",
+        "def of_type(type_or_tuple, iterable):\n    # type: (Union[type, Tuple[Union[type, tuple], ...]], Iterable[Any]) -> Iterator[Any]\n    return (x for x in iterable if isinstance(x, type_or_tuple))"
+    ],
+    [
+        "STORE_NAME",
+        "def safe_next(it):\n    # type: (Iterator[T]) -> T\n    \"\"\"\n    next() can raise a StopIteration which can cause strange bugs inside generators.\n    \"\"\"\n    try:\n        return next(it)\n    except StopIteration as e:\n        raise_from(RuntimeError, e)\n        raise"
+    ],
+    [
+        "STORE_NAME",
+        "def one_or_none(expression):\n    \"\"\"Performs a one_or_none on a sqlalchemy expression.\"\"\"\n    if hasattr(expression, 'one_or_none'):\n        return expression.one_or_none()\n    result = expression.all()\n    if len(result) == 0:\n        return None\n    elif len(result) == 1:\n        return result[0]\n    else:\n        raise Exception(\"There is more than one item returned for the supplied filter\")"
+    ],
+    [
+        "STORE_NAME",
+        "def flatten_list(lst):\n    result = []\n    for x in lst:\n        if isinstance(x, list):\n            result.extend(flatten_list(x))\n        else:\n            result.append(x)\n    return result"
+    ],
+    [
+        "STORE_NAME",
+        "def is_lambda(f):\n    try:\n        code = f.__code__\n    except AttributeError:\n        return False\n    return code.co_name == (lambda: 0).__code__.co_name"
     ],
     [
         "LOAD_NAME",
@@ -92,8 +272,56 @@
         "json.JSONEncoder"
     ],
     [
+        "CALL_FUNCTION",
+        "class ProtocolEncoder(json.JSONEncoder):\n    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
+    ],
+    [
+        "STORE_NAME",
+        "class ProtocolEncoder(json.JSONEncoder):\n    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
+    ],
+    [
+        "STORE_NAME",
+        "from tokenize import open as open_with_encoding_check"
+    ],
+    [
         "LOAD_NAME",
         "ImportError"
+    ],
+    [
+        "STORE_NAME",
+        "from lib2to3.pgen2.tokenize import detect_encoding"
+    ],
+    [
+        "STORE_NAME",
+        "import io"
+    ],
+    [
+        "STORE_NAME",
+        "    def open_with_encoding_check(filename):  # type: ignore\n        \"\"\"Open a file in read only mode using the encoding detected by\n        detect_encoding().\n        \"\"\"\n        fp = io.open(filename, 'rb')\n        try:\n            encoding, lines = detect_encoding(fp.readline)\n            fp.seek(0)\n            text = io.TextIOWrapper(fp, encoding, line_buffering=True)\n            text.mode = 'r'\n            return text\n        except:\n            fp.close()\n            raise"
+    ],
+    [
+        "STORE_NAME",
+        "def read_source_file(filename):\n    from lib2to3.pgen2.tokenize import cookie_re\n\n    if filename.endswith('.pyc'):\n        filename = filename[:-1]\n\n    with open_with_encoding_check(filename) as f:\n        return ''.join([\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ])"
+    ],
+    [
+        "STORE_NAME",
+        "def source_without_decorators(tokens, function_node):\n    def_token = safe_next(t for t in tokens.get_tokens(function_node)\n                          if t.string == 'def' and t.type == token.NAME)\n\n    startpos = def_token.startpos\n    source = tokens.text[startpos:function_node.last_token.endpos].rstrip()\n    assert source.startswith('def')\n\n    return startpos, source"
+    ],
+    [
+        "STORE_NAME",
+        "def prn(*args):\n    for arg in args:\n        print(arg)\n    if len(args) == 1:\n        return args[0]\n    return args"
+    ],
+    [
+        "STORE_NAME",
+        "def is_ipython_cell(filename):\n    return filename.startswith('<ipython-input-')"
+    ],
+    [
+        "STORE_NAME",
+        "def is_future_import(node):\n    return isinstance(node, ast.ImportFrom) and node.module == \"__future__\""
+    ],
+    [
+        "STORE_NAME",
+        "def get_unfrozen_datetime():\n    try:\n        # if freezegun could be active, we need to use real_datetime to ensure we use the actual time instead of the\n        # time set by freezegun.\n        # we have to import this at the last possible moment because birdeye is very likely to be imported before\n        # freezegun is activated.\n        from freezegun.api import real_datetime\n    except ImportError:\n        from datetime import datetime as real_datetime\n\n    return real_datetime.now()"
     ],
     [
         "LOAD_GLOBAL",
@@ -110,6 +338,14 @@
     [
         "CALL_METHOD",
         "ntpath.split(path)"
+    ],
+    [
+        "STORE_FAST",
+        "head"
+    ],
+    [
+        "STORE_FAST",
+        "tail"
     ],
     [
         "LOAD_FAST",
@@ -152,6 +388,10 @@
         "os.path.commonprefix(paths)"
     ],
     [
+        "STORE_FAST",
+        "prefix"
+    ],
+    [
         "LOAD_GLOBAL",
         "ntpath"
     ],
@@ -170,6 +410,10 @@
     [
         "BINARY_SUBSCR",
         "ntpath.split(prefix)[0]"
+    ],
+    [
+        "STORE_FAST",
+        "prefix"
     ],
     [
         "LOAD_FAST",
@@ -196,6 +440,10 @@
         "paths[0][len(prefix)]"
     ],
     [
+        "STORE_FAST",
+        "first_char_after"
+    ],
+    [
         "LOAD_FAST",
         "first_char_after"
     ],
@@ -205,7 +453,15 @@
     ],
     [
         "LOAD_FAST",
+        "prefix"
+    ],
+    [
+        "LOAD_FAST",
         "first_char_after"
+    ],
+    [
+        "STORE_FAST",
+        "prefix"
     ],
     [
         "LOAD_FAST",
@@ -232,6 +488,14 @@
         "all_paths"
     ],
     [
+        "CALL_FUNCTION",
+        "[f for f in all_paths\n                 if f != IPYTHON_FILE_PATH]"
+    ],
+    [
+        "STORE_FAST",
+        "all_paths"
+    ],
+    [
         "LOAD_GLOBAL",
         "common_ancestor"
     ],
@@ -244,12 +508,20 @@
         "common_ancestor(all_paths)"
     ],
     [
+        "STORE_FAST",
+        "prefix"
+    ],
+    [
         "LOAD_FAST",
         "prefix"
     ],
     [
         "CONTAINS_OP",
         "prefix in r'\\/'"
+    ],
+    [
+        "STORE_FAST",
+        "prefix"
     ],
     [
         "LOAD_GLOBAL",
@@ -278,6 +550,14 @@
     [
         "CALL_FUNCTION",
         "path_leaf(path)"
+    ],
+    [
+        "LOAD_FAST",
+        "[f for f in all_paths\n                 if f != IPYTHON_FILE_PATH]"
+    ],
+    [
+        "STORE_FAST",
+        "f"
     ],
     [
         "LOAD_FAST",
@@ -348,6 +628,10 @@
         "'/' + path"
     ],
     [
+        "STORE_FAST",
+        "path"
+    ],
+    [
         "LOAD_FAST",
         "path"
     ],
@@ -362,6 +646,10 @@
     [
         "CALL_FUNCTION",
         "type(obj)"
+    ],
+    [
+        "STORE_FAST",
+        "t"
     ],
     [
         "LOAD_FAST",
@@ -394,6 +682,18 @@
     [
         "LOAD_FAST",
         "iterable"
+    ],
+    [
+        "CALL_FUNCTION",
+        "(x for x in iterable if isinstance(x, type_or_tuple))"
+    ],
+    [
+        "LOAD_FAST",
+        "(x for x in iterable if isinstance(x, type_or_tuple))"
+    ],
+    [
+        "STORE_FAST",
+        "x"
     ],
     [
         "LOAD_GLOBAL",
@@ -484,6 +784,10 @@
         "expression.all()"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_GLOBAL",
         "len"
     ],
@@ -532,8 +836,16 @@
         "Exception(\"There is more than one item returned for the supplied filter\")"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_FAST",
         "lst"
+    ],
+    [
+        "STORE_FAST",
+        "x"
     ],
     [
         "LOAD_GLOBAL",
@@ -604,6 +916,10 @@
         "f.__code__"
     ],
     [
+        "STORE_FAST",
+        "code"
+    ],
+    [
         "LOAD_GLOBAL",
         "AttributeError"
     ],
@@ -628,12 +944,32 @@
         "code.co_name == (lambda: 0).__code__.co_name"
     ],
     [
+        "LOAD_NAME",
+        "class ProtocolEncoder(json.JSONEncoder):\n    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
+    ],
+    [
+        "STORE_NAME",
+        "class ProtocolEncoder(json.JSONEncoder):\n    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
+    ],
+    [
+        "STORE_NAME",
+        "class ProtocolEncoder(json.JSONEncoder):\n    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
+    ],
+    [
+        "STORE_NAME",
+        "    def default(self, o):\n        try:\n            method = o.as_json\n        except AttributeError:\n            return super(ProtocolEncoder, self).default(o)\n        else:\n            return method()"
+    ],
+    [
         "LOAD_FAST",
         "o"
     ],
     [
         "LOAD_ATTR",
         "o.as_json"
+    ],
+    [
+        "STORE_FAST",
+        "method"
     ],
     [
         "LOAD_FAST",
@@ -692,6 +1028,10 @@
         "io.open(filename, 'rb')"
     ],
     [
+        "STORE_FAST",
+        "fp"
+    ],
+    [
         "LOAD_GLOBAL",
         "detect_encoding"
     ],
@@ -706,6 +1046,14 @@
     [
         "CALL_FUNCTION",
         "detect_encoding(fp.readline)"
+    ],
+    [
+        "STORE_FAST",
+        "encoding"
+    ],
+    [
+        "STORE_FAST",
+        "lines"
     ],
     [
         "LOAD_FAST",
@@ -740,6 +1088,10 @@
         "io.TextIOWrapper(fp, encoding, line_buffering=True)"
     ],
     [
+        "STORE_FAST",
+        "text"
+    ],
+    [
         "LOAD_FAST",
         "text"
     ],
@@ -764,6 +1116,10 @@
         "fp.close()"
     ],
     [
+        "STORE_DEREF",
+        "from lib2to3.pgen2.tokenize import cookie_re"
+    ],
+    [
         "LOAD_FAST",
         "filename"
     ],
@@ -784,6 +1140,10 @@
         "filename[:-1]"
     ],
     [
+        "STORE_FAST",
+        "filename"
+    ],
+    [
         "LOAD_GLOBAL",
         "open_with_encoding_check"
     ],
@@ -794,6 +1154,10 @@
     [
         "CALL_FUNCTION",
         "open_with_encoding_check(filename)"
+    ],
+    [
+        "STORE_FAST",
+        "f"
     ],
     [
         "LOAD_METHOD",
@@ -812,8 +1176,28 @@
         "enumerate(f)"
     ],
     [
+        "CALL_FUNCTION",
+        "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
+    ],
+    [
         "CALL_METHOD",
         "''.join([\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "    with open_with_encoding_check(filename) as f:\n        return ''.join([\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ])"
+    ],
+    [
+        "LOAD_FAST",
+        "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "line"
     ],
     [
         "LOAD_FAST",
@@ -865,7 +1249,15 @@
     ],
     [
         "CALL_FUNCTION",
+        "(t for t in tokens.get_tokens(function_node)\n                          if t.string == 'def' and t.type == token.NAME)"
+    ],
+    [
+        "CALL_FUNCTION",
         "safe_next(t for t in tokens.get_tokens(function_node)\n                          if t.string == 'def' and t.type == token.NAME)"
+    ],
+    [
+        "STORE_FAST",
+        "def_token"
     ],
     [
         "LOAD_FAST",
@@ -874,6 +1266,10 @@
     [
         "LOAD_ATTR",
         "def_token.startpos"
+    ],
+    [
+        "STORE_FAST",
+        "startpos"
     ],
     [
         "LOAD_FAST",
@@ -912,6 +1308,10 @@
         "tokens.text[startpos:function_node.last_token.endpos].rstrip()"
     ],
     [
+        "STORE_FAST",
+        "source"
+    ],
+    [
         "LOAD_FAST",
         "source"
     ],
@@ -930,6 +1330,14 @@
     [
         "LOAD_FAST",
         "source"
+    ],
+    [
+        "LOAD_FAST",
+        "(t for t in tokens.get_tokens(function_node)\n                          if t.string == 'def' and t.type == token.NAME)"
+    ],
+    [
+        "STORE_FAST",
+        "t"
     ],
     [
         "LOAD_FAST",
@@ -970,6 +1378,10 @@
     [
         "LOAD_FAST",
         "args"
+    ],
+    [
+        "STORE_FAST",
+        "arg"
     ],
     [
         "LOAD_GLOBAL",
@@ -1056,6 +1468,10 @@
         "node.module == \"__future__\""
     ],
     [
+        "STORE_FAST",
+        "from freezegun.api import real_datetime"
+    ],
+    [
         "LOAD_FAST",
         "real_datetime"
     ],
@@ -1070,6 +1486,10 @@
     [
         "LOAD_GLOBAL",
         "ImportError"
+    ],
+    [
+        "STORE_FAST",
+        "from datetime import datetime as real_datetime"
     ],
     [
         "LOAD_FAST",
