@@ -1,4 +1,5 @@
 import ast
+import sys
 import dis
 from types import CodeType, FrameType
 from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
@@ -237,6 +238,16 @@ class PositionNodeFinder(object):
             else:
                 # Comprehension and generators get not fixed for now.
                 raise KnownIssue("chain comparison inside %s can not be fixed" % (node))
+
+        if (
+            sys.version_info[:3] == (3, 11, 1)
+            and isinstance(node, ast.Compare)
+            and instruction.opname == "CALL"
+            and any(isinstance(n, ast.Assert) for n in node_and_parents(node))
+        ):
+            raise KnownIssue(
+                "known bug in 3.11.1 https://github.com/python/cpython/issues/95921"
+            )
 
         if isinstance(node, ast.Assert):
             # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
