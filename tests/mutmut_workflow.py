@@ -34,10 +34,8 @@ def survived() -> set[str]:
 
 
 def main():
-
-
     # Mutmut is not really build for this kind of integration.
-    # This is the reason for some wired code here.
+    # This is the reason for some weird code here.
 
     # make sure that there are no known bugs
     sp.check_call(["git", "checkout", *files])

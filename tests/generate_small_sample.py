@@ -42,7 +42,7 @@ def big_samples(folder):
             continue
 
         if content.count("\n") > 50000:
-            # long take to much time to check and are most likely generated code or repetitive
+            # Long files take too much time to check and are most likely generated code or repetitive
             continue
 
         h = source_hash(content)
@@ -55,7 +55,7 @@ def big_samples(folder):
 def test_file(filename: Path):
     code = filename.read_text()
 
-    # Clear caches because we are analysing a lot of bytecode here and this can result in hight memory usage.
+    # Clear caches to avoid accumulating too much data in memory.
     # This is usually not a problem for executing, but this usage scenario is different
     linecache.clearcache()
     for cache_name in ("__source_cache_with_lines", "__executing_cache"):
