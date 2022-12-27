@@ -695,6 +695,12 @@ def test_small_samples(full_filename, result_filename):
     if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
         pytest.xfail("no `from __future__ import annotations`")
 
+    if (
+        (sys.version_info[:2] == (3, 5) or PYPY)
+        and "1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc"
+        in full_filename
+    ):
+        pytest.skip("recursion takes to long in 3.5")
 
     TestFiles().check_filename(full_filename, check_names=True)
 
