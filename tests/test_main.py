@@ -33,8 +33,7 @@ from executing.executing import get_instructions, function_node_types
 
 from executing._exceptions import VerifierFailure, KnownIssue
 
-if sys.version_info >= (3,11):
-    from tests.deadcode import Deadcode
+from tests.deadcode import is_deadcode
 
 if eval("0"):
     global_never_defined = 1
@@ -597,7 +596,10 @@ class TimeOut(Exception):
     pass
 
 
-def dump_source(source, start, end, context=4, file=sys.stdout):
+def dump_source(source, start, end, context=4, file=None):
+    if file is None:
+        file= sys.stdout
+
     print("source code:", file=file)
     start = max(start.lineno - 5, 0)
     num = start + 1
@@ -648,9 +650,9 @@ def is_annotation(node):
 
 
 
-def sample_files():
+def sample_files(samples):
     root_dir = os.path.dirname(__file__)
-    samples_dir = os.path.join(root_dir, "samples")
+    samples_dir = os.path.join(root_dir, samples)
 
     for filename in os.listdir(samples_dir):
         full_filename = os.path.join(samples_dir, filename)
@@ -669,6 +671,40 @@ def sample_files():
         yield pytest.param(full_filename, result_filename, id=filename)
 
 
+@pytest.mark.parametrize(
+    "full_filename,result_filename", list(sample_files("small_samples"))
+)
+@pytest.mark.skipif(sys.version_info<(3,),reason="no 2.7 support")
+def test_small_samples(full_filename, result_filename):
+    skip_sentinel = [
+        "load_deref",
+        "4851dc1b626a95e97dbe0c53f96099d165b755dd1bd552c6ca771f7bca6d30f5",
+        "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
+        "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
+        "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
+    ]
+
+    skip_annotations = [
+        "d98e27d8963331b58e4e6b84c7580dafde4d9e2980ad4277ce55e6b186113c1d",
+        "9b3db37076d3c7c76bdfd9badcc70d8047584433e1eea89f45014453d58bbc43",
+    ]
+
+    if any(s in full_filename for s in skip_sentinel) and sys.version_info < (3, 11):
+        pytest.xfail("SentinelNodeFinder does not find some of the nodes (maybe a bug)")
+
+    if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
+        pytest.xfail("no `from __future__ import annotations`")
+
+    if (
+        (sys.version_info[:2] == (3, 5) or PYPY)
+        and "1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc"
+        in full_filename
+    ):
+        pytest.skip("recursion takes to long in 3.5")
+
+    TestFiles().check_filename(full_filename, check_names=True)
+
+
 
 
 @pytest.mark.skipif(
@@ -677,7 +713,7 @@ def sample_files():
 )
 class TestFiles:
 
-    @pytest.mark.parametrize("full_filename,result_filename", list(sample_files()))
+    @pytest.mark.parametrize("full_filename,result_filename", list(sample_files("samples")))
     def test_sample_files(self, full_filename, result_filename):
 
         self.start_time = time.time()
@@ -738,15 +774,16 @@ class TestFiles:
 
 
     def check_filename(self, filename, check_names):
+
+        # increase the recursion limit in testing mode, because there are files out there with large ast-nodes
+        # example: tests/small_samples/1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc.py
+        sys.setrecursionlimit(3000)
         source = Source.for_filename(filename)
 
         if source.tree is None:
             # we could not parse this file (maybe wrong python version)
             print("skip %s"%filename)
             return
-
-        if sys.version_info >= (3,11):
-            Deadcode.annotate(source.tree)
 
         print("check %s"%filename)
 
@@ -820,6 +857,12 @@ class TestFiles:
                             continue
 
                     if is_literal(node):
+                        continue
+
+                    if len(values) == 0 and is_deadcode(node):
+                        continue
+
+                    if isinstance(node,ast.Name) and node.id=="__debug__":
                         continue
                 else:
                     # x (is/is not) None
@@ -899,7 +942,7 @@ class TestFiles:
                         # "%50s"%(a,) is missing an BUILD_STRING instruction which normally maps to BinOp
                         continue
 
-                    if getattr(node, "deadcode", False):
+                    if len(values)==0 and is_deadcode(node):
                         continue
 
                     if (
@@ -927,6 +970,7 @@ class TestFiles:
                     p("correct:", correct)
                     p("len(values):", len(values))
                     p("values:", values)
+                    p("deadcode:", is_deadcode(node))
 
                     p()
 
@@ -960,31 +1004,33 @@ class TestFiles:
                     )
                     p()
 
-                    p("all bytecodes in this range:")
+                    if sys.version_info >= (3, 11):
+                        p("all bytecodes in this range:")
 
-                    bc = compile(source.text, filename, "exec")
 
-                    def inspect(bc):
-                        first = True
-                        for i in dis.get_instructions(bc):
+                        bc = compile(source.text, filename, "exec")
 
-                            if (
-                                i.positions.lineno is not None
-                                and i.positions.lineno <= node.end_lineno
-                                and node.lineno <= i.positions.end_lineno
-                            ):
-                                if first:
-                                    p("block name:", bc.co_name)
-                                    first = False
-                                p(i.positions, i.opname, i.argval)
+                        def inspect(bc):
+                            first = True
+                            for i in dis.get_instructions(bc):
 
-                        for const in bc.co_consts:
-                            if isinstance(const, types.CodeType):
-                                inspect(const)
+                                if (
+                                    i.positions.lineno is not None
+                                    and i.positions.lineno <= node.end_lineno
+                                    and node.lineno <= i.positions.end_lineno
+                                ):
+                                    if first:
+                                        p("block name:", bc.co_name)
+                                        first = False
+                                    p(i.positions, i.opname, i.argval)
 
-                    inspect(bc)
+                            for const in bc.co_consts:
+                                if isinstance(const, types.CodeType):
+                                    inspect(const)
 
-                    self.fail()
+                        inspect(bc)
+
+                    raise AssertionError()
 
         return result
 
@@ -1035,7 +1081,9 @@ class TestFiles:
                         "STORE_ATTR",
                         "DELETE_ATTR",
                         "DELETE_NAME",
+                        "DELETE_DEREF",
                         "DELETE_FAST",
+                        "DELETE_GLOBAL",
                         "STORE_SUBSCR",
                         "STORE_SLICE",
                         "DELETE_SUBSCR",
@@ -1120,7 +1168,7 @@ class TestFiles:
                             )
                         )
 
-                self.fail()
+                raise
 
             except Exception as e:
                 # continue for every case where this can be an known issue
@@ -1253,28 +1301,6 @@ class TestFiles:
                         )
 
                 raise
-
-            if py11 and getattr(node, "deadcode", True) == True:
-                print("code is alive:")
-                print("There is a bug in the deadcode detection, because the python compiler has generated bytecode for this node.")
-
-                print("deadcode:",getattr(node, "deadcode", "<undefined>"))
-
-                print("node:",ast.dump(node))
-                print("line:",node.lineno)
-
-                non_dead_parent=node
-                while getattr(non_dead_parent,"deadcode",True)==True:
-                    non_dead_parent=non_dead_parent.parent
-
-                dump_source(source.text, start_position(non_dead_parent), end_position(non_dead_parent))
-
-                from deadcode import dump_deadcode
-
-                
-                dump_deadcode(non_dead_parent)
-
-                self.fail()
 
             # `argval` isn't set for all relevant instructions in python 2
             # The relation between `ast.Name` and `argval` is already

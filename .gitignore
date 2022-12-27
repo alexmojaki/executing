@@ -110,3 +110,10 @@ venv.bak/
 
 # VSCode
 .vscode/
+
+# mutmut
+.mutmut-cache
+
+# testing tools
+/done.db
+/tests/last_samples/

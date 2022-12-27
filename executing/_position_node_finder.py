@@ -1,4 +1,5 @@
 import ast
+import sys
 import dis
 from types import CodeType, FrameType
 from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
@@ -16,7 +17,8 @@ def parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
             node = node.parent
             yield node
         else:
-            break
+            break  # pragma: no mutate
+
 
 def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     yield node
@@ -42,7 +44,8 @@ def mangled_name(node: EnhancedAST) -> str:
     elif isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
         name = node.name
     elif isinstance(node, ast.ExceptHandler):
-        name = node.name or "exc"
+        assert node.name
+        name = node.name
     else:
         raise TypeError("no node to mangle")
 
@@ -52,7 +55,8 @@ def mangled_name(node: EnhancedAST) -> str:
 
         while not (isinstance(parent,ast.ClassDef) and child not in parent.bases):
             if not hasattr(parent,"parent"):
-                break
+                break # pragma: no mutate
+
             parent,child=parent.parent,parent
         else:
             class_name=parent.name.lstrip("_")
@@ -64,7 +68,7 @@ def mangled_name(node: EnhancedAST) -> str:
     return name
 
 
-@lru_cache(128)
+@lru_cache(128) # pragma: no mutate
 def get_instructions(code: CodeType) -> list[dis.Instruction]:
     return list(dis.get_instructions(code, show_caches=True))
 
@@ -154,8 +158,11 @@ class PositionNodeFinder(object):
 
         self.test_for_decorator(self.result, lasti)
 
+        # verify
         if self.decorator is None:
             self.verify(self.result, self.instruction(lasti))
+        else: 
+            assert_(self.decorator in self.result.decorator_list)
 
     def test_for_decorator(self, node: EnhancedAST, index: int) -> None:
         if (
@@ -182,8 +189,8 @@ class PositionNodeFinder(object):
 
                 # index+x  STORE_*     the ast-node of this instruction points to the decorated thing
 
-                if self.opname(index - 4) != "PRECALL" or self.opname(index) != "CALL":
-                    break
+                if self.opname(index - 4) != "PRECALL" or self.opname(index) != "CALL": # pragma: no mutate
+                    break # pragma: no mutate
 
                 index += 2
 
@@ -232,6 +239,16 @@ class PositionNodeFinder(object):
                 # Comprehension and generators get not fixed for now.
                 raise KnownIssue("chain comparison inside %s can not be fixed" % (node))
 
+        if (
+            sys.version_info[:3] == (3, 11, 1)
+            and isinstance(node, ast.Compare)
+            and instruction.opname == "CALL"
+            and any(isinstance(n, ast.Assert) for n in node_and_parents(node))
+        ):
+            raise KnownIssue(
+                "known bug in 3.11.1 https://github.com/python/cpython/issues/95921"
+            )
+
         if isinstance(node, ast.Assert):
             # pytest assigns the position of the assertion to all expressions of the rewritten assertion.
             # All the rewritten expressions get mapped to ast.Assert, which is the wrong ast-node.
@@ -241,6 +258,9 @@ class PositionNodeFinder(object):
         if any(isinstance(n, ast.pattern) for n in node_and_parents(node)):
             # TODO: investigate
             raise KnownIssue("pattern matching ranges seems to be wrong")
+
+        if self.is_except_cleanup(instruction, node):
+            raise KnownIssue("exeption cleanup does not belong to the last node in a except block")
 
         if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
             # handle stores to __classcell__ as KnownIssue,
@@ -268,6 +288,7 @@ class PositionNodeFinder(object):
             "STORE_GLOBAL",
             "DELETE_NAME",
             "DELETE_FAST",
+            "DELETE_DEREF",
             "DELETE_GLOBAL",
         ):
             return False
@@ -291,8 +312,26 @@ class PositionNodeFinder(object):
         #  except TypeError as msg:
         #      print("Sorry:", msg, file=file)
 
+        if (
+            isinstance(node, ast.Name)
+            and isinstance(node.ctx,ast.Store)
+            and inst.opname.startswith("STORE_")
+            and mangled_name(node) == inst.argval
+        ):
+            # Storing the variable is valid and no exception cleanup, if the name is correct
+            return False
+
+        if (
+            isinstance(node, ast.Name)
+            and isinstance(node.ctx,ast.Del)
+            and inst.opname.startswith("DELETE_")
+            and mangled_name(node) == inst.argval
+        ):
+            # Deleting the variable is valid and no exception cleanup, if the name is correct
+            return False
+
         return any(
-            isinstance(n, ast.ExceptHandler) and mangled_name(n) == inst.argval
+            isinstance(n, ast.ExceptHandler) and n.name and mangled_name(n) == inst.argval
             for n in parents(node)
         )
 
@@ -383,8 +422,6 @@ class PositionNodeFinder(object):
             # data: int
             return
 
-        if self.is_except_cleanup(instruction, node):
-            return
 
         if inst_match(("DELETE_NAME", "DELETE_FAST")) and node_match(
             ast.Name, id=instruction.argval, ctx=ast.Del
@@ -467,13 +504,19 @@ class PositionNodeFinder(object):
         if inst_match("DELETE_SUBSCR") and node_match(ast.Subscript, ctx=ast.Del):
             return
 
-        if node_match(ast.Name, ctx=ast.Load) and inst_match(
-            ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL"), argval=mangled_name(node)
+        if (
+            node_match(ast.Name, ctx=ast.Load)
+            or (
+                node_match(ast.Name, ctx=ast.Store)
+                and isinstance(node.parent, ast.AugAssign)
+            )
+        ) and inst_match(
+            ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL", "LOAD_DEREF"), argval=mangled_name(node)
         ):
             return
 
         if node_match(ast.Name, ctx=ast.Del) and inst_match(
-            ("DELETE_NAME", "DELETE_GLOBAL"), argval=mangled_name(node)
+            ("DELETE_NAME", "DELETE_GLOBAL", "DELETE_DEREF"), argval=mangled_name(node)
         ):
             return
 
