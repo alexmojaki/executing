@@ -1,5 +1,8 @@
 import ast
+import sys
 import operator
+
+py11=sys.version_info>=(3,11)
 
 
 def contains_break(node_or_list):
@@ -50,23 +53,35 @@ class Deadcode:
         ast.BitOr: operator.or_,
         ast.BitXor: operator.xor,
         ast.BitAnd: operator.and_,
-        ast.MatMult: operator.matmul,
         # unary
         ast.UAdd: operator.pos,
         ast.USub: operator.neg,
         ast.Not: operator.not_,
         ast.Invert: operator.invert,
     }
+    if hasattr(ast,"MatMult"):
+        operator_map[ast.MatMult]=operator.matmul
 
     def annotate_static_values(self, node):
         for n in ast.iter_child_nodes(node):
             self.annotate_static_values(n)
 
         try:
-            if isinstance(node, ast.Constant):
+            if sys.version_info >= (3,6) and isinstance(node, ast.Constant):
                 node.__static_value = node.value
 
-            elif isinstance(node, ast.Name) and node.id == "__debug__":
+            if not sys.version_info >= (3,8):
+                if isinstance(node,ast.Str):
+                    node.__static_value = node.s
+                if isinstance(node,ast.Bytes):
+                    node.__static_value = node.s
+                if isinstance(node,ast.Num):
+                    node.__static_value = node.n
+                if isinstance(node,ast.NameConstant):
+                    node.__static_value = node.value
+                    
+
+            if isinstance(node, ast.Name) and node.id == "__debug__":
                 node.__static_value = True
 
             elif isinstance(node, ast.UnaryOp):
@@ -124,7 +139,7 @@ class Deadcode:
                     node.__static_value = True
 
         except AttributeError as e:
-            if e.name != "_Deadcode__static_value":
+            if "_Deadcode__static_value" not in str(e):
                 raise
 
     def static_cnd(self, node):
@@ -227,7 +242,9 @@ class Deadcode:
                 self.walk_deadcode(node.msg, deadcode)
 
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            self.walk_annotation(node.args.posonlyargs, deadcode)
+            if sys.version_info >= (3,8):
+                self.walk_annotation(node.args.posonlyargs, deadcode)
+
             self.walk_annotation(node.args.args, deadcode)
             self.walk_annotation(node.args.kwonlyargs, deadcode)
 
@@ -264,7 +281,7 @@ class Deadcode:
 
             deadcode = if_is_dead and else_is_dead
 
-        elif isinstance(node, ast.Match):
+        elif sys.version_info >= (3,10) and isinstance(node, ast.Match):
             self.walk_deadcode(node.subject, deadcode)
             for case_ in node.cases:
                 case_.deadcode = deadcode
@@ -343,7 +360,7 @@ class Deadcode:
                 # deadcode()
                 deadcode = True
 
-        elif isinstance(node, (ast.Try, ast.TryStar)):
+        elif isinstance(node, (ast.Try, ast.TryStar if py11 else ())):
             try_dead = self.check_stmts(node.body, deadcode)
 
             for handler in node.handlers:
@@ -381,8 +398,8 @@ class Deadcode:
                     (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef),
                 )
                 and node.parent.body[0] == node
-                and isinstance(node.value, ast.Constant)
-                and isinstance(node.value.value, str)
+                and( isinstance(node.value, ast.Constant)
+                and isinstance(node.value.value, str) if sys.version_info >= (3,6) else isinstance(node.value,ast.Str) )
             ):
                 # docstring
                 dead_expr = False
@@ -396,6 +413,7 @@ class Deadcode:
 
         return deadcode
 
+
 def is_deadcode(node):
     if hasattr(node,"deadcode"):
         return node.deadcode
@@ -407,4 +425,6 @@ def is_deadcode(node):
     Deadcode().annotate(module)
 
     return node.deadcode
+
+
 
