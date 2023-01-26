@@ -39,7 +39,7 @@ from tests.deadcode import is_deadcode
 if eval("0"):
     global_never_defined = 1
 
-only_new_algo=pytest.mark.skipif( not use_new_algo, reason="Not supported by the SentinelNodeFinder")
+only_new_algo=pytest.mark.xfail( not use_new_algo, reason="Not supported by the SentinelNodeFinder")
 
 def calling_expression():
     frame = inspect.currentframe().f_back.f_back
@@ -431,7 +431,6 @@ class TestStuff(unittest.TestCase):
         c.x = c.y = tester
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
-    @only_new_algo
     def test_store_attr_multiline(self):
         tester.x \
         .y = 1
@@ -482,7 +481,6 @@ class TestStuff(unittest.TestCase):
         del tester. \
         x.y
 
-    @only_new_algo
     def test_method_call_multiline(self):
 
         tester.method(
@@ -501,7 +499,6 @@ class TestStuff(unittest.TestCase):
                 (tester).\
                 b(5)
 
-    @only_new_algo
     def test_call_things(self):
         # call things which are no methods or functions
 
