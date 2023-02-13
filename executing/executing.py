@@ -1304,7 +1304,7 @@ def node_minmax(node):
         linenos = [] # type: Sequence[int]
         if hasattr(node, "end_lineno") and isinstance(node, ast.expr):
             assert node.end_lineno is not None # type: ignore[attr-defined]
-            return (node.lineno, node.end_lineno)
+            return (node.lineno, node.end_lineno) # type: ignore[attr-defined]
         else:
             return (node.lineno, node.lineno) # type: ignore[attr-defined]
     return None
