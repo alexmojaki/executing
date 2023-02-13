@@ -277,7 +277,7 @@ class Source(object):
             lines = [line.decode(encoding) for line in lines]
 
         self.text = text
-        self.lines = [line.rstrip('\r\n') for line in lines]
+        self.lines = text.splitlines()
 
         if sys.version_info[0] == 3:
             ast_text = text
