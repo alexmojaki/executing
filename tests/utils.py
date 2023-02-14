@@ -1,6 +1,7 @@
 import sys
 import ast
 import inspect
+import tempfile
 from collections import namedtuple
 
 import executing.executing
@@ -226,3 +227,17 @@ def end_position(obj):
 
     return SourcePosition(obj.end_lineno, obj.end_col_offset)
 
+def no_pytest_vars(d):
+    return {k: v for k, v in d.items() if not k.startswith("@py")}
+
+def fexec(source):
+    frame = inspect.currentframe()
+    assert frame
+    frame = frame.f_back
+    assert frame
+
+    _, filename = tempfile.mkstemp()
+    with open(filename, "w") as outfile:
+        outfile.write(source)
+    code = compile(source, filename, "exec")
+    exec(code, no_pytest_vars(frame.f_globals), no_pytest_vars(frame.f_locals))

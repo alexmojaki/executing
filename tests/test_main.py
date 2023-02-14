@@ -13,7 +13,6 @@ import json
 import os
 import re
 import sys
-import tempfile
 import time
 import types
 import unittest
@@ -23,7 +22,7 @@ import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from tests.utils import tester, subscript_item, in_finally, start_position, end_position
+from tests.utils import tester, subscript_item, in_finally, start_position, end_position,fexec
 
 PYPY = 'pypy' in sys.version.lower()
 PY3 = sys.version_info[0] == 3
@@ -396,12 +395,7 @@ class TestStuff(unittest.TestCase):
 
     def test_extended_arg(self):
         source = 'tester(6)\n%s\ntester(9)' % list(range(66000))
-        _, filename = tempfile.mkstemp()
-        print(filename)
-        code = compile(source, filename, 'exec')
-        with open(filename, 'w') as outfile:
-            outfile.write(source)
-        exec(code)
+        fexec(source)
 
     def test_only(self):
         for n in range(5):
@@ -520,14 +514,10 @@ class TestStuff(unittest.TestCase):
             self.assertEqual(ex.text(), "134895 / 0")
 
     def test_retry_cache(self):
-        _, filename = tempfile.mkstemp()
 
         def check(x):
             source = 'tester(6)\n%s\ntester(9)' % list(range(x))
-            code = compile(source, filename, 'exec')
-            with open(filename, 'w') as outfile:
-                outfile.write(source)
-            exec(code, globals(), locals())
+            fexec(source)
 
         check(3)
         check(5)
