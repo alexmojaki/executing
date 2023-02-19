@@ -5,6 +5,7 @@ from types import CodeType, FrameType
 from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
+from ._linenos import pos_range
 
 from functools import lru_cache
 
@@ -602,15 +603,63 @@ class PositionNodeFinder(object):
         position = self.instruction(index).positions
         assert position is not None and position.lineno is not None
 
-        return only(
-            cast(EnhancedAST, node)
-            for node in self.source._nodes_by_line[position.lineno]
-            if isinstance(node, typ)
-            if not isinstance(node, ast.Expr)
-            # matchvalue.value has the same positions as matchvalue themself, so we exclude ast.MatchValue
-            if not isinstance(node, ast.MatchValue)
-            if all(
-                getattr(position, attr) == getattr(node, attr)
-                for attr in match_positions
+        node = self.source.tree
+
+        # print(ast.dump(node, indent=2, include_attributes=True))
+
+        def childs(node):
+            for child in ast.iter_child_nodes(node):
+                if isinstance(child, typ) and not isinstance(child,ast.Expr):
+                    yield child
+                else:
+                    yield from childs(child)
+
+        def pos_range(node):
+            start, end = node, node
+            if hasattr(node, "decorator_list") and node.decorator_list:
+                start, end = node.decorator_list[0], node
+
+            return (start.lineno, start.col_offset), (
+                end.end_lineno,
+                end.end_col_offset,
             )
-        )
+
+        def find(node):
+            print(node)
+            if (
+                not isinstance(node, (ast.Expr, ast.MatchValue))
+                and all(
+                    hasattr(node, attr)
+                    and getattr(position, attr) == getattr(node, attr)
+                    for attr in match_positions
+                )
+                and isinstance(node, typ)
+            ):
+                yield node
+
+            for child in childs(node):
+                print(" child:",child)
+                if hasattr(child, "lineno"):
+                    start, end = pos_range(child)
+                    if (
+                        start <= (position.lineno, position.col_offset)
+                        and (position.end_lineno, position.end_col_offset) <= end
+                    ):
+                        yield from find(child)
+
+        node = only(find(self.source.tree))
+
+        # assert node == only(
+        #     cast(EnhancedAST, node)
+        #     for node in self.source._nodes_by_line[position.lineno]
+        #     if isinstance(node, typ)
+        #     if not isinstance(node, ast.Expr)
+        #     # matchvalue.value has the same positions as matchvalue themself, so we exclude ast.MatchValue
+        #     if not isinstance(node, ast.MatchValue)
+        #     if all(
+        #         getattr(position, attr) == getattr(node, attr)
+        #         for attr in match_positions
+        #     )
+        # )
+
+        return node

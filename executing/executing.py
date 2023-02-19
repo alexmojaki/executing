@@ -39,6 +39,8 @@ from operator import attrgetter
 from threading import RLock
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 
+from ._linenos import LinenosCache
+
 if TYPE_CHECKING:  # pragma: no cover
     from asttokens import ASTTokens, ASTText
     from asttokens.asttokens import ASTTextBase
@@ -193,6 +195,7 @@ def only(it):
     return lst[0]
 
 
+
 class Source(object):
     """
     The source code of a single file and associated metadata.
@@ -247,7 +250,9 @@ class Source(object):
                 for i, line in enumerate(lines)
             ])
 
-        self._nodes_by_line = defaultdict(list)
+        if sys.version_info < (3,8):
+            self._nodes_by_line = defaultdict(list)
+
         self.tree = None
         self._qualnames = {}
         self._asttokens = None  # type: Optional[ASTTokens]
@@ -258,11 +263,17 @@ class Source(object):
         except (SyntaxError, ValueError):
             pass
         else:
+            if sys.version_info >= (3,8):
+                self._nodes_by_line= LinenosCache(self.tree)
+
             for node in ast.walk(self.tree):
                 for child in ast.iter_child_nodes(node):
                     cast(EnhancedAST, child).parent = cast(EnhancedAST, node)
-                for lineno in node_linenos(node):
-                    self._nodes_by_line[lineno].append(node)
+                if sys.version_info < (3,8):
+                    for lineno in node_linenos(node):
+                        self._nodes_by_line[lineno].append(node)
+
+
 
             visitor = QualnameVisitor()
             visitor.visit(self.tree)
