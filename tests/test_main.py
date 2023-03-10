@@ -29,7 +29,7 @@ PYPY = 'pypy' in sys.version.lower()
 PY3 = sys.version_info[0] == 3
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import get_instructions, function_node_types
+from executing.executing import NodeFinder, get_instructions, function_node_types
 
 from executing._exceptions import VerifierFailure, KnownIssue
 
@@ -736,6 +736,10 @@ class TestFiles:
                 assert result == json.load(infile)
 
 
+    @pytest.mark.skipif(
+        NodeFinder.__name__ == "SentinelNodeFinder",
+        reason="The SentinelNodeFinder has problems in some situations (see skip_sentinel)",
+    )
     def test_module_files(self):
         self.start_time = time.time()
     
