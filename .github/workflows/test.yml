@@ -40,7 +40,11 @@ jobs:
       env:
         EXECUTING_SLOW_TESTS: 1
       run: |
-        coverage run --include=executing/executing.py --append -m pytest tests
+        # COVERAGE_PROCESS_START defines the path to the coverage config for coverage-enable-subprocess
+        export COVERAGE_PROCESS_START=${GITHUB_WORKSPACE}/setup.cfg
+        coverage run -m pytest tests
+        # combine the coverage of all subprocesses
+        coverage combine
         coverage report -m
     - name: Coveralls Python
       uses: AndreMiras/coveralls-python-action@v20201129
