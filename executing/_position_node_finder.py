@@ -283,6 +283,14 @@ class PositionNodeFinder(object):
 
             raise KnownIssue("store __classcell__")
 
+        if (
+            instruction.opname == "CALL"
+            and not isinstance(node,ast.Call)
+            and any(isinstance(p, ast.Assert) for p in parents(node))
+            and sys.version_info >= (3, 11, 2)
+        ):
+            raise KnownIssue("exception generation maps to condition")
+
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
         if inst.opname not in (
