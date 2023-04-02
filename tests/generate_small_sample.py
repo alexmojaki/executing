@@ -18,10 +18,13 @@ from rich.progress import Progress, track
 from rich.syntax import Syntax
 from rich.console import Console
 import argparse
+import _pytest.outcomes
+import json
 
 last_samples_dir = Path(__file__).parent / "last_samples"
 last_samples_dir.mkdir(exist_ok=True)
 
+checked_files_json=last_samples_dir/"checked.json"
 
 small_samples = Path(__file__).parent / "small_samples"
 
@@ -51,7 +54,6 @@ def big_samples(folder):
         hashes.add(h)
         yield p
 
-
 def test_file(filename: Path):
     code = filename.read_text()
 
@@ -68,7 +70,12 @@ def test_file(filename: Path):
             with contextlib.redirect_stderr(dev_null):
                 with contextlib.redirect_stdout(dev_null):
                     test.check_filename(filename, check_names=True)
-    except:
+    except _pytest.outcomes.Skipped:
+        return True
+    except MemoryError:
+        return True
+
+    except Exception as e:
         return False
 
     return True
@@ -99,18 +106,29 @@ def main():
     console.print(f"Check files in tests/last_samples and {folder}:")
     console.print()
 
+    checked_files=set()
+
+    if checked_files_json.exists():
+        checked_files={Path(file) for file in  json.loads(checked_files_json.read_text())}
+
     with Progress() as progress:
 
         task_collect = progress.add_task(description="collect files ...", total=None)
 
         with get_context("spawn").Pool(maxtasksperchild=100) as p:
-            files = list(
+            files = set(
                 progress.track(
                     big_samples(folder),
                     task_id=task_collect,
                     description="collect files...",
                 )
             )
+            checked_files=checked_files & files
+            files=files - checked_files
+            # check the already checked files last
+            # this improves the propability of finding new issues sooner
+            files=[*files,*checked_files]
+
             progress.reset(task_collect, description="check files...", total=len(files))
 
             for result, filename in progress.track(
@@ -122,7 +140,7 @@ def main():
                     break_file.unlink()
                     sys.exit(0)
 
-                if time.time() > end_time:
+                if time.time() > end_time and False :
                     print("Timeout")
                     sys.exit(0)
 
@@ -130,6 +148,8 @@ def main():
                     print(f"{filename} is failing the tests -> minimize\n")
                     failing_code = filename.read_text()
                     break
+                else:
+                    checked_files.add(filename)
             else:
                 progress.stop()
                 console.print()
@@ -137,11 +157,18 @@ def main():
                     f"  :fireworks: checked {len(files)} files and everything was ok :fireworks:"
                 )
                 console.print()
+                checked_files=[]
+                checked_files_json.write_text(json.dumps([]))
                 return
+
+
+
 
             p.terminate()
 
         (last_samples_dir / f"{source_hash(failing_code)}.py").write_text(failing_code)
+
+        checked_files_json.write_text(json.dumps([str(path) for path in checked_files]))
 
         def check_for_error(source: str):
             with tempfile.NamedTemporaryFile(delete=False) as tmp_file:

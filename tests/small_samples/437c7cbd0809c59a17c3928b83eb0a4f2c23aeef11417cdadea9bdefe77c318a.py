@@ -13,5 +13,8 @@
 #  
 # 
 
+
+@foo()
+@bar()
 class SerializedDAG:
     del __get_constructor_defaults

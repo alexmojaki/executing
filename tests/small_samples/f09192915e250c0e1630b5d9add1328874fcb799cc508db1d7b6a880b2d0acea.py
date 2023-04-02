@@ -1,0 +1,1 @@
+assert self is None or frame, ()

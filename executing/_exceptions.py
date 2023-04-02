@@ -20,3 +20,13 @@ class VerifierFailure(Exception):
         self.instruction = instruction
 
         super().__init__(title) # type: ignore[call-arg]
+
+
+class MultipleMatches(Exception):
+    def __init__(self,nodes):
+        # type: (object) -> None
+        self.nodes=nodes
+
+
+class NoMatch(Exception):
+    pass

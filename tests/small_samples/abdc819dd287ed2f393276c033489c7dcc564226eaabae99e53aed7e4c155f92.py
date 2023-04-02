@@ -1,0 +1,1 @@
+(a for a in attrs if a or (a and a is True))

@@ -1,5 +1,49 @@
 [
     [
+        "STORE_NAME",
+        "from __future__ import print_function, division, absolute_import"
+    ],
+    [
+        "STORE_NAME",
+        "from __future__ import print_function, division, absolute_import"
+    ],
+    [
+        "STORE_NAME",
+        "from __future__ import print_function, division, absolute_import"
+    ],
+    [
+        "STORE_NAME",
+        "import json"
+    ],
+    [
+        "STORE_NAME",
+        "from collections import OrderedDict"
+    ],
+    [
+        "STORE_NAME",
+        "from functools import partial"
+    ],
+    [
+        "STORE_NAME",
+        "from os.path import basename"
+    ],
+    [
+        "STORE_NAME",
+        "from future import standard_library"
+    ],
+    [
+        "STORE_NAME",
+        "from littleutils import DecentJSONEncoder, withattrs, group_by_attr"
+    ],
+    [
+        "STORE_NAME",
+        "from littleutils import DecentJSONEncoder, withattrs, group_by_attr"
+    ],
+    [
+        "STORE_NAME",
+        "from littleutils import DecentJSONEncoder, withattrs, group_by_attr"
+    ],
+    [
         "LOAD_NAME",
         "standard_library"
     ],
@@ -12,12 +56,80 @@
         "standard_library.install_aliases()"
     ],
     [
+        "STORE_NAME",
+        "import argparse"
+    ],
+    [
+        "STORE_NAME",
+        "import os"
+    ],
+    [
+        "STORE_NAME",
+        "import sys"
+    ],
+    [
+        "STORE_NAME",
+        "from flask import Flask, request, jsonify, url_for"
+    ],
+    [
+        "STORE_NAME",
+        "from flask import Flask, request, jsonify, url_for"
+    ],
+    [
+        "STORE_NAME",
+        "from flask import Flask, request, jsonify, url_for"
+    ],
+    [
+        "STORE_NAME",
+        "from flask import Flask, request, jsonify, url_for"
+    ],
+    [
+        "STORE_NAME",
+        "from flask.templating import render_template"
+    ],
+    [
+        "STORE_NAME",
+        "from flask_humanize import Humanize"
+    ],
+    [
+        "STORE_NAME",
+        "from werkzeug.routing import PathConverter"
+    ],
+    [
+        "STORE_NAME",
+        "import sqlalchemy"
+    ],
+    [
+        "STORE_NAME",
+        "from birdseye.db import Database"
+    ],
+    [
+        "STORE_NAME",
+        "from birdseye.utils import short_path, IPYTHON_FILE_PATH, fix_abs_path, is_ipython_cell"
+    ],
+    [
+        "STORE_NAME",
+        "from birdseye.utils import short_path, IPYTHON_FILE_PATH, fix_abs_path, is_ipython_cell"
+    ],
+    [
+        "STORE_NAME",
+        "from birdseye.utils import short_path, IPYTHON_FILE_PATH, fix_abs_path, is_ipython_cell"
+    ],
+    [
+        "STORE_NAME",
+        "from birdseye.utils import short_path, IPYTHON_FILE_PATH, fix_abs_path, is_ipython_cell"
+    ],
+    [
         "LOAD_NAME",
         "Flask"
     ],
     [
         "CALL_FUNCTION",
         "Flask('birdseye')"
+    ],
+    [
+        "STORE_NAME",
+        "app"
     ],
     [
         "LOAD_NAME",
@@ -48,6 +160,14 @@
         "PathConverter"
     ],
     [
+        "CALL_FUNCTION",
+        "class FileConverter(PathConverter):\n    regex = '.*?'"
+    ],
+    [
+        "STORE_NAME",
+        "class FileConverter(PathConverter):\n    regex = '.*?'"
+    ],
+    [
         "LOAD_NAME",
         "FileConverter"
     ],
@@ -76,12 +196,20 @@
         "Database()"
     ],
     [
+        "STORE_NAME",
+        "db"
+    ],
+    [
         "LOAD_NAME",
         "db"
     ],
     [
         "LOAD_ATTR",
         "db.Session"
+    ],
+    [
+        "STORE_NAME",
+        "Session"
     ],
     [
         "LOAD_NAME",
@@ -92,6 +220,10 @@
         "db.Function"
     ],
     [
+        "STORE_NAME",
+        "Function"
+    ],
+    [
         "LOAD_NAME",
         "db"
     ],
@@ -100,6 +232,10 @@
         "db.Call"
     ],
     [
+        "STORE_NAME",
+        "Call"
+    ],
+    [
         "LOAD_NAME",
         "app"
     ],
@@ -126,6 +262,10 @@
     [
         "CALL_FUNCTION",
         "app.route('/')"
+    ],
+    [
+        "STORE_NAME",
+        "@app.route('/')\n@db.provide_session\ndef index(session):\n    all_paths = db.all_file_paths()\n\n    recent_calls = (session.query(*(Call.basic_columns + Function.basic_columns))\n                        .join(Function)\n                        .order_by(Call.start_time.desc())[:100])\n\n    files = OrderedDict()\n\n    for row in recent_calls:\n        if is_ipython_cell(row.file):\n            continue\n        files.setdefault(\n            row.file, OrderedDict()\n        ).setdefault(\n            row.name, row\n        )\n\n    for path in all_paths:\n        files.setdefault(\n            path, OrderedDict()\n        )\n\n    short = partial(short_path, all_paths=all_paths)\n\n    return render_template('index.html',\n                           short=short,\n                           files=files)"
     ],
     [
         "LOAD_NAME",
@@ -156,6 +296,10 @@
         "app.route('/file/<file:path>')"
     ],
     [
+        "STORE_NAME",
+        "@app.route('/file/<file:path>')\n@db.provide_session\ndef file_view(session, path):\n    path = fix_abs_path(path)\n\n    # Get all calls and functions in this file\n    filtered_calls = (session.query(*(Call.basic_columns + Function.basic_columns))\n                      .join(Function)\n                      .filter_by(file=path)\n                      .subquery('filtered_calls'))\n\n    # Get the latest call *time* for each function in the file\n    latest_calls = session.query(\n        filtered_calls.c.name,\n        sqlalchemy.func.max(filtered_calls.c.start_time).label('maxtime')\n    ).group_by(\n        filtered_calls.c.name,\n    ).subquery('latest_calls')\n\n    # Get the latest call for each function\n    query = session.query(filtered_calls).join(\n        latest_calls,\n        sqlalchemy.and_(\n            filtered_calls.c.name == latest_calls.c.name,\n            filtered_calls.c.start_time == latest_calls.c.maxtime,\n        )\n    ).order_by(filtered_calls.c.start_time.desc())\n    funcs = group_by_attr(query, 'type')\n\n    # Add any functions which were never called\n    all_funcs = sorted(session.query(Function.name, Function.type)\n                       .filter_by(file=path)\n                       .distinct())\n    func_names = {row.name for row in query}\n    for func in all_funcs:\n        if func.name not in func_names:\n            funcs[func.type].append(func)\n\n    return render_template('file.html',\n                           funcs=funcs,\n                           is_ipython=path == IPYTHON_FILE_PATH,\n                           full_path=path,\n                           short_path=basename(path))"
+    ],
+    [
         "LOAD_NAME",
         "app"
     ],
@@ -182,6 +326,10 @@
     [
         "CALL_FUNCTION",
         "app.route('/file/<file:path>/__function__/<func_name>')"
+    ],
+    [
+        "STORE_NAME",
+        "@app.route('/file/<file:path>/__function__/<func_name>')\n@db.provide_session\ndef func_view(session, path, func_name):\n    path = fix_abs_path(path)\n    query = get_calls(session, path, func_name, 200)\n    if query:\n        func = query[0]\n        calls = [withattrs(Call(), **row._asdict()) for row in query]\n    else:\n        func = session.query(Function).filter_by(file=path, name=func_name)[0]\n        calls = None\n\n    return render_template('function.html',\n                           func=func,\n                           short_path=basename(path),\n                           calls=calls)"
     ],
     [
         "LOAD_NAME",
@@ -212,6 +360,14 @@
         "app.route('/api/file/<file:path>/__function__/<func_name>/latest_call/')"
     ],
     [
+        "STORE_NAME",
+        "@app.route('/api/file/<file:path>/__function__/<func_name>/latest_call/')\n@db.provide_session\ndef latest_call(session, path, func_name):\n    path = fix_abs_path(path)\n    call = get_calls(session, path, func_name, 1)[0]\n    return jsonify(dict(\n        id=call.id,\n        url=url_for(call_view.__name__,\n                    call_id=call.id),\n    ))"
+    ],
+    [
+        "STORE_NAME",
+        "def get_calls(session, path, func_name, limit):\n    return (session.query(*(Call.basic_columns + Function.basic_columns))\n                .join(Function)\n                .filter_by(file=path, name=func_name)\n                .order_by(Call.start_time.desc())[:limit])"
+    ],
+    [
         "LOAD_NAME",
         "db"
     ],
@@ -224,6 +380,10 @@
         "db.provide_session"
     ],
     [
+        "STORE_NAME",
+        "@db.provide_session\ndef base_call_view(session, call_id, template):\n    call = session.query(Call).filter_by(id=call_id).one()\n    func = call.function\n    return render_template(template,\n                           short_path=basename(func.file),\n                           call=call,\n                           func=func)"
+    ],
+    [
         "LOAD_NAME",
         "app"
     ],
@@ -238,6 +398,10 @@
     [
         "CALL_FUNCTION",
         "app.route('/call/<call_id>')"
+    ],
+    [
+        "STORE_NAME",
+        "@app.route('/call/<call_id>')\ndef call_view(call_id):\n    return base_call_view(call_id, 'call.html')"
     ],
     [
         "LOAD_NAME",
@@ -256,6 +420,10 @@
         "app.route('/ipython_call/<call_id>')"
     ],
     [
+        "STORE_NAME",
+        "@app.route('/ipython_call/<call_id>')\ndef ipython_call_view(call_id):\n    return base_call_view(call_id, 'ipython_call.html')"
+    ],
+    [
         "LOAD_NAME",
         "app"
     ],
@@ -270,6 +438,10 @@
     [
         "CALL_FUNCTION",
         "app.route('/ipython_iframe/<call_id>')"
+    ],
+    [
+        "STORE_NAME",
+        "@app.route('/ipython_iframe/<call_id>')\ndef ipython_iframe_view(call_id):\n    \"\"\"\n    This view isn't generally used, it's just an easy way to play with the template\n    without a notebook.\n    \"\"\"\n    return render_template('ipython_iframe.html',\n                           container_id='1234',\n                           port=7777,\n                           call_id=call_id)"
     ],
     [
         "LOAD_NAME",
@@ -286,6 +458,10 @@
     [
         "CALL_FUNCTION",
         "app.route('/kill', methods=['POST'])"
+    ],
+    [
+        "STORE_NAME",
+        "@app.route('/kill', methods=['POST'])\ndef kill():\n    func = request.environ.get('werkzeug.server.shutdown')\n    if func is None:\n        raise RuntimeError('Not running with the Werkzeug Server')\n    func()\n    return 'Server shutting down...'"
     ],
     [
         "LOAD_NAME",
@@ -316,6 +492,10 @@
         "app.route('/api/call/<call_id>')"
     ],
     [
+        "STORE_NAME",
+        "@app.route('/api/call/<call_id>')\n@db.provide_session\ndef api_call_view(session, call_id):\n    call = session.query(Call).filter_by(id=call_id).one()\n    func = call.function\n    return DecentJSONEncoder().encode(dict(\n        call=dict(data=call.parsed_data, **Call.basic_dict(call)),\n        function=dict(data=func.parsed_data, **Function.basic_dict(func))))"
+    ],
+    [
         "LOAD_NAME",
         "app"
     ],
@@ -344,6 +524,10 @@
         "app.route('/api/calls_by_body_hash/<body_hash>')"
     ],
     [
+        "STORE_NAME",
+        "@app.route('/api/calls_by_body_hash/<body_hash>')\n@db.provide_session\ndef calls_by_body_hash(session, body_hash):\n    query = (session.query(*Call.basic_columns + (Function.data,))\n                 .join(Function)\n                 .filter_by(body_hash=body_hash)\n                 .order_by(Call.start_time.desc())[:200])\n\n    calls = [Call.basic_dict(withattrs(Call(), **row._asdict()))\n             for row in query]\n\n    function_data_set = {row.data for row in query}\n    ranges = set()\n    loop_ranges = set()\n    for function_data in function_data_set:\n        function_data = json.loads(function_data)\n\n        def add(key, ranges_set):\n            for node in function_data[key]:\n                ranges_set.add((node['start'], node['end']))\n\n        add('node_ranges', ranges)\n\n        # All functions are expected to have the same set\n        # of loop nodes\n        current_loop_ranges = set()\n        add('loop_ranges', current_loop_ranges)\n        assert loop_ranges in (set(), current_loop_ranges)\n        loop_ranges = current_loop_ranges\n\n    ranges = [dict(start=start, end=end) for start, end in ranges]\n    loop_ranges = [dict(start=start, end=end) for start, end in loop_ranges]\n\n    return DecentJSONEncoder().encode(dict(\n        calls=calls, ranges=ranges, loop_ranges=loop_ranges))"
+    ],
+    [
         "LOAD_NAME",
         "app"
     ],
@@ -370,6 +554,10 @@
     [
         "CALL_FUNCTION",
         "app.route('/api/body_hashes_present/', methods=['POST'])"
+    ],
+    [
+        "STORE_NAME",
+        "@app.route('/api/body_hashes_present/', methods=['POST'])\n@db.provide_session\ndef body_hashes_present(session):\n    hashes = request.get_json()\n    query = (session.query(Function.body_hash, sqlalchemy.func.count(Call.id))\n             .outerjoin(Call)\n             .filter(Function.body_hash.in_(hashes))\n             .group_by(Function.body_hash))\n    return DecentJSONEncoder().encode([\n        dict(hash=h, count=count)\n        for h, count in query\n    ])"
     ],
     [
         "LOAD_NAME",
@@ -382,6 +570,10 @@
     [
         "BINARY_SUBSCR",
         "sys.argv[1:]"
+    ],
+    [
+        "STORE_NAME",
+        "def main(argv=sys.argv[1:]):\n    # Support legacy CLI where there was just one positional argument: the port\n    if len(argv) == 1 and argv[0].isdigit():\n        argv.insert(0, '--port')\n\n    parser = argparse.ArgumentParser(description=\"Bird's Eye: A graphical Python debugger\")\n    parser.add_argument('-p', '--port', help='HTTP port, default is 7777', default=7777, type=int)\n    parser.add_argument('--host', help=\"HTTP host, default is 'localhost'\", default='localhost')\n\n    args = parser.parse_args(argv)\n    app.run(\n        port=args.port,\n        host=args.host,\n        use_reloader=os.environ.get('BIRDSEYE_RELOADER') == '1',\n    )"
     ],
     [
         "LOAD_NAME",
@@ -400,6 +592,22 @@
         "main()"
     ],
     [
+        "LOAD_NAME",
+        "class FileConverter(PathConverter):\n    regex = '.*?'"
+    ],
+    [
+        "STORE_NAME",
+        "class FileConverter(PathConverter):\n    regex = '.*?'"
+    ],
+    [
+        "STORE_NAME",
+        "class FileConverter(PathConverter):\n    regex = '.*?'"
+    ],
+    [
+        "STORE_NAME",
+        "regex"
+    ],
+    [
         "LOAD_GLOBAL",
         "db"
     ],
@@ -410,6 +618,10 @@
     [
         "CALL_METHOD",
         "db.all_file_paths()"
+    ],
+    [
+        "STORE_FAST",
+        "all_paths"
     ],
     [
         "LOAD_FAST",
@@ -484,6 +696,10 @@
         "session.query(*(Call.basic_columns + Function.basic_columns))\n                        .join(Function)\n                        .order_by(Call.start_time.desc())[:100]"
     ],
     [
+        "STORE_FAST",
+        "recent_calls"
+    ],
+    [
         "LOAD_GLOBAL",
         "OrderedDict"
     ],
@@ -492,8 +708,16 @@
         "OrderedDict()"
     ],
     [
+        "STORE_FAST",
+        "files"
+    ],
+    [
         "LOAD_FAST",
         "recent_calls"
+    ],
+    [
+        "STORE_FAST",
+        "row"
     ],
     [
         "LOAD_GLOBAL",
@@ -564,6 +788,10 @@
         "all_paths"
     ],
     [
+        "STORE_FAST",
+        "path"
+    ],
+    [
         "LOAD_FAST",
         "files"
     ],
@@ -604,6 +832,10 @@
         "partial(short_path, all_paths=all_paths)"
     ],
     [
+        "STORE_FAST",
+        "short"
+    ],
+    [
         "LOAD_GLOBAL",
         "render_template"
     ],
@@ -630,6 +862,10 @@
     [
         "CALL_FUNCTION",
         "fix_abs_path(path)"
+    ],
+    [
+        "STORE_FAST",
+        "path"
     ],
     [
         "LOAD_FAST",
@@ -694,6 +930,10 @@
     [
         "CALL_METHOD",
         "session.query(*(Call.basic_columns + Function.basic_columns))\n                      .join(Function)\n                      .filter_by(file=path)\n                      .subquery('filtered_calls')"
+    ],
+    [
+        "STORE_FAST",
+        "filtered_calls"
     ],
     [
         "LOAD_FAST",
@@ -782,6 +1022,10 @@
     [
         "CALL_METHOD",
         "session.query(\n        filtered_calls.c.name,\n        sqlalchemy.func.max(filtered_calls.c.start_time).label('maxtime')\n    ).group_by(\n        filtered_calls.c.name,\n    ).subquery('latest_calls')"
+    ],
+    [
+        "STORE_FAST",
+        "latest_calls"
     ],
     [
         "LOAD_FAST",
@@ -908,6 +1152,10 @@
         "session.query(filtered_calls).join(\n        latest_calls,\n        sqlalchemy.and_(\n            filtered_calls.c.name == latest_calls.c.name,\n            filtered_calls.c.start_time == latest_calls.c.maxtime,\n        )\n    ).order_by(filtered_calls.c.start_time.desc())"
     ],
     [
+        "STORE_FAST",
+        "query"
+    ],
+    [
         "LOAD_GLOBAL",
         "group_by_attr"
     ],
@@ -918,6 +1166,10 @@
     [
         "CALL_FUNCTION",
         "group_by_attr(query, 'type')"
+    ],
+    [
+        "STORE_FAST",
+        "funcs"
     ],
     [
         "LOAD_GLOBAL",
@@ -976,12 +1228,28 @@
         "sorted(session.query(Function.name, Function.type)\n                       .filter_by(file=path)\n                       .distinct())"
     ],
     [
+        "STORE_FAST",
+        "all_funcs"
+    ],
+    [
         "LOAD_FAST",
         "query"
     ],
     [
+        "CALL_FUNCTION",
+        "{row.name for row in query}"
+    ],
+    [
+        "STORE_FAST",
+        "func_names"
+    ],
+    [
         "LOAD_FAST",
         "all_funcs"
+    ],
+    [
+        "STORE_FAST",
+        "func"
     ],
     [
         "LOAD_FAST",
@@ -1069,6 +1337,14 @@
     ],
     [
         "LOAD_FAST",
+        "{row.name for row in query}"
+    ],
+    [
+        "STORE_FAST",
+        "row"
+    ],
+    [
+        "LOAD_FAST",
         "row"
     ],
     [
@@ -1086,6 +1362,10 @@
     [
         "CALL_FUNCTION",
         "fix_abs_path(path)"
+    ],
+    [
+        "STORE_FAST",
+        "path"
     ],
     [
         "LOAD_GLOBAL",
@@ -1108,6 +1388,10 @@
         "get_calls(session, path, func_name, 200)"
     ],
     [
+        "STORE_FAST",
+        "query"
+    ],
+    [
         "LOAD_FAST",
         "query"
     ],
@@ -1120,8 +1404,20 @@
         "query[0]"
     ],
     [
+        "STORE_FAST",
+        "func"
+    ],
+    [
         "LOAD_FAST",
         "query"
+    ],
+    [
+        "CALL_FUNCTION",
+        "[withattrs(Call(), **row._asdict()) for row in query]"
+    ],
+    [
+        "STORE_FAST",
+        "calls"
     ],
     [
         "LOAD_FAST",
@@ -1160,6 +1456,14 @@
         "session.query(Function).filter_by(file=path, name=func_name)[0]"
     ],
     [
+        "STORE_FAST",
+        "func"
+    ],
+    [
+        "STORE_FAST",
+        "calls"
+    ],
+    [
         "LOAD_GLOBAL",
         "render_template"
     ],
@@ -1186,6 +1490,14 @@
     [
         "CALL_FUNCTION_KW",
         "render_template('function.html',\n                           func=func,\n                           short_path=basename(path),\n                           calls=calls)"
+    ],
+    [
+        "LOAD_FAST",
+        "[withattrs(Call(), **row._asdict()) for row in query]"
+    ],
+    [
+        "STORE_FAST",
+        "row"
     ],
     [
         "LOAD_GLOBAL",
@@ -1228,6 +1540,10 @@
         "fix_abs_path(path)"
     ],
     [
+        "STORE_FAST",
+        "path"
+    ],
+    [
         "LOAD_GLOBAL",
         "get_calls"
     ],
@@ -1250,6 +1566,10 @@
     [
         "BINARY_SUBSCR",
         "get_calls(session, path, func_name, 1)[0]"
+    ],
+    [
+        "STORE_FAST",
+        "call"
     ],
     [
         "LOAD_GLOBAL",
@@ -1428,12 +1748,20 @@
         "session.query(Call).filter_by(id=call_id).one()"
     ],
     [
+        "STORE_FAST",
+        "call"
+    ],
+    [
         "LOAD_FAST",
         "call"
     ],
     [
         "LOAD_ATTR",
         "call.function"
+    ],
+    [
+        "STORE_FAST",
+        "func"
     ],
     [
         "LOAD_GLOBAL",
@@ -1524,6 +1852,10 @@
         "request.environ.get('werkzeug.server.shutdown')"
     ],
     [
+        "STORE_FAST",
+        "func"
+    ],
+    [
         "LOAD_FAST",
         "func"
     ],
@@ -1584,12 +1916,20 @@
         "session.query(Call).filter_by(id=call_id).one()"
     ],
     [
+        "STORE_FAST",
+        "call"
+    ],
+    [
         "LOAD_FAST",
         "call"
     ],
     [
         "LOAD_ATTR",
         "call.function"
+    ],
+    [
+        "STORE_FAST",
+        "func"
     ],
     [
         "LOAD_GLOBAL",
@@ -1764,12 +2104,32 @@
         "session.query(*Call.basic_columns + (Function.data,))\n                 .join(Function)\n                 .filter_by(body_hash=body_hash)\n                 .order_by(Call.start_time.desc())[:200]"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
         "query"
     ],
     [
         "LOAD_FAST",
         "query"
+    ],
+    [
+        "CALL_FUNCTION",
+        "[Call.basic_dict(withattrs(Call(), **row._asdict()))\n             for row in query]"
+    ],
+    [
+        "STORE_FAST",
+        "calls"
+    ],
+    [
+        "LOAD_FAST",
+        "query"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{row.data for row in query}"
+    ],
+    [
+        "STORE_FAST",
+        "function_data_set"
     ],
     [
         "LOAD_GLOBAL",
@@ -1780,16 +2140,28 @@
         "set()"
     ],
     [
+        "STORE_FAST",
+        "ranges"
+    ],
+    [
         "LOAD_GLOBAL",
         "set"
     ],
     [
         "CALL_FUNCTION",
         "set()"
+    ],
+    [
+        "STORE_FAST",
+        "loop_ranges"
     ],
     [
         "LOAD_FAST",
         "function_data_set"
+    ],
+    [
+        "STORE_DEREF",
+        "function_data"
     ],
     [
         "LOAD_GLOBAL",
@@ -1806,6 +2178,14 @@
     [
         "CALL_METHOD",
         "json.loads(function_data)"
+    ],
+    [
+        "STORE_DEREF",
+        "function_data"
+    ],
+    [
+        "STORE_FAST",
+        "        def add(key, ranges_set):\n            for node in function_data[key]:\n                ranges_set.add((node['start'], node['end']))"
     ],
     [
         "LOAD_FAST",
@@ -1826,6 +2206,10 @@
     [
         "CALL_FUNCTION",
         "set()"
+    ],
+    [
+        "STORE_FAST",
+        "current_loop_ranges"
     ],
     [
         "LOAD_FAST",
@@ -1864,11 +2248,31 @@
         "current_loop_ranges"
     ],
     [
+        "STORE_FAST",
+        "loop_ranges"
+    ],
+    [
         "LOAD_FAST",
         "ranges"
     ],
     [
+        "CALL_FUNCTION",
+        "[dict(start=start, end=end) for start, end in ranges]"
+    ],
+    [
+        "STORE_FAST",
+        "ranges"
+    ],
+    [
         "LOAD_FAST",
+        "loop_ranges"
+    ],
+    [
+        "CALL_FUNCTION",
+        "[dict(start=start, end=end) for start, end in loop_ranges]"
+    ],
+    [
+        "STORE_FAST",
         "loop_ranges"
     ],
     [
@@ -1906,6 +2310,14 @@
     [
         "CALL_METHOD",
         "DecentJSONEncoder().encode(dict(\n        calls=calls, ranges=ranges, loop_ranges=loop_ranges))"
+    ],
+    [
+        "LOAD_FAST",
+        "[Call.basic_dict(withattrs(Call(), **row._asdict()))\n             for row in query]"
+    ],
+    [
+        "STORE_FAST",
+        "row"
     ],
     [
         "LOAD_GLOBAL",
@@ -1949,6 +2361,14 @@
     ],
     [
         "LOAD_FAST",
+        "{row.data for row in query}"
+    ],
+    [
+        "STORE_FAST",
+        "row"
+    ],
+    [
+        "LOAD_FAST",
         "row"
     ],
     [
@@ -1966,6 +2386,10 @@
     [
         "BINARY_SUBSCR",
         "function_data[key]"
+    ],
+    [
+        "STORE_FAST",
+        "node"
     ],
     [
         "LOAD_FAST",
@@ -1996,6 +2420,18 @@
         "ranges_set.add((node['start'], node['end']))"
     ],
     [
+        "LOAD_FAST",
+        "[dict(start=start, end=end) for start, end in ranges]"
+    ],
+    [
+        "STORE_FAST",
+        "start"
+    ],
+    [
+        "STORE_FAST",
+        "end"
+    ],
+    [
         "LOAD_GLOBAL",
         "dict"
     ],
@@ -2010,6 +2446,18 @@
     [
         "CALL_FUNCTION_KW",
         "dict(start=start, end=end)"
+    ],
+    [
+        "LOAD_FAST",
+        "[dict(start=start, end=end) for start, end in loop_ranges]"
+    ],
+    [
+        "STORE_FAST",
+        "start"
+    ],
+    [
+        "STORE_FAST",
+        "end"
     ],
     [
         "LOAD_GLOBAL",
@@ -2038,6 +2486,10 @@
     [
         "CALL_METHOD",
         "request.get_json()"
+    ],
+    [
+        "STORE_FAST",
+        "hashes"
     ],
     [
         "LOAD_FAST",
@@ -2140,6 +2592,10 @@
         "session.query(Function.body_hash, sqlalchemy.func.count(Call.id))\n             .outerjoin(Call)\n             .filter(Function.body_hash.in_(hashes))\n             .group_by(Function.body_hash)"
     ],
     [
+        "STORE_FAST",
+        "query"
+    ],
+    [
         "LOAD_GLOBAL",
         "DecentJSONEncoder"
     ],
@@ -2156,8 +2612,24 @@
         "query"
     ],
     [
+        "CALL_FUNCTION",
+        "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
+    ],
+    [
         "CALL_METHOD",
         "DecentJSONEncoder().encode([\n        dict(hash=h, count=count)\n        for h, count in query\n    ])"
+    ],
+    [
+        "LOAD_FAST",
+        "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
+    ],
+    [
+        "STORE_FAST",
+        "h"
+    ],
+    [
+        "STORE_FAST",
+        "count"
     ],
     [
         "LOAD_GLOBAL",
@@ -2232,6 +2704,10 @@
         "argparse.ArgumentParser(description=\"Bird's Eye: A graphical Python debugger\")"
     ],
     [
+        "STORE_FAST",
+        "parser"
+    ],
+    [
         "LOAD_FAST",
         "parser"
     ],
@@ -2274,6 +2750,10 @@
     [
         "CALL_METHOD",
         "parser.parse_args(argv)"
+    ],
+    [
+        "STORE_FAST",
+        "args"
     ],
     [
         "LOAD_GLOBAL",

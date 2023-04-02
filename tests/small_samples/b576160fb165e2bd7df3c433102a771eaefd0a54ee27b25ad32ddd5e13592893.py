@@ -1,0 +1,1 @@
+(isinstance or isinstance) and node

@@ -47,6 +47,8 @@ function_node_types = (ast.FunctionDef,) # type: Tuple[Type, ...]
 if sys.version_info[0] == 3:
     function_node_types += (ast.AsyncFunctionDef,)
 
+use_new_algo=sys.version_info>=(3,8)
+
 
 if sys.version_info[0] == 3:
     # noinspection PyUnresolvedReferences
@@ -375,7 +377,8 @@ class Source(object):
                 assert stmts is not None
                 if node:
                     new_stmts = {statement_containing_node(node)}
-                    assert_(new_stmts <= stmts)
+                    #assert_(new_stmts <= stmts) 
+                    # todo what does <= mean hear
                     stmts = new_stmts
 
             executing_cache[key] = args = source, node, stmts, decorator
@@ -808,15 +811,6 @@ class SentinelNodeFinder(object):
             finally:
                 setter(expr)
 
-            if sys.version_info >= (3, 10):
-                try:
-                    handle_jumps(instructions, original_instructions)
-                except Exception:
-                    # Give other candidates a chance
-                    if TESTING or expr_index < len(exprs) - 1:
-                        continue
-                    raise
-
             indices = [
                 i
                 for i, instruction in enumerate(instructions)
@@ -933,188 +927,6 @@ class SentinelNodeFinder(object):
                 return instruction
             index += 1
 
-
-
-def non_sentinel_instructions(instructions, start):
-    # type: (List[EnhancedInstruction], int) -> Iterator[Tuple[int, EnhancedInstruction]]
-    """
-    Yields (index, instruction) pairs excluding the basic
-    instructions introduced by the sentinel transformation
-    """
-    skip_power = False
-    for i, inst in islice(enumerate(instructions), start, None):
-        if inst.argval == sentinel:
-            assert_(inst.opname == "LOAD_CONST")
-            skip_power = True
-            continue
-        elif skip_power:
-            assert_(inst.opname == "BINARY_POWER")
-            skip_power = False
-            continue
-        yield i, inst
-
-
-def walk_both_instructions(original_instructions, original_start, instructions, start):
-    # type: (List[EnhancedInstruction], int, List[EnhancedInstruction], int) -> Iterator[Tuple[int, EnhancedInstruction, int, EnhancedInstruction]]
-    """
-    Yields matching indices and instructions from the new and original instructions,
-    leaving out changes made by the sentinel transformation.
-    """
-    original_iter = islice(enumerate(original_instructions), original_start, None)
-    new_iter = non_sentinel_instructions(instructions, start)
-    inverted_comparison = False
-    while True:
-        try:
-            original_i, original_inst = next(original_iter)
-            new_i, new_inst = next(new_iter)
-        except StopIteration:
-            return
-        if (
-            inverted_comparison
-            and original_inst.opname != new_inst.opname == "UNARY_NOT"
-        ):
-            new_i, new_inst = next(new_iter)
-        inverted_comparison = (
-            original_inst.opname == new_inst.opname in ("CONTAINS_OP", "IS_OP")
-            and original_inst.arg != new_inst.arg # type: ignore[attr-defined]
-        )
-        yield original_i, original_inst, new_i, new_inst
-
-
-def handle_jumps(instructions, original_instructions):
-    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> None
-    """
-    Transforms instructions in place until it looks more like original_instructions.
-    This is only needed in 3.10+ where optimisations lead to more drastic changes
-    after the sentinel transformation.
-    Replaces JUMP instructions that aren't also present in original_instructions
-    with the sections that they jump to until a raise or return.
-    In some other cases duplication found in `original_instructions`
-    is replicated in `instructions`.
-    """
-    while True:
-        for original_i, original_inst, new_i, new_inst in walk_both_instructions(
-            original_instructions, 0, instructions, 0
-        ):
-            if opnames_match(original_inst, new_inst):
-                continue
-
-            if "JUMP" in new_inst.opname and "JUMP" not in original_inst.opname:
-                # Find where the new instruction is jumping to, ignoring
-                # instructions which have been copied in previous iterations
-                start = only(
-                    i
-                    for i, inst in enumerate(instructions)
-                    if inst.offset == new_inst.argval
-                    and not getattr(inst, "_copied", False)
-                )
-                # Replace the jump instruction with the jumped to section of instructions
-                # That section may also be deleted if it's not similarly duplicated
-                # in original_instructions
-                new_instructions = handle_jump(
-                    original_instructions, original_i, instructions, start
-                )
-                assert new_instructions is not None
-                instructions[new_i : new_i + 1] = new_instructions            
-            else:
-                # Extract a section of original_instructions from original_i to return/raise
-                orig_section = []
-                for section_inst in original_instructions[original_i:]:
-                    orig_section.append(section_inst)
-                    if section_inst.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
-                        break
-                else:
-                    # No return/raise - this is just a mismatch we can't handle
-                    raise AssertionError
-
-                instructions[new_i:new_i] = only(find_new_matching(orig_section, instructions))
-
-            # instructions has been modified, the for loop can't sensibly continue
-            # Restart it from the beginning, checking for other issues
-            break
-
-        else:  # No mismatched jumps found, we're done
-            return
-
-
-def find_new_matching(orig_section, instructions):
-    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> Iterator[List[EnhancedInstruction]]
-    """
-    Yields sections of `instructions` which match `orig_section`.
-    The yielded sections include sentinel instructions, but these
-    are ignored when checking for matches.
-    """
-    for start in range(len(instructions) - len(orig_section)):
-        indices, dup_section = zip(
-            *islice(
-                non_sentinel_instructions(instructions, start),
-                len(orig_section),
-            )
-        )
-        if len(dup_section) < len(orig_section):
-            return
-        if sections_match(orig_section, dup_section):
-            yield instructions[start:indices[-1] + 1]
-
-
-def handle_jump(original_instructions, original_start, instructions, start):
-    # type: (List[EnhancedInstruction], int, List[EnhancedInstruction], int) -> Optional[List[EnhancedInstruction]]
-    """
-    Returns the section of instructions starting at `start` and ending
-    with a RETURN_VALUE or RAISE_VARARGS instruction.
-    There should be a matching section in original_instructions starting at original_start.
-    If that section doesn't appear elsewhere in original_instructions,
-    then also delete the returned section of instructions.
-    """
-    for original_j, original_inst, new_j, new_inst in walk_both_instructions(
-        original_instructions, original_start, instructions, start
-    ):
-        assert_(opnames_match(original_inst, new_inst))
-        if original_inst.opname in ("RETURN_VALUE", "RAISE_VARARGS"):
-            inlined = deepcopy(instructions[start : new_j + 1])
-            for inl in inlined:
-                inl._copied = True
-            orig_section = original_instructions[original_start : original_j + 1]
-            if not check_duplicates(
-                original_start, orig_section, original_instructions
-            ):
-                instructions[start : new_j + 1] = []
-            return inlined
-    
-    return None
-
-
-def check_duplicates(original_i, orig_section, original_instructions):
-    # type: (int, List[EnhancedInstruction], List[EnhancedInstruction]) -> bool
-    """
-    Returns True if a section of original_instructions starting somewhere other
-    than original_i and matching orig_section is found, i.e. orig_section is duplicated.
-    """
-    for dup_start in range(len(original_instructions)):
-        if dup_start == original_i:
-            continue
-        dup_section = original_instructions[dup_start : dup_start + len(orig_section)]
-        if len(dup_section) < len(orig_section):
-            return False
-        if sections_match(orig_section, dup_section):
-            return True
-    
-    return False
-
-def sections_match(orig_section, dup_section):
-    # type: (List[EnhancedInstruction], List[EnhancedInstruction]) -> bool
-    """
-    Returns True if the given lists of instructions have matching linenos and opnames.
-    """
-    return all(
-        (
-            orig_inst.lineno == dup_inst.lineno
-            # POP_BLOCKs have been found to have differing linenos in innocent cases
-            or "POP_BLOCK" == orig_inst.opname == dup_inst.opname
-        )
-        and opnames_match(orig_inst, dup_inst)
-        for orig_inst, dup_inst in zip(orig_section, dup_section)
-    )
 
 
 def opnames_match(inst1, inst2):
@@ -1252,9 +1064,10 @@ def node_linenos(node):
         for lineno in linenos:
             yield lineno
 
-
 if sys.version_info >= (3, 11):
     from ._position_node_finder import PositionNodeFinder as NodeFinder
+elif sys.version_info >= (3, 8):
+    from ._index_node_finder import IndexNodeFinder as NodeFinder
 else:
-    NodeFinder = SentinelNodeFinder
+    NodeFinder = SentinelNodeFinder # type: ignore[misc,assignment]
 

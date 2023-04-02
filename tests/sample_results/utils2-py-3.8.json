@@ -1,5 +1,37 @@
 [
     [
+        "STORE_NAME",
+        "import ast"
+    ],
+    [
+        "STORE_NAME",
+        "import inspect"
+    ],
+    [
+        "STORE_NAME",
+        "import os"
+    ],
+    [
+        "STORE_NAME",
+        "import sys"
+    ],
+    [
+        "STORE_NAME",
+        "from itertools import chain"
+    ],
+    [
+        "STORE_NAME",
+        "import six"
+    ],
+    [
+        "STORE_NAME",
+        "from cheap_repr import cheap_repr, try_register_repr"
+    ],
+    [
+        "STORE_NAME",
+        "from cheap_repr import cheap_repr, try_register_repr"
+    ],
+    [
         "LOAD_NAME",
         "sys"
     ],
@@ -36,6 +68,10 @@
         "sys.version_info[:2] in [(3, 4), (3, 8)]"
     ],
     [
+        "STORE_NAME",
+        "NO_ASTTOKENS"
+    ],
+    [
         "LOAD_NAME",
         "IOError"
     ],
@@ -48,8 +84,72 @@
         "ValueError"
     ],
     [
+        "STORE_NAME",
+        "file_reading_errors"
+    ],
+    [
+        "STORE_NAME",
+        "def shitcode(s):\n    return ''.join(\n        (c if (0 < ord(c) < 256) else '?') for c in s\n    )"
+    ],
+    [
+        "STORE_NAME",
+        "def truncate(seq, max_length, middle):\n    if len(seq) > max_length:\n        left = (max_length - len(middle)) // 2\n        right = max_length - len(middle) - left\n        seq = seq[:left] + middle + seq[-right:]\n    return seq"
+    ],
+    [
+        "STORE_NAME",
+        "def truncate_string(string, max_length):\n    return truncate(string, max_length, '...')"
+    ],
+    [
+        "STORE_NAME",
+        "def truncate_list(lst, max_length):\n    return truncate(lst, max_length, ['...'])"
+    ],
+    [
+        "STORE_NAME",
+        "def ensure_tuple(x, split=False):\n    if split and isinstance(x, six.string_types):\n        x = x.replace(',', ' ').split()\n    if not isinstance(x, (list, set, tuple)):\n        x = (x,)\n    return tuple(x)"
+    ],
+    [
+        "STORE_NAME",
+        "def short_filename(code):\n    result = os.path.basename(code.co_filename)\n    if result.endswith('.pyc'):\n        result = result[:-1]\n    return result"
+    ],
+    [
+        "STORE_NAME",
+        "def is_comprehension_frame(frame):\n    return frame.f_code.co_name in ('<listcomp>', '<dictcomp>', '<setcomp>')"
+    ],
+    [
+        "STORE_NAME",
+        "def needs_parentheses(source):\n    def code(s):\n        return compile(s.format(source), '<variable>', 'eval').co_code\n\n    try:\n        without_parens = code('{}.x')\n    except SyntaxError:\n        # Likely a multiline expression that needs parentheses to be valid\n        code('({})')\n        return True\n    else:\n        return without_parens != code('({}).x')"
+    ],
+    [
+        "STORE_NAME",
+        "def with_needed_parentheses(source):\n    if needs_parentheses(source):\n        return '({})'.format(source)\n    else:\n        return source"
+    ],
+    [
+        "STORE_NAME",
+        "REPR_TARGET_LENGTH"
+    ],
+    [
+        "STORE_NAME",
+        "def my_cheap_repr(x):\n    return cheap_repr(x, target_length=REPR_TARGET_LENGTH)"
+    ],
+    [
         "LOAD_NAME",
         "dict"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class ArgDefaultDict(dict):\n    def __init__(self, factory):\n        super(ArgDefaultDict, self).__init__()\n        self.factory = factory\n\n    def __missing__(self, key):\n        result = self[key] = self.factory(key)\n        return result"
+    ],
+    [
+        "STORE_NAME",
+        "class ArgDefaultDict(dict):\n    def __init__(self, factory):\n        super(ArgDefaultDict, self).__init__()\n        self.factory = factory\n\n    def __missing__(self, key):\n        result = self[key] = self.factory(key)\n        return result"
+    ],
+    [
+        "STORE_NAME",
+        "def optional_numeric_label(i, lst):\n    if len(lst) == 1:\n        return ''\n    else:\n        return ' ' + str(i + 1)"
+    ],
+    [
+        "STORE_NAME",
+        "def is_pathlike(x):\n    if hasattr(os, 'PathLike'):\n        return isinstance(x, os.PathLike)\n\n    return (\n            hasattr(x, '__fspath__') or\n            # Make a concession for older `pathlib` versions:\n            (hasattr(x, 'open') and\n             'path' in x.__class__.__name__.lower())\n    )"
     ],
     [
         "LOAD_NAME",
@@ -60,8 +160,16 @@
         "inspect.iscoroutinefunction"
     ],
     [
+        "STORE_NAME",
+        "iscoroutinefunction"
+    ],
+    [
         "LOAD_NAME",
         "AttributeError"
+    ],
+    [
+        "STORE_NAME",
+        "    def iscoroutinefunction(_):\n        return False"
     ],
     [
         "LOAD_NAME",
@@ -70,6 +178,10 @@
     [
         "LOAD_ATTR",
         "ast.Try"
+    ],
+    [
+        "STORE_NAME",
+        "try_statement"
     ],
     [
         "LOAD_NAME",
@@ -84,12 +196,20 @@
         "ast.TryExcept"
     ],
     [
+        "STORE_NAME",
+        "try_statement"
+    ],
+    [
         "LOAD_NAME",
         "__import__"
     ],
     [
         "CALL_FUNCTION",
         "__import__(\"__builtin__\")"
+    ],
+    [
+        "STORE_NAME",
+        "builtins"
     ],
     [
         "LOAD_NAME",
@@ -104,6 +224,10 @@
         "__import__(\"builtins\")"
     ],
     [
+        "STORE_NAME",
+        "builtins"
+    ],
+    [
         "LOAD_NAME",
         "ast"
     ],
@@ -112,24 +236,72 @@
         "ast.FormattedValue"
     ],
     [
+        "STORE_NAME",
+        "FormattedValue"
+    ],
+    [
         "LOAD_NAME",
         "object"
     ],
     [
+        "CALL_FUNCTION",
+        "    class FormattedValue(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "    class FormattedValue(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "def no_args_decorator(args, kwargs):\n    return len(args) == 1 and inspect.isfunction(args[0]) and not kwargs"
+    ],
+    [
+        "STORE_NAME",
+        "from functools import lru_cache"
+    ],
+    [
         "LOAD_NAME",
         "ImportError"
+    ],
+    [
+        "STORE_NAME",
+        "from backports.functools_lru_cache import lru_cache"
     ],
     [
         "LOAD_NAME",
         "str"
     ],
     [
+        "CALL_FUNCTION",
+        "class DirectRepr(str):\n    def __repr__(self):\n        return self"
+    ],
+    [
+        "STORE_NAME",
+        "class DirectRepr(str):\n    def __repr__(self):\n        return self"
+    ],
+    [
+        "STORE_NAME",
+        "from django.db.models import QuerySet"
+    ],
+    [
         "LOAD_NAME",
         "ImportError"
     ],
     [
         "LOAD_NAME",
         "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "    class QuerySet(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "    class QuerySet(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "def _sample_indices(length, max_length):\n    if length <= max_length + 2:\n        return range(length)\n    else:\n        return chain(range(max_length // 2),\n                     range(length - max_length // 2,\n                           length))"
     ],
     [
         "LOAD_NAME",
@@ -144,6 +316,10 @@
         "try_register_repr('pandas', 'Series')"
     ],
     [
+        "STORE_NAME",
+        "@try_register_repr('pandas', 'Series')\ndef _repr_series_one_line(x, helper):\n    n = len(x)\n    if n == 0:\n        return repr(x)\n    newlevel = helper.level - 1\n    pieces = []\n    maxparts = _repr_series_one_line.maxparts\n    for i in _sample_indices(n, maxparts):\n        k = x.index[i:i + 1].format(sparsify=False)[0]\n        v = x.iloc[i]\n        pieces.append('%s = %s' % (k, cheap_repr(v, newlevel)))\n    if n > maxparts + 2:\n        pieces.insert(maxparts // 2, '...')\n    return '; '.join(pieces)"
+    ],
+    [
         "LOAD_METHOD",
         "''.join"
     ],
@@ -152,8 +328,20 @@
         "s"
     ],
     [
+        "CALL_FUNCTION",
+        "(\n        (c if (0 < ord(c) < 256) else '?') for c in s\n    )"
+    ],
+    [
         "CALL_METHOD",
         "''.join(\n        (c if (0 < ord(c) < 256) else '?') for c in s\n    )"
+    ],
+    [
+        "LOAD_FAST",
+        "(\n        (c if (0 < ord(c) < 256) else '?') for c in s\n    )"
+    ],
+    [
+        "STORE_FAST",
+        "c"
     ],
     [
         "LOAD_GLOBAL",
@@ -216,6 +404,10 @@
         "(max_length - len(middle)) // 2"
     ],
     [
+        "STORE_FAST",
+        "left"
+    ],
+    [
         "LOAD_FAST",
         "max_length"
     ],
@@ -242,6 +434,10 @@
     [
         "BINARY_SUBTRACT",
         "max_length - len(middle) - left"
+    ],
+    [
+        "STORE_FAST",
+        "right"
     ],
     [
         "LOAD_FAST",
@@ -282,6 +478,10 @@
     [
         "BINARY_ADD",
         "seq[:left] + middle + seq[-right:]"
+    ],
+    [
+        "STORE_FAST",
+        "seq"
     ],
     [
         "LOAD_FAST",
@@ -364,6 +564,10 @@
         "x.replace(',', ' ').split()"
     ],
     [
+        "STORE_FAST",
+        "x"
+    ],
+    [
         "LOAD_GLOBAL",
         "isinstance"
     ],
@@ -389,6 +593,10 @@
     ],
     [
         "LOAD_FAST",
+        "x"
+    ],
+    [
+        "STORE_FAST",
         "x"
     ],
     [
@@ -428,6 +636,10 @@
         "os.path.basename(code.co_filename)"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_FAST",
         "result"
     ],
@@ -446,6 +658,10 @@
     [
         "BINARY_SUBSCR",
         "result[:-1]"
+    ],
+    [
+        "STORE_FAST",
+        "result"
     ],
     [
         "LOAD_FAST",
@@ -468,12 +684,20 @@
         "frame.f_code.co_name in ('<listcomp>', '<dictcomp>', '<setcomp>')"
     ],
     [
+        "STORE_FAST",
+        "    def code(s):\n        return compile(s.format(source), '<variable>', 'eval').co_code"
+    ],
+    [
         "LOAD_FAST",
         "code"
     ],
     [
         "CALL_FUNCTION",
         "code('{}.x')"
+    ],
+    [
+        "STORE_FAST",
+        "without_parens"
     ],
     [
         "LOAD_GLOBAL",
@@ -576,6 +800,26 @@
         "cheap_repr(x, target_length=REPR_TARGET_LENGTH)"
     ],
     [
+        "LOAD_NAME",
+        "class ArgDefaultDict(dict):\n    def __init__(self, factory):\n        super(ArgDefaultDict, self).__init__()\n        self.factory = factory\n\n    def __missing__(self, key):\n        result = self[key] = self.factory(key)\n        return result"
+    ],
+    [
+        "STORE_NAME",
+        "class ArgDefaultDict(dict):\n    def __init__(self, factory):\n        super(ArgDefaultDict, self).__init__()\n        self.factory = factory\n\n    def __missing__(self, key):\n        result = self[key] = self.factory(key)\n        return result"
+    ],
+    [
+        "STORE_NAME",
+        "class ArgDefaultDict(dict):\n    def __init__(self, factory):\n        super(ArgDefaultDict, self).__init__()\n        self.factory = factory\n\n    def __missing__(self, key):\n        result = self[key] = self.factory(key)\n        return result"
+    ],
+    [
+        "STORE_NAME",
+        "    def __init__(self, factory):\n        super(ArgDefaultDict, self).__init__()\n        self.factory = factory"
+    ],
+    [
+        "STORE_NAME",
+        "    def __missing__(self, key):\n        result = self[key] = self.factory(key)\n        return result"
+    ],
+    [
         "LOAD_GLOBAL",
         "super"
     ],
@@ -626,6 +870,10 @@
     [
         "CALL_METHOD",
         "self.factory(key)"
+    ],
+    [
+        "STORE_FAST",
+        "result"
     ],
     [
         "LOAD_FAST",
@@ -760,6 +1008,18 @@
         "'path' in x.__class__.__name__.lower()"
     ],
     [
+        "LOAD_NAME",
+        "    class FormattedValue(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "    class FormattedValue(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "    class FormattedValue(object):\n        pass"
+    ],
+    [
         "LOAD_GLOBAL",
         "len"
     ],
@@ -804,8 +1064,36 @@
         "not kwargs"
     ],
     [
+        "LOAD_NAME",
+        "class DirectRepr(str):\n    def __repr__(self):\n        return self"
+    ],
+    [
+        "STORE_NAME",
+        "class DirectRepr(str):\n    def __repr__(self):\n        return self"
+    ],
+    [
+        "STORE_NAME",
+        "class DirectRepr(str):\n    def __repr__(self):\n        return self"
+    ],
+    [
+        "STORE_NAME",
+        "    def __repr__(self):\n        return self"
+    ],
+    [
         "LOAD_FAST",
         "self"
+    ],
+    [
+        "LOAD_NAME",
+        "    class QuerySet(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "    class QuerySet(object):\n        pass"
+    ],
+    [
+        "STORE_NAME",
+        "    class QuerySet(object):\n        pass"
     ],
     [
         "LOAD_FAST",
@@ -900,6 +1188,10 @@
         "len(x)"
     ],
     [
+        "STORE_FAST",
+        "n"
+    ],
+    [
         "LOAD_FAST",
         "n"
     ],
@@ -932,12 +1224,24 @@
         "helper.level - 1"
     ],
     [
+        "STORE_FAST",
+        "newlevel"
+    ],
+    [
+        "STORE_FAST",
+        "pieces"
+    ],
+    [
         "LOAD_GLOBAL",
         "_repr_series_one_line"
     ],
     [
         "LOAD_ATTR",
         "_repr_series_one_line.maxparts"
+    ],
+    [
+        "STORE_FAST",
+        "maxparts"
     ],
     [
         "LOAD_GLOBAL",
@@ -954,6 +1258,10 @@
     [
         "CALL_FUNCTION",
         "_sample_indices(n, maxparts)"
+    ],
+    [
+        "STORE_FAST",
+        "i"
     ],
     [
         "LOAD_FAST",
@@ -992,6 +1300,10 @@
         "x.index[i:i + 1].format(sparsify=False)[0]"
     ],
     [
+        "STORE_FAST",
+        "k"
+    ],
+    [
         "LOAD_FAST",
         "x"
     ],
@@ -1006,6 +1318,10 @@
     [
         "BINARY_SUBSCR",
         "x.iloc[i]"
+    ],
+    [
+        "STORE_FAST",
+        "v"
     ],
     [
         "LOAD_FAST",

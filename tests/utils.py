@@ -1,6 +1,7 @@
 import sys
 import ast
 import inspect
+import tempfile
 from collections import namedtuple
 
 import executing.executing
@@ -14,8 +15,10 @@ except ImportError:
 executing.executing.TESTING = 1
 
 from executing import Source
+from executing.executing import use_new_algo
 
 non_existing_argument=object()
+checking=False
 
 class Tester(object):
     def __init__(self):
@@ -42,33 +45,40 @@ class Tester(object):
         return Source.executing(frame)
 
     def check(self, node, value):
+        global checking
+        
         frame = inspect.currentframe().f_back.f_back
-        result = eval(
-            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),
-            frame.f_globals,
-            frame.f_locals,
-        )
+        checking=True
+        try:
+            result = eval(
+                compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),
+                frame.f_globals,
+                frame.f_locals,
+            )
+        finally:
+            checking=False
         assert result == value, (result, value)
 
     def __call__(self, arg=non_existing_argument, check_func=True):
-        ex = self.get_executing(inspect.currentframe().f_back)
-        if ex.decorator:
-            assert {ex.node} == ex.statements
-            self.decorators.append(ex.node.decorator_list.index(ex.decorator))
-        else:
-            call = ex.node
-            if arg is non_existing_argument:
-                assert len(call.args)==0
+        if not checking:
+            ex = self.get_executing(inspect.currentframe().f_back)
+            if ex.decorator:
+                assert {ex.node} == ex.statements
+                self.decorators.append(ex.node.decorator_list.index(ex.decorator))
             else:
-                self.check(call.args[0], arg)
+                call = ex.node
+                if arg is non_existing_argument:
+                    assert len(call.args)==0
+                else:
+                    self.check(call.args[0], arg)
 
-            if check_func:
-                self.check(call.func, self)
-            if (
-                isinstance(call.parent, (ast.ClassDef, ast.FunctionDef))
-                and call in call.parent.decorator_list
-            ):
-                return self
+                if check_func:
+                    self.check(call.func, self)
+                if (
+                    isinstance(call.parent, (ast.ClassDef, ast.FunctionDef))
+                    and call in call.parent.decorator_list
+                ):
+                    return self
 
         if arg is non_existing_argument:
             return tester
@@ -76,20 +86,22 @@ class Tester(object):
             return arg
 
     def __getattr__(self, item):
-        parent_frame=inspect.currentframe().f_back
+        if not checking:
+            parent_frame=inspect.currentframe().f_back
 
-        # pytest is accessing tester to check if it is a test function
-        if "_pytest" not in parent_frame.f_code.co_filename:
-            node = self.get_node(ast.Attribute)
-            self.check(node.value, self)
-            assert node.attr == item
+            # pytest is accessing tester to check if it is a test function
+            if "_pytest" not in parent_frame.f_code.co_filename:
+                node = self.get_node(ast.Attribute)
+                self.check(node.value, self)
+                assert node.attr == item
 
         return self
 
     def __getitem__(self, item):
-        node = self.get_node(ast.Subscript)
-        self.check(node.value, self)
-        self.check(subscript_item(node), item)
+        if not checking:
+            node = self.get_node(ast.Subscript)
+            self.check(node.value, self)
+            self.check(subscript_item(node), item)
         return self
 
     def __setattr__(self, name, value):
@@ -120,9 +132,10 @@ class Tester(object):
         return self
 
     def __add__(self, other):
-        node = self.get_node(ast.BinOp)
-        self.check(node.left, self)
-        self.check(node.right, other)
+        if not checking:
+            node = self.get_node(ast.BinOp)
+            self.check(node.left, self)
+            self.check(node.right, other)
         return self
 
     __pow__ = __mul__ = __sub__ = __add__
@@ -143,7 +156,7 @@ class Tester(object):
     __ne__ = __ge__ = __lt__
 
     def __bool__(self):
-        if sys.version_info >= (3, 11):
+        if use_new_algo:
             self.get_node(ast.BoolOp)
             return False
         else:
@@ -213,3 +226,18 @@ def end_position(obj):
         obj=obj.body[-1]
 
     return SourcePosition(obj.end_lineno, obj.end_col_offset)
+
+def no_pytest_vars(d):
+    return {k: v for k, v in d.items() if not k.startswith("@py")}
+
+def fexec(source):
+    frame = inspect.currentframe()
+    assert frame
+    frame = frame.f_back
+    assert frame
+
+    _, filename = tempfile.mkstemp()
+    with open(filename, "w") as outfile:
+        outfile.write(source)
+    code = compile(source, filename, "exec")
+    exec(code, no_pytest_vars(frame.f_globals), no_pytest_vars(frame.f_locals))

@@ -1,5 +1,61 @@
 [
     [
+        "STORE_NAME",
+        "from __future__ import print_function, division"
+    ],
+    [
+        "STORE_NAME",
+        "from __future__ import print_function, division"
+    ],
+    [
+        "STORE_NAME",
+        "import ast"
+    ],
+    [
+        "STORE_NAME",
+        "import inspect"
+    ],
+    [
+        "STORE_NAME",
+        "import os"
+    ],
+    [
+        "STORE_NAME",
+        "import sys"
+    ],
+    [
+        "STORE_NAME",
+        "import tempfile"
+    ],
+    [
+        "STORE_NAME",
+        "import time"
+    ],
+    [
+        "STORE_NAME",
+        "import unittest"
+    ],
+    [
+        "STORE_NAME",
+        "from executing import Source, only, PY3, NotOneValueFound, get_instructions"
+    ],
+    [
+        "STORE_NAME",
+        "from executing import Source, only, PY3, NotOneValueFound, get_instructions"
+    ],
+    [
+        "STORE_NAME",
+        "from executing import Source, only, PY3, NotOneValueFound, get_instructions"
+    ],
+    [
+        "STORE_NAME",
+        "from executing import Source, only, PY3, NotOneValueFound, get_instructions"
+    ],
+    [
+        "STORE_NAME",
+        "from executing import Source, only, PY3, NotOneValueFound, get_instructions"
+    ],
+    [
         "LOAD_NAME",
         "unittest"
     ],
@@ -8,16 +64,40 @@
         "unittest.TestCase"
     ],
     [
+        "CALL_FUNCTION",
+        "class TestStuff(unittest.TestCase):\n\n    # noinspection PyTrailingSemicolon\n    def test_semicolons(self):\n        # @formatter:off\n        tester(1); tester(2); tester(3)\n        tester(9\n               ); tester(\n            8); tester(\n            99\n        ); tester(33); tester([4,\n                               5, 6, [\n                                7]])\n        # @formatter:on\n\n    def test_decorator(self):\n        @empty_decorator\n        @decorator_with_args(tester('123'), x=int())\n        @tester(list(tuple([1, 2])), returns=empty_decorator)\n        @tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(\n            str(),\n            x=int())\n        @tester(list(tuple([5, 6])), returns=empty_decorator)\n        @tester(list(tuple([7, 8])), returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(tester('sdf'), x=tester('123234'))\n        def foo():\n            pass\n\n    def test_comprehensions(self):\n        # Comprehensions can be separated if they contain different names\n        str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])\n        # or are on different lines\n        str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])\n        # or are of different types\n        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])\n        # but not if everything is the same\n        # noinspection PyTypeChecker\n        # with self.assertRaises((AttributeError, NotOneValueFound)):\n        #     str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])\n\n    def test_lambda(self):\n        self.assertEqual(\n            (lambda x: (tester(x), tester(x)))(tester(3)),\n            (3, 3),\n        )\n        (lambda: (lambda: tester(1))())()\n        self.assertEqual(\n            (lambda: [tester(x) for x in tester([1, 2])])(),\n            [1, 2],\n        )\n\n    def test_closures_and_nested_comprehensions(self):\n        x = 1\n        # @formatter:off\n        str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n        def foo():\n            y = 2\n            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            bar()\n\n        foo()\n        # @formatter:on\n\n    def test_indirect_call(self):\n        dict(x=tester)['x'](tester)(3, check_func=False)\n\n    def test_compound_statements(self):\n        with self.assertRaises(TypeError):\n            try:\n                for _ in tester([1, 2, 3]):\n                    while tester(0):\n                        pass\n                    else:\n                        tester(4)\n                else:\n                    tester(5)\n                    raise ValueError\n            except tester(ValueError):\n                tester(9)\n                raise TypeError\n            finally:\n                tester(10)\n\n        # PyCharm getting confused somehow?\n        # noinspection PyUnreachableCode\n        str()\n\n        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass\n\n    def test_generator(self):\n        def gen():\n            for x in [1, 2]:\n                yield tester(x)\n\n        gen2 = (tester(x) for x in tester([1, 2]))\n\n        assert list(gen()) == list(gen2) == [1, 2]\n\n    def test_future_import(self):\n        tester(4)\n\n    def test_many_calls(self):\n        node = None\n        start = time.time()\n        for i in range(10000):\n            new_node = Source.executing(inspect.currentframe()).node\n            if node is None:\n                node = new_node\n            else:\n                self.assertIs(node, new_node)\n        self.assertLess(time.time() - start, 1)\n\n    def test_decode_source(self):\n        def check(source, encoding, exception=None, matches=True):\n            encoded = source.encode(encoding)\n            if exception:\n                with self.assertRaises(exception):\n                    Source.decode_source(encoded)\n            else:\n                decoded = Source.decode_source(encoded)\n                if matches:\n                    self.assertEqual(decoded, source)\n                else:\n                    self.assertNotEqual(decoded, source)\n\n        check(u'# coding=utf8\\n\u00e9', 'utf8')\n        check(u'# coding=gbk\\n\u00e9', 'gbk')\n\n        check(u'# coding=utf8\\n\u00e9', 'gbk', exception=UnicodeDecodeError)\n        check(u'# coding=gbk\\n\u00e9', 'utf8', matches=False)\n\n        # In Python 3 the default encoding is assumed to be UTF8\n        if PY3:\n            check(u'\u00e9', 'utf8')\n            check(u'\u00e9', 'gbk', exception=SyntaxError)\n\n    def test_multiline_strings(self):\n        tester('a')\n        tester('''\n            ab''')\n        tester('''\n                    abc\n                    def\n                    '''\n               )\n        str([\n            tester(\n                '''\n                123\n                456\n                '''\n            ),\n            tester(\n                '''\n                345\n                456786\n                '''\n            ),\n        ])\n        tester(\n            [\n                '''\n                123\n                456\n                '''\n                '''\n                345\n                456786\n                '''\n                ,\n                '''\n                123\n                456\n                ''',\n                '''\n                345\n                456786\n                '''\n            ]\n        )\n\n    def test_multiple_statements_on_one_line(self):\n        if tester(1): tester(2)\n        for _ in tester([1, 2]): tester(3)\n\n    def assert_qualname(self, func, qn, check_actual_qualname=True):\n        qualname = Source.for_filename(__file__).code_qualname(func.__code__)\n        self.assertEqual(qn, qualname)\n        if PY3 and check_actual_qualname:\n            self.assertEqual(qn, func.__qualname__)\n        self.assertTrue(qn.endswith(func.__name__))\n\n    def test_qualname(self):\n        self.assert_qualname(C.f, 'C.f')\n        self.assert_qualname(C.D.g, 'C.D.g')\n        self.assert_qualname(f, 'f')\n        self.assert_qualname(f(), 'f.<locals>.g')\n        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')\n        self.assert_qualname(lamb, '<lambda>')\n        foo = lambda_maker()\n        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')\n        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')\n        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')\n        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)\n\n    def test_extended_arg(self):\n        source = 'tester(6)\\n%s\\ntester(9)' % list(range(66000))\n        _, filename = tempfile.mkstemp()\n        code = compile(source, filename, 'exec')\n        with open(filename, 'w') as outfile:\n            outfile.write(source)\n        exec(code)\n\n    def test_only(self):\n        for n in range(5):\n            gen = (i for i in range(n))\n            if n == 1:\n                self.assertEqual(only(gen), 0)\n            else:\n                with self.assertRaises(NotOneValueFound):\n                    only(gen)\n\n    def test_invalid_python(self):\n        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )\n        source = Source.for_filename(path)\n        self.assertIsNone(source.tree)\n\n    def test_executing_methods(self):\n        frame = inspect.currentframe()\n        executing = Source.executing(frame)\n        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')\n        if 'pypy' not in sys.version.lower():\n            text = 'Source.executing(frame)'\n            self.assertEqual(executing.text(), text)\n            start, end = executing.text_range()\n            self.assertEqual(executing.source.text[start:end], text)\n\n    def test_attr(self):\n        c = C()\n        c.x = c.y = tester\n        str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
+    ],
+    [
+        "STORE_NAME",
+        "class TestStuff(unittest.TestCase):\n\n    # noinspection PyTrailingSemicolon\n    def test_semicolons(self):\n        # @formatter:off\n        tester(1); tester(2); tester(3)\n        tester(9\n               ); tester(\n            8); tester(\n            99\n        ); tester(33); tester([4,\n                               5, 6, [\n                                7]])\n        # @formatter:on\n\n    def test_decorator(self):\n        @empty_decorator\n        @decorator_with_args(tester('123'), x=int())\n        @tester(list(tuple([1, 2])), returns=empty_decorator)\n        @tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(\n            str(),\n            x=int())\n        @tester(list(tuple([5, 6])), returns=empty_decorator)\n        @tester(list(tuple([7, 8])), returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(tester('sdf'), x=tester('123234'))\n        def foo():\n            pass\n\n    def test_comprehensions(self):\n        # Comprehensions can be separated if they contain different names\n        str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])\n        # or are on different lines\n        str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])\n        # or are of different types\n        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])\n        # but not if everything is the same\n        # noinspection PyTypeChecker\n        # with self.assertRaises((AttributeError, NotOneValueFound)):\n        #     str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])\n\n    def test_lambda(self):\n        self.assertEqual(\n            (lambda x: (tester(x), tester(x)))(tester(3)),\n            (3, 3),\n        )\n        (lambda: (lambda: tester(1))())()\n        self.assertEqual(\n            (lambda: [tester(x) for x in tester([1, 2])])(),\n            [1, 2],\n        )\n\n    def test_closures_and_nested_comprehensions(self):\n        x = 1\n        # @formatter:off\n        str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n        def foo():\n            y = 2\n            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            bar()\n\n        foo()\n        # @formatter:on\n\n    def test_indirect_call(self):\n        dict(x=tester)['x'](tester)(3, check_func=False)\n\n    def test_compound_statements(self):\n        with self.assertRaises(TypeError):\n            try:\n                for _ in tester([1, 2, 3]):\n                    while tester(0):\n                        pass\n                    else:\n                        tester(4)\n                else:\n                    tester(5)\n                    raise ValueError\n            except tester(ValueError):\n                tester(9)\n                raise TypeError\n            finally:\n                tester(10)\n\n        # PyCharm getting confused somehow?\n        # noinspection PyUnreachableCode\n        str()\n\n        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass\n\n    def test_generator(self):\n        def gen():\n            for x in [1, 2]:\n                yield tester(x)\n\n        gen2 = (tester(x) for x in tester([1, 2]))\n\n        assert list(gen()) == list(gen2) == [1, 2]\n\n    def test_future_import(self):\n        tester(4)\n\n    def test_many_calls(self):\n        node = None\n        start = time.time()\n        for i in range(10000):\n            new_node = Source.executing(inspect.currentframe()).node\n            if node is None:\n                node = new_node\n            else:\n                self.assertIs(node, new_node)\n        self.assertLess(time.time() - start, 1)\n\n    def test_decode_source(self):\n        def check(source, encoding, exception=None, matches=True):\n            encoded = source.encode(encoding)\n            if exception:\n                with self.assertRaises(exception):\n                    Source.decode_source(encoded)\n            else:\n                decoded = Source.decode_source(encoded)\n                if matches:\n                    self.assertEqual(decoded, source)\n                else:\n                    self.assertNotEqual(decoded, source)\n\n        check(u'# coding=utf8\\n\u00e9', 'utf8')\n        check(u'# coding=gbk\\n\u00e9', 'gbk')\n\n        check(u'# coding=utf8\\n\u00e9', 'gbk', exception=UnicodeDecodeError)\n        check(u'# coding=gbk\\n\u00e9', 'utf8', matches=False)\n\n        # In Python 3 the default encoding is assumed to be UTF8\n        if PY3:\n            check(u'\u00e9', 'utf8')\n            check(u'\u00e9', 'gbk', exception=SyntaxError)\n\n    def test_multiline_strings(self):\n        tester('a')\n        tester('''\n            ab''')\n        tester('''\n                    abc\n                    def\n                    '''\n               )\n        str([\n            tester(\n                '''\n                123\n                456\n                '''\n            ),\n            tester(\n                '''\n                345\n                456786\n                '''\n            ),\n        ])\n        tester(\n            [\n                '''\n                123\n                456\n                '''\n                '''\n                345\n                456786\n                '''\n                ,\n                '''\n                123\n                456\n                ''',\n                '''\n                345\n                456786\n                '''\n            ]\n        )\n\n    def test_multiple_statements_on_one_line(self):\n        if tester(1): tester(2)\n        for _ in tester([1, 2]): tester(3)\n\n    def assert_qualname(self, func, qn, check_actual_qualname=True):\n        qualname = Source.for_filename(__file__).code_qualname(func.__code__)\n        self.assertEqual(qn, qualname)\n        if PY3 and check_actual_qualname:\n            self.assertEqual(qn, func.__qualname__)\n        self.assertTrue(qn.endswith(func.__name__))\n\n    def test_qualname(self):\n        self.assert_qualname(C.f, 'C.f')\n        self.assert_qualname(C.D.g, 'C.D.g')\n        self.assert_qualname(f, 'f')\n        self.assert_qualname(f(), 'f.<locals>.g')\n        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')\n        self.assert_qualname(lamb, '<lambda>')\n        foo = lambda_maker()\n        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')\n        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')\n        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')\n        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)\n\n    def test_extended_arg(self):\n        source = 'tester(6)\\n%s\\ntester(9)' % list(range(66000))\n        _, filename = tempfile.mkstemp()\n        code = compile(source, filename, 'exec')\n        with open(filename, 'w') as outfile:\n            outfile.write(source)\n        exec(code)\n\n    def test_only(self):\n        for n in range(5):\n            gen = (i for i in range(n))\n            if n == 1:\n                self.assertEqual(only(gen), 0)\n            else:\n                with self.assertRaises(NotOneValueFound):\n                    only(gen)\n\n    def test_invalid_python(self):\n        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )\n        source = Source.for_filename(path)\n        self.assertIsNone(source.tree)\n\n    def test_executing_methods(self):\n        frame = inspect.currentframe()\n        executing = Source.executing(frame)\n        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')\n        if 'pypy' not in sys.version.lower():\n            text = 'Source.executing(frame)'\n            self.assertEqual(executing.text(), text)\n            start, end = executing.text_range()\n            self.assertEqual(executing.source.text[start:end], text)\n\n    def test_attr(self):\n        c = C()\n        c.x = c.y = tester\n        str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
+    ],
+    [
         "LOAD_NAME",
         "unittest"
     ],
     [
         "LOAD_ATTR",
         "unittest.TestCase"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class TestFile(unittest.TestCase):\n    def test_file(self):\n        source = Source.for_frame(inspect.currentframe())\n        code = compile(source.text, source.filename, 'exec')\n        instructions = get_instructions(code)\n        lineno = None\n        for inst in instructions:\n            if inst.starts_line is not None:\n                lineno = inst.starts_line\n            if not inst.opname.startswith(\n                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP')):\n                continue\n            frame = C()\n            frame.f_lasti = inst.offset\n            frame.f_code = code\n            frame.f_globals = globals()\n            frame.f_lineno = lineno\n            print(inst.opname)\n            assert Source.executing(frame).node is not None"
+    ],
+    [
+        "STORE_NAME",
+        "class TestFile(unittest.TestCase):\n    def test_file(self):\n        source = Source.for_frame(inspect.currentframe())\n        code = compile(source.text, source.filename, 'exec')\n        instructions = get_instructions(code)\n        lineno = None\n        for inst in instructions:\n            if inst.starts_line is not None:\n                lineno = inst.starts_line\n            if not inst.opname.startswith(\n                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP')):\n                continue\n            frame = C()\n            frame.f_lasti = inst.offset\n            frame.f_code = code\n            frame.f_globals = globals()\n            frame.f_lineno = lineno\n            print(inst.opname)\n            assert Source.executing(frame).node is not None"
     ],
     [
         "LOAD_NAME",
         "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class C(object):\n    @staticmethod\n    def f():\n        pass\n\n    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "STORE_NAME",
+        "class C(object):\n    @staticmethod\n    def f():\n        pass\n\n    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
     ],
     [
         "LOAD_NAME",
@@ -36,8 +116,28 @@
         "TestFile().test_file()"
     ],
     [
+        "STORE_NAME",
+        "def f():\n    def g():\n        pass\n\n    return g"
+    ],
+    [
+        "STORE_NAME",
+        "def lambda_maker():\n    def assign(x):\n        def decorator(func):\n            func.x = x\n            return func\n\n        return decorator\n\n    @assign(lambda: 1)\n    def foo():\n        return lambda: lambda: 3\n\n    return foo"
+    ],
+    [
+        "STORE_NAME",
+        "lamb"
+    ],
+    [
         "LOAD_NAME",
         "object"
+    ],
+    [
+        "CALL_FUNCTION",
+        "class Tester(object):\n    def get_node(self, typ):\n        frame = inspect.currentframe().f_back.f_back\n        Source.lazycache(frame)\n        node = Source.executing(frame).node\n        assert isinstance(node, typ), (node, typ)\n        return node\n\n    def check(self, node, value):\n        frame = inspect.currentframe().f_back.f_back\n        result = eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )\n        assert result == value, (result, value)\n\n    def __call__(self, arg, check_func=True, returns=None):\n        call = self.get_node(ast.Call)\n        self.check(call.args[0], arg)\n        if check_func:\n            self.check(call.func, self)\n        if returns is None:\n            return arg\n        return returns\n\n    def __getattr__(self, item):\n        node = self.get_node(ast.Attribute)\n        self.check(node.value, self)\n        assert node.attr == item\n        return self\n\n    def __getitem__(self, item):\n        node = self.get_node(ast.Subscript)\n        self.check(node.value, self)\n        self.check(node.slice.value, item)\n        return self\n\n    def __add__(self, other):\n        node = self.get_node(ast.BinOp)\n        self.check(node.left, self)\n        self.check(node.right, other)\n        return self\n\n    __pow__ = __mul__ = __sub__ = __add__\n\n    def __invert__(self):\n        node = self.get_node(ast.UnaryOp)\n        self.check(node.operand, self)\n        return self\n\n    __neg__ = __pos__ = __invert__\n\n    def __lt__(self, other):\n        node = self.get_node(ast.Compare)\n        self.check(node.left, self)\n        self.check(node.comparators[0], other)\n        return self\n\n    __ne__ = __ge__ = __lt__"
+    ],
+    [
+        "STORE_NAME",
+        "class Tester(object):\n    def get_node(self, typ):\n        frame = inspect.currentframe().f_back.f_back\n        Source.lazycache(frame)\n        node = Source.executing(frame).node\n        assert isinstance(node, typ), (node, typ)\n        return node\n\n    def check(self, node, value):\n        frame = inspect.currentframe().f_back.f_back\n        result = eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )\n        assert result == value, (result, value)\n\n    def __call__(self, arg, check_func=True, returns=None):\n        call = self.get_node(ast.Call)\n        self.check(call.args[0], arg)\n        if check_func:\n            self.check(call.func, self)\n        if returns is None:\n            return arg\n        return returns\n\n    def __getattr__(self, item):\n        node = self.get_node(ast.Attribute)\n        self.check(node.value, self)\n        assert node.attr == item\n        return self\n\n    def __getitem__(self, item):\n        node = self.get_node(ast.Subscript)\n        self.check(node.value, self)\n        self.check(node.slice.value, item)\n        return self\n\n    def __add__(self, other):\n        node = self.get_node(ast.BinOp)\n        self.check(node.left, self)\n        self.check(node.right, other)\n        return self\n\n    __pow__ = __mul__ = __sub__ = __add__\n\n    def __invert__(self):\n        node = self.get_node(ast.UnaryOp)\n        self.check(node.operand, self)\n        return self\n\n    __neg__ = __pos__ = __invert__\n\n    def __lt__(self, other):\n        node = self.get_node(ast.Compare)\n        self.check(node.left, self)\n        self.check(node.comparators[0], other)\n        return self\n\n    __ne__ = __ge__ = __lt__"
     ],
     [
         "LOAD_NAME",
@@ -46,6 +146,10 @@
     [
         "CALL_FUNCTION",
         "Tester()"
+    ],
+    [
+        "STORE_NAME",
+        "tester"
     ],
     [
         "LOAD_NAME",
@@ -268,6 +372,14 @@
         "tester.foo(45, False) == 45"
     ],
     [
+        "STORE_NAME",
+        "def empty_decorator(func):\n    return func"
+    ],
+    [
+        "STORE_NAME",
+        "def decorator_with_args(*_, **__):\n    return empty_decorator"
+    ],
+    [
         "LOAD_NAME",
         "__name__"
     ],
@@ -286,6 +398,98 @@
     [
         "CALL_METHOD",
         "unittest.main()"
+    ],
+    [
+        "LOAD_NAME",
+        "class TestStuff(unittest.TestCase):\n\n    # noinspection PyTrailingSemicolon\n    def test_semicolons(self):\n        # @formatter:off\n        tester(1); tester(2); tester(3)\n        tester(9\n               ); tester(\n            8); tester(\n            99\n        ); tester(33); tester([4,\n                               5, 6, [\n                                7]])\n        # @formatter:on\n\n    def test_decorator(self):\n        @empty_decorator\n        @decorator_with_args(tester('123'), x=int())\n        @tester(list(tuple([1, 2])), returns=empty_decorator)\n        @tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(\n            str(),\n            x=int())\n        @tester(list(tuple([5, 6])), returns=empty_decorator)\n        @tester(list(tuple([7, 8])), returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(tester('sdf'), x=tester('123234'))\n        def foo():\n            pass\n\n    def test_comprehensions(self):\n        # Comprehensions can be separated if they contain different names\n        str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])\n        # or are on different lines\n        str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])\n        # or are of different types\n        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])\n        # but not if everything is the same\n        # noinspection PyTypeChecker\n        # with self.assertRaises((AttributeError, NotOneValueFound)):\n        #     str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])\n\n    def test_lambda(self):\n        self.assertEqual(\n            (lambda x: (tester(x), tester(x)))(tester(3)),\n            (3, 3),\n        )\n        (lambda: (lambda: tester(1))())()\n        self.assertEqual(\n            (lambda: [tester(x) for x in tester([1, 2])])(),\n            [1, 2],\n        )\n\n    def test_closures_and_nested_comprehensions(self):\n        x = 1\n        # @formatter:off\n        str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n        def foo():\n            y = 2\n            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            bar()\n\n        foo()\n        # @formatter:on\n\n    def test_indirect_call(self):\n        dict(x=tester)['x'](tester)(3, check_func=False)\n\n    def test_compound_statements(self):\n        with self.assertRaises(TypeError):\n            try:\n                for _ in tester([1, 2, 3]):\n                    while tester(0):\n                        pass\n                    else:\n                        tester(4)\n                else:\n                    tester(5)\n                    raise ValueError\n            except tester(ValueError):\n                tester(9)\n                raise TypeError\n            finally:\n                tester(10)\n\n        # PyCharm getting confused somehow?\n        # noinspection PyUnreachableCode\n        str()\n\n        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass\n\n    def test_generator(self):\n        def gen():\n            for x in [1, 2]:\n                yield tester(x)\n\n        gen2 = (tester(x) for x in tester([1, 2]))\n\n        assert list(gen()) == list(gen2) == [1, 2]\n\n    def test_future_import(self):\n        tester(4)\n\n    def test_many_calls(self):\n        node = None\n        start = time.time()\n        for i in range(10000):\n            new_node = Source.executing(inspect.currentframe()).node\n            if node is None:\n                node = new_node\n            else:\n                self.assertIs(node, new_node)\n        self.assertLess(time.time() - start, 1)\n\n    def test_decode_source(self):\n        def check(source, encoding, exception=None, matches=True):\n            encoded = source.encode(encoding)\n            if exception:\n                with self.assertRaises(exception):\n                    Source.decode_source(encoded)\n            else:\n                decoded = Source.decode_source(encoded)\n                if matches:\n                    self.assertEqual(decoded, source)\n                else:\n                    self.assertNotEqual(decoded, source)\n\n        check(u'# coding=utf8\\n\u00e9', 'utf8')\n        check(u'# coding=gbk\\n\u00e9', 'gbk')\n\n        check(u'# coding=utf8\\n\u00e9', 'gbk', exception=UnicodeDecodeError)\n        check(u'# coding=gbk\\n\u00e9', 'utf8', matches=False)\n\n        # In Python 3 the default encoding is assumed to be UTF8\n        if PY3:\n            check(u'\u00e9', 'utf8')\n            check(u'\u00e9', 'gbk', exception=SyntaxError)\n\n    def test_multiline_strings(self):\n        tester('a')\n        tester('''\n            ab''')\n        tester('''\n                    abc\n                    def\n                    '''\n               )\n        str([\n            tester(\n                '''\n                123\n                456\n                '''\n            ),\n            tester(\n                '''\n                345\n                456786\n                '''\n            ),\n        ])\n        tester(\n            [\n                '''\n                123\n                456\n                '''\n                '''\n                345\n                456786\n                '''\n                ,\n                '''\n                123\n                456\n                ''',\n                '''\n                345\n                456786\n                '''\n            ]\n        )\n\n    def test_multiple_statements_on_one_line(self):\n        if tester(1): tester(2)\n        for _ in tester([1, 2]): tester(3)\n\n    def assert_qualname(self, func, qn, check_actual_qualname=True):\n        qualname = Source.for_filename(__file__).code_qualname(func.__code__)\n        self.assertEqual(qn, qualname)\n        if PY3 and check_actual_qualname:\n            self.assertEqual(qn, func.__qualname__)\n        self.assertTrue(qn.endswith(func.__name__))\n\n    def test_qualname(self):\n        self.assert_qualname(C.f, 'C.f')\n        self.assert_qualname(C.D.g, 'C.D.g')\n        self.assert_qualname(f, 'f')\n        self.assert_qualname(f(), 'f.<locals>.g')\n        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')\n        self.assert_qualname(lamb, '<lambda>')\n        foo = lambda_maker()\n        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')\n        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')\n        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')\n        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)\n\n    def test_extended_arg(self):\n        source = 'tester(6)\\n%s\\ntester(9)' % list(range(66000))\n        _, filename = tempfile.mkstemp()\n        code = compile(source, filename, 'exec')\n        with open(filename, 'w') as outfile:\n            outfile.write(source)\n        exec(code)\n\n    def test_only(self):\n        for n in range(5):\n            gen = (i for i in range(n))\n            if n == 1:\n                self.assertEqual(only(gen), 0)\n            else:\n                with self.assertRaises(NotOneValueFound):\n                    only(gen)\n\n    def test_invalid_python(self):\n        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )\n        source = Source.for_filename(path)\n        self.assertIsNone(source.tree)\n\n    def test_executing_methods(self):\n        frame = inspect.currentframe()\n        executing = Source.executing(frame)\n        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')\n        if 'pypy' not in sys.version.lower():\n            text = 'Source.executing(frame)'\n            self.assertEqual(executing.text(), text)\n            start, end = executing.text_range()\n            self.assertEqual(executing.source.text[start:end], text)\n\n    def test_attr(self):\n        c = C()\n        c.x = c.y = tester\n        str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
+    ],
+    [
+        "STORE_NAME",
+        "class TestStuff(unittest.TestCase):\n\n    # noinspection PyTrailingSemicolon\n    def test_semicolons(self):\n        # @formatter:off\n        tester(1); tester(2); tester(3)\n        tester(9\n               ); tester(\n            8); tester(\n            99\n        ); tester(33); tester([4,\n                               5, 6, [\n                                7]])\n        # @formatter:on\n\n    def test_decorator(self):\n        @empty_decorator\n        @decorator_with_args(tester('123'), x=int())\n        @tester(list(tuple([1, 2])), returns=empty_decorator)\n        @tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(\n            str(),\n            x=int())\n        @tester(list(tuple([5, 6])), returns=empty_decorator)\n        @tester(list(tuple([7, 8])), returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(tester('sdf'), x=tester('123234'))\n        def foo():\n            pass\n\n    def test_comprehensions(self):\n        # Comprehensions can be separated if they contain different names\n        str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])\n        # or are on different lines\n        str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])\n        # or are of different types\n        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])\n        # but not if everything is the same\n        # noinspection PyTypeChecker\n        # with self.assertRaises((AttributeError, NotOneValueFound)):\n        #     str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])\n\n    def test_lambda(self):\n        self.assertEqual(\n            (lambda x: (tester(x), tester(x)))(tester(3)),\n            (3, 3),\n        )\n        (lambda: (lambda: tester(1))())()\n        self.assertEqual(\n            (lambda: [tester(x) for x in tester([1, 2])])(),\n            [1, 2],\n        )\n\n    def test_closures_and_nested_comprehensions(self):\n        x = 1\n        # @formatter:off\n        str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n        def foo():\n            y = 2\n            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            bar()\n\n        foo()\n        # @formatter:on\n\n    def test_indirect_call(self):\n        dict(x=tester)['x'](tester)(3, check_func=False)\n\n    def test_compound_statements(self):\n        with self.assertRaises(TypeError):\n            try:\n                for _ in tester([1, 2, 3]):\n                    while tester(0):\n                        pass\n                    else:\n                        tester(4)\n                else:\n                    tester(5)\n                    raise ValueError\n            except tester(ValueError):\n                tester(9)\n                raise TypeError\n            finally:\n                tester(10)\n\n        # PyCharm getting confused somehow?\n        # noinspection PyUnreachableCode\n        str()\n\n        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass\n\n    def test_generator(self):\n        def gen():\n            for x in [1, 2]:\n                yield tester(x)\n\n        gen2 = (tester(x) for x in tester([1, 2]))\n\n        assert list(gen()) == list(gen2) == [1, 2]\n\n    def test_future_import(self):\n        tester(4)\n\n    def test_many_calls(self):\n        node = None\n        start = time.time()\n        for i in range(10000):\n            new_node = Source.executing(inspect.currentframe()).node\n            if node is None:\n                node = new_node\n            else:\n                self.assertIs(node, new_node)\n        self.assertLess(time.time() - start, 1)\n\n    def test_decode_source(self):\n        def check(source, encoding, exception=None, matches=True):\n            encoded = source.encode(encoding)\n            if exception:\n                with self.assertRaises(exception):\n                    Source.decode_source(encoded)\n            else:\n                decoded = Source.decode_source(encoded)\n                if matches:\n                    self.assertEqual(decoded, source)\n                else:\n                    self.assertNotEqual(decoded, source)\n\n        check(u'# coding=utf8\\n\u00e9', 'utf8')\n        check(u'# coding=gbk\\n\u00e9', 'gbk')\n\n        check(u'# coding=utf8\\n\u00e9', 'gbk', exception=UnicodeDecodeError)\n        check(u'# coding=gbk\\n\u00e9', 'utf8', matches=False)\n\n        # In Python 3 the default encoding is assumed to be UTF8\n        if PY3:\n            check(u'\u00e9', 'utf8')\n            check(u'\u00e9', 'gbk', exception=SyntaxError)\n\n    def test_multiline_strings(self):\n        tester('a')\n        tester('''\n            ab''')\n        tester('''\n                    abc\n                    def\n                    '''\n               )\n        str([\n            tester(\n                '''\n                123\n                456\n                '''\n            ),\n            tester(\n                '''\n                345\n                456786\n                '''\n            ),\n        ])\n        tester(\n            [\n                '''\n                123\n                456\n                '''\n                '''\n                345\n                456786\n                '''\n                ,\n                '''\n                123\n                456\n                ''',\n                '''\n                345\n                456786\n                '''\n            ]\n        )\n\n    def test_multiple_statements_on_one_line(self):\n        if tester(1): tester(2)\n        for _ in tester([1, 2]): tester(3)\n\n    def assert_qualname(self, func, qn, check_actual_qualname=True):\n        qualname = Source.for_filename(__file__).code_qualname(func.__code__)\n        self.assertEqual(qn, qualname)\n        if PY3 and check_actual_qualname:\n            self.assertEqual(qn, func.__qualname__)\n        self.assertTrue(qn.endswith(func.__name__))\n\n    def test_qualname(self):\n        self.assert_qualname(C.f, 'C.f')\n        self.assert_qualname(C.D.g, 'C.D.g')\n        self.assert_qualname(f, 'f')\n        self.assert_qualname(f(), 'f.<locals>.g')\n        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')\n        self.assert_qualname(lamb, '<lambda>')\n        foo = lambda_maker()\n        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')\n        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')\n        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')\n        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)\n\n    def test_extended_arg(self):\n        source = 'tester(6)\\n%s\\ntester(9)' % list(range(66000))\n        _, filename = tempfile.mkstemp()\n        code = compile(source, filename, 'exec')\n        with open(filename, 'w') as outfile:\n            outfile.write(source)\n        exec(code)\n\n    def test_only(self):\n        for n in range(5):\n            gen = (i for i in range(n))\n            if n == 1:\n                self.assertEqual(only(gen), 0)\n            else:\n                with self.assertRaises(NotOneValueFound):\n                    only(gen)\n\n    def test_invalid_python(self):\n        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )\n        source = Source.for_filename(path)\n        self.assertIsNone(source.tree)\n\n    def test_executing_methods(self):\n        frame = inspect.currentframe()\n        executing = Source.executing(frame)\n        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')\n        if 'pypy' not in sys.version.lower():\n            text = 'Source.executing(frame)'\n            self.assertEqual(executing.text(), text)\n            start, end = executing.text_range()\n            self.assertEqual(executing.source.text[start:end], text)\n\n    def test_attr(self):\n        c = C()\n        c.x = c.y = tester\n        str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
+    ],
+    [
+        "STORE_NAME",
+        "class TestStuff(unittest.TestCase):\n\n    # noinspection PyTrailingSemicolon\n    def test_semicolons(self):\n        # @formatter:off\n        tester(1); tester(2); tester(3)\n        tester(9\n               ); tester(\n            8); tester(\n            99\n        ); tester(33); tester([4,\n                               5, 6, [\n                                7]])\n        # @formatter:on\n\n    def test_decorator(self):\n        @empty_decorator\n        @decorator_with_args(tester('123'), x=int())\n        @tester(list(tuple([1, 2])), returns=empty_decorator)\n        @tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(\n            str(),\n            x=int())\n        @tester(list(tuple([5, 6])), returns=empty_decorator)\n        @tester(list(tuple([7, 8])), returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(tester('sdf'), x=tester('123234'))\n        def foo():\n            pass\n\n    def test_comprehensions(self):\n        # Comprehensions can be separated if they contain different names\n        str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])\n        # or are on different lines\n        str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])\n        # or are of different types\n        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])\n        # but not if everything is the same\n        # noinspection PyTypeChecker\n        # with self.assertRaises((AttributeError, NotOneValueFound)):\n        #     str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])\n\n    def test_lambda(self):\n        self.assertEqual(\n            (lambda x: (tester(x), tester(x)))(tester(3)),\n            (3, 3),\n        )\n        (lambda: (lambda: tester(1))())()\n        self.assertEqual(\n            (lambda: [tester(x) for x in tester([1, 2])])(),\n            [1, 2],\n        )\n\n    def test_closures_and_nested_comprehensions(self):\n        x = 1\n        # @formatter:off\n        str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n        def foo():\n            y = 2\n            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            bar()\n\n        foo()\n        # @formatter:on\n\n    def test_indirect_call(self):\n        dict(x=tester)['x'](tester)(3, check_func=False)\n\n    def test_compound_statements(self):\n        with self.assertRaises(TypeError):\n            try:\n                for _ in tester([1, 2, 3]):\n                    while tester(0):\n                        pass\n                    else:\n                        tester(4)\n                else:\n                    tester(5)\n                    raise ValueError\n            except tester(ValueError):\n                tester(9)\n                raise TypeError\n            finally:\n                tester(10)\n\n        # PyCharm getting confused somehow?\n        # noinspection PyUnreachableCode\n        str()\n\n        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass\n\n    def test_generator(self):\n        def gen():\n            for x in [1, 2]:\n                yield tester(x)\n\n        gen2 = (tester(x) for x in tester([1, 2]))\n\n        assert list(gen()) == list(gen2) == [1, 2]\n\n    def test_future_import(self):\n        tester(4)\n\n    def test_many_calls(self):\n        node = None\n        start = time.time()\n        for i in range(10000):\n            new_node = Source.executing(inspect.currentframe()).node\n            if node is None:\n                node = new_node\n            else:\n                self.assertIs(node, new_node)\n        self.assertLess(time.time() - start, 1)\n\n    def test_decode_source(self):\n        def check(source, encoding, exception=None, matches=True):\n            encoded = source.encode(encoding)\n            if exception:\n                with self.assertRaises(exception):\n                    Source.decode_source(encoded)\n            else:\n                decoded = Source.decode_source(encoded)\n                if matches:\n                    self.assertEqual(decoded, source)\n                else:\n                    self.assertNotEqual(decoded, source)\n\n        check(u'# coding=utf8\\n\u00e9', 'utf8')\n        check(u'# coding=gbk\\n\u00e9', 'gbk')\n\n        check(u'# coding=utf8\\n\u00e9', 'gbk', exception=UnicodeDecodeError)\n        check(u'# coding=gbk\\n\u00e9', 'utf8', matches=False)\n\n        # In Python 3 the default encoding is assumed to be UTF8\n        if PY3:\n            check(u'\u00e9', 'utf8')\n            check(u'\u00e9', 'gbk', exception=SyntaxError)\n\n    def test_multiline_strings(self):\n        tester('a')\n        tester('''\n            ab''')\n        tester('''\n                    abc\n                    def\n                    '''\n               )\n        str([\n            tester(\n                '''\n                123\n                456\n                '''\n            ),\n            tester(\n                '''\n                345\n                456786\n                '''\n            ),\n        ])\n        tester(\n            [\n                '''\n                123\n                456\n                '''\n                '''\n                345\n                456786\n                '''\n                ,\n                '''\n                123\n                456\n                ''',\n                '''\n                345\n                456786\n                '''\n            ]\n        )\n\n    def test_multiple_statements_on_one_line(self):\n        if tester(1): tester(2)\n        for _ in tester([1, 2]): tester(3)\n\n    def assert_qualname(self, func, qn, check_actual_qualname=True):\n        qualname = Source.for_filename(__file__).code_qualname(func.__code__)\n        self.assertEqual(qn, qualname)\n        if PY3 and check_actual_qualname:\n            self.assertEqual(qn, func.__qualname__)\n        self.assertTrue(qn.endswith(func.__name__))\n\n    def test_qualname(self):\n        self.assert_qualname(C.f, 'C.f')\n        self.assert_qualname(C.D.g, 'C.D.g')\n        self.assert_qualname(f, 'f')\n        self.assert_qualname(f(), 'f.<locals>.g')\n        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')\n        self.assert_qualname(lamb, '<lambda>')\n        foo = lambda_maker()\n        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')\n        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')\n        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')\n        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)\n\n    def test_extended_arg(self):\n        source = 'tester(6)\\n%s\\ntester(9)' % list(range(66000))\n        _, filename = tempfile.mkstemp()\n        code = compile(source, filename, 'exec')\n        with open(filename, 'w') as outfile:\n            outfile.write(source)\n        exec(code)\n\n    def test_only(self):\n        for n in range(5):\n            gen = (i for i in range(n))\n            if n == 1:\n                self.assertEqual(only(gen), 0)\n            else:\n                with self.assertRaises(NotOneValueFound):\n                    only(gen)\n\n    def test_invalid_python(self):\n        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )\n        source = Source.for_filename(path)\n        self.assertIsNone(source.tree)\n\n    def test_executing_methods(self):\n        frame = inspect.currentframe()\n        executing = Source.executing(frame)\n        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')\n        if 'pypy' not in sys.version.lower():\n            text = 'Source.executing(frame)'\n            self.assertEqual(executing.text(), text)\n            start, end = executing.text_range()\n            self.assertEqual(executing.source.text[start:end], text)\n\n    def test_attr(self):\n        c = C()\n        c.x = c.y = tester\n        str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_semicolons(self):\n        # @formatter:off\n        tester(1); tester(2); tester(3)\n        tester(9\n               ); tester(\n            8); tester(\n            99\n        ); tester(33); tester([4,\n                               5, 6, [\n                                7]])"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_decorator(self):\n        @empty_decorator\n        @decorator_with_args(tester('123'), x=int())\n        @tester(list(tuple([1, 2])), returns=empty_decorator)\n        @tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(\n            str(),\n            x=int())\n        @tester(list(tuple([5, 6])), returns=empty_decorator)\n        @tester(list(tuple([7, 8])), returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(tester('sdf'), x=tester('123234'))\n        def foo():\n            pass"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_comprehensions(self):\n        # Comprehensions can be separated if they contain different names\n        str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])\n        # or are on different lines\n        str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])\n        # or are of different types\n        str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_lambda(self):\n        self.assertEqual(\n            (lambda x: (tester(x), tester(x)))(tester(3)),\n            (3, 3),\n        )\n        (lambda: (lambda: tester(1))())()\n        self.assertEqual(\n            (lambda: [tester(x) for x in tester([1, 2])])(),\n            [1, 2],\n        )"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_closures_and_nested_comprehensions(self):\n        x = 1\n        # @formatter:off\n        str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n        def foo():\n            y = 2\n            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            bar()\n\n        foo()"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_indirect_call(self):\n        dict(x=tester)['x'](tester)(3, check_func=False)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_compound_statements(self):\n        with self.assertRaises(TypeError):\n            try:\n                for _ in tester([1, 2, 3]):\n                    while tester(0):\n                        pass\n                    else:\n                        tester(4)\n                else:\n                    tester(5)\n                    raise ValueError\n            except tester(ValueError):\n                tester(9)\n                raise TypeError\n            finally:\n                tester(10)\n\n        # PyCharm getting confused somehow?\n        # noinspection PyUnreachableCode\n        str()\n\n        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_generator(self):\n        def gen():\n            for x in [1, 2]:\n                yield tester(x)\n\n        gen2 = (tester(x) for x in tester([1, 2]))\n\n        assert list(gen()) == list(gen2) == [1, 2]"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_future_import(self):\n        tester(4)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_many_calls(self):\n        node = None\n        start = time.time()\n        for i in range(10000):\n            new_node = Source.executing(inspect.currentframe()).node\n            if node is None:\n                node = new_node\n            else:\n                self.assertIs(node, new_node)\n        self.assertLess(time.time() - start, 1)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_decode_source(self):\n        def check(source, encoding, exception=None, matches=True):\n            encoded = source.encode(encoding)\n            if exception:\n                with self.assertRaises(exception):\n                    Source.decode_source(encoded)\n            else:\n                decoded = Source.decode_source(encoded)\n                if matches:\n                    self.assertEqual(decoded, source)\n                else:\n                    self.assertNotEqual(decoded, source)\n\n        check(u'# coding=utf8\\n\u00e9', 'utf8')\n        check(u'# coding=gbk\\n\u00e9', 'gbk')\n\n        check(u'# coding=utf8\\n\u00e9', 'gbk', exception=UnicodeDecodeError)\n        check(u'# coding=gbk\\n\u00e9', 'utf8', matches=False)\n\n        # In Python 3 the default encoding is assumed to be UTF8\n        if PY3:\n            check(u'\u00e9', 'utf8')\n            check(u'\u00e9', 'gbk', exception=SyntaxError)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_multiline_strings(self):\n        tester('a')\n        tester('''\n            ab''')\n        tester('''\n                    abc\n                    def\n                    '''\n               )\n        str([\n            tester(\n                '''\n                123\n                456\n                '''\n            ),\n            tester(\n                '''\n                345\n                456786\n                '''\n            ),\n        ])\n        tester(\n            [\n                '''\n                123\n                456\n                '''\n                '''\n                345\n                456786\n                '''\n                ,\n                '''\n                123\n                456\n                ''',\n                '''\n                345\n                456786\n                '''\n            ]\n        )"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_multiple_statements_on_one_line(self):\n        if tester(1): tester(2)\n        for _ in tester([1, 2]): tester(3)"
+    ],
+    [
+        "STORE_NAME",
+        "    def assert_qualname(self, func, qn, check_actual_qualname=True):\n        qualname = Source.for_filename(__file__).code_qualname(func.__code__)\n        self.assertEqual(qn, qualname)\n        if PY3 and check_actual_qualname:\n            self.assertEqual(qn, func.__qualname__)\n        self.assertTrue(qn.endswith(func.__name__))"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_qualname(self):\n        self.assert_qualname(C.f, 'C.f')\n        self.assert_qualname(C.D.g, 'C.D.g')\n        self.assert_qualname(f, 'f')\n        self.assert_qualname(f(), 'f.<locals>.g')\n        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')\n        self.assert_qualname(lamb, '<lambda>')\n        foo = lambda_maker()\n        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')\n        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')\n        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')\n        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_extended_arg(self):\n        source = 'tester(6)\\n%s\\ntester(9)' % list(range(66000))\n        _, filename = tempfile.mkstemp()\n        code = compile(source, filename, 'exec')\n        with open(filename, 'w') as outfile:\n            outfile.write(source)\n        exec(code)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_only(self):\n        for n in range(5):\n            gen = (i for i in range(n))\n            if n == 1:\n                self.assertEqual(only(gen), 0)\n            else:\n                with self.assertRaises(NotOneValueFound):\n                    only(gen)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_invalid_python(self):\n        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )\n        source = Source.for_filename(path)\n        self.assertIsNone(source.tree)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_executing_methods(self):\n        frame = inspect.currentframe()\n        executing = Source.executing(frame)\n        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')\n        if 'pypy' not in sys.version.lower():\n            text = 'Source.executing(frame)'\n            self.assertEqual(executing.text(), text)\n            start, end = executing.text_range()\n            self.assertEqual(executing.source.text[start:end], text)"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_attr(self):\n        c = C()\n        c.x = c.y = tester\n        str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
     ],
     [
         "LOAD_GLOBAL",
@@ -588,8 +792,20 @@
         "empty_decorator"
     ],
     [
+        "STORE_FAST",
+        "        @empty_decorator\n        @decorator_with_args(tester('123'), x=int())\n        @tester(list(tuple([1, 2])), returns=empty_decorator)\n        @tester(\n            list(\n                tuple(\n                    [3, 4])),\n            returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(\n            str(),\n            x=int())\n        @tester(list(tuple([5, 6])), returns=empty_decorator)\n        @tester(list(tuple([7, 8])), returns=empty_decorator)\n        @empty_decorator\n        @decorator_with_args(tester('sdf'), x=tester('123234'))\n        def foo():\n            pass"
+    ],
+    [
         "LOAD_GLOBAL",
         "str"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(y) for y in [1]}"
     ],
     [
         "CALL_FUNCTION",
@@ -601,6 +817,14 @@
     ],
     [
         "CALL_FUNCTION",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "CALL_FUNCTION",
         "str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])"
     ],
     [
@@ -608,8 +832,16 @@
         "str"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(x) for x in [1]}"
+    ],
+    [
         "LOAD_GLOBAL",
         "list"
+    ],
+    [
+        "CALL_FUNCTION",
+        "(tester(x) for x in [1])"
     ],
     [
         "CALL_FUNCTION",
@@ -618,6 +850,14 @@
     [
         "CALL_FUNCTION",
         "str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "x"
     ],
     [
         "LOAD_GLOBAL",
@@ -630,6 +870,14 @@
     [
         "CALL_FUNCTION",
         "tester(x)"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(y) for y in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "y"
     ],
     [
         "LOAD_GLOBAL",
@@ -644,6 +892,14 @@
         "tester(y)"
     ],
     [
+        "LOAD_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "x"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -656,6 +912,14 @@
         "tester(x)"
     ],
     [
+        "LOAD_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "x"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -668,6 +932,14 @@
         "tester(x)"
     ],
     [
+        "LOAD_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "x"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -678,6 +950,14 @@
     [
         "CALL_FUNCTION",
         "tester(x)"
+    ],
+    [
+        "LOAD_FAST",
+        "(tester(x) for x in [1])"
+    ],
+    [
+        "STORE_FAST",
+        "x"
     ],
     [
         "LOAD_GLOBAL",
@@ -780,6 +1060,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "[tester(x) for x in tester([1, 2])]"
+    ],
+    [
+        "LOAD_FAST",
+        "[tester(x) for x in tester([1, 2])]"
+    ],
+    [
+        "STORE_FAST",
+        "x"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -792,6 +1084,10 @@
         "tester(x)"
     ],
     [
+        "STORE_DEREF",
+        "x"
+    ],
+    [
         "LOAD_GLOBAL",
         "str"
     ],
@@ -805,7 +1101,15 @@
     ],
     [
         "CALL_FUNCTION",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL_FUNCTION",
         "str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+    ],
+    [
+        "STORE_FAST",
+        "        def foo():\n            y = 2\n            str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n            str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n\n            bar()"
     ],
     [
         "LOAD_FAST",
@@ -816,6 +1120,14 @@
         "foo()"
     ],
     [
+        "LOAD_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -842,6 +1154,18 @@
     [
         "CALL_FUNCTION",
         "tester([3, 4])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
     ],
     [
         "LOAD_GLOBAL",
@@ -872,6 +1196,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -892,6 +1228,10 @@
         "tester(c+x)"
     ],
     [
+        "STORE_DEREF",
+        "y"
+    ],
+    [
         "LOAD_GLOBAL",
         "str"
     ],
@@ -902,6 +1242,10 @@
     [
         "CALL_FUNCTION",
         "tester([5, 6])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
         "CALL_FUNCTION",
@@ -921,6 +1265,10 @@
     ],
     [
         "CALL_FUNCTION",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL_FUNCTION",
         "str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
     ],
     [
@@ -937,7 +1285,15 @@
     ],
     [
         "CALL_FUNCTION",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL_FUNCTION",
         "str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+    ],
+    [
+        "STORE_FAST",
+        "            def bar():\n                z = 3\n                str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})\n                str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
     ],
     [
         "LOAD_FAST",
@@ -948,6 +1304,14 @@
         "bar()"
     ],
     [
+        "LOAD_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -974,6 +1338,18 @@
     [
         "CALL_FUNCTION",
         "tester([3, 4])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
     ],
     [
         "LOAD_GLOBAL",
@@ -1004,6 +1380,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1022,6 +1410,14 @@
     [
         "CALL_FUNCTION",
         "tester(c+x)"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
     ],
     [
         "LOAD_GLOBAL",
@@ -1052,6 +1448,18 @@
         "tester([3, 4])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1080,6 +1488,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1098,6 +1518,14 @@
     [
         "CALL_FUNCTION",
         "tester(c+y)"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
     ],
     [
         "LOAD_GLOBAL",
@@ -1136,6 +1564,18 @@
         "tester([3, 4])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1172,6 +1612,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1200,6 +1652,10 @@
         "tester(c+x+y)"
     ],
     [
+        "STORE_DEREF",
+        "z"
+    ],
+    [
         "LOAD_GLOBAL",
         "str"
     ],
@@ -1210,6 +1666,10 @@
     [
         "CALL_FUNCTION",
         "tester([5, 6])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
         "CALL_FUNCTION",
@@ -1229,6 +1689,10 @@
     ],
     [
         "CALL_FUNCTION",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL_FUNCTION",
         "str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
     ],
     [
@@ -1242,6 +1706,10 @@
     [
         "CALL_FUNCTION",
         "tester([5, 6])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
         "CALL_FUNCTION",
@@ -1261,7 +1729,19 @@
     ],
     [
         "CALL_FUNCTION",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL_FUNCTION",
         "str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
     ],
     [
         "LOAD_GLOBAL",
@@ -1292,6 +1772,18 @@
         "tester([3, 4])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1320,6 +1812,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1338,6 +1842,14 @@
     [
         "CALL_FUNCTION",
         "tester(c+x)"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
     ],
     [
         "LOAD_GLOBAL",
@@ -1368,6 +1880,18 @@
         "tester([3, 4])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1396,6 +1920,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1414,6 +1950,14 @@
     [
         "CALL_FUNCTION",
         "tester(c+y)"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
     ],
     [
         "LOAD_GLOBAL",
@@ -1452,6 +1996,18 @@
         "tester([3, 4])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1488,6 +2044,18 @@
         "tester([1, 2])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1514,6 +2082,14 @@
     [
         "CALL_FUNCTION",
         "tester(c+x+y)"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
     ],
     [
         "LOAD_GLOBAL",
@@ -1560,6 +2136,18 @@
         "tester([3, 4])"
     ],
     [
+        "CALL_FUNCTION",
+        "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1602,6 +2190,18 @@
     [
         "CALL_FUNCTION",
         "tester([1, 2])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "{tester(c+x+y+z) for c in tester([1, 2])}"
+    ],
+    [
+        "LOAD_FAST",
+        "{tester(c+x+y+z) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
     ],
     [
         "LOAD_GLOBAL",
@@ -1690,6 +2290,10 @@
     [
         "CALL_FUNCTION",
         "tester([1, 2, 3])"
+    ],
+    [
+        "STORE_FAST",
+        "_"
     ],
     [
         "LOAD_GLOBAL",
@@ -1820,12 +2424,40 @@
         "tester(1 / 0)"
     ],
     [
+        "CALL_FUNCTION",
+        "        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass"
+    ],
+    [
+        "CALL_FUNCTION",
+        "        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass"
+    ],
+    [
+        "CALL_FUNCTION",
+        "        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass"
+    ],
+    [
+        "CALL_FUNCTION",
+        "        with self.assertRaises(tester(Exception)):\n            if tester(0):\n                pass\n            elif tester(0):\n                pass\n            elif tester(1 / 0):\n                pass"
+    ],
+    [
+        "STORE_FAST",
+        "        def gen():\n            for x in [1, 2]:\n                yield tester(x)"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
     [
         "CALL_FUNCTION",
         "tester([1, 2])"
+    ],
+    [
+        "CALL_FUNCTION",
+        "(tester(x) for x in tester([1, 2]))"
+    ],
+    [
+        "STORE_FAST",
+        "gen2"
     ],
     [
         "LOAD_GLOBAL",
@@ -1856,6 +2488,18 @@
         "list(gen2)"
     ],
     [
+        "COMPARE_OP",
+        "list(gen()) == list(gen2) == [1, 2]"
+    ],
+    [
+        "COMPARE_OP",
+        "list(gen()) == list(gen2) == [1, 2]"
+    ],
+    [
+        "STORE_FAST",
+        "x"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -1866,6 +2510,14 @@
     [
         "CALL_FUNCTION",
         "tester(x)"
+    ],
+    [
+        "LOAD_FAST",
+        "(tester(x) for x in tester([1, 2]))"
+    ],
+    [
+        "STORE_FAST",
+        "x"
     ],
     [
         "LOAD_GLOBAL",
@@ -1888,6 +2540,10 @@
         "tester(4)"
     ],
     [
+        "STORE_FAST",
+        "node"
+    ],
+    [
         "LOAD_GLOBAL",
         "time"
     ],
@@ -1900,12 +2556,20 @@
         "time.time()"
     ],
     [
+        "STORE_FAST",
+        "start"
+    ],
+    [
         "LOAD_GLOBAL",
         "range"
     ],
     [
         "CALL_FUNCTION",
         "range(10000)"
+    ],
+    [
+        "STORE_FAST",
+        "i"
     ],
     [
         "LOAD_GLOBAL",
@@ -1936,6 +2600,10 @@
         "Source.executing(inspect.currentframe()).node"
     ],
     [
+        "STORE_FAST",
+        "new_node"
+    ],
+    [
         "LOAD_FAST",
         "node"
     ],
@@ -1946,6 +2614,10 @@
     [
         "LOAD_FAST",
         "new_node"
+    ],
+    [
+        "STORE_FAST",
+        "node"
     ],
     [
         "LOAD_FAST",
@@ -1998,6 +2670,10 @@
     [
         "CALL_METHOD",
         "self.assertLess(time.time() - start, 1)"
+    ],
+    [
+        "STORE_FAST",
+        "        def check(source, encoding, exception=None, matches=True):\n            encoded = source.encode(encoding)\n            if exception:\n                with self.assertRaises(exception):\n                    Source.decode_source(encoded)\n            else:\n                decoded = Source.decode_source(encoded)\n                if matches:\n                    self.assertEqual(decoded, source)\n                else:\n                    self.assertNotEqual(decoded, source)"
     ],
     [
         "LOAD_FAST",
@@ -2076,6 +2752,10 @@
         "source.encode(encoding)"
     ],
     [
+        "STORE_FAST",
+        "encoded"
+    ],
+    [
         "LOAD_FAST",
         "exception"
     ],
@@ -2112,6 +2792,10 @@
         "Source.decode_source(encoded)"
     ],
     [
+        "CALL_FUNCTION",
+        "                with self.assertRaises(exception):\n                    Source.decode_source(encoded)"
+    ],
+    [
         "LOAD_GLOBAL",
         "Source"
     ],
@@ -2126,6 +2810,10 @@
     [
         "CALL_METHOD",
         "Source.decode_source(encoded)"
+    ],
+    [
+        "STORE_FAST",
+        "decoded"
     ],
     [
         "LOAD_FAST",
@@ -2252,6 +2940,10 @@
         "tester([1, 2])"
     ],
     [
+        "STORE_FAST",
+        "_"
+    ],
+    [
         "LOAD_GLOBAL",
         "tester"
     ],
@@ -2290,6 +2982,10 @@
     [
         "CALL_METHOD",
         "Source.for_filename(__file__).code_qualname(func.__code__)"
+    ],
+    [
+        "STORE_FAST",
+        "qualname"
     ],
     [
         "LOAD_FAST",
@@ -2508,6 +3204,10 @@
         "lambda_maker()"
     ],
     [
+        "STORE_FAST",
+        "foo"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -2608,6 +3308,10 @@
         "'tester(6)\\n%s\\ntester(9)' % list(range(66000))"
     ],
     [
+        "STORE_FAST",
+        "source"
+    ],
+    [
         "LOAD_GLOBAL",
         "tempfile"
     ],
@@ -2618,6 +3322,14 @@
     [
         "CALL_METHOD",
         "tempfile.mkstemp()"
+    ],
+    [
+        "STORE_FAST",
+        "_"
+    ],
+    [
+        "STORE_FAST",
+        "filename"
     ],
     [
         "LOAD_GLOBAL",
@@ -2636,6 +3348,10 @@
         "compile(source, filename, 'exec')"
     ],
     [
+        "STORE_FAST",
+        "code"
+    ],
+    [
         "LOAD_GLOBAL",
         "open"
     ],
@@ -2646,6 +3362,10 @@
     [
         "CALL_FUNCTION",
         "open(filename, 'w')"
+    ],
+    [
+        "STORE_FAST",
+        "outfile"
     ],
     [
         "LOAD_FAST",
@@ -2662,6 +3382,10 @@
     [
         "CALL_METHOD",
         "outfile.write(source)"
+    ],
+    [
+        "CALL_FUNCTION",
+        "        with open(filename, 'w') as outfile:\n            outfile.write(source)"
     ],
     [
         "LOAD_GLOBAL",
@@ -2684,6 +3408,10 @@
         "range(5)"
     ],
     [
+        "STORE_FAST",
+        "n"
+    ],
+    [
         "LOAD_GLOBAL",
         "range"
     ],
@@ -2694,6 +3422,14 @@
     [
         "CALL_FUNCTION",
         "range(n)"
+    ],
+    [
+        "CALL_FUNCTION",
+        "(i for i in range(n))"
+    ],
+    [
+        "STORE_FAST",
+        "gen"
     ],
     [
         "LOAD_FAST",
@@ -2756,6 +3492,18 @@
         "only(gen)"
     ],
     [
+        "CALL_FUNCTION",
+        "                with self.assertRaises(NotOneValueFound):\n                    only(gen)"
+    ],
+    [
+        "LOAD_FAST",
+        "(i for i in range(n))"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
         "LOAD_FAST",
         "i"
     ],
@@ -2796,6 +3544,10 @@
         "os.path.join(os.path.dirname(__file__), 'not_code.txt', )"
     ],
     [
+        "STORE_FAST",
+        "path"
+    ],
+    [
         "LOAD_GLOBAL",
         "Source"
     ],
@@ -2810,6 +3562,10 @@
     [
         "CALL_METHOD",
         "Source.for_filename(path)"
+    ],
+    [
+        "STORE_FAST",
+        "source"
     ],
     [
         "LOAD_FAST",
@@ -2844,6 +3600,10 @@
         "inspect.currentframe()"
     ],
     [
+        "STORE_FAST",
+        "frame"
+    ],
+    [
         "LOAD_GLOBAL",
         "Source"
     ],
@@ -2858,6 +3618,10 @@
     [
         "CALL_METHOD",
         "Source.executing(frame)"
+    ],
+    [
+        "STORE_FAST",
+        "executing"
     ],
     [
         "LOAD_FAST",
@@ -2904,6 +3668,10 @@
         "'pypy' not in sys.version.lower()"
     ],
     [
+        "STORE_FAST",
+        "text"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -2942,6 +3710,14 @@
     [
         "CALL_METHOD",
         "executing.text_range()"
+    ],
+    [
+        "STORE_FAST",
+        "start"
+    ],
+    [
+        "STORE_FAST",
+        "end"
     ],
     [
         "LOAD_FAST",
@@ -2990,6 +3766,10 @@
     [
         "CALL_FUNCTION",
         "C()"
+    ],
+    [
+        "STORE_FAST",
+        "c"
     ],
     [
         "LOAD_GLOBAL",
@@ -3092,6 +3872,22 @@
         "str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))"
     ],
     [
+        "LOAD_NAME",
+        "class TestFile(unittest.TestCase):\n    def test_file(self):\n        source = Source.for_frame(inspect.currentframe())\n        code = compile(source.text, source.filename, 'exec')\n        instructions = get_instructions(code)\n        lineno = None\n        for inst in instructions:\n            if inst.starts_line is not None:\n                lineno = inst.starts_line\n            if not inst.opname.startswith(\n                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP')):\n                continue\n            frame = C()\n            frame.f_lasti = inst.offset\n            frame.f_code = code\n            frame.f_globals = globals()\n            frame.f_lineno = lineno\n            print(inst.opname)\n            assert Source.executing(frame).node is not None"
+    ],
+    [
+        "STORE_NAME",
+        "class TestFile(unittest.TestCase):\n    def test_file(self):\n        source = Source.for_frame(inspect.currentframe())\n        code = compile(source.text, source.filename, 'exec')\n        instructions = get_instructions(code)\n        lineno = None\n        for inst in instructions:\n            if inst.starts_line is not None:\n                lineno = inst.starts_line\n            if not inst.opname.startswith(\n                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP')):\n                continue\n            frame = C()\n            frame.f_lasti = inst.offset\n            frame.f_code = code\n            frame.f_globals = globals()\n            frame.f_lineno = lineno\n            print(inst.opname)\n            assert Source.executing(frame).node is not None"
+    ],
+    [
+        "STORE_NAME",
+        "class TestFile(unittest.TestCase):\n    def test_file(self):\n        source = Source.for_frame(inspect.currentframe())\n        code = compile(source.text, source.filename, 'exec')\n        instructions = get_instructions(code)\n        lineno = None\n        for inst in instructions:\n            if inst.starts_line is not None:\n                lineno = inst.starts_line\n            if not inst.opname.startswith(\n                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP')):\n                continue\n            frame = C()\n            frame.f_lasti = inst.offset\n            frame.f_code = code\n            frame.f_globals = globals()\n            frame.f_lineno = lineno\n            print(inst.opname)\n            assert Source.executing(frame).node is not None"
+    ],
+    [
+        "STORE_NAME",
+        "    def test_file(self):\n        source = Source.for_frame(inspect.currentframe())\n        code = compile(source.text, source.filename, 'exec')\n        instructions = get_instructions(code)\n        lineno = None\n        for inst in instructions:\n            if inst.starts_line is not None:\n                lineno = inst.starts_line\n            if not inst.opname.startswith(\n                    ('BINARY_', 'UNARY_', 'LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD', 'COMPARE_OP')):\n                continue\n            frame = C()\n            frame.f_lasti = inst.offset\n            frame.f_code = code\n            frame.f_globals = globals()\n            frame.f_lineno = lineno\n            print(inst.opname)\n            assert Source.executing(frame).node is not None"
+    ],
+    [
         "LOAD_GLOBAL",
         "Source"
     ],
@@ -3114,6 +3910,10 @@
     [
         "CALL_METHOD",
         "Source.for_frame(inspect.currentframe())"
+    ],
+    [
+        "STORE_FAST",
+        "source"
     ],
     [
         "LOAD_GLOBAL",
@@ -3140,6 +3940,10 @@
         "compile(source.text, source.filename, 'exec')"
     ],
     [
+        "STORE_FAST",
+        "code"
+    ],
+    [
         "LOAD_GLOBAL",
         "get_instructions"
     ],
@@ -3152,8 +3956,20 @@
         "get_instructions(code)"
     ],
     [
+        "STORE_FAST",
+        "instructions"
+    ],
+    [
+        "STORE_FAST",
+        "lineno"
+    ],
+    [
         "LOAD_FAST",
         "instructions"
+    ],
+    [
+        "STORE_FAST",
+        "inst"
     ],
     [
         "LOAD_FAST",
@@ -3174,6 +3990,10 @@
     [
         "LOAD_ATTR",
         "inst.starts_line"
+    ],
+    [
+        "STORE_FAST",
+        "lineno"
     ],
     [
         "LOAD_FAST",
@@ -3198,6 +4018,10 @@
     [
         "CALL_FUNCTION",
         "C()"
+    ],
+    [
+        "STORE_FAST",
+        "frame"
     ],
     [
         "LOAD_FAST",
@@ -3297,17 +4121,53 @@
     ],
     [
         "LOAD_NAME",
+        "class C(object):\n    @staticmethod\n    def f():\n        pass\n\n    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "STORE_NAME",
+        "class C(object):\n    @staticmethod\n    def f():\n        pass\n\n    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "STORE_NAME",
+        "class C(object):\n    @staticmethod\n    def f():\n        pass\n\n    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "LOAD_NAME",
         "staticmethod"
     ],
     [
         "CALL_FUNCTION",
         "staticmethod"
+    ],
+    [
+        "STORE_NAME",
+        "    @staticmethod\n    def f():\n        pass"
     ],
     [
         "LOAD_NAME",
         "object"
     ],
     [
+        "CALL_FUNCTION",
+        "    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "STORE_NAME",
+        "    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "LOAD_NAME",
+        "    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "STORE_NAME",
+        "    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "STORE_NAME",
+        "    class D(object):\n        @staticmethod\n        def g():\n            pass\n\n        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
         "LOAD_NAME",
         "staticmethod"
     ],
@@ -3316,12 +4176,24 @@
         "staticmethod"
     ],
     [
+        "STORE_NAME",
+        "        @staticmethod\n        def g():\n            pass"
+    ],
+    [
         "LOAD_NAME",
         "staticmethod"
     ],
     [
         "CALL_FUNCTION",
         "staticmethod"
+    ],
+    [
+        "STORE_NAME",
+        "        @staticmethod\n        def h():\n            def i():\n                def j():\n                    pass\n\n                return j\n\n            return i()"
+    ],
+    [
+        "STORE_FAST",
+        "            def i():\n                def j():\n                    pass\n\n                return j"
     ],
     [
         "LOAD_FAST",
@@ -3332,12 +4204,24 @@
         "i()"
     ],
     [
+        "STORE_FAST",
+        "                def j():\n                    pass"
+    ],
+    [
         "LOAD_FAST",
         "j"
     ],
     [
+        "STORE_FAST",
+        "    def g():\n        pass"
+    ],
+    [
         "LOAD_FAST",
         "g"
+    ],
+    [
+        "STORE_FAST",
+        "    def assign(x):\n        def decorator(func):\n            func.x = x\n            return func\n\n        return decorator"
     ],
     [
         "LOAD_FAST",
@@ -3352,8 +4236,16 @@
         "assign(lambda: 1)"
     ],
     [
+        "STORE_FAST",
+        "    @assign(lambda: 1)\n    def foo():\n        return lambda: lambda: 3"
+    ],
+    [
         "LOAD_FAST",
         "foo"
+    ],
+    [
+        "STORE_FAST",
+        "        def decorator(func):\n            func.x = x\n            return func"
     ],
     [
         "LOAD_FAST",
@@ -3377,15 +4269,87 @@
     ],
     [
         "LOAD_NAME",
+        "class Tester(object):\n    def get_node(self, typ):\n        frame = inspect.currentframe().f_back.f_back\n        Source.lazycache(frame)\n        node = Source.executing(frame).node\n        assert isinstance(node, typ), (node, typ)\n        return node\n\n    def check(self, node, value):\n        frame = inspect.currentframe().f_back.f_back\n        result = eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )\n        assert result == value, (result, value)\n\n    def __call__(self, arg, check_func=True, returns=None):\n        call = self.get_node(ast.Call)\n        self.check(call.args[0], arg)\n        if check_func:\n            self.check(call.func, self)\n        if returns is None:\n            return arg\n        return returns\n\n    def __getattr__(self, item):\n        node = self.get_node(ast.Attribute)\n        self.check(node.value, self)\n        assert node.attr == item\n        return self\n\n    def __getitem__(self, item):\n        node = self.get_node(ast.Subscript)\n        self.check(node.value, self)\n        self.check(node.slice.value, item)\n        return self\n\n    def __add__(self, other):\n        node = self.get_node(ast.BinOp)\n        self.check(node.left, self)\n        self.check(node.right, other)\n        return self\n\n    __pow__ = __mul__ = __sub__ = __add__\n\n    def __invert__(self):\n        node = self.get_node(ast.UnaryOp)\n        self.check(node.operand, self)\n        return self\n\n    __neg__ = __pos__ = __invert__\n\n    def __lt__(self, other):\n        node = self.get_node(ast.Compare)\n        self.check(node.left, self)\n        self.check(node.comparators[0], other)\n        return self\n\n    __ne__ = __ge__ = __lt__"
+    ],
+    [
+        "STORE_NAME",
+        "class Tester(object):\n    def get_node(self, typ):\n        frame = inspect.currentframe().f_back.f_back\n        Source.lazycache(frame)\n        node = Source.executing(frame).node\n        assert isinstance(node, typ), (node, typ)\n        return node\n\n    def check(self, node, value):\n        frame = inspect.currentframe().f_back.f_back\n        result = eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )\n        assert result == value, (result, value)\n\n    def __call__(self, arg, check_func=True, returns=None):\n        call = self.get_node(ast.Call)\n        self.check(call.args[0], arg)\n        if check_func:\n            self.check(call.func, self)\n        if returns is None:\n            return arg\n        return returns\n\n    def __getattr__(self, item):\n        node = self.get_node(ast.Attribute)\n        self.check(node.value, self)\n        assert node.attr == item\n        return self\n\n    def __getitem__(self, item):\n        node = self.get_node(ast.Subscript)\n        self.check(node.value, self)\n        self.check(node.slice.value, item)\n        return self\n\n    def __add__(self, other):\n        node = self.get_node(ast.BinOp)\n        self.check(node.left, self)\n        self.check(node.right, other)\n        return self\n\n    __pow__ = __mul__ = __sub__ = __add__\n\n    def __invert__(self):\n        node = self.get_node(ast.UnaryOp)\n        self.check(node.operand, self)\n        return self\n\n    __neg__ = __pos__ = __invert__\n\n    def __lt__(self, other):\n        node = self.get_node(ast.Compare)\n        self.check(node.left, self)\n        self.check(node.comparators[0], other)\n        return self\n\n    __ne__ = __ge__ = __lt__"
+    ],
+    [
+        "STORE_NAME",
+        "class Tester(object):\n    def get_node(self, typ):\n        frame = inspect.currentframe().f_back.f_back\n        Source.lazycache(frame)\n        node = Source.executing(frame).node\n        assert isinstance(node, typ), (node, typ)\n        return node\n\n    def check(self, node, value):\n        frame = inspect.currentframe().f_back.f_back\n        result = eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )\n        assert result == value, (result, value)\n\n    def __call__(self, arg, check_func=True, returns=None):\n        call = self.get_node(ast.Call)\n        self.check(call.args[0], arg)\n        if check_func:\n            self.check(call.func, self)\n        if returns is None:\n            return arg\n        return returns\n\n    def __getattr__(self, item):\n        node = self.get_node(ast.Attribute)\n        self.check(node.value, self)\n        assert node.attr == item\n        return self\n\n    def __getitem__(self, item):\n        node = self.get_node(ast.Subscript)\n        self.check(node.value, self)\n        self.check(node.slice.value, item)\n        return self\n\n    def __add__(self, other):\n        node = self.get_node(ast.BinOp)\n        self.check(node.left, self)\n        self.check(node.right, other)\n        return self\n\n    __pow__ = __mul__ = __sub__ = __add__\n\n    def __invert__(self):\n        node = self.get_node(ast.UnaryOp)\n        self.check(node.operand, self)\n        return self\n\n    __neg__ = __pos__ = __invert__\n\n    def __lt__(self, other):\n        node = self.get_node(ast.Compare)\n        self.check(node.left, self)\n        self.check(node.comparators[0], other)\n        return self\n\n    __ne__ = __ge__ = __lt__"
+    ],
+    [
+        "STORE_NAME",
+        "    def get_node(self, typ):\n        frame = inspect.currentframe().f_back.f_back\n        Source.lazycache(frame)\n        node = Source.executing(frame).node\n        assert isinstance(node, typ), (node, typ)\n        return node"
+    ],
+    [
+        "STORE_NAME",
+        "    def check(self, node, value):\n        frame = inspect.currentframe().f_back.f_back\n        result = eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )\n        assert result == value, (result, value)"
+    ],
+    [
+        "STORE_NAME",
+        "    def __call__(self, arg, check_func=True, returns=None):\n        call = self.get_node(ast.Call)\n        self.check(call.args[0], arg)\n        if check_func:\n            self.check(call.func, self)\n        if returns is None:\n            return arg\n        return returns"
+    ],
+    [
+        "STORE_NAME",
+        "    def __getattr__(self, item):\n        node = self.get_node(ast.Attribute)\n        self.check(node.value, self)\n        assert node.attr == item\n        return self"
+    ],
+    [
+        "STORE_NAME",
+        "    def __getitem__(self, item):\n        node = self.get_node(ast.Subscript)\n        self.check(node.value, self)\n        self.check(node.slice.value, item)\n        return self"
+    ],
+    [
+        "STORE_NAME",
+        "    def __add__(self, other):\n        node = self.get_node(ast.BinOp)\n        self.check(node.left, self)\n        self.check(node.right, other)\n        return self"
+    ],
+    [
+        "LOAD_NAME",
         "__add__"
+    ],
+    [
+        "STORE_NAME",
+        "__pow__"
+    ],
+    [
+        "STORE_NAME",
+        "__mul__"
+    ],
+    [
+        "STORE_NAME",
+        "__sub__"
+    ],
+    [
+        "STORE_NAME",
+        "    def __invert__(self):\n        node = self.get_node(ast.UnaryOp)\n        self.check(node.operand, self)\n        return self"
     ],
     [
         "LOAD_NAME",
         "__invert__"
     ],
     [
+        "STORE_NAME",
+        "__neg__"
+    ],
+    [
+        "STORE_NAME",
+        "__pos__"
+    ],
+    [
+        "STORE_NAME",
+        "    def __lt__(self, other):\n        node = self.get_node(ast.Compare)\n        self.check(node.left, self)\n        self.check(node.comparators[0], other)\n        return self"
+    ],
+    [
         "LOAD_NAME",
         "__lt__"
+    ],
+    [
+        "STORE_NAME",
+        "__ne__"
+    ],
+    [
+        "STORE_NAME",
+        "__ge__"
     ],
     [
         "LOAD_GLOBAL",
@@ -3406,6 +4370,10 @@
     [
         "LOAD_ATTR",
         "inspect.currentframe().f_back.f_back"
+    ],
+    [
+        "STORE_FAST",
+        "frame"
     ],
     [
         "LOAD_GLOBAL",
@@ -3442,6 +4410,10 @@
     [
         "LOAD_ATTR",
         "Source.executing(frame).node"
+    ],
+    [
+        "STORE_FAST",
+        "node"
     ],
     [
         "LOAD_GLOBAL",
@@ -3490,6 +4462,10 @@
     [
         "LOAD_ATTR",
         "inspect.currentframe().f_back.f_back"
+    ],
+    [
+        "STORE_FAST",
+        "frame"
     ],
     [
         "LOAD_GLOBAL",
@@ -3552,6 +4528,10 @@
         "eval(\n            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),\n            frame.f_globals,\n            frame.f_locals,\n        )"
     ],
     [
+        "STORE_FAST",
+        "result"
+    ],
+    [
         "LOAD_FAST",
         "result"
     ],
@@ -3590,6 +4570,10 @@
     [
         "CALL_METHOD",
         "self.get_node(ast.Call)"
+    ],
+    [
+        "STORE_FAST",
+        "call"
     ],
     [
         "LOAD_FAST",
@@ -3684,6 +4668,10 @@
         "self.get_node(ast.Attribute)"
     ],
     [
+        "STORE_FAST",
+        "node"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -3746,6 +4734,10 @@
     [
         "CALL_METHOD",
         "self.get_node(ast.Subscript)"
+    ],
+    [
+        "STORE_FAST",
+        "node"
     ],
     [
         "LOAD_FAST",
@@ -3824,6 +4816,10 @@
         "self.get_node(ast.BinOp)"
     ],
     [
+        "STORE_FAST",
+        "node"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -3896,6 +4892,10 @@
         "self.get_node(ast.UnaryOp)"
     ],
     [
+        "STORE_FAST",
+        "node"
+    ],
+    [
         "LOAD_FAST",
         "self"
     ],
@@ -3942,6 +4942,10 @@
     [
         "CALL_METHOD",
         "self.get_node(ast.Compare)"
+    ],
+    [
+        "STORE_FAST",
+        "node"
     ],
     [
         "LOAD_FAST",
