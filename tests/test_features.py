@@ -23,7 +23,7 @@ def calling_expr():
         and frame.f_back.f_back is not None
     )
     ex = Source.executing(frame.f_back.f_back)
-    assert ex.node
+    assert ex.node is not None
 
     return ex.node
 
