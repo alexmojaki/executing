@@ -176,21 +176,24 @@ class PositionNodeFinder(object):
 
                 # index    opname
                 # ------------------
-                # index-4  PRECALL
+                # index-4  PRECALL     (only in 3.11)
                 # index-2  CACHE
                 # index    CALL        <- the call instruction
                 # ...      CACHE       some CACHE instructions
 
                 # maybe multiple other bytecode blocks for other decorators
-                # index-4  PRECALL
+                # index-4  PRECALL     (only in 3.11)
                 # index-2  CACHE
                 # index    CALL        <- index of the next loop
                 # ...      CACHE       some CACHE instructions
 
                 # index+x  STORE_*     the ast-node of this instruction points to the decorated thing
 
-                if self.opname(index - 4) != "PRECALL" or self.opname(index) != "CALL": # pragma: no mutate
-                    break # pragma: no mutate
+                if not (
+                    (self.opname(index - 4) == "PRECALL" or sys.version_info >= (3, 12))
+                    and self.opname(index) == "CALL"
+                ):  # pragma: no mutate
+                    break  # pragma: no mutate
 
                 index += 2
 
@@ -205,7 +208,8 @@ class PositionNodeFinder(object):
                     self.decorator = node
                     return
 
-                index += 4
+                if sys.version_info < (3, 12):
+                    index += 4
 
     def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
         if instruction.opname in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
@@ -410,6 +414,7 @@ class PositionNodeFinder(object):
         if (
             (
                 inst_match("LOAD_METHOD", argval="join")
+                or inst_match("LOAD_ATTR", argval="join")  # 3.12
                 or inst_match(("CALL", "BUILD_STRING"))
             )
             and node_match(ast.BinOp, left=ast.Constant, op=ast.Mod)
@@ -495,9 +500,14 @@ class PositionNodeFinder(object):
         ):
             return
 
-        if inst_match(("JUMP_IF_TRUE_OR_POP", "JUMP_IF_FALSE_OR_POP")) and node_match(
-            ast.BoolOp
-        ):
+        if inst_match(
+            (
+                "JUMP_IF_TRUE_OR_POP",
+                "JUMP_IF_FALSE_OR_POP",
+                "POP_JUMP_IF_TRUE",
+                "POP_JUMP_IF_FALSE",
+            )
+        ) and node_match(ast.BoolOp):
             # and/or short circuit
             return
 
@@ -511,7 +521,8 @@ class PositionNodeFinder(object):
                 and isinstance(node.parent, ast.AugAssign)
             )
         ) and inst_match(
-            ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL", "LOAD_DEREF"), argval=mangled_name(node)
+            ("LOAD_NAME", "LOAD_FAST", "LOAD_FAST_CHECK", "LOAD_GLOBAL", "LOAD_DEREF"),
+            argval=mangled_name(node),
         ):
             return
 
@@ -519,6 +530,26 @@ class PositionNodeFinder(object):
             ("DELETE_NAME", "DELETE_GLOBAL", "DELETE_DEREF"), argval=mangled_name(node)
         ):
             return
+
+        if sys.version_info >= (3, 12):
+            if node_match(ast.UnaryOp, op=ast.UAdd) and inst_match(
+                "CALL_INTRINSIC_1", argrepr="INTRINSIC_UNARY_POSITIVE"
+            ):
+                return
+
+            if node_match(ast.Subscript) and inst_match("BINARY_SLICE"):
+                return
+
+            if node_match(ast.ImportFrom) and inst_match(
+                "CALL_INTRINSIC_1", argrepr="INTRINSIC_IMPORT_STAR"
+            ):
+                return
+
+            if (
+                node_match(ast.Yield) or isinstance(node.parent, ast.GeneratorExp)
+            ) and inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_ASYNC_GEN_WRAP"):
+                return
+
 
         # old verifier
 

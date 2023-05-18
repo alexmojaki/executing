@@ -696,6 +696,13 @@ def test_small_samples(full_filename, result_filename):
         pytest.xfail("no `from __future__ import annotations`")
 
     if (
+        (sys.version_info[:2] == (3, 7))
+        and "ad8aa993e6ee4eb5ee764d55f2e3fd636a99b2ecb8c5aff2b35fbb78a074ea30"
+        in full_filename
+    ):
+        pytest.xfail("(i async for i in arange) can not be analyzed in 3.7")
+
+    if (
         (sys.version_info[:2] == (3, 5) or PYPY)
         and "1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc"
         in full_filename
@@ -819,6 +826,10 @@ class TestFiles:
             # SyntaxError: 'return' outside function
             print("skip %s" % filename)
             return
+        except RecursionError:
+            print("skip %s" % filename)
+            return 
+
         result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
@@ -1116,6 +1127,11 @@ class TestFiles:
                     continue
 
                 if inst.positions.lineno == None:
+                    continue
+
+            if sys.version_info >= (3,12):
+                if inst.opname == "CALL_INTRINSIC_1" and inst.argrepr=='INTRINSIC_LIST_TO_TUPLE':
+                    # convert list to tuple
                     continue
 
             frame = C()

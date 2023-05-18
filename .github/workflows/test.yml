@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, '3.10', 3.11-dev, pypy2, pypy-3.6]
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, '3.10', 3.11-dev, 3.12-dev, pypy2, pypy-3.6]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
         pip install mypy==0.910
         python -m mypy executing --exclude=executing/_position_node_finder.py
       # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
-      if: ${{ !contains(fromJson('["2.7", "pypy2", "pypy-3.6", "3.11-dev"]'), matrix.python-version) }}
+      if: ${{ !contains(fromJson('["2.7", "pypy2", "pypy-3.6", "3.11-dev","3.12-dev"]'), matrix.python-version) }}
       # pypy < 3.8 very doesn't work
       # 2.7 is tested separately in mypy-py2, as we need to run mypy under Python 3.x            
     - name: Mypy testing (3.11)
@@ -34,7 +34,7 @@ jobs:
         pip install mypy==0.971
         python -m mypy executing
       # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
-      if: ${{ contains(fromJson('["3.11-dev"]'), matrix.python-version) }}
+      if: ${{ contains(fromJson('["3.11-dev","3.12-dev"]'), matrix.python-version) }}
       # only >=3.11 use _position_node_finder.py
     - name: Test
       env:
