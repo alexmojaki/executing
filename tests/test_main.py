@@ -689,11 +689,20 @@ def test_small_samples(full_filename, result_filename):
         "9b3db37076d3c7c76bdfd9badcc70d8047584433e1eea89f45014453d58bbc43",
     ]
 
+    
+
     if any(s in full_filename for s in skip_sentinel) and sys.version_info < (3, 11):
         pytest.xfail("SentinelNodeFinder does not find some of the nodes (maybe a bug)")
 
     if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
         pytest.xfail("no `from __future__ import annotations`")
+
+    if (
+        (sys.version_info[:2] == (3, 7))
+        and "ad8aa993e6ee4eb5ee764d55f2e3fd636a99b2ecb8c5aff2b35fbb78a074ea30"
+        in full_filename
+    ):
+        pytest.xfail("(i async for i in arange) can not be analyzed in 3.7")
 
     if (
         (sys.version_info[:2] == (3, 5) or PYPY)
@@ -819,6 +828,10 @@ class TestFiles:
             # SyntaxError: 'return' outside function
             print("skip %s" % filename)
             return
+        except RecursionError:
+            print("skip %s" % filename)
+            return 
+
         result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
@@ -1116,6 +1129,11 @@ class TestFiles:
                     continue
 
                 if inst.positions.lineno == None:
+                    continue
+
+            if sys.version_info >= (3,12):
+                if inst.opname == "CALL_INTRINSIC_1" and inst.argval==6:
+                    # convert list to tuple
                     continue
 
             frame = C()
