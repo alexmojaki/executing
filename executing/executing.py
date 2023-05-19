@@ -38,6 +38,7 @@ from itertools import islice
 from operator import attrgetter
 from threading import RLock
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
+from ._utils import mangled_name,assert_, EnhancedAST,EnhancedInstruction,Instruction,get_instructions
 
 if TYPE_CHECKING:  # pragma: no cover
     from asttokens import ASTTokens, ASTText
@@ -85,84 +86,10 @@ else:
     # noinspection PyUnresolvedReferences
     text_type = unicode
 
-# Type class used to expand out the definition of AST to include fields added by this library
-# It's not actually used for anything other than type checking though!
-class EnhancedAST(ast.AST):
-    parent = None  # type: EnhancedAST
-
-if sys.version_info >= (3, 4):
-    # noinspection PyUnresolvedReferences
-    _get_instructions = dis.get_instructions
-    from dis import Instruction as _Instruction
-    
-    class Instruction(_Instruction):
-        lineno = None  # type: int
-else:
-    class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):
-        lineno = None # type: int
-
-    from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts, hasname
-
-    # Based on dis.disassemble from 2.7
-    # Left as similar as possible for easy diff
-
-    def _get_instructions(co):
-        # type: (types.CodeType) -> Iterator[Instruction]
-        code = co.co_code
-        linestarts = dict(findlinestarts(co))
-        n = len(code)
-        i = 0
-        extended_arg = 0
-        while i < n:
-            offset = i
-            c = code[i]
-            op = ord(c)
-            lineno = linestarts.get(i)
-            argval = None
-            i = i + 1
-            if op >= HAVE_ARGUMENT:
-                oparg = ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg
-                extended_arg = 0
-                i = i + 2
-                if op == EXTENDED_ARG:
-                    extended_arg = oparg * 65536
-
-                if op in hasconst:
-                    argval = co.co_consts[oparg]
-                elif op in hasname:
-                    argval = co.co_names[oparg]
-                elif opname[op] == 'LOAD_FAST':
-                    argval = co.co_varnames[oparg]
-            yield Instruction(offset, argval, opname[op], lineno)
-
-
-# Type class used to expand out the definition of AST to include fields added by this library
-# It's not actually used for anything other than type checking though!
-class EnhancedInstruction(Instruction):
-    _copied = None # type: bool
 
 
 
-def assert_(condition, message=""):
-    # type: (Any, str) -> None
-    """
-    Like an assert statement, but unaffected by -O
-    :param condition: value that is expected to be truthy
-    :type message: Any
-    """
-    if not condition:
-        raise AssertionError(str(message))
 
-
-def get_instructions(co):
-    # type: (types.CodeType) -> Iterator[EnhancedInstruction]
-    lineno = co.co_firstlineno
-    for inst in _get_instructions(co):
-        inst = cast(EnhancedInstruction, inst)
-        lineno = inst.starts_line or lineno
-        assert_(lineno)
-        inst.lineno = lineno
-        yield inst
 
 
 TESTING = 0
@@ -680,12 +607,12 @@ class SentinelNodeFinder(object):
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
             ctx = ast.Load
-            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+            extra_filter = lambda e:mangled_name(e) == instruction.argval 
         elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
             typ = ast.Name
             ctx = ast.Load
             if sys.version_info[0] == 3 or instruction.argval:
-                extra_filter = lambda e: e.id == instruction.argval
+                extra_filter =lambda e:mangled_name(e) == instruction.argval 
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
             extra_filter = lambda e: len(e.ops) == 1
@@ -695,9 +622,10 @@ class SentinelNodeFinder(object):
         elif op_name.startswith('STORE_ATTR'):
             ctx = ast.Store
             typ = ast.Attribute
-            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+            extra_filter = lambda e:mangled_name(e) == instruction.argval 
         else:
             raise RuntimeError(op_name)
+
 
         with lock:
             exprs = {
@@ -709,6 +637,10 @@ class SentinelNodeFinder(object):
                 if extra_filter(node)
                 if statement_containing_node(node) == stmt
             }
+
+            print(instruction)
+
+            print(exprs)
 
             if ctx == ast.Store:
                 # No special bytecode tricks here.
@@ -1225,19 +1157,6 @@ def find_node_ipython(frame, lasti, stmts, source):
             pass
     return decorator, node
 
-
-def attr_names_match(attr, argval):
-    # type: (str, str) -> bool
-    """
-    Checks that the user-visible attr (from ast) can correspond to
-    the argval in the bytecode, i.e. the real attribute fetched internally,
-    which may be mangled for private attributes.
-    """
-    if attr == argval:
-        return True
-    if not attr.startswith("__"):
-        return False
-    return bool(re.match(r"^_\w+%s$" % attr, argval))
 
 
 def node_linenos(node):

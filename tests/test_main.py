@@ -20,6 +20,7 @@ import unittest
 from collections import defaultdict, namedtuple
 from random import shuffle
 import pytest
+from executing._utils import mangled_name
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -676,23 +677,14 @@ def sample_files(samples):
 )
 @pytest.mark.skipif(sys.version_info<(3,),reason="no 2.7 support")
 def test_small_samples(full_filename, result_filename):
-    skip_sentinel = [
-        "load_deref",
-        "4851dc1b626a95e97dbe0c53f96099d165b755dd1bd552c6ca771f7bca6d30f5",
-        "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
-        "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
-        "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
-    ]
+
+
 
     skip_annotations = [
         "d98e27d8963331b58e4e6b84c7580dafde4d9e2980ad4277ce55e6b186113c1d",
         "9b3db37076d3c7c76bdfd9badcc70d8047584433e1eea89f45014453d58bbc43",
     ]
 
-    
-
-    if any(s in full_filename for s in skip_sentinel) and sys.version_info < (3, 11):
-        pytest.xfail("SentinelNodeFinder does not find some of the nodes (maybe a bug)")
 
     if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
         pytest.xfail("no `from __future__ import annotations`")
@@ -992,6 +984,7 @@ class TestFiles:
                     p()
 
                     p("ast node:")
+                    p(mangled_name(node))
                     p(ast_dump(node, indent=4))
 
                     parents = []
@@ -1327,8 +1320,8 @@ class TestFiles:
             # `argval` isn't set for all relevant instructions in python 2
             # The relation between `ast.Name` and `argval` is already
             # covered by the verifier and much more complex in python 3.11 
-            if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
-                assert inst.argval == node.id, (inst, ast.dump(node))
+            if isinstance(node, ast.Name) and (PY3 or inst.argval) and inst.opname != "CALL_INTRINSIC_1":
+                assert  mangled_name(node) == inst.argval , (inst, ast.dump(node))
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)

@@ -12,7 +12,8 @@ from littleutils import SimpleNamespace
 import executing.executing
 from executing import Source, NotOneValueFound
 from executing._exceptions import KnownIssue
-from executing.executing import is_ipython_cell_code, attr_names_match, is_rewritten_by_pytest
+from executing.executing import is_ipython_cell_code, is_rewritten_by_pytest
+from executing._utils import get_instructions
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -53,20 +54,6 @@ def test_ipython_cell_code():
             co_filename="tmp/ipykernel_3",
         )
     )
-
-
-def test_attr_names_match():
-    assert attr_names_match("foo", "foo")
-
-    assert not attr_names_match("foo", "_foo")
-    assert not attr_names_match("foo", "__foo")
-    assert not attr_names_match("_foo", "foo")
-    assert not attr_names_match("__foo", "foo")
-
-    assert attr_names_match("__foo", "_Class__foo")
-    assert not attr_names_match("_Class__foo", "__foo")
-    assert not attr_names_match("__foo", "Class__foo")
-    assert not attr_names_match("__foo", "_Class_foo")
 
 
 def test_source_file_text_change(tmpdir):
@@ -162,12 +149,17 @@ ex = Source.executing(frame)
     assert ex.source.text == fake_text
 
 
-if sys.version_info >= (3, 11):
-    from executing._position_node_finder import mangled_name
-    from textwrap import indent
-    import dis
+from executing._utils import mangled_name
+import dis
 
-    def test_mangled_name():
+if sys.version_info < (3,):
+    def indent(s,prefix):
+        return prefix + s.replace("\n","\n"+prefix)
+else:
+    from textwrap import indent
+
+@pytest.mark.skipif(sys.version_info < (3,), reason="argval of some Instructions is None")
+def test_mangled_name():
         def result(*code_levels):
             code = ""
             for i, level in enumerate(code_levels):
@@ -179,25 +171,31 @@ if sys.version_info >= (3, 11):
                 for child in ast.iter_child_nodes(parent):
                     child.parent = parent
 
-            tree_names = {
-                mangled_name(n)
-                for n in ast.walk(tree)
-                if isinstance(
-                    n,
-                    (
+
+            ast_types=(
                         ast.Name,
                         ast.Attribute,
                         ast.alias,
                         ast.FunctionDef,
                         ast.ClassDef,
-                        ast.AsyncFunctionDef,
                         ast.ExceptHandler,
-                    ),
+                    )
+            if sys.version_info>=(3,):
+                ast_types+=(                        ast.AsyncFunctionDef,)
+
+            tree_names = {
+                mangled_name(n)
+                for n in ast.walk(tree)
+                if isinstance(
+                    n,
+                ast_types
+                    ,
                 )
             }
 
             def collect_names(code):
-                for instruction in dis.get_instructions(code):
+                before=None
+                for instruction in get_instructions(code):
                     if instruction.opname in (
                         "STORE_NAME",
                         "LOAD_NAME",
@@ -214,11 +212,15 @@ if sys.version_info >= (3, 11):
                         # IMPORT_FROM(_Test__submodule11c)
                         # STORE_NAME(_Test__subc11)
 
+                        if instruction.opname=="LOAD_ATTR" and before is not None  and before.opname == "IMPORT_NAME":
+                            continue
+
                         name = instruction.argval
                         if name in ("__module__", "__qualname__", "__name__"):
                             continue
 
                         yield name
+                    before=instruction
 
                 for const in code.co_consts:
                     if isinstance(const, type(code)):
@@ -394,6 +396,14 @@ for __var in [1]:
             "def a(self):",
             "self.__thing",
         ) == {"Test","_","a", "self", "__thing"}
+
+
+        assert result(
+        "@__thing\n"
+        "class Test:\n"
+            "    pass"
+        )== {"Test","__thing"}
+    
 
 
 def test_pytest_rewrite():
