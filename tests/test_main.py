@@ -1194,6 +1194,7 @@ class TestFiles:
                     # convert list to tuple
                     continue
 
+
             frame = C()
             frame.f_lasti = inst.offset
             frame.f_code = code
@@ -1319,6 +1320,10 @@ class TestFiles:
                     for stmt in source.statements_at_line(lineno)
                 ):
                     continue
+
+                if sys.version_info < (3,8): 
+                    if inst.opname == "LOAD_GLOBAL" and inst.argval=="StopAsyncIteration":
+                        continue
 
                 if (
                     sys.version_info >= (3, 12)

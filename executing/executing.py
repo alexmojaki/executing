@@ -573,9 +573,6 @@ class SentinelNodeFinder(object):
                 if statement_containing_node(node) == stmt
             }
 
-            print(instruction)
-
-            print(exprs)
 
             if ctx == ast.Store:
                 # No special bytecode tricks here.
