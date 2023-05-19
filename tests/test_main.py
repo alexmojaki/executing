@@ -798,12 +798,6 @@ class TestFiles:
 
         print("check %s"%filename)
 
-        if PY3 and sys.version_info < (3, 11):
-            code = compile(source.text, filename, "exec", dont_inherit=True)
-            for subcode, qualname in find_qualnames(code):
-                if not qualname.endswith(">"):
-                    code_qualname = source.code_qualname(subcode)
-                    assert code_qualname == qualname
 
         nodes = defaultdict(list)
         decorators = defaultdict(list)
@@ -824,7 +818,7 @@ class TestFiles:
                 decorators[(node.lineno, node.name)] = []
 
         try:
-            code = compile(source.tree, source.filename, "exec")
+            code = compile(source.tree, source.filename, "exec", dont_inherit=True)
         except SyntaxError:
             # for example:
             # SyntaxError: 'return' outside function
@@ -833,6 +827,12 @@ class TestFiles:
         except RecursionError:
             print("skip %s" % filename)
             return 
+
+        if PY3 and sys.version_info < (3, 11):
+            for subcode, qualname in find_qualnames(code):
+                if not qualname.endswith(">"):
+                    code_qualname = source.code_qualname(subcode)
+                    assert code_qualname == qualname
 
         result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
