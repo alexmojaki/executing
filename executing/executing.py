@@ -67,11 +67,15 @@ def only(it):
     # type: (Iterable[T]) -> T
     if isinstance(it, Sized):
         if len(it) != 1:
-            raise NotOneValueFound('Expected one value, found %s' % len(it))
+            raise NotOneValueFound('Expected one value, found %s' % len(it),it)
         # noinspection PyTypeChecker
         return list(it)[0]
 
-    lst = tuple(islice(it, 2))
+    if TESTING:
+        lst=tuple(it)
+    else:
+        lst = tuple(islice(it, 2))
+
     if len(lst) == 0:
         raise NotOneValueFound('Expected one value, found 0')
     if len(lst) > 1:

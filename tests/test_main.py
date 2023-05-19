@@ -1325,6 +1325,15 @@ class TestFiles:
                     if inst.opname == "LOAD_GLOBAL" and inst.argval=="StopAsyncIteration":
                         continue
 
+                if sys.version_info < (3,11): 
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, ast.Attribute) for v in e.values)
+                        and len({v.attr for v in e.values}) == 1
+                    ):
+                        # x.a = y.a = 5
+                        continue
+
                 if (
                     sys.version_info >= (3, 12)
                     and inst.positions.col_offset == inst.positions.end_col_offset == 0
