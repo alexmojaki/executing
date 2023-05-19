@@ -1262,6 +1262,14 @@ class TestFiles:
                     if inst.opname == "LOAD_GLOBAL" and inst.argval=="StopAsyncIteration":
                         continue
 
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, ast.Attribute) for v in e.values)
+                        and len({v.attr for v in e.values}) == 1
+                    ):
+                        # x.a = y.a = 5
+                        continue
+
                 # report more information for debugging
                 print("mapping failed")
 
