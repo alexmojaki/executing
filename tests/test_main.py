@@ -827,7 +827,13 @@ class TestFiles:
         # increase the recursion limit in testing mode, because there are files out there with large ast-nodes
         # example: tests/small_samples/1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc.py
         sys.setrecursionlimit(3000)
-        source = Source.for_filename(filename)
+        try:
+            source = Source.for_filename(filename)
+        except SyntaxError:
+            # wrong encoding
+            print("skip %s"%filename)
+            return
+
 
         if source.tree is None:
             # we could not parse this file (maybe wrong python version)
