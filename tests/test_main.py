@@ -1273,7 +1273,16 @@ class TestFiles:
                         and all(isinstance(v, ast.Attribute) for v in e.values)
                         and len({v.attr for v in e.values}) == 1
                     ):
+                        # problem:
                         # x.a = y.a = 5
+                        continue
+
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, types.CodeType) for v in e.values)
+                    ):
+                        # problem:
+                        # self([len for x in obj], [len for x in unpickled])                                              
                         continue
 
                 # report more information for debugging
@@ -1282,9 +1291,12 @@ class TestFiles:
                 print(e)
                 if isinstance(e, NotOneValueFound):
                     for value in e.values:
-                        print(
+                        if isinstance(value, ast.expr):
+                            print(
                             "value:", ast_dump(value, indent=4, include_attributes=True)
                         )
+                        else:
+                            print("value:",value)
 
                 print("search bytecode", inst)
                 print("in file", source.filename)
