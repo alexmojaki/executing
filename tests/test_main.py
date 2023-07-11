@@ -1026,6 +1026,29 @@ class TestFiles:
                         # type alias names have no associated bytecode
                         continue
 
+                if sys.version_info < (3,11) and not values:
+                    # self([len for x in obj], [len for x in unpickled])
+                    # a node in one list-expression is not found because the code for both
+                    # list expressions is the same and the bytecodes gets only mapped to one list-expression
+                    def inside(node,typ):
+                        while hasattr(node,"parent") and not isinstance(node.parent,typ):
+                            node=node.parent
+
+                        return getattr(node,"parent",None)
+
+                    list_comp=inside(node,ast.ListComp)
+                    stmt=inside(list_comp,ast.stmt)
+                    if stmt is not None:
+                        line=list_comp.lineno
+                        # check if there is more than one ListComp in the statement in the same line
+                        if len([e for e in ast.walk(stmt) if isinstance(e,ast.ListComp) and e.lineno==line])>1:
+                            continue
+                            
+
+                    
+                    
+
+
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
@@ -1337,7 +1360,16 @@ class TestFiles:
                         and all(isinstance(v, ast.Attribute) for v in e.values)
                         and len({v.attr for v in e.values}) == 1
                     ):
+                        # problem:
                         # x.a = y.a = 5
+                        continue
+
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, types.CodeType) for v in e.values)
+                    ):
+                        # problem:
+                        # self([len for x in obj], [len for x in unpickled])                                              
                         continue
 
                 if (
@@ -1354,9 +1386,12 @@ class TestFiles:
                 print(e)
                 if isinstance(e, NotOneValueFound):
                     for value in e.values:
-                        print(
+                        if isinstance(value, ast.expr):
+                            print(
                             "value:", ast_dump(value, indent=4, include_attributes=True)
                         )
+                        else:
+                            print("value:",value)
 
                 print("search bytecode", inst)
                 print("in file", source.filename)
