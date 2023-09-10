@@ -404,6 +404,13 @@ class PositionNodeFinder(object):
             # call to the generator function
             return
 
+        if (
+            sys.version_info >= (3, 12)
+            and inst_match(("LOAD_FAST_AND_CLEAR", "STORE_FAST"))
+            and node_match((ast.ListComp, ast.SetComp, ast.DictComp))
+        ):
+            return
+
         if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(
             (ast.ClassDef, ast.Call)
         ):
@@ -529,7 +536,14 @@ class PositionNodeFinder(object):
                 and isinstance(node.parent, ast.AugAssign)
             )
         ) and inst_match(
-            ("LOAD_NAME", "LOAD_FAST", "LOAD_FAST_CHECK", "LOAD_GLOBAL", "LOAD_DEREF"),
+            (
+                "LOAD_NAME",
+                "LOAD_FAST",
+                "LOAD_FAST_CHECK",
+                "LOAD_GLOBAL",
+                "LOAD_DEREF",
+                "LOAD_FROM_DICT_OR_DEREF",
+            ),
             argval=mangled_name(node),
         ):
             return

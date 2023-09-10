@@ -570,7 +570,8 @@ class TestStuff(unittest.TestCase):
                 a(b(c()))
 
     def test_listcomp(self):
-        if sys.version_info >= (3, 11):
+        if (3, 11) <= sys.version_info < (3, 12):
+            # ListComp is inlined in 3.12
             result = [calling_expression() for e in [1]]
             self.assertIsInstance(result[0], ast.ListComp)
 
@@ -1093,6 +1094,7 @@ class TestFiles:
                     and inst.opname
                     in (
                         "LOAD_GLOBAL",
+                        "LOAD_FROM_DICT_OR_DEREF",
                         "STORE_ATTR",
                         "DELETE_ATTR",
                         "DELETE_NAME",
