@@ -5,6 +5,7 @@ from types import CodeType, FrameType
 from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
+from ._utils import mangled_name
 
 from functools import lru_cache
 
@@ -23,49 +24,6 @@ def parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
 def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     yield node
     yield from parents(node)
-
-
-def mangled_name(node: EnhancedAST) -> str:
-    """
-
-    Parameters:
-        node: the node which should be mangled
-        name: the name of the node
-
-    Returns:
-        The mangled name of `node`
-    """
-    if isinstance(node, ast.Attribute):
-        name = node.attr
-    elif isinstance(node, ast.Name):
-        name = node.id
-    elif isinstance(node, (ast.alias)):
-        name = node.asname or node.name.split(".")[0]
-    elif isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
-        name = node.name
-    elif isinstance(node, ast.ExceptHandler):
-        assert node.name
-        name = node.name
-    else:
-        raise TypeError("no node to mangle")
-
-    if name.startswith("__") and not name.endswith("__"):
-
-        parent,child=node.parent,node
-
-        while not (isinstance(parent,ast.ClassDef) and child not in parent.bases):
-            if not hasattr(parent,"parent"):
-                break # pragma: no mutate
-
-            parent,child=parent.parent,parent
-        else:
-            class_name=parent.name.lstrip("_")
-            if class_name!="":
-                return "_" + class_name + name
-
-            
-
-    return name
 
 
 @lru_cache(128) # pragma: no mutate
@@ -176,21 +134,24 @@ class PositionNodeFinder(object):
 
                 # index    opname
                 # ------------------
-                # index-4  PRECALL
+                # index-4  PRECALL     (only in 3.11)
                 # index-2  CACHE
                 # index    CALL        <- the call instruction
                 # ...      CACHE       some CACHE instructions
 
                 # maybe multiple other bytecode blocks for other decorators
-                # index-4  PRECALL
+                # index-4  PRECALL     (only in 3.11)
                 # index-2  CACHE
                 # index    CALL        <- index of the next loop
                 # ...      CACHE       some CACHE instructions
 
                 # index+x  STORE_*     the ast-node of this instruction points to the decorated thing
 
-                if self.opname(index - 4) != "PRECALL" or self.opname(index) != "CALL": # pragma: no mutate
-                    break # pragma: no mutate
+                if not (
+                    (self.opname(index - 4) == "PRECALL" or sys.version_info >= (3, 12))
+                    and self.opname(index) == "CALL"
+                ):  # pragma: no mutate
+                    break  # pragma: no mutate
 
                 index += 2
 
@@ -205,7 +166,8 @@ class PositionNodeFinder(object):
                     self.decorator = node
                     return
 
-                index += 4
+                if sys.version_info < (3, 12):
+                    index += 4
 
     def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
         if instruction.opname in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
@@ -278,6 +240,14 @@ class PositionNodeFinder(object):
             # This last element could be anything and gets dificult to verify.
 
             raise KnownIssue("store __classcell__")
+
+        if (
+            instruction.opname == "CALL"
+            and not isinstance(node,ast.Call)
+            and any(isinstance(p, ast.Assert) for p in parents(node))
+            and sys.version_info >= (3, 11, 2)
+        ):
+            raise KnownIssue("exception generation maps to condition")
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
@@ -410,6 +380,7 @@ class PositionNodeFinder(object):
         if (
             (
                 inst_match("LOAD_METHOD", argval="join")
+                or inst_match("LOAD_ATTR", argval="join")  # 3.12
                 or inst_match(("CALL", "BUILD_STRING"))
             )
             and node_match(ast.BinOp, left=ast.Constant, op=ast.Mod)
@@ -495,9 +466,14 @@ class PositionNodeFinder(object):
         ):
             return
 
-        if inst_match(("JUMP_IF_TRUE_OR_POP", "JUMP_IF_FALSE_OR_POP")) and node_match(
-            ast.BoolOp
-        ):
+        if inst_match(
+            (
+                "JUMP_IF_TRUE_OR_POP",
+                "JUMP_IF_FALSE_OR_POP",
+                "POP_JUMP_IF_TRUE",
+                "POP_JUMP_IF_FALSE",
+            )
+        ) and node_match(ast.BoolOp):
             # and/or short circuit
             return
 
@@ -511,7 +487,8 @@ class PositionNodeFinder(object):
                 and isinstance(node.parent, ast.AugAssign)
             )
         ) and inst_match(
-            ("LOAD_NAME", "LOAD_FAST", "LOAD_GLOBAL", "LOAD_DEREF"), argval=mangled_name(node)
+            ("LOAD_NAME", "LOAD_FAST", "LOAD_FAST_CHECK", "LOAD_GLOBAL", "LOAD_DEREF"),
+            argval=mangled_name(node),
         ):
             return
 
@@ -519,6 +496,26 @@ class PositionNodeFinder(object):
             ("DELETE_NAME", "DELETE_GLOBAL", "DELETE_DEREF"), argval=mangled_name(node)
         ):
             return
+
+        # 3.12
+        if node_match(ast.UnaryOp, op=ast.UAdd) and inst_match(
+            "CALL_INTRINSIC_1", argval=5
+        ):
+            return
+
+        if node_match(ast.Subscript) and inst_match("BINARY_SLICE"):
+            return
+
+        if node_match(ast.ImportFrom) and inst_match(
+            "CALL_INTRINSIC_1", argval=2
+        ):
+            return
+
+        if (node_match(ast.Yield) or isinstance(node.parent,ast.GeneratorExp)) and inst_match(
+            "CALL_INTRINSIC_1", argval=4
+        ):
+            return
+
 
         # old verifier
 

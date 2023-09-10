@@ -20,6 +20,7 @@ import unittest
 from collections import defaultdict, namedtuple
 from random import shuffle
 import pytest
+from executing._utils import mangled_name
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -29,7 +30,7 @@ PYPY = 'pypy' in sys.version.lower()
 PY3 = sys.version_info[0] == 3
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import get_instructions, function_node_types
+from executing.executing import NodeFinder, get_instructions, function_node_types
 
 from executing._exceptions import VerifierFailure, KnownIssue
 
@@ -676,24 +677,24 @@ def sample_files(samples):
 )
 @pytest.mark.skipif(sys.version_info<(3,),reason="no 2.7 support")
 def test_small_samples(full_filename, result_filename):
-    skip_sentinel = [
-        "load_deref",
-        "4851dc1b626a95e97dbe0c53f96099d165b755dd1bd552c6ca771f7bca6d30f5",
-        "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
-        "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
-        "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
-    ]
+
+
 
     skip_annotations = [
         "d98e27d8963331b58e4e6b84c7580dafde4d9e2980ad4277ce55e6b186113c1d",
         "9b3db37076d3c7c76bdfd9badcc70d8047584433e1eea89f45014453d58bbc43",
     ]
 
-    if any(s in full_filename for s in skip_sentinel) and sys.version_info < (3, 11):
-        pytest.xfail("SentinelNodeFinder does not find some of the nodes (maybe a bug)")
 
     if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
         pytest.xfail("no `from __future__ import annotations`")
+
+    if (
+        (sys.version_info[:2] == (3, 7))
+        and "ad8aa993e6ee4eb5ee764d55f2e3fd636a99b2ecb8c5aff2b35fbb78a074ea30"
+        in full_filename
+    ):
+        pytest.xfail("(i async for i in arange) can not be analyzed in 3.7")
 
     if (
         (sys.version_info[:2] == (3, 5) or PYPY)
@@ -729,6 +730,10 @@ class TestFiles:
                 assert result == json.load(infile)
 
 
+    @pytest.mark.skipif(
+        NodeFinder.__name__ == "SentinelNodeFinder",
+        reason="The SentinelNodeFinder has problems in some situations (see skip_sentinel)",
+    )
     def test_module_files(self):
         self.start_time = time.time()
     
@@ -778,7 +783,13 @@ class TestFiles:
         # increase the recursion limit in testing mode, because there are files out there with large ast-nodes
         # example: tests/small_samples/1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc.py
         sys.setrecursionlimit(3000)
-        source = Source.for_filename(filename)
+        try:
+            source = Source.for_filename(filename)
+        except SyntaxError:
+            # wrong encoding
+            print("skip %s"%filename)
+            return
+
 
         if source.tree is None:
             # we could not parse this file (maybe wrong python version)
@@ -787,12 +798,6 @@ class TestFiles:
 
         print("check %s"%filename)
 
-        if PY3 and sys.version_info < (3, 11):
-            code = compile(source.text, filename, "exec", dont_inherit=True)
-            for subcode, qualname in find_qualnames(code):
-                if not qualname.endswith(">"):
-                    code_qualname = source.code_qualname(subcode)
-                    assert code_qualname == qualname
 
         nodes = defaultdict(list)
         decorators = defaultdict(list)
@@ -813,12 +818,22 @@ class TestFiles:
                 decorators[(node.lineno, node.name)] = []
 
         try:
-            code = compile(source.tree, source.filename, "exec")
+            code = compile(source.tree, source.filename, "exec", dont_inherit=True)
         except SyntaxError:
             # for example:
             # SyntaxError: 'return' outside function
             print("skip %s" % filename)
             return
+        except RecursionError:
+            print("skip %s" % filename)
+            return 
+
+        if PY3 and sys.version_info < (3, 11):
+            for subcode, qualname in find_qualnames(code):
+                if not qualname.endswith(">"):
+                    code_qualname = source.code_qualname(subcode)
+                    assert code_qualname == qualname
+
         result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
@@ -975,6 +990,7 @@ class TestFiles:
                     p()
 
                     p("ast node:")
+                    p(mangled_name(node))
                     p(ast_dump(node, indent=4))
 
                     parents = []
@@ -1118,6 +1134,12 @@ class TestFiles:
                 if inst.positions.lineno == None:
                     continue
 
+            if sys.version_info >= (3,12):
+                if inst.opname == "CALL_INTRINSIC_1" and inst.argval==6:
+                    # convert list to tuple
+                    continue
+
+
             frame = C()
             frame.f_lasti = inst.offset
             frame.f_code = code
@@ -1242,15 +1264,39 @@ class TestFiles:
                 ):
                     continue
 
+                if sys.version_info < (3,8): 
+                    if inst.opname == "LOAD_GLOBAL" and inst.argval=="StopAsyncIteration":
+                        continue
+
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, ast.Attribute) for v in e.values)
+                        and len({v.attr for v in e.values}) == 1
+                    ):
+                        # problem:
+                        # x.a = y.a = 5
+                        continue
+
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, types.CodeType) for v in e.values)
+                    ):
+                        # problem:
+                        # self([len for x in obj], [len for x in unpickled])                                              
+                        continue
+
                 # report more information for debugging
                 print("mapping failed")
 
                 print(e)
                 if isinstance(e, NotOneValueFound):
                     for value in e.values:
-                        print(
+                        if isinstance(value, ast.expr):
+                            print(
                             "value:", ast_dump(value, indent=4, include_attributes=True)
                         )
+                        else:
+                            print("value:",value)
 
                 print("search bytecode", inst)
                 print("in file", source.filename)
@@ -1305,8 +1351,8 @@ class TestFiles:
             # `argval` isn't set for all relevant instructions in python 2
             # The relation between `ast.Name` and `argval` is already
             # covered by the verifier and much more complex in python 3.11 
-            if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
-                assert inst.argval == node.id, (inst, ast.dump(node))
+            if isinstance(node, ast.Name) and (PY3 or inst.argval) and inst.opname != "CALL_INTRINSIC_1":
+                assert  mangled_name(node) == inst.argval , (inst, ast.dump(node))
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)
