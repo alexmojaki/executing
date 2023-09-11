@@ -968,6 +968,17 @@ class TestFiles:
                     ):
                         continue
 
+                if sys.version_info >= (3, 12):
+                    if (
+                        isinstance(node, ast.Call)
+                        and isinstance(node.func, ast.Name)
+                        and node.func.id == "super"
+                    ):
+                        # super optimization
+                        continue
+
+
+
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
@@ -1095,6 +1106,7 @@ class TestFiles:
                     in (
                         "LOAD_GLOBAL",
                         "LOAD_FROM_DICT_OR_DEREF",
+                        "LOAD_SUPER_ATTR",
                         "STORE_ATTR",
                         "DELETE_ATTR",
                         "DELETE_NAME",

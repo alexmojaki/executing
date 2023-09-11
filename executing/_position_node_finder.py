@@ -263,6 +263,37 @@ class PositionNodeFinder(object):
             # TODO: investigate
             raise KnownIssue("pattern matching ranges seems to be wrong")
 
+        if (
+            sys.version_info >= (3, 12)
+            and isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "super"
+        ):
+            # super is optimized to some instructions which do not map nicely to a Call
+
+            # find the enclosing function
+            func = node.parent
+            while hasattr(func, "parent") and not isinstance(
+                func, (ast.AsyncFunctionDef, ast.FunctionDef)
+            ):
+
+                func = func.parent
+
+            # get the first function argument (self/cls)
+            first_arg = None
+
+            if hasattr(func, "args"):
+                args = [*func.args.posonlyargs, *func.args.args]
+                if args:
+                    first_arg = args[0].arg
+
+            if (instruction.opname, instruction.argval) in [
+                ("LOAD_DEREF", "__class__"),
+                ("LOAD_FAST", first_arg),
+                ("LOAD_DEREF", first_arg),
+            ]:
+                raise KnownIssue("super optimization")
+
         if self.is_except_cleanup(instruction, node):
             raise KnownIssue("exeption cleanup does not belong to the last node in a except block")
 
@@ -599,7 +630,7 @@ class PositionNodeFinder(object):
                 UNARY_INVERT=ast.Invert,
             )[op_name]
             extra_filter = lambda e: isinstance(cast(ast.UnaryOp, e).op, op_type)
-        elif op_name in ("LOAD_ATTR", "LOAD_METHOD", "LOOKUP_METHOD"):
+        elif op_name in ("LOAD_ATTR", "LOAD_METHOD", "LOOKUP_METHOD","LOAD_SUPER_ATTR"):
             typ = ast.Attribute
             ctx = ast.Load
             extra_filter = lambda e: mangled_name(e) == instruction.argval
