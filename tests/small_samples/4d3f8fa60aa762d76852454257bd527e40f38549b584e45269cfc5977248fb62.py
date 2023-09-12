@@ -1,0 +1,1 @@
+type ConstrainedGenericAlias[LongName: (str,)] = list

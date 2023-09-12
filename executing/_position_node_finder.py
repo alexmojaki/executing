@@ -46,8 +46,10 @@ def mangled_name(node: EnhancedAST) -> str:
     elif isinstance(node, ast.ExceptHandler):
         assert node.name
         name = node.name
+    elif sys.version_info >= (3,12) and isinstance(node,ast.TypeVar):
+        name=node.name
     else:
-        raise TypeError("no node to mangle")
+        raise TypeError("no node to mangle for type "+repr(type(node)))
 
     if name.startswith("__") and not name.endswith("__"):
 
@@ -608,6 +610,83 @@ class PositionNodeFinder(object):
             ) and inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_ASYNC_GEN_WRAP"):
                 return
 
+        if sys.version_info >= (3, 12):
+            if node_match(ast.Name) and inst_match("LOAD_DEREF",argval="__classdict__"):
+                return
+
+            if node_match(ast.TypeVar) and (
+                inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEVAR")
+                or inst_match(
+                    "CALL_INTRINSIC_2", argrepr="INTRINSIC_TYPEVAR_WITH_BOUND"
+                )
+                or inst_match(
+                    "CALL_INTRINSIC_2", argrepr="INTRINSIC_TYPEVAR_WITH_CONSTRAINTS"
+                )
+                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=mangled_name(node))
+            ):
+                return
+
+            if node_match(ast.TypeVarTuple) and (
+                inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEVARTUPLE")
+                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=node.name)
+            ):
+                return
+
+            if node_match(ast.ParamSpec) and (
+                inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_PARAMSPEC")
+
+                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=node.name)):
+                return
+
+
+            if node_match(ast.TypeAlias):
+                if(
+                    inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEALIAS")
+                    or inst_match(
+                        ("STORE_NAME", "STORE_FAST", "STORE_DEREF"), argrepr=node.name.id
+                    )
+                    or inst_match("CALL")
+                ):
+                    return
+
+
+            if node_match(ast.ClassDef) and node.type_params:
+                if inst_match(
+                    ("STORE_DEREF", "LOAD_DEREF", "LOAD_FROM_DICT_OR_DEREF"),
+                    argrepr=".type_params",
+                ):
+                    return
+
+                if inst_match(("STORE_FAST", "LOAD_FAST"), argrepr=".generic_base"):
+                    return
+
+                if inst_match(
+                    "CALL_INTRINSIC_1", argrepr="INTRINSIC_SUBSCRIPT_GENERIC"
+                ):
+                    return
+
+                if inst_match("LOAD_DEREF",argval="__classdict__"):
+                    return
+
+            if node_match((ast.FunctionDef,ast.AsyncFunctionDef)) and node.type_params:
+                if inst_match("CALL"):
+                    return
+
+                if inst_match(
+                    "CALL_INTRINSIC_2", argrepr="INTRINSIC_SET_FUNCTION_TYPE_PARAMS"
+                ):
+                    return
+
+                if inst_match("LOAD_FAST",argval=".defaults"):
+                    return
+
+                if inst_match("LOAD_FAST",argval=".kwdefaults"):
+                    return
+
+            if inst_match("STORE_NAME", argval="__classdictcell__"):
+                # this is a general thing
+                return
+
 
         # old verifier
 
@@ -682,11 +761,26 @@ class PositionNodeFinder(object):
     def opname(self, index: int) -> str:
         return self.instruction(index).opname
 
+    extra_node_types=()
+    if sys.version_info >= (3,12):
+        extra_node_types = (ast.type_param,)
+
     def find_node(
         self,
         index: int,
-        match_positions: Sequence[str]=("lineno", "end_lineno", "col_offset", "end_col_offset"),
-        typ: tuple[Type, ...]=(ast.expr, ast.stmt, ast.excepthandler, ast.pattern),
+        match_positions: Sequence[str] = (
+            "lineno",
+            "end_lineno",
+            "col_offset",
+            "end_col_offset",
+        ),
+        typ: tuple[Type, ...] = (
+            ast.expr,
+            ast.stmt,
+            ast.excepthandler,
+            ast.pattern,
+            *extra_node_types,
+        ),
     ) -> EnhancedAST:
         position = self.instruction(index).positions
         assert position is not None and position.lineno is not None

@@ -82,6 +82,9 @@ def is_deadcode(node):
     if isinstance(node, ast.ExceptHandler):
         node = node.body[0]
 
+    if sys.version_info >= (3,12) and isinstance(node.parent,ast.TypeAlias):
+        node = node.parent
+
     if (
         sys.version_info >= (3, 6)
         and isinstance(node.parent, ast.AnnAssign)

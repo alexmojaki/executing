@@ -51,23 +51,24 @@ def inspect_opcode(bytecode, index, lineno):
 
     try:
         ex = Source.executing(frame)
-        result = "[green]" + type(ex.node).__name__
-        if hasattr(ex.node, "name"):
-            result += "(" + ex.node.name + ")"
-        elif hasattr(ex.node, "id"):
-            result += "(" + ex.node.id + ")"
-        elif hasattr(ex.node, "attr"):
-            result += "(." + ex.node.attr + ")"
-        elif hasattr(ex.node, "value"):
-            result += f"({ex.node.value})"
-
-        if ex.decorator:
-            result += " @%s" % ex.decorator
-        return result
     except RuntimeError:
         raise
     except Exception as e:
         return "[red]" + type(e).__name__ + ": " + str(e).split("\n")[0]
+
+    result = "[green]" + type(ex.node).__name__
+    if hasattr(ex.node, "name"):
+        result += "(" + str(ex.node.name) + ")"
+    elif hasattr(ex.node, "id"):
+        result += "(" + ex.node.id + ")"
+    elif hasattr(ex.node, "attr"):
+        result += "(." + ex.node.attr + ")"
+    elif hasattr(ex.node, "value"):
+        result += f"({ex.node.value})"
+
+    if ex.decorator:
+        result += " @%s" % ex.decorator
+    return result
         
 
 

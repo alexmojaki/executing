@@ -23,7 +23,7 @@ import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from tests.utils import tester, subscript_item, in_finally, start_position, end_position
+from .utils import tester, subscript_item, in_finally, start_position, end_position
 
 PYPY = 'pypy' in sys.version.lower()
 PY3 = sys.version_info[0] == 3
@@ -977,7 +977,11 @@ class TestFiles:
                         # super optimization
                         continue
 
-
+                    if isinstance(node, ast.Name) and isinstance(
+                        node.parent, ast.TypeAlias
+                    ):
+                        # type alias names have no associated bytecode
+                        continue
 
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
@@ -1273,6 +1277,14 @@ class TestFiles:
                 if any(
                     isinstance(stmt, (ast.AugAssign, ast.Import))
                     for stmt in source.statements_at_line(lineno)
+                ):
+                    continue
+
+                if (
+                    sys.version_info >= (3, 12)
+                    and inst.positions.col_offset == inst.positions.end_col_offset == 0
+                    and inst.argval
+                    in ("__type_params__", ".type_params", "__classdict__")
                 ):
                     continue
 
