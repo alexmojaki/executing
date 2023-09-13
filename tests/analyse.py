@@ -124,7 +124,7 @@ def inspect(bc):
                 str(i.offset),
                 "%s:%s" % (i.positions.lineno, i.positions.col_offset),
                 "%s:%s" % (i.positions.end_lineno, i.positions.end_col_offset),
-                highlighter("%s(%s)" % (i.opname, i.argval)),
+                highlighter("%s(%s)" % (i.opname, i.argrepr)),
                 ex,
                 style="on grey19" if i.opname=="CACHE" else "on grey30"
                 #**({"style":"on white" } if i.opname=="CACHE" else {})

@@ -610,7 +610,6 @@ class PositionNodeFinder(object):
             ) and inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_ASYNC_GEN_WRAP"):
                 return
 
-        if sys.version_info >= (3, 12):
             if node_match(ast.Name) and inst_match("LOAD_DEREF",argval="__classdict__"):
                 return
 
@@ -685,6 +684,18 @@ class PositionNodeFinder(object):
 
             if inst_match("STORE_NAME", argval="__classdictcell__"):
                 # this is a general thing
+                return
+
+
+            # f-strings
+
+            if node_match(ast.JoinedStr) and (
+                inst_match("LOAD_ATTR", argval="join")
+                or inst_match(("LIST_APPEND", "CALL"))
+            ):
+                return
+
+            if node_match(ast.FormattedValue) and inst_match("FORMAT_VALUE"):
                 return
 
 

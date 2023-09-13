@@ -683,6 +683,7 @@ def test_small_samples(full_filename, result_filename):
         "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
         "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
         "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
+        "206e0609ff0589a0a32422ee902f09156af91746e27157c32c9595d12072f92a",
     ]
 
     skip_annotations = [
