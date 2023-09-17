@@ -1992,6 +1992,10 @@
         "src[pos]"
     ],
     [
+        "BUILD_STRING",
+        "f\"Found invalid character {src[pos]!r}\""
+    ],
+    [
         "CALL",
         "suffixed_err(src, pos, f\"Found invalid character {src[pos]!r}\")"
     ],
@@ -2038,6 +2042,10 @@
     [
         "LOAD_FAST",
         "expect"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Expected {expect!r}\""
     ],
     [
         "CALL",
@@ -2304,6 +2312,10 @@
         "key"
     ],
     [
+        "BUILD_STRING",
+        "f\"Cannot declare {key} twice\""
+    ],
+    [
         "CALL",
         "suffixed_err(src, pos, f\"Cannot declare {key} twice\")"
     ],
@@ -2522,6 +2534,10 @@
     [
         "LOAD_FAST",
         "key"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Cannot mutate immutable namespace {key}\""
     ],
     [
         "CALL",
@@ -2812,6 +2828,10 @@
         "cont_key"
     ],
     [
+        "BUILD_STRING",
+        "f\"Cannot redefine namespace {cont_key}\""
+    ],
+    [
         "CALL",
         "suffixed_err(src, pos, f\"Cannot redefine namespace {cont_key}\")"
     ],
@@ -2886,6 +2906,10 @@
     [
         "LOAD_FAST",
         "abs_key_parent"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Cannot mutate immutable namespace {abs_key_parent}\""
     ],
     [
         "CALL",
@@ -4036,6 +4060,10 @@
         "key"
     ],
     [
+        "BUILD_STRING",
+        "f\"Cannot mutate immutable namespace {key}\""
+    ],
+    [
         "CALL",
         "suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")"
     ],
@@ -4086,6 +4114,10 @@
     [
         "LOAD_FAST",
         "key_stem"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Duplicate inline table key {key_stem!r}\""
     ],
     [
         "CALL",
@@ -5316,6 +5348,10 @@
         "char"
     ],
     [
+        "BUILD_STRING",
+        "f\"Illegal character {char!r}\""
+    ],
+    [
         "CALL",
         "suffixed_err(src, pos, f\"Illegal character {char!r}\")"
     ],
@@ -5952,6 +5988,10 @@
         "coord_repr(src, pos)"
     ],
     [
+        "BUILD_STRING",
+        "f\"{msg} (at {coord_repr(src, pos)})\""
+    ],
+    [
         "CALL",
         "TOMLDecodeError(f\"{msg} (at {coord_repr(src, pos)})\")"
     ],
@@ -6054,6 +6094,10 @@
     [
         "LOAD_FAST",
         "column"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"line {line}, column {column}\""
     ],
     [
         "LOAD_FAST",

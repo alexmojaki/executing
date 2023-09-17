@@ -1192,11 +1192,7 @@
         "self._treetrace_hidden_after_expr"
     ],
     [
-        "CALL",
-        "{f.__name__: partial(f, traced_file)\n                for f in [\n                    self._treetrace_hidden_with_stmt,\n                    self._treetrace_hidden_before_expr,\n                    self._treetrace_hidden_after_expr,\n                ]}"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{f.__name__: partial(f, traced_file)\n                for f in [\n                    self._treetrace_hidden_with_stmt,\n                    self._treetrace_hidden_before_expr,\n                    self._treetrace_hidden_after_expr,\n                ]}"
     ],
     [
@@ -1220,12 +1216,20 @@
         "f"
     ],
     [
-        "LOAD_DEREF",
+        "LOAD_FAST",
         "traced_file"
     ],
     [
         "CALL",
         "partial(f, traced_file)"
+    ],
+    [
+        "STORE_FAST",
+        "{f.__name__: partial(f, traced_file)\n                for f in [\n                    self._treetrace_hidden_with_stmt,\n                    self._treetrace_hidden_before_expr,\n                    self._treetrace_hidden_after_expr,\n                ]}"
+    ],
+    [
+        "STORE_FAST",
+        "{f.__name__: partial(f, traced_file)\n                for f in [\n                    self._treetrace_hidden_with_stmt,\n                    self._treetrace_hidden_before_expr,\n                    self._treetrace_hidden_after_expr,\n                ]}"
     ],
     [
         "LOAD_GLOBAL",
@@ -2996,11 +3000,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(_NodeVisitor, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(_NodeVisitor, self).generic_visit"
     ],
     [
@@ -3120,11 +3120,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(_NodeVisitor, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(_NodeVisitor, self).generic_visit"
     ],
     [
@@ -3204,11 +3200,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(_NodeVisitor, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(_NodeVisitor, self).generic_visit"
     ],
     [

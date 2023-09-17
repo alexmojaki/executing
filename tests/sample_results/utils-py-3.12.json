@@ -492,12 +492,36 @@
         "all_paths"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[f for f in all_paths\n                 if f != IPYTHON_FILE_PATH]"
     ],
     [
         "STORE_FAST",
+        "f"
+    ],
+    [
+        "LOAD_FAST",
+        "f"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "IPYTHON_FILE_PATH"
+    ],
+    [
+        "COMPARE_OP",
+        "f != IPYTHON_FILE_PATH"
+    ],
+    [
+        "LOAD_FAST",
+        "f"
+    ],
+    [
+        "STORE_FAST",
         "all_paths"
+    ],
+    [
+        "STORE_FAST",
+        "[f for f in all_paths\n                 if f != IPYTHON_FILE_PATH]"
     ],
     [
         "LOAD_GLOBAL",
@@ -556,28 +580,8 @@
         "path_leaf(path)"
     ],
     [
-        "LOAD_FAST",
-        "[f for f in all_paths\n                 if f != IPYTHON_FILE_PATH]"
-    ],
-    [
         "STORE_FAST",
-        "f"
-    ],
-    [
-        "LOAD_FAST",
-        "f"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "IPYTHON_FILE_PATH"
-    ],
-    [
-        "COMPARE_OP",
-        "f != IPYTHON_FILE_PATH"
-    ],
-    [
-        "LOAD_FAST",
-        "f"
+        "[f for f in all_paths\n                 if f != IPYTHON_FILE_PATH]"
     ],
     [
         "LOAD_FAST",
@@ -992,11 +996,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(ProtocolEncoder, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(ProtocolEncoder, self).default"
     ],
     [
@@ -1008,7 +1008,7 @@
         "super(ProtocolEncoder, self).default(o)"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "from lib2to3.pgen2.tokenize import cookie_re"
     ],
     [
@@ -1068,19 +1068,11 @@
         "enumerate(f)"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
     ],
     [
-        "CALL",
-        "''.join([\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ])"
-    ],
-    [
-        "CALL",
-        "    with open_with_encoding_check(filename) as f:\n        return ''.join([\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ])"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
     ],
     [
@@ -1100,7 +1092,7 @@
         "i < 2"
     ],
     [
-        "LOAD_DEREF",
+        "LOAD_FAST",
         "cookie_re"
     ],
     [
@@ -1118,6 +1110,30 @@
     [
         "LOAD_FAST",
         "line"
+    ],
+    [
+        "STORE_FAST",
+        "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
+    ],
+    [
+        "STORE_FAST",
+        "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
+    ],
+    [
+        "CALL",
+        "''.join([\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ])"
+    ],
+    [
+        "CALL",
+        "    with open_with_encoding_check(filename) as f:\n        return ''.join([\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ])"
+    ],
+    [
+        "STORE_FAST",
+        "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
+    ],
+    [
+        "STORE_FAST",
+        "[\n            '\\n' if i < 2 and cookie_re.match(line)\n            else line\n            for i, line in enumerate(f)\n        ]"
     ],
     [
         "LOAD_GLOBAL",

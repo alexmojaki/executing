@@ -828,11 +828,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(ArgDefaultDict, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(ArgDefaultDict, self).__init__"
     ],
     [

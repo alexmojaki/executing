@@ -788,59 +788,7 @@
         "str"
     ],
     [
-        "CALL",
-        "{tester(x) for x in [1]}"
-    ],
-    [
-        "CALL",
-        "{tester(y) for y in [1]}"
-    ],
-    [
-        "CALL",
-        "str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "str"
-    ],
-    [
-        "CALL",
-        "{tester(x) for x in [1]}"
-    ],
-    [
-        "CALL",
-        "{tester(x) for x in [1]}"
-    ],
-    [
-        "CALL",
-        "str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "str"
-    ],
-    [
-        "CALL",
-        "{tester(x) for x in [1]}"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "list"
-    ],
-    [
-        "CALL",
-        "(tester(x) for x in [1])"
-    ],
-    [
-        "CALL",
-        "list(tester(x) for x in [1])"
-    ],
-    [
-        "CALL",
-        "str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(x) for x in [1]}"
     ],
     [
@@ -860,7 +808,11 @@
         "tester(x)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(y) for y in [1]}"
     ],
     [
@@ -880,7 +832,19 @@
         "tester(y)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(y) for y in [1]}"
+    ],
+    [
+        "CALL",
+        "str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "str"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(x) for x in [1]}"
     ],
     [
@@ -900,7 +864,11 @@
         "tester(x)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(x) for x in [1]}"
     ],
     [
@@ -920,7 +888,19 @@
         "tester(x)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "CALL",
+        "str([{tester(x) for x in [1]},\n             {tester(x) for x in [1]}])"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "str"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(x) for x in [1]}"
     ],
     [
@@ -938,6 +918,46 @@
     [
         "CALL",
         "tester(x)"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "list"
+    ],
+    [
+        "CALL",
+        "(tester(x) for x in [1])"
+    ],
+    [
+        "CALL",
+        "list(tester(x) for x in [1])"
+    ],
+    [
+        "CALL",
+        "str([{tester(x) for x in [1]}, list(tester(x) for x in [1])])"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(y) for y in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(x) for x in [1]}"
     ],
     [
         "LOAD_FAST",
@@ -1048,11 +1068,7 @@
         "tester([1, 2])"
     ],
     [
-        "CALL",
-        "[tester(x) for x in tester([1, 2])]"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "[tester(x) for x in tester([1, 2])]"
     ],
     [
@@ -1072,6 +1088,14 @@
         "tester(x)"
     ],
     [
+        "STORE_FAST",
+        "[tester(x) for x in tester([1, 2])]"
+    ],
+    [
+        "STORE_FAST",
+        "[tester(x) for x in tester([1, 2])]"
+    ],
+    [
         "STORE_DEREF",
         "x"
     ],
@@ -1088,7 +1112,139 @@
         "tester([5, 6])"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "a"
+    ],
+    [
+        "LOAD_DEREF",
+        "x"
+    ],
+    [
+        "BINARY_OP",
+        "a+x"
+    ],
+    [
         "CALL",
+        "tester(a+x)"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([3, 4])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "b"
+    ],
+    [
+        "LOAD_DEREF",
+        "x"
+    ],
+    [
+        "BINARY_OP",
+        "b+x"
+    ],
+    [
+        "CALL",
+        "tester(b+x)"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([1, 2])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "c"
+    ],
+    [
+        "LOAD_DEREF",
+        "x"
+    ],
+    [
+        "BINARY_OP",
+        "c+x"
+    ],
+    [
+        "CALL",
+        "tester(c+x)"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
         "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1108,7 +1264,55 @@
         "foo()"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_DEREF",
+        "y"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "str"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([5, 6])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1144,11 +1348,11 @@
         "tester([3, 4])"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
@@ -1184,11 +1388,7 @@
         "tester([1, 2])"
     ],
     [
-        "CALL",
-        "{tester(c+x) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(c+x) for c in tester([1, 2])}"
     ],
     [
@@ -1216,23 +1416,27 @@
         "tester(c+x)"
     ],
     [
-        "STORE_DEREF",
-        "y"
+        "STORE_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
     ],
     [
-        "LOAD_GLOBAL",
-        "str"
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
-        "LOAD_GLOBAL",
-        "tester"
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
-        "CALL",
-        "tester([5, 6])"
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
-        "CALL",
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
         "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1252,7 +1456,139 @@
         "tester([5, 6])"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "a"
+    ],
+    [
+        "LOAD_DEREF",
+        "y"
+    ],
+    [
+        "BINARY_OP",
+        "a+y"
+    ],
+    [
         "CALL",
+        "tester(a+y)"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([3, 4])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "b"
+    ],
+    [
+        "LOAD_DEREF",
+        "y"
+    ],
+    [
+        "BINARY_OP",
+        "b+y"
+    ],
+    [
+        "CALL",
+        "tester(b+y)"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([1, 2])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "c"
+    ],
+    [
+        "LOAD_DEREF",
+        "y"
+    ],
+    [
+        "BINARY_OP",
+        "c+y"
+    ],
+    [
+        "CALL",
+        "tester(c+y)"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
         "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1272,7 +1608,163 @@
         "tester([5, 6])"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "a"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "a"
+    ],
+    [
+        "LOAD_DEREF",
+        "x"
+    ],
+    [
+        "BINARY_OP",
+        "a+x"
+    ],
+    [
+        "LOAD_DEREF",
+        "y"
+    ],
+    [
+        "BINARY_OP",
+        "a+x+y"
+    ],
+    [
         "CALL",
+        "tester(a+x+y)"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([3, 4])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "b"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "b"
+    ],
+    [
+        "LOAD_DEREF",
+        "x"
+    ],
+    [
+        "BINARY_OP",
+        "b+x"
+    ],
+    [
+        "LOAD_DEREF",
+        "y"
+    ],
+    [
+        "BINARY_OP",
+        "b+x+y"
+    ],
+    [
+        "CALL",
+        "tester(b+x+y)"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([1, 2])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "c"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "LOAD_FAST",
+        "c"
+    ],
+    [
+        "LOAD_DEREF",
+        "x"
+    ],
+    [
+        "BINARY_OP",
+        "c+x"
+    ],
+    [
+        "LOAD_DEREF",
+        "y"
+    ],
+    [
+        "BINARY_OP",
+        "c+x+y"
+    ],
+    [
+        "CALL",
+        "tester(c+x+y)"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
         "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1292,7 +1784,103 @@
         "bar()"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "z"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "str"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([5, 6])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1328,11 +1916,11 @@
         "tester([3, 4])"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
@@ -1368,11 +1956,7 @@
         "tester([1, 2])"
     ],
     [
-        "CALL",
-        "{tester(c+x) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(c+x) for c in tester([1, 2])}"
     ],
     [
@@ -1400,263 +1984,27 @@
         "tester(c+x)"
     ],
     [
-        "LOAD_FAST",
-        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+        "STORE_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
     ],
     [
         "STORE_FAST",
-        "a"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "a"
-    ],
-    [
-        "LOAD_DEREF",
-        "y"
-    ],
-    [
-        "BINARY_OP",
-        "a+y"
-    ],
-    [
-        "CALL",
-        "tester(a+y)"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([3, 4])"
-    ],
-    [
-        "CALL",
-        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
         "STORE_FAST",
-        "b"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "b"
-    ],
-    [
-        "LOAD_DEREF",
-        "y"
-    ],
-    [
-        "BINARY_OP",
-        "b+y"
-    ],
-    [
-        "CALL",
-        "tester(b+y)"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([1, 2])"
-    ],
-    [
-        "CALL",
-        "{tester(c+y) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(c+y) for c in tester([1, 2])}"
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
         "STORE_FAST",
-        "c"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "c"
-    ],
-    [
-        "LOAD_DEREF",
-        "y"
-    ],
-    [
-        "BINARY_OP",
-        "c+y"
-    ],
-    [
-        "CALL",
-        "tester(c+y)"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
         "STORE_FAST",
-        "a"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "a"
-    ],
-    [
-        "LOAD_DEREF",
-        "x"
-    ],
-    [
-        "BINARY_OP",
-        "a+x"
-    ],
-    [
-        "LOAD_DEREF",
-        "y"
-    ],
-    [
-        "BINARY_OP",
-        "a+x+y"
-    ],
-    [
-        "CALL",
-        "tester(a+x+y)"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([3, 4])"
-    ],
-    [
-        "CALL",
-        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
         "STORE_FAST",
-        "b"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "b"
-    ],
-    [
-        "LOAD_DEREF",
-        "x"
-    ],
-    [
-        "BINARY_OP",
-        "b+x"
-    ],
-    [
-        "LOAD_DEREF",
-        "y"
-    ],
-    [
-        "BINARY_OP",
-        "b+x+y"
-    ],
-    [
-        "CALL",
-        "tester(b+x+y)"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([1, 2])"
-    ],
-    [
-        "CALL",
-        "{tester(c+x+y) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(c+x+y) for c in tester([1, 2])}"
-    ],
-    [
-        "STORE_FAST",
-        "c"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "c"
-    ],
-    [
-        "LOAD_DEREF",
-        "x"
-    ],
-    [
-        "BINARY_OP",
-        "c+x"
-    ],
-    [
-        "LOAD_DEREF",
-        "y"
-    ],
-    [
-        "BINARY_OP",
-        "c+x+y"
-    ],
-    [
-        "CALL",
-        "tester(c+x+y)"
-    ],
-    [
-        "STORE_DEREF",
-        "z"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "str"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([5, 6])"
-    ],
-    [
-        "CALL",
         "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1676,163 +2024,15 @@
         "tester([5, 6])"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
-        "CALL",
-        "str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
-        "LOAD_GLOBAL",
-        "str"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([5, 6])"
-    ],
-    [
-        "CALL",
-        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
-    ],
-    [
-        "CALL",
-        "str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "str"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([5, 6])"
-    ],
-    [
-        "CALL",
-        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
-    ],
-    [
-        "CALL",
-        "str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
-    ],
-    [
-        "STORE_FAST",
-        "a"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "a"
-    ],
-    [
-        "LOAD_DEREF",
-        "x"
-    ],
-    [
-        "BINARY_OP",
-        "a+x"
-    ],
-    [
-        "CALL",
-        "tester(a+x)"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([3, 4])"
-    ],
-    [
-        "CALL",
-        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
-    ],
-    [
-        "STORE_FAST",
-        "b"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "b"
-    ],
-    [
-        "LOAD_DEREF",
-        "x"
-    ],
-    [
-        "BINARY_OP",
-        "b+x"
-    ],
-    [
-        "CALL",
-        "tester(b+x)"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "CALL",
-        "tester([1, 2])"
-    ],
-    [
-        "CALL",
-        "{tester(c+x) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
-        "{tester(c+x) for c in tester([1, 2])}"
-    ],
-    [
-        "STORE_FAST",
-        "c"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "tester"
-    ],
-    [
-        "LOAD_FAST",
-        "c"
-    ],
-    [
-        "LOAD_DEREF",
-        "x"
-    ],
-    [
-        "BINARY_OP",
-        "c+x"
-    ],
-    [
-        "CALL",
-        "tester(c+x)"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1868,11 +2068,11 @@
         "tester([3, 4])"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
@@ -1908,11 +2108,7 @@
         "tester([1, 2])"
     ],
     [
-        "CALL",
-        "{tester(c+y) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(c+y) for c in tester([1, 2])}"
     ],
     [
@@ -1940,7 +2136,55 @@
         "tester(c+y)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL",
+        "str({tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "str"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([5, 6])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -1984,11 +2228,11 @@
         "tester([3, 4])"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
@@ -2032,11 +2276,7 @@
         "tester([1, 2])"
     ],
     [
-        "CALL",
-        "{tester(c+x+y) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(c+x+y) for c in tester([1, 2])}"
     ],
     [
@@ -2072,7 +2312,55 @@
         "tester(c+x+y)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL",
+        "str({tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "str"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "tester"
+    ],
+    [
+        "CALL",
+        "tester([5, 6])"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
@@ -2104,7 +2392,7 @@
         "a+x+y"
     ],
     [
-        "LOAD_DEREF",
+        "LOAD_FAST",
         "z"
     ],
     [
@@ -2124,11 +2412,11 @@
         "tester([3, 4])"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
     ],
     [
@@ -2160,7 +2448,7 @@
         "b+x+y"
     ],
     [
-        "LOAD_DEREF",
+        "LOAD_FAST",
         "z"
     ],
     [
@@ -2180,11 +2468,7 @@
         "tester([1, 2])"
     ],
     [
-        "CALL",
-        "{tester(c+x+y+z) for c in tester([1, 2])}"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{tester(c+x+y+z) for c in tester([1, 2])}"
     ],
     [
@@ -2216,7 +2500,7 @@
         "c+x+y"
     ],
     [
-        "LOAD_DEREF",
+        "LOAD_FAST",
         "z"
     ],
     [
@@ -2226,6 +2510,130 @@
     [
         "CALL",
         "tester(c+x+y+z)"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+x+y+z) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "CALL",
+        "str({tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+x) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+y): {tester(b+y): {tester(c+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+x+y) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y): {tester(b+x+y): {tester(c+x+y) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(c+x+y+z) for c in tester([1, 2])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
+    ],
+    [
+        "STORE_FAST",
+        "{tester(a+x+y+z): {tester(b+x+y+z): {tester(c+x+y+z) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])}"
     ],
     [
         "LOAD_GLOBAL",

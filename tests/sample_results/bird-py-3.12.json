@@ -788,11 +788,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(BirdsEye, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(BirdsEye, self).__init__"
     ],
     [
@@ -984,11 +980,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(BirdsEye, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(BirdsEye, self).compile"
     ],
     [
@@ -2508,7 +2500,7 @@
         "frame.f_locals.copy()"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "f_locals"
     ],
     [
@@ -2520,11 +2512,43 @@
         "code_info.arg_names"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[(name, f_locals.pop(name))\n                         for name in code_info.arg_names\n                         if name]"
     ],
     [
-        "LOAD_DEREF",
+        "STORE_FAST",
+        "name"
+    ],
+    [
+        "LOAD_FAST",
+        "name"
+    ],
+    [
+        "LOAD_FAST",
+        "name"
+    ],
+    [
+        "LOAD_FAST",
+        "f_locals"
+    ],
+    [
+        "LOAD_ATTR",
+        "f_locals.pop"
+    ],
+    [
+        "LOAD_FAST",
+        "name"
+    ],
+    [
+        "CALL",
+        "f_locals.pop(name)"
+    ],
+    [
+        "STORE_FAST",
+        "[(name, f_locals.pop(name))\n                         for name in code_info.arg_names\n                         if name]"
+    ],
+    [
+        "LOAD_FAST",
         "f_locals"
     ],
     [
@@ -2536,7 +2560,35 @@
         "f_locals.items()"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
+        "[\n\n                            # Local variables other than actual arguments. These are variables from\n                            # the enclosing scope. It's handy to treat them like arguments in the UI\n                            it for it in f_locals.items()\n                            if it[0][0] != '.'  # Appears when using nested tuple arguments\n                        ]"
+    ],
+    [
+        "STORE_FAST",
+        "it"
+    ],
+    [
+        "LOAD_FAST",
+        "it"
+    ],
+    [
+        "BINARY_SUBSCR",
+        "it[0]"
+    ],
+    [
+        "BINARY_SUBSCR",
+        "it[0][0]"
+    ],
+    [
+        "COMPARE_OP",
+        "it[0][0] != '.'"
+    ],
+    [
+        "LOAD_FAST",
+        "it"
+    ],
+    [
+        "STORE_FAST",
         "[\n\n                            # Local variables other than actual arguments. These are variables from\n                            # the enclosing scope. It's handy to treat them like arguments in the UI\n                            it for it in f_locals.items()\n                            if it[0][0] != '.'  # Appears when using nested tuple arguments\n                        ]"
     ],
     [
@@ -2560,7 +2612,43 @@
         "arguments"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "[[k, cheap_repr(v)] for k, v in arguments]"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "[[k, cheap_repr(v)] for k, v in arguments]"
+    ],
+    [
+        "STORE_FAST",
+        "k"
+    ],
+    [
+        "STORE_FAST",
+        "v"
+    ],
+    [
+        "LOAD_FAST",
+        "k"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "cheap_repr"
+    ],
+    [
+        "LOAD_FAST",
+        "v"
+    ],
+    [
         "CALL",
+        "cheap_repr(v)"
+    ],
+    [
+        "STORE_FAST",
+        "[[k, cheap_repr(v)] for k, v in arguments]"
+    ],
+    [
+        "STORE_FAST",
         "[[k, cheap_repr(v)] for k, v in arguments]"
     ],
     [
@@ -2700,92 +2788,20 @@
         "inner_calls[enter_info.call_node].append(frame_info.call_id)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
         "[(name, f_locals.pop(name))\n                         for name in code_info.arg_names\n                         if name]"
     ],
     [
         "STORE_FAST",
-        "name"
-    ],
-    [
-        "LOAD_FAST",
-        "name"
-    ],
-    [
-        "LOAD_FAST",
-        "name"
-    ],
-    [
-        "LOAD_DEREF",
-        "f_locals"
-    ],
-    [
-        "LOAD_ATTR",
-        "f_locals.pop"
-    ],
-    [
-        "LOAD_FAST",
-        "name"
-    ],
-    [
-        "CALL",
-        "f_locals.pop(name)"
-    ],
-    [
-        "LOAD_FAST",
         "[\n\n                            # Local variables other than actual arguments. These are variables from\n                            # the enclosing scope. It's handy to treat them like arguments in the UI\n                            it for it in f_locals.items()\n                            if it[0][0] != '.'  # Appears when using nested tuple arguments\n                        ]"
     ],
     [
         "STORE_FAST",
-        "it"
-    ],
-    [
-        "LOAD_FAST",
-        "it"
-    ],
-    [
-        "BINARY_SUBSCR",
-        "it[0]"
-    ],
-    [
-        "BINARY_SUBSCR",
-        "it[0][0]"
-    ],
-    [
-        "COMPARE_OP",
-        "it[0][0] != '.'"
-    ],
-    [
-        "LOAD_FAST",
-        "it"
-    ],
-    [
-        "LOAD_FAST",
         "[[k, cheap_repr(v)] for k, v in arguments]"
     ],
     [
         "STORE_FAST",
-        "k"
-    ],
-    [
-        "STORE_FAST",
-        "v"
-    ],
-    [
-        "LOAD_FAST",
-        "k"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "cheap_repr"
-    ],
-    [
-        "LOAD_FAST",
-        "v"
-    ],
-    [
-        "CALL",
-        "cheap_repr(v)"
+        "[[k, cheap_repr(v)] for k, v in arguments]"
     ],
     [
         "LOAD_GLOBAL",
@@ -3424,11 +3440,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(BirdsEye, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(BirdsEye, self).trace_function"
     ],
     [
@@ -4412,7 +4424,47 @@
         "traced_file.nodes"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "{\n                node.lineno: node\n                for node in traced_file.nodes\n                if isinstance(node, ast.FunctionDef)\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "node"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "isinstance"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "ast"
+    ],
+    [
+        "LOAD_ATTR",
+        "ast.FunctionDef"
+    ],
+    [
         "CALL",
+        "isinstance(node, ast.FunctionDef)"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "LOAD_ATTR",
+        "node.lineno"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "STORE_FAST",
         "{\n                node.lineno: node\n                for node in traced_file.nodes\n                if isinstance(node, ast.FunctionDef)\n            }"
     ],
     [
@@ -4464,44 +4516,8 @@
         "exec(traced_file.code, globs, locs)"
     ],
     [
-        "LOAD_FAST",
-        "{\n                node.lineno: node\n                for node in traced_file.nodes\n                if isinstance(node, ast.FunctionDef)\n            }"
-    ],
-    [
         "STORE_FAST",
-        "node"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "isinstance"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "ast"
-    ],
-    [
-        "LOAD_ATTR",
-        "ast.FunctionDef"
-    ],
-    [
-        "CALL",
-        "isinstance(node, ast.FunctionDef)"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "LOAD_ATTR",
-        "node.lineno"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
+        "{\n                node.lineno: node\n                for node in traced_file.nodes\n                if isinstance(node, ast.FunctionDef)\n            }"
     ],
     [
         "LOAD_FAST",
@@ -4768,7 +4784,79 @@
         "nodes"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
+        "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "node"
+    ],
+    [
+        "STORE_FAST",
+        "_"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "LOAD_ATTR",
+        "node._loops"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "LOAD_ATTR",
+        "node._tree_index"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "LOAD_ATTR",
+        "node._loops"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "[n._tree_index for n in node._loops]"
+    ],
+    [
+        "STORE_FAST",
+        "n"
+    ],
+    [
+        "LOAD_FAST",
+        "n"
+    ],
+    [
+        "LOAD_ATTR",
+        "n._tree_index"
+    ],
+    [
+        "STORE_FAST",
+        "[n._tree_index for n in node._loops]"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
+    ],
+    [
+        "STORE_FAST",
         "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
     ],
     [
@@ -5020,60 +5108,20 @@
         "self._code_infos[code]"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
+        "[n._tree_index for n in node._loops]"
+    ],
+    [
+        "STORE_FAST",
         "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
     ],
     [
         "STORE_FAST",
-        "node"
+        "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
     ],
     [
         "STORE_FAST",
-        "_"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "LOAD_ATTR",
-        "node._loops"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "LOAD_ATTR",
-        "node._tree_index"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "LOAD_ATTR",
-        "node._loops"
-    ],
-    [
-        "CALL",
-        "[n._tree_index for n in node._loops]"
-    ],
-    [
-        "LOAD_FAST",
-        "[n._tree_index for n in node._loops]"
-    ],
-    [
-        "STORE_FAST",
-        "n"
-    ],
-    [
-        "LOAD_FAST",
-        "n"
-    ],
-    [
-        "LOAD_ATTR",
-        "n._tree_index"
+        "{\n                node._tree_index: [n._tree_index for n in node._loops]\n                for node, _ in nodes\n                if node._loops\n            }"
     ],
     [
         "LOAD_FAST",
@@ -6164,7 +6212,23 @@
         "nodes"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
+        "[n[0] for n in nodes]"
+    ],
+    [
+        "STORE_FAST",
+        "n"
+    ],
+    [
+        "LOAD_FAST",
+        "n"
+    ],
+    [
+        "BINARY_SUBSCR",
+        "n[0]"
+    ],
+    [
+        "STORE_FAST",
         "[n[0] for n in nodes]"
     ],
     [
@@ -6404,20 +6468,8 @@
         "html_body.strip('\\n')"
     ],
     [
-        "LOAD_FAST",
-        "[n[0] for n in nodes]"
-    ],
-    [
         "STORE_FAST",
-        "n"
-    ],
-    [
-        "LOAD_FAST",
-        "n"
-    ],
-    [
-        "BINARY_SUBSCR",
-        "n[0]"
+        "[n[0] for n in nodes]"
     ],
     [
         "LOAD_GLOBAL",
@@ -6852,11 +6904,15 @@
         "self.loops.items()"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
     ],
     [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
+        "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
     ],
     [
@@ -6876,11 +6932,7 @@
         "iteration_list"
     ],
     [
-        "CALL",
-        "[iteration.extract_iterations()\n                             for iteration in iteration_list]"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "[iteration.extract_iterations()\n                             for iteration in iteration_list]"
     ],
     [
@@ -6898,6 +6950,38 @@
     [
         "CALL",
         "iteration.extract_iterations()"
+    ],
+    [
+        "STORE_FAST",
+        "[iteration.extract_iterations()\n                             for iteration in iteration_list]"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "[iteration.extract_iterations()\n                             for iteration in iteration_list]"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                tree_index: [iteration.extract_iterations()\n                             for iteration in iteration_list]\n                for tree_index, iteration_list in self.loops.items()\n            }"
     ],
     [
         "STORE_NAME",
@@ -7556,7 +7640,7 @@
         "dict((v, k) for k, v in self.data.items())"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "rev"
     ],
     [
@@ -7568,7 +7652,7 @@
         "len"
     ],
     [
-        "LOAD_DEREF",
+        "LOAD_FAST",
         "rev"
     ],
     [
@@ -7580,7 +7664,39 @@
         "range(len(rev))"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "[safe_qualname(rev[i]) for i in range(len(rev))]"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "safe_qualname"
+    ],
+    [
+        "LOAD_FAST",
+        "rev"
+    ],
+    [
+        "LOAD_FAST",
+        "i"
+    ],
+    [
+        "BINARY_SUBSCR",
+        "rev[i]"
+    ],
+    [
         "CALL",
+        "safe_qualname(rev[i])"
+    ],
+    [
+        "STORE_FAST",
+        "[safe_qualname(rev[i]) for i in range(len(rev))]"
+    ],
+    [
+        "STORE_FAST",
         "[safe_qualname(rev[i]) for i in range(len(rev))]"
     ],
     [
@@ -7602,34 +7718,6 @@
     [
         "LOAD_FAST",
         "k"
-    ],
-    [
-        "LOAD_FAST",
-        "[safe_qualname(rev[i]) for i in range(len(rev))]"
-    ],
-    [
-        "STORE_FAST",
-        "i"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "safe_qualname"
-    ],
-    [
-        "LOAD_DEREF",
-        "rev"
-    ],
-    [
-        "LOAD_FAST",
-        "i"
-    ],
-    [
-        "BINARY_SUBSCR",
-        "rev[i]"
-    ],
-    [
-        "CALL",
-        "safe_qualname(rev[i])"
     ],
     [
         "STORE_NAME",

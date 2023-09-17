@@ -4172,6 +4172,10 @@
         "year"
     ],
     [
+        "BUILD_STRING",
+        "f\"Year is out of range: {year}\""
+    ],
+    [
         "CALL",
         "ValueError(f\"Year is out of range: {year}\")"
     ],
@@ -4264,6 +4268,10 @@
         "week"
     ],
     [
+        "BUILD_STRING",
+        "f\"Invalid week: {week}\""
+    ],
+    [
         "CALL",
         "ValueError(f\"Invalid week: {week}\")"
     ],
@@ -4286,6 +4294,10 @@
     [
         "LOAD_FAST",
         "day"
+    ],
+    [
+        "BUILD_STRING",
+        "f\"Invalid weekday: {day} (range is [1, 7])\""
     ],
     [
         "CALL",
@@ -8724,6 +8736,10 @@
         "date_string"
     ],
     [
+        "BUILD_STRING",
+        "f'Invalid isoformat string: {date_string!r}'"
+    ],
+    [
         "CALL",
         "ValueError(f'Invalid isoformat string: {date_string!r}')"
     ],
@@ -8758,6 +8774,10 @@
     [
         "LOAD_FAST",
         "date_string"
+    ],
+    [
+        "BUILD_STRING",
+        "f'Invalid isoformat string: {date_string!r}'"
     ],
     [
         "CALL",
@@ -10548,11 +10568,7 @@
         "super"
     ],
     [
-        "CALL",
-        "super()"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super().__new__"
     ],
     [
@@ -10650,6 +10666,10 @@
     [
         "BINARY_SUBSCR",
         "self[2]"
+    ],
+    [
+        "BUILD_STRING",
+        "f'{self.__class__.__name__}'\n                f'(year={self[0]}, week={self[1]}, weekday={self[2]})'"
     ],
     [
         "STORE_NAME",
@@ -12466,6 +12486,10 @@
     [
         "LOAD_FAST",
         "time_string"
+    ],
+    [
+        "BUILD_STRING",
+        "f'Invalid isoformat string: {time_string!r}'"
     ],
     [
         "CALL",
@@ -14892,6 +14916,10 @@
         "date_string"
     ],
     [
+        "BUILD_STRING",
+        "f'Invalid isoformat string: {date_string!r}'"
+    ],
+    [
         "CALL",
         "ValueError(f'Invalid isoformat string: {date_string!r}')"
     ],
@@ -15020,6 +15048,10 @@
         "date_string"
     ],
     [
+        "BUILD_STRING",
+        "f'Invalid isoformat string: {date_string!r}'"
+    ],
+    [
         "CALL",
         "ValueError(\n                f'Invalid isoformat string: {date_string!r}')"
     ],
@@ -15034,6 +15066,10 @@
     [
         "LOAD_FAST",
         "date_string"
+    ],
+    [
+        "BUILD_STRING",
+        "f'Invalid isoformat string: {date_string!r}'"
     ],
     [
         "CALL",
@@ -20024,20 +20060,8 @@
         "microseconds"
     ],
     [
-        "LOAD_FAST",
-        "seconds"
-    ],
-    [
-        "LOAD_FAST",
-        "sign"
-    ],
-    [
-        "LOAD_FAST",
-        "hours"
-    ],
-    [
-        "LOAD_FAST",
-        "minutes"
+        "BUILD_STRING",
+        "f'UTC{sign}{hours:02d}:{minutes:02d}:{seconds:02d}'\n                    f'.{microseconds:06d}'"
     ],
     [
         "LOAD_FAST",
@@ -20054,5 +20078,29 @@
     [
         "LOAD_FAST",
         "minutes"
+    ],
+    [
+        "LOAD_FAST",
+        "seconds"
+    ],
+    [
+        "BUILD_STRING",
+        "f'UTC{sign}{hours:02d}:{minutes:02d}:{seconds:02d}'"
+    ],
+    [
+        "LOAD_FAST",
+        "sign"
+    ],
+    [
+        "LOAD_FAST",
+        "hours"
+    ],
+    [
+        "LOAD_FAST",
+        "minutes"
+    ],
+    [
+        "BUILD_STRING",
+        "f'UTC{sign}{hours:02d}:{minutes:02d}'"
     ]
 ]

@@ -736,7 +736,43 @@
         "self.comprehension_variables.items()"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
+    ],
+    [
+        "STORE_FAST",
+        "name"
+    ],
+    [
+        "STORE_FAST",
+        "values"
+    ],
+    [
+        "LOAD_FAST",
+        "name"
+    ],
+    [
+        "LOAD_ATTR",
+        "', '.join"
+    ],
+    [
+        "LOAD_FAST",
+        "values"
+    ],
+    [
         "CALL",
+        "', '.join(values)"
+    ],
+    [
+        "STORE_FAST",
+        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
+    ],
+    [
+        "STORE_FAST",
         "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
     ],
     [
@@ -824,6 +860,14 @@
         "variables"
     ],
     [
+        "STORE_FAST",
+        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
+    ],
+    [
+        "STORE_FAST",
+        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
+    ],
+    [
         "LOAD_FAST",
         "(\n            (source, my_cheap_repr(value))\n            for source, value in\n            self.get_local_reprs(watch, watch_extras)\n        )"
     ],
@@ -850,34 +894,6 @@
     [
         "CALL",
         "my_cheap_repr(value)"
-    ],
-    [
-        "LOAD_FAST",
-        "[\n                    (name, ', '.join(values))\n                    for name, values in self.comprehension_variables.items()\n                ]"
-    ],
-    [
-        "STORE_FAST",
-        "name"
-    ],
-    [
-        "STORE_FAST",
-        "values"
-    ],
-    [
-        "LOAD_FAST",
-        "name"
-    ],
-    [
-        "LOAD_ATTR",
-        "', '.join"
-    ],
-    [
-        "LOAD_FAST",
-        "values"
-    ],
-    [
-        "CALL",
-        "', '.join(values)"
     ],
     [
         "LOAD_FAST",
@@ -1164,11 +1180,7 @@
         "mcs"
     ],
     [
-        "CALL",
-        "super(TracerMeta, mcs)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(TracerMeta, mcs).__new__"
     ],
     [
@@ -1260,11 +1272,7 @@
         "cls"
     ],
     [
-        "CALL",
-        "super(TracerMeta, cls)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(TracerMeta, cls).__call__"
     ],
     [
@@ -1356,7 +1364,47 @@
         "ensure_tuple(watch)"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "[\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ]"
+    ],
+    [
+        "STORE_FAST",
+        "v"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "isinstance"
+    ],
+    [
+        "LOAD_FAST",
+        "v"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "BaseVariable"
+    ],
+    [
         "CALL",
+        "isinstance(v, BaseVariable)"
+    ],
+    [
+        "LOAD_FAST",
+        "v"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "CommonVariable"
+    ],
+    [
+        "LOAD_FAST",
+        "v"
+    ],
+    [
+        "CALL",
+        "CommonVariable(v)"
+    ],
+    [
+        "STORE_FAST",
         "[\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ]"
     ],
     [
@@ -1372,7 +1420,47 @@
         "ensure_tuple(watch_explode)"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "[\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]"
+    ],
+    [
+        "STORE_FAST",
+        "v"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "isinstance"
+    ],
+    [
+        "LOAD_FAST",
+        "v"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "BaseVariable"
+    ],
+    [
         "CALL",
+        "isinstance(v, BaseVariable)"
+    ],
+    [
+        "LOAD_FAST",
+        "v"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "Exploding"
+    ],
+    [
+        "LOAD_FAST",
+        "v"
+    ],
+    [
+        "CALL",
+        "Exploding(v)"
+    ],
+    [
+        "STORE_FAST",
         "[\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]"
     ],
     [
@@ -1464,84 +1552,12 @@
         "self.target_frames"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
         "[\n            v if isinstance(v, BaseVariable) else CommonVariable(v)\n            for v in ensure_tuple(watch)\n        ]"
     ],
     [
         "STORE_FAST",
-        "v"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "isinstance"
-    ],
-    [
-        "LOAD_FAST",
-        "v"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "BaseVariable"
-    ],
-    [
-        "CALL",
-        "isinstance(v, BaseVariable)"
-    ],
-    [
-        "LOAD_FAST",
-        "v"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "CommonVariable"
-    ],
-    [
-        "LOAD_FAST",
-        "v"
-    ],
-    [
-        "CALL",
-        "CommonVariable(v)"
-    ],
-    [
-        "LOAD_FAST",
         "[\n            v if isinstance(v, BaseVariable) else Exploding(v)\n            for v in ensure_tuple(watch_explode)\n        ]"
-    ],
-    [
-        "STORE_FAST",
-        "v"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "isinstance"
-    ],
-    [
-        "LOAD_FAST",
-        "v"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "BaseVariable"
-    ],
-    [
-        "CALL",
-        "isinstance(v, BaseVariable)"
-    ],
-    [
-        "LOAD_FAST",
-        "v"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "Exploding"
-    ],
-    [
-        "LOAD_FAST",
-        "v"
-    ],
-    [
-        "CALL",
-        "Exploding(v)"
     ],
     [
         "LOAD_GLOBAL",

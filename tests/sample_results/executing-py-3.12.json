@@ -764,7 +764,55 @@
         "enumerate(text.splitlines(True))"
     ],
     [
+        "LOAD_FAST_AND_CLEAR",
+        "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
+    ],
+    [
+        "STORE_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "line"
+    ],
+    [
+        "LOAD_FAST",
+        "i"
+    ],
+    [
+        "COMPARE_OP",
+        "i < 2"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "encoding_pattern"
+    ],
+    [
+        "LOAD_ATTR",
+        "encoding_pattern.match"
+    ],
+    [
+        "LOAD_FAST",
+        "line"
+    ],
+    [
         "CALL",
+        "encoding_pattern.match(line)"
+    ],
+    [
+        "LOAD_FAST",
+        "line"
+    ],
+    [
+        "STORE_FAST",
+        "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
+    ],
+    [
+        "STORE_FAST",
         "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
     ],
     [
@@ -992,48 +1040,16 @@
         "self._qualnames"
     ],
     [
-        "LOAD_GLOBAL",
-        "SyntaxError"
-    ],
-    [
-        "LOAD_FAST",
+        "STORE_FAST",
         "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
     ],
     [
         "STORE_FAST",
-        "i"
-    ],
-    [
-        "STORE_FAST",
-        "line"
-    ],
-    [
-        "LOAD_FAST",
-        "i"
-    ],
-    [
-        "COMPARE_OP",
-        "i < 2"
+        "[\n                '\\n' if i < 2 and encoding_pattern.match(line)\n                else line\n                for i, line in enumerate(text.splitlines(True))\n            ]"
     ],
     [
         "LOAD_GLOBAL",
-        "encoding_pattern"
-    ],
-    [
-        "LOAD_ATTR",
-        "encoding_pattern.match"
-    ],
-    [
-        "LOAD_FAST",
-        "line"
-    ],
-    [
-        "CALL",
-        "encoding_pattern.match(line)"
-    ],
-    [
-        "LOAD_FAST",
-        "line"
+        "SyntaxError"
     ],
     [
         "LOAD_FAST",
@@ -1516,11 +1532,7 @@
         "self._nodes_by_line[lineno]"
     ],
     [
-        "CALL",
-        "{\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "{\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }"
     ],
     [
@@ -1538,6 +1550,14 @@
     [
         "CALL",
         "statement_containing_node(node)"
+    ],
+    [
+        "STORE_FAST",
+        "{\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }"
+    ],
+    [
+        "STORE_FAST",
+        "{\n            statement_containing_node(node)\n            for node in\n            self._nodes_by_line[lineno]\n        }"
     ],
     [
         "STORE_FAST",
@@ -1900,11 +1920,7 @@
         "self"
     ],
     [
-        "CALL",
-        "super(QualnameVisitor, self)"
-    ],
-    [
-        "LOAD_ATTR",
+        "LOAD_SUPER_ATTR",
         "super(QualnameVisitor, self).__init__"
     ],
     [
@@ -2512,7 +2528,7 @@
         "ast.Call"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "typ"
     ],
     [
@@ -2532,7 +2548,7 @@
         "ast.Subscript"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "typ"
     ],
     [
@@ -2556,7 +2572,7 @@
         "ast.BinOp"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "typ"
     ],
     [
@@ -2580,7 +2596,7 @@
         "ast.UnaryOp"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "typ"
     ],
     [
@@ -2600,7 +2616,7 @@
         "ast.Attribute"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "typ"
     ],
     [
@@ -2620,7 +2636,7 @@
         "ast.Compare"
     ],
     [
-        "STORE_DEREF",
+        "STORE_FAST",
         "typ"
     ],
     [
@@ -2644,12 +2660,104 @@
         "stmts"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
+        "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
     ],
     [
         "STORE_FAST",
+        "stmt"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "ast"
+    ],
+    [
+        "LOAD_ATTR",
+        "ast.walk"
+    ],
+    [
+        "LOAD_FAST",
+        "stmt"
+    ],
+    [
+        "CALL",
+        "ast.walk(stmt)"
+    ],
+    [
+        "STORE_FAST",
+        "node"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "isinstance"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "LOAD_FAST",
+        "typ"
+    ],
+    [
+        "CALL",
+        "isinstance(node, typ)"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "hasattr"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "CALL",
+        "hasattr(node, \"ctx\")"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "isinstance"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "LOAD_ATTR",
+        "node.ctx"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "ast"
+    ],
+    [
+        "LOAD_ATTR",
+        "ast.Load"
+    ],
+    [
+        "CALL",
+        "isinstance(node.ctx, ast.Load)"
+    ],
+    [
+        "LOAD_FAST",
+        "node"
+    ],
+    [
+        "STORE_FAST",
         "exprs"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
+    ],
+    [
+        "STORE_FAST",
+        "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
     ],
     [
         "LOAD_GLOBAL",
@@ -2696,88 +2804,12 @@
         "        with lock:\n            exprs = {\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }\n\n            self.result = only(list(self.matching_nodes(exprs)))"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
         "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
     ],
     [
         "STORE_FAST",
-        "stmt"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "ast"
-    ],
-    [
-        "LOAD_ATTR",
-        "ast.walk"
-    ],
-    [
-        "LOAD_FAST",
-        "stmt"
-    ],
-    [
-        "CALL",
-        "ast.walk(stmt)"
-    ],
-    [
-        "STORE_FAST",
-        "node"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "isinstance"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "LOAD_DEREF",
-        "typ"
-    ],
-    [
-        "CALL",
-        "isinstance(node, typ)"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "hasattr"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "CALL",
-        "hasattr(node, \"ctx\")"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "isinstance"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
-    ],
-    [
-        "LOAD_ATTR",
-        "node.ctx"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "ast"
-    ],
-    [
-        "LOAD_ATTR",
-        "ast.Load"
-    ],
-    [
-        "CALL",
-        "isinstance(node.ctx, ast.Load)"
-    ],
-    [
-        "LOAD_FAST",
-        "node"
+        "{\n                node\n                for stmt in stmts\n                for node in ast.walk(stmt)\n                if isinstance(node, typ)\n                if not (hasattr(node, \"ctx\") and not isinstance(node.ctx, ast.Load))\n            }"
     ],
     [
         "LOAD_GLOBAL",
@@ -2932,12 +2964,52 @@
         "enumerate(instructions)"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
+        "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
     ],
     [
         "STORE_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
+        "instruction"
+    ],
+    [
+        "LOAD_FAST",
+        "instruction"
+    ],
+    [
+        "LOAD_ATTR",
+        "instruction.argval"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "sentinel"
+    ],
+    [
+        "COMPARE_OP",
+        "instruction.argval == sentinel"
+    ],
+    [
+        "LOAD_FAST",
+        "i"
+    ],
+    [
+        "STORE_FAST",
         "indices"
+    ],
+    [
+        "STORE_FAST",
+        "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
+    ],
+    [
+        "STORE_FAST",
+        "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
     ],
     [
         "LOAD_FAST",
@@ -3080,36 +3152,12 @@
         "setter(expr)"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
         "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
     ],
     [
         "STORE_FAST",
-        "i"
-    ],
-    [
-        "STORE_FAST",
-        "instruction"
-    ],
-    [
-        "LOAD_FAST",
-        "instruction"
-    ],
-    [
-        "LOAD_ATTR",
-        "instruction.argval"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "sentinel"
-    ],
-    [
-        "COMPARE_OP",
-        "instruction.argval == sentinel"
-    ],
-    [
-        "LOAD_FAST",
-        "i"
+        "[\n                i\n                for i, instruction in enumerate(instructions)\n                if instruction.argval == sentinel\n            ]"
     ],
     [
         "LOAD_GLOBAL",

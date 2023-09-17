@@ -1224,12 +1224,28 @@
         "query"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{row.name for row in query}"
     ],
     [
         "STORE_FAST",
+        "row"
+    ],
+    [
+        "LOAD_FAST",
+        "row"
+    ],
+    [
+        "LOAD_ATTR",
+        "row.name"
+    ],
+    [
+        "STORE_FAST",
         "func_names"
+    ],
+    [
+        "STORE_FAST",
+        "{row.name for row in query}"
     ],
     [
         "LOAD_FAST",
@@ -1324,20 +1340,8 @@
         "render_template('file.html',\n                           funcs=funcs,\n                           is_ipython=path == IPYTHON_FILE_PATH,\n                           full_path=path,\n                           short_path=basename(path))"
     ],
     [
-        "LOAD_FAST",
-        "{row.name for row in query}"
-    ],
-    [
         "STORE_FAST",
-        "row"
-    ],
-    [
-        "LOAD_FAST",
-        "row"
-    ],
-    [
-        "LOAD_ATTR",
-        "row.name"
+        "{row.name for row in query}"
     ],
     [
         "LOAD_GLOBAL",
@@ -1400,12 +1404,48 @@
         "query"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[withattrs(Call(), **row._asdict()) for row in query]"
     ],
     [
         "STORE_FAST",
+        "row"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "withattrs"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "Call"
+    ],
+    [
+        "CALL",
+        "Call()"
+    ],
+    [
+        "LOAD_FAST",
+        "row"
+    ],
+    [
+        "LOAD_ATTR",
+        "row._asdict"
+    ],
+    [
+        "CALL",
+        "row._asdict()"
+    ],
+    [
+        "CALL_FUNCTION_EX",
+        "withattrs(Call(), **row._asdict())"
+    ],
+    [
+        "STORE_FAST",
         "calls"
+    ],
+    [
+        "STORE_FAST",
+        "[withattrs(Call(), **row._asdict()) for row in query]"
     ],
     [
         "LOAD_FAST",
@@ -1480,40 +1520,8 @@
         "render_template('function.html',\n                           func=func,\n                           short_path=basename(path),\n                           calls=calls)"
     ],
     [
-        "LOAD_FAST",
-        "[withattrs(Call(), **row._asdict()) for row in query]"
-    ],
-    [
         "STORE_FAST",
-        "row"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "withattrs"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "Call"
-    ],
-    [
-        "CALL",
-        "Call()"
-    ],
-    [
-        "LOAD_FAST",
-        "row"
-    ],
-    [
-        "LOAD_ATTR",
-        "row._asdict"
-    ],
-    [
-        "CALL",
-        "row._asdict()"
-    ],
-    [
-        "CALL_FUNCTION_EX",
-        "withattrs(Call(), **row._asdict())"
+        "[withattrs(Call(), **row._asdict()) for row in query]"
     ],
     [
         "LOAD_GLOBAL",
@@ -2096,24 +2104,88 @@
         "query"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[Call.basic_dict(withattrs(Call(), **row._asdict()))\n             for row in query]"
+    ],
+    [
+        "STORE_FAST",
+        "row"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "Call"
+    ],
+    [
+        "LOAD_ATTR",
+        "Call.basic_dict"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "withattrs"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "Call"
+    ],
+    [
+        "CALL",
+        "Call()"
+    ],
+    [
+        "LOAD_FAST",
+        "row"
+    ],
+    [
+        "LOAD_ATTR",
+        "row._asdict"
+    ],
+    [
+        "CALL",
+        "row._asdict()"
+    ],
+    [
+        "CALL_FUNCTION_EX",
+        "withattrs(Call(), **row._asdict())"
+    ],
+    [
+        "CALL",
+        "Call.basic_dict(withattrs(Call(), **row._asdict()))"
     ],
     [
         "STORE_FAST",
         "calls"
     ],
     [
+        "STORE_FAST",
+        "[Call.basic_dict(withattrs(Call(), **row._asdict()))\n             for row in query]"
+    ],
+    [
         "LOAD_FAST",
         "query"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "{row.data for row in query}"
     ],
     [
         "STORE_FAST",
+        "row"
+    ],
+    [
+        "LOAD_FAST",
+        "row"
+    ],
+    [
+        "LOAD_ATTR",
+        "row.data"
+    ],
+    [
+        "STORE_FAST",
         "function_data_set"
+    ],
+    [
+        "STORE_FAST",
+        "{row.data for row in query}"
     ],
     [
         "LOAD_GLOBAL",
@@ -2240,24 +2312,96 @@
         "ranges"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[dict(start=start, end=end) for start, end in ranges]"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
+        "[dict(start=start, end=end) for start, end in ranges]"
+    ],
+    [
+        "STORE_FAST",
+        "start"
+    ],
+    [
+        "STORE_FAST",
+        "end"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "dict"
+    ],
+    [
+        "LOAD_FAST",
+        "start"
+    ],
+    [
+        "LOAD_FAST",
+        "end"
+    ],
+    [
+        "CALL",
+        "dict(start=start, end=end)"
     ],
     [
         "STORE_FAST",
         "ranges"
     ],
     [
+        "STORE_FAST",
+        "[dict(start=start, end=end) for start, end in ranges]"
+    ],
+    [
+        "STORE_FAST",
+        "[dict(start=start, end=end) for start, end in ranges]"
+    ],
+    [
         "LOAD_FAST",
         "loop_ranges"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
+        "[dict(start=start, end=end) for start, end in loop_ranges]"
+    ],
+    [
+        "LOAD_FAST_AND_CLEAR",
         "[dict(start=start, end=end) for start, end in loop_ranges]"
     ],
     [
         "STORE_FAST",
+        "start"
+    ],
+    [
+        "STORE_FAST",
+        "end"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "dict"
+    ],
+    [
+        "LOAD_FAST",
+        "start"
+    ],
+    [
+        "LOAD_FAST",
+        "end"
+    ],
+    [
+        "CALL",
+        "dict(start=start, end=end)"
+    ],
+    [
+        "STORE_FAST",
         "loop_ranges"
+    ],
+    [
+        "STORE_FAST",
+        "[dict(start=start, end=end) for start, end in loop_ranges]"
+    ],
+    [
+        "STORE_FAST",
+        "[dict(start=start, end=end) for start, end in loop_ranges]"
     ],
     [
         "LOAD_GLOBAL",
@@ -2296,68 +2440,28 @@
         "DecentJSONEncoder().encode(dict(\n        calls=calls, ranges=ranges, loop_ranges=loop_ranges))"
     ],
     [
-        "LOAD_FAST",
+        "STORE_FAST",
         "[Call.basic_dict(withattrs(Call(), **row._asdict()))\n             for row in query]"
     ],
     [
         "STORE_FAST",
-        "row"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "Call"
-    ],
-    [
-        "LOAD_ATTR",
-        "Call.basic_dict"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "withattrs"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "Call"
-    ],
-    [
-        "CALL",
-        "Call()"
-    ],
-    [
-        "LOAD_FAST",
-        "row"
-    ],
-    [
-        "LOAD_ATTR",
-        "row._asdict"
-    ],
-    [
-        "CALL",
-        "row._asdict()"
-    ],
-    [
-        "CALL_FUNCTION_EX",
-        "withattrs(Call(), **row._asdict())"
-    ],
-    [
-        "CALL",
-        "Call.basic_dict(withattrs(Call(), **row._asdict()))"
-    ],
-    [
-        "LOAD_FAST",
         "{row.data for row in query}"
     ],
     [
         "STORE_FAST",
-        "row"
+        "[dict(start=start, end=end) for start, end in ranges]"
     ],
     [
-        "LOAD_FAST",
-        "row"
+        "STORE_FAST",
+        "[dict(start=start, end=end) for start, end in ranges]"
     ],
     [
-        "LOAD_ATTR",
-        "row.data"
+        "STORE_FAST",
+        "[dict(start=start, end=end) for start, end in loop_ranges]"
+    ],
+    [
+        "STORE_FAST",
+        "[dict(start=start, end=end) for start, end in loop_ranges]"
     ],
     [
         "LOAD_DEREF",
@@ -2402,62 +2506,6 @@
     [
         "CALL",
         "ranges_set.add((node['start'], node['end']))"
-    ],
-    [
-        "LOAD_FAST",
-        "[dict(start=start, end=end) for start, end in ranges]"
-    ],
-    [
-        "STORE_FAST",
-        "start"
-    ],
-    [
-        "STORE_FAST",
-        "end"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "dict"
-    ],
-    [
-        "LOAD_FAST",
-        "start"
-    ],
-    [
-        "LOAD_FAST",
-        "end"
-    ],
-    [
-        "CALL",
-        "dict(start=start, end=end)"
-    ],
-    [
-        "LOAD_FAST",
-        "[dict(start=start, end=end) for start, end in loop_ranges]"
-    ],
-    [
-        "STORE_FAST",
-        "start"
-    ],
-    [
-        "STORE_FAST",
-        "end"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "dict"
-    ],
-    [
-        "LOAD_FAST",
-        "start"
-    ],
-    [
-        "LOAD_FAST",
-        "end"
-    ],
-    [
-        "CALL",
-        "dict(start=start, end=end)"
     ],
     [
         "LOAD_GLOBAL",
@@ -2596,15 +2644,11 @@
         "query"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
     ],
     [
-        "CALL",
-        "DecentJSONEncoder().encode([\n        dict(hash=h, count=count)\n        for h, count in query\n    ])"
-    ],
-    [
-        "LOAD_FAST",
+        "LOAD_FAST_AND_CLEAR",
         "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
     ],
     [
@@ -2630,6 +2674,26 @@
     [
         "CALL",
         "dict(hash=h, count=count)"
+    ],
+    [
+        "STORE_FAST",
+        "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
+    ],
+    [
+        "STORE_FAST",
+        "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
+    ],
+    [
+        "CALL",
+        "DecentJSONEncoder().encode([\n        dict(hash=h, count=count)\n        for h, count in query\n    ])"
+    ],
+    [
+        "STORE_FAST",
+        "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
+    ],
+    [
+        "STORE_FAST",
+        "[\n        dict(hash=h, count=count)\n        for h, count in query\n    ]"
     ],
     [
         "LOAD_GLOBAL",

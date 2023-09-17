@@ -640,7 +640,7 @@
         "self.watch_extras"
     ],
     [
-        "LOAD_CLASSDEREF",
+        "LOAD_FROM_DICT_OR_DEREF",
         "self"
     ],
     [

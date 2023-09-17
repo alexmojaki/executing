@@ -1056,7 +1056,7 @@
         "Column"
     ],
     [
-        "LOAD_CLASSDEREF",
+        "LOAD_FROM_DICT_OR_DEREF",
         "LongText"
     ],
     [
@@ -1520,7 +1520,7 @@
         "Column"
     ],
     [
-        "LOAD_CLASSDEREF",
+        "LOAD_FROM_DICT_OR_DEREF",
         "LongText"
     ],
     [
@@ -1552,7 +1552,7 @@
         "Column"
     ],
     [
-        "LOAD_CLASSDEREF",
+        "LOAD_FROM_DICT_OR_DEREF",
         "LongText"
     ],
     [
@@ -1800,12 +1800,44 @@
         "session.query(self.Function.file).distinct()"
     ],
     [
-        "CALL",
+        "LOAD_FAST_AND_CLEAR",
         "[f[0] for f in session.query(self.Function.file).distinct()\n                     if not is_ipython_cell(f[0])]"
     ],
     [
         "STORE_FAST",
+        "f"
+    ],
+    [
+        "LOAD_GLOBAL",
+        "is_ipython_cell"
+    ],
+    [
+        "LOAD_FAST",
+        "f"
+    ],
+    [
+        "BINARY_SUBSCR",
+        "f[0]"
+    ],
+    [
+        "CALL",
+        "is_ipython_cell(f[0])"
+    ],
+    [
+        "LOAD_FAST",
+        "f"
+    ],
+    [
+        "BINARY_SUBSCR",
+        "f[0]"
+    ],
+    [
+        "STORE_FAST",
         "paths"
+    ],
+    [
+        "STORE_FAST",
+        "[f[0] for f in session.query(self.Function.file).distinct()\n                     if not is_ipython_cell(f[0])]"
     ],
     [
         "CALL",
@@ -1872,36 +1904,8 @@
         "paths"
     ],
     [
-        "LOAD_FAST",
-        "[f[0] for f in session.query(self.Function.file).distinct()\n                     if not is_ipython_cell(f[0])]"
-    ],
-    [
         "STORE_FAST",
-        "f"
-    ],
-    [
-        "LOAD_GLOBAL",
-        "is_ipython_cell"
-    ],
-    [
-        "LOAD_FAST",
-        "f"
-    ],
-    [
-        "BINARY_SUBSCR",
-        "f[0]"
-    ],
-    [
-        "CALL",
-        "is_ipython_cell(f[0])"
-    ],
-    [
-        "LOAD_FAST",
-        "f"
-    ],
-    [
-        "BINARY_SUBSCR",
-        "f[0]"
+        "[f[0] for f in session.query(self.Function.file).distinct()\n                     if not is_ipython_cell(f[0])]"
     ],
     [
         "LOAD_FAST",
