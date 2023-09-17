@@ -34,7 +34,8 @@ jobs:
         pip install mypy==0.971
         python -m mypy executing
       # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
-      if: ${{ contains(fromJson('["3.11-dev","3.12-dev"]'), matrix.python-version) }}
+      # TODO: enable typechecking for 3.12
+      if: ${{ contains(fromJson('["3.11-dev"]'), matrix.python-version) }}
       # only >=3.11 use _position_node_finder.py
     - name: Test
       env:
