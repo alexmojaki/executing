@@ -38,6 +38,11 @@ from tests.deadcode import is_deadcode
 if eval("0"):
     global_never_defined = 1
 
+if sys.version_info[:2] == (3, 9):
+    # https://github.com/alexmojaki/executing/pull/71#issuecomment-1723634310
+    import asttokens.util
+    asttokens.util.fstring_positions_work = lambda: True
+
 
 def calling_expression():
     frame = inspect.currentframe().f_back.f_back
