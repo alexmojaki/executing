@@ -757,6 +757,12 @@ class TestFiles:
                 filename = inspect.getsourcefile(module)
             except TypeError:
                 continue
+
+            except AttributeError as error:
+                if str(error)== "'_SixMetaPathImporter' object has no attribute '_path'":
+                    # work around for https://github.com/benjaminp/six/issues/376
+                    continue
+                raise
     
             if not filename:
                 continue
