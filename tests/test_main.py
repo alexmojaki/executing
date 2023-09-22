@@ -743,10 +743,6 @@ class TestFiles:
                 assert result == json.load(infile)
 
 
-    @pytest.mark.skipif(
-        NodeFinder.__name__ == "SentinelNodeFinder",
-        reason="The SentinelNodeFinder has problems in some situations (see skip_sentinel)",
-    )
     def test_module_files(self):
         self.start_time = time.time()
     
