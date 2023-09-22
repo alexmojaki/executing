@@ -1273,7 +1273,9 @@ class TestFiles:
                 # Attributes which appear ambiguously in modules:
                 #   op1.sign, op2.sign = (0, 0)
                 #   nm_tpl.__annotations__ = nm_tpl.__new__.__annotations__ = types
-                if not py11 and inst.opname == 'STORE_ATTR' and inst.argval in ['sign', '__annotations__']:
+                if not py11 and inst.opname == 'STORE_ATTR' and inst.argval in [
+                    'sign', '__annotations__', '__deprecated__'
+                ]:
                     continue
 
                 if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
