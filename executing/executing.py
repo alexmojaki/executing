@@ -361,7 +361,7 @@ class Source(object):
 
     @staticmethod
     def decode_source(source):
-        # type: (Union[str, bytes]) -> text_type
+        # type: (Union[str, bytes]) -> str
         if isinstance(source, bytes):
             encoding = Source.detect_encoding(source)
             return source.decode(encoding)
