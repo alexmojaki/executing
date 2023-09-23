@@ -26,7 +26,6 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from .utils import tester, subscript_item, in_finally, start_position, end_position
 
 PYPY = 'pypy' in sys.version.lower()
-PY3 = sys.version_info[0] == 3
 
 from executing import Source, only, NotOneValueFound
 from executing.executing import NodeFinder, get_instructions, function_node_types
@@ -323,10 +322,8 @@ class TestStuff(unittest.TestCase):
         check(u'# coding=utf8\né', 'gbk', exception=UnicodeDecodeError)
         check(u'# coding=gbk\né', 'utf8', matches=False)
 
-        # In Python 3 the default encoding is assumed to be UTF8
-        if PY3:
-            check(u'é', 'utf8')
-            check(u'é', 'gbk', exception=SyntaxError)
+        check(u'é', 'utf8')
+        check(u'é', 'gbk', exception=SyntaxError)
 
     def test_multiline_strings(self):
         tester('a')
@@ -380,7 +377,7 @@ class TestStuff(unittest.TestCase):
     def assert_qualname(self, func, qn, check_actual_qualname=True):
         qualname = Source.for_filename(__file__).code_qualname(func.__code__)
         self.assertEqual(qn, qualname)
-        if PY3 and check_actual_qualname:
+        if check_actual_qualname:
             self.assertEqual(qn, func.__qualname__)
         self.assertTrue(qn.endswith(func.__name__))
 
@@ -837,7 +834,7 @@ class TestFiles:
             print("skip %s" % filename)
             return 
 
-        if PY3 and sys.version_info < (3, 11):
+        if sys.version_info < (3, 11):
             for subcode, qualname in find_qualnames(code):
                 if not qualname.endswith(">"):
                     code_qualname = source.code_qualname(subcode)
@@ -1361,7 +1358,7 @@ class TestFiles:
             # `argval` isn't set for all relevant instructions in python 2
             # The relation between `ast.Name` and `argval` is already
             # covered by the verifier and much more complex in python 3.11 
-            if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
+            if isinstance(node, ast.Name) and not py11:
                 assert inst.argval == node.id, (inst, ast.dump(node))
 
             if ex.decorator:
