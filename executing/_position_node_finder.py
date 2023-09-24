@@ -593,7 +593,7 @@ class PositionNodeFinder(object):
 
         if node_match(
             (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp, ast.For)
-        ) and inst_match("GET_ITER"):
+        ) and inst_match(("GET_ITER", "FOR_ITER")):
             return
 
         if sys.version_info >= (3, 12):

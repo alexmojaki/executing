@@ -581,12 +581,18 @@ class TestStuff(unittest.TestCase):
         class iter_test:
             def __init__(self, typ):
                 self.typ = typ
+                self.it = iter([1, 2])
 
             def __iter__(self):
                 assert isinstance(calling_expression(), self.typ)
-                return iter([1, 2])
+                return self
 
-        iter(iter_test(ast.Call))
+            def __next__(self):
+                assert isinstance(calling_expression(), self.typ)
+                return next(self.it)
+
+        assert list(iter_test(ast.Call)) == [1, 2]
+        assert next(iter(iter_test(ast.Call))) == 1
 
         if sys.version_info >= (3, 11):
 
@@ -597,7 +603,6 @@ class TestStuff(unittest.TestCase):
 
             for i in iter_test(ast.For):
                 assert i in (1, 2)
-
 
     def test_decorator_cache_instruction(self):
         frame = inspect.currentframe()
