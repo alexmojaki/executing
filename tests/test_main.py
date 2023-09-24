@@ -577,6 +577,28 @@ class TestStuff(unittest.TestCase):
             result = [calling_expression() for e in [1]]
             self.assertIsInstance(result[0], ast.ListComp)
 
+    def test_iter(self):
+        class iter_test:
+            def __init__(self, typ):
+                self.typ = typ
+
+            def __iter__(self):
+                assert isinstance(calling_expression(), self.typ)
+                return iter([1, 2])
+
+        iter(iter_test(ast.Call))
+
+        if sys.version_info >= (3, 11):
+
+            assert [i for i in iter_test(ast.ListComp)] == [1, 2]
+            assert {i for i in iter_test(ast.SetComp)} == {1, 2}
+            assert {i: i for i in iter_test(ast.DictComp)} == {1: 1, 2: 2}
+            assert list(i for i in iter_test(ast.GeneratorExp)) == [1, 2]
+
+            for i in iter_test(ast.For):
+                assert i in (1, 2)
+
+
     def test_decorator_cache_instruction(self):
         frame = inspect.currentframe()
 

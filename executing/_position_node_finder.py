@@ -591,6 +591,11 @@ class PositionNodeFinder(object):
         ):
             return
 
+        if node_match(
+            (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp, ast.For)
+        ) and inst_match("GET_ITER"):
+            return
+
         if sys.version_info >= (3, 12):
             if node_match(ast.UnaryOp, op=ast.UAdd) and inst_match(
                 "CALL_INTRINSIC_1", argrepr="INTRINSIC_UNARY_POSITIVE"
