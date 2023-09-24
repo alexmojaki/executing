@@ -51,23 +51,24 @@ def inspect_opcode(bytecode, index, lineno):
 
     try:
         ex = Source.executing(frame)
-        result = "[green]" + type(ex.node).__name__
-        if hasattr(ex.node, "name"):
-            result += "(" + ex.node.name + ")"
-        elif hasattr(ex.node, "id"):
-            result += "(" + ex.node.id + ")"
-        elif hasattr(ex.node, "attr"):
-            result += "(." + ex.node.attr + ")"
-        elif hasattr(ex.node, "value"):
-            result += f"({ex.node.value})"
-
-        if ex.decorator:
-            result += " @%s" % ex.decorator
-        return result
     except RuntimeError:
         raise
     except Exception as e:
         return "[red]" + type(e).__name__ + ": " + str(e).split("\n")[0]
+
+    result = "[green]" + type(ex.node).__name__
+    if hasattr(ex.node, "name"):
+        result += "(" + str(ex.node.name) + ")"
+    elif hasattr(ex.node, "id"):
+        result += "(" + ex.node.id + ")"
+    elif hasattr(ex.node, "attr"):
+        result += "(." + ex.node.attr + ")"
+    elif hasattr(ex.node, "value"):
+        result += f"({ex.node.value})"
+
+    if ex.decorator:
+        result += " @%s" % ex.decorator
+    return result
         
 
 
@@ -123,7 +124,7 @@ def inspect(bc):
                 str(i.offset),
                 "%s:%s" % (i.positions.lineno, i.positions.col_offset),
                 "%s:%s" % (i.positions.end_lineno, i.positions.end_col_offset),
-                highlighter("%s(%s)" % (i.opname, i.argval)),
+                highlighter("%s(%s)" % (i.opname, i.argrepr)),
                 ex,
                 style="on grey19" if i.opname=="CACHE" else "on grey30"
                 #**({"style":"on white" } if i.opname=="CACHE" else {})
