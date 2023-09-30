@@ -23,13 +23,12 @@ import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from tests.utils import tester, subscript_item, in_finally, start_position, end_position
+from .utils import tester, subscript_item, in_finally, start_position, end_position
 
 PYPY = 'pypy' in sys.version.lower()
-PY3 = sys.version_info[0] == 3
 
 from executing import Source, only, NotOneValueFound
-from executing.executing import get_instructions, function_node_types
+from executing.executing import NodeFinder, get_instructions, function_node_types
 
 from executing._exceptions import VerifierFailure, KnownIssue
 
@@ -37,6 +36,11 @@ from tests.deadcode import is_deadcode
 
 if eval("0"):
     global_never_defined = 1
+
+if sys.version_info[:2] == (3, 9):
+    # https://github.com/alexmojaki/executing/pull/71#issuecomment-1723634310
+    import asttokens.util
+    asttokens.util.fstring_positions_work = lambda: True
 
 
 def calling_expression():
@@ -318,10 +322,8 @@ class TestStuff(unittest.TestCase):
         check(u'# coding=utf8\né', 'gbk', exception=UnicodeDecodeError)
         check(u'# coding=gbk\né', 'utf8', matches=False)
 
-        # In Python 3 the default encoding is assumed to be UTF8
-        if PY3:
-            check(u'é', 'utf8')
-            check(u'é', 'gbk', exception=SyntaxError)
+        check(u'é', 'utf8')
+        check(u'é', 'gbk', exception=SyntaxError)
 
     def test_multiline_strings(self):
         tester('a')
@@ -375,7 +377,7 @@ class TestStuff(unittest.TestCase):
     def assert_qualname(self, func, qn, check_actual_qualname=True):
         qualname = Source.for_filename(__file__).code_qualname(func.__code__)
         self.assertEqual(qn, qualname)
-        if PY3 and check_actual_qualname:
+        if check_actual_qualname:
             self.assertEqual(qn, func.__qualname__)
         self.assertTrue(qn.endswith(func.__name__))
 
@@ -570,9 +572,37 @@ class TestStuff(unittest.TestCase):
                 a(b(c()))
 
     def test_listcomp(self):
-        if sys.version_info >= (3, 11):
+        if (3, 11) <= sys.version_info < (3, 12):
+            # ListComp is inlined in 3.12
             result = [calling_expression() for e in [1]]
             self.assertIsInstance(result[0], ast.ListComp)
+
+    def test_iter(self):
+        class iter_test:
+            def __init__(self, typ):
+                self.typ = typ
+                self.it = iter([1, 2])
+
+            def __iter__(self):
+                assert isinstance(calling_expression(), self.typ)
+                return self
+
+            def __next__(self):
+                assert isinstance(calling_expression(), self.typ)
+                return next(self.it)
+
+        assert list(iter_test(ast.Call)) == [1, 2]
+        assert next(iter(iter_test(ast.Call))) == 1
+
+        if sys.version_info >= (3, 11):
+
+            assert [i for i in iter_test(ast.ListComp)] == [1, 2]
+            assert {i for i in iter_test(ast.SetComp)} == {1, 2}
+            assert {i: i for i in iter_test(ast.DictComp)} == {1: 1, 2: 2}
+            assert list(i for i in iter_test(ast.GeneratorExp)) == [1, 2]
+
+            for i in iter_test(ast.For):
+                assert i in (1, 2)
 
     def test_decorator_cache_instruction(self):
         frame = inspect.currentframe()
@@ -682,6 +712,7 @@ def test_small_samples(full_filename, result_filename):
         "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
         "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
         "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
+        "206e0609ff0589a0a32422ee902f09156af91746e27157c32c9595d12072f92a",
     ]
 
     skip_annotations = [
@@ -694,6 +725,13 @@ def test_small_samples(full_filename, result_filename):
 
     if any(s in full_filename for s in skip_annotations) and sys.version_info < (3, 7):
         pytest.xfail("no `from __future__ import annotations`")
+
+    if (
+        (sys.version_info[:2] == (3, 7))
+        and "ad8aa993e6ee4eb5ee764d55f2e3fd636a99b2ecb8c5aff2b35fbb78a074ea30"
+        in full_filename
+    ):
+        pytest.xfail("(i async for i in arange) can not be analyzed in 3.7")
 
     if (
         (sys.version_info[:2] == (3, 5) or PYPY)
@@ -739,6 +777,12 @@ class TestFiles:
                 filename = inspect.getsourcefile(module)
             except TypeError:
                 continue
+
+            except AttributeError as error:
+                if str(error)== "'_SixMetaPathImporter' object has no attribute '_path'":
+                    # work around for https://github.com/benjaminp/six/issues/376
+                    continue
+                raise
     
             if not filename:
                 continue
@@ -787,12 +831,6 @@ class TestFiles:
 
         print("check %s"%filename)
 
-        if PY3 and sys.version_info < (3, 11):
-            code = compile(source.text, filename, "exec", dont_inherit=True)
-            for subcode, qualname in find_qualnames(code):
-                if not qualname.endswith(">"):
-                    code_qualname = source.code_qualname(subcode)
-                    assert code_qualname == qualname
 
         nodes = defaultdict(list)
         decorators = defaultdict(list)
@@ -813,12 +851,22 @@ class TestFiles:
                 decorators[(node.lineno, node.name)] = []
 
         try:
-            code = compile(source.tree, source.filename, "exec")
+            code = compile(source.tree, source.filename, "exec", dont_inherit=True)
         except SyntaxError:
             # for example:
             # SyntaxError: 'return' outside function
             print("skip %s" % filename)
             return
+        except RecursionError:
+            print("skip %s" % filename)
+            return 
+
+        if sys.version_info < (3, 11):
+            for subcode, qualname in find_qualnames(code):
+                if not qualname.endswith(">"):
+                    code_qualname = source.code_qualname(subcode)
+                    assert code_qualname == qualname
+
         result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
         if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
@@ -952,6 +1000,21 @@ class TestFiles:
                     ):
                         continue
 
+                if sys.version_info >= (3, 12):
+                    if (
+                        isinstance(node, ast.Call)
+                        and isinstance(node.func, ast.Name)
+                        and node.func.id == "super"
+                    ):
+                        # super optimization
+                        continue
+
+                    if isinstance(node, ast.Name) and isinstance(
+                        node.parent, ast.TypeAlias
+                    ):
+                        # type alias names have no associated bytecode
+                        continue
+
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
@@ -1078,6 +1141,8 @@ class TestFiles:
                     and inst.opname
                     in (
                         "LOAD_GLOBAL",
+                        "LOAD_FROM_DICT_OR_DEREF",
+                        "LOAD_SUPER_ATTR",
                         "STORE_ATTR",
                         "DELETE_ATTR",
                         "DELETE_NAME",
@@ -1116,6 +1181,11 @@ class TestFiles:
                     continue
 
                 if inst.positions.lineno == None:
+                    continue
+
+            if sys.version_info >= (3,12):
+                if inst.opname == "CALL_INTRINSIC_1" and inst.argrepr=='INTRINSIC_LIST_TO_TUPLE':
+                    # convert list to tuple
                     continue
 
             frame = C()
@@ -1227,7 +1297,9 @@ class TestFiles:
                 # Attributes which appear ambiguously in modules:
                 #   op1.sign, op2.sign = (0, 0)
                 #   nm_tpl.__annotations__ = nm_tpl.__new__.__annotations__ = types
-                if not py11 and inst.opname == 'STORE_ATTR' and inst.argval in ['sign', '__annotations__']:
+                if not py11 and inst.opname == 'STORE_ATTR' and inst.argval in [
+                    'sign', '__annotations__', '__deprecated__'
+                ]:
                     continue
 
                 if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
@@ -1239,6 +1311,14 @@ class TestFiles:
                 if any(
                     isinstance(stmt, (ast.AugAssign, ast.Import))
                     for stmt in source.statements_at_line(lineno)
+                ):
+                    continue
+
+                if (
+                    sys.version_info >= (3, 12)
+                    and inst.positions.col_offset == inst.positions.end_col_offset == 0
+                    and inst.argval
+                    in ("__type_params__", ".type_params", "__classdict__")
                 ):
                     continue
 
@@ -1305,7 +1385,7 @@ class TestFiles:
             # `argval` isn't set for all relevant instructions in python 2
             # The relation between `ast.Name` and `argval` is already
             # covered by the verifier and much more complex in python 3.11 
-            if isinstance(node, ast.Name) and (PY3 or inst.argval) and not py11:
+            if isinstance(node, ast.Name) and not py11:
                 assert inst.argval == node.id, (inst, ast.dump(node))
 
             if ex.decorator:

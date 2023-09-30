@@ -1,4 +1,4 @@
-from test_main import TestFiles
+from .test_main import TestFiles
 from pathlib import Path
 import hashlib
 
