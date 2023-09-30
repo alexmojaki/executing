@@ -31,13 +31,11 @@ def test():
 """
 
 
-@pytest.mark.skipif(sys.version_info < (3,), reason="ipython has no python2.7 support")
 def test_one_lookup():
     p = run(test_function_code + "test()")
     assert "test failure" not in p
 
 
-@pytest.mark.skipif(sys.version_info < (3,), reason="ipython has no python2.7 support")
 def test_two_statement_lookups():
     p = run(test_function_code + "test();test()")
     assert "test failure" in p
