@@ -279,6 +279,10 @@ class TestStuff(unittest.TestCase):
         print(1 / 2)
         tester(4)
 
+    @pytest.mark.skipif(
+        not os.getenv("EXECUTING_SLOW_TESTS"),
+        reason="These tests are very slow, enable them explicitly",
+    )
     def test_many_calls(self):
         node = None
         start = time.time()
@@ -290,6 +294,10 @@ class TestStuff(unittest.TestCase):
                 self.assertIs(node, new_node)
         self.assertLess(time.time() - start, 1)
 
+    @pytest.mark.skipif(
+        not os.getenv("EXECUTING_SLOW_TESTS"),
+        reason="These tests are very slow, enable them explicitly",
+    )
     def test_many_source_for_filename_calls(self):
         source = None
         start = time.time()
