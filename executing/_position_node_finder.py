@@ -141,7 +141,7 @@ class PositionNodeFinder(object):
                 # we ignore here the start position and try to find the ast-node just by end position and expected node type
                 # This is save, because there can only be one attribute ending at a specific point in the source code.
                 typ = (ast.Attribute,)
-            elif self.opname(lasti) == "CALL":
+            elif self.opname(lasti) in ("CALL", "CALL_KW"):
                 # A CALL instruction can be a method call, in which case the lineno and col_offset gets changed by the compiler.
                 # Therefore we ignoring here this attributes and searchnig for a Call-node only by end_col_offset and end_lineno.
                 # This is save, because there can only be one method ending at a specific point in the source code.
