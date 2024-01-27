@@ -1171,6 +1171,10 @@ class TestFiles:
                         "CALL",
                     )
                 )
+                or (
+                    sys.version_info >= (3, 13)
+                    and inst.opname in ("STORE_FAST_STORE_FAST", "STORE_FAST_LOAD_FAST")
+                )
             ):
                 continue
 

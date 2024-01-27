@@ -731,6 +731,52 @@ class PositionNodeFinder(object):
             if node_match(ast.FormattedValue) and inst_match("FORMAT_VALUE"):
                 return
 
+        if sys.version_info >= (3, 13):
+            if (
+                node_match(ast.FunctionDef)
+                and inst_match("LOAD_CONST")
+                and node.name == instruction.argval.co_name
+            ):
+                return
+
+            if inst_match("NOP"):
+                return
+
+            if inst_match("TO_BOOL") and node_match(ast.BoolOp):
+                return
+
+            if inst_match("CALL_KW") and node_match((ast.Call, ast.ClassDef)):
+                return
+
+            if inst_match("LOAD_FAST", argval=".type_params"):
+                return
+
+            if inst_match("LOAD_FAST", argval="__classdict__"):
+                return
+
+            if inst_match("LOAD_FAST") and node_match(
+                (ast.FunctionDef, ast.ClassDef, ast.TypeAlias)
+            ):
+                # closures
+                # TODO: better check that this is actualy a closure for a scope of a type variable
+                return
+
+            if (
+                inst_match("LOAD_FAST")
+                and node_match(ast.TypeAlias)
+                and node.name.id == instruction.argval
+            ):
+                return
+
+            if inst_match(
+                ("STORE_FAST_STORE_FAST", "STORE_FAST_LOAD_FAST", "LOAD_FAST_LOAD_FAST")
+            ):
+                # TODO: the problem here is that STORE_FAST_STORE_FAST should map to two ast.Name nodes,
+                # but the position refers only to the first ast.Name node
+                import pytest
+
+                pytest.skip()
+                return
 
         # old verifier
 
