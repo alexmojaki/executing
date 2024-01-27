@@ -363,6 +363,11 @@ class PositionNodeFinder(object):
             ):
                 raise KnownIssue(f"can not map {instruction.opname} to two ast nodes")
 
+            if instruction.opname == "LOAD_FAST" and instruction.argval == "__class__":
+                raise KnownIssue(
+                    f"loading of __class__ is accociated with a random node at the end of a class"
+                )
+
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
         if inst.opname not in (
