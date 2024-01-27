@@ -72,7 +72,7 @@ def mangled_name(node: EnhancedAST) -> str:
 
 @lru_cache(128) # pragma: no mutate
 def get_instructions(code: CodeType) -> list[dis.Instruction]:
-    return list(dis.get_instructions(code, show_caches=True))
+    return list(dis.get_instructions(code))
 
 
 types_cmp_issue_fix = (
@@ -114,7 +114,7 @@ class PositionNodeFinder(object):
     """
 
     def __init__(self, frame: FrameType, stmts: Set[EnhancedAST], tree: ast.Module, lasti: int, source: Source):
-        self.bc_list = get_instructions(frame.f_code)
+        self.bc_dict={bc.offset:bc for bc in get_instructions(frame.f_code) }
 
         self.source = source
         self.decorator: Optional[EnhancedAST] = None
@@ -799,11 +799,14 @@ class PositionNodeFinder(object):
 
         raise VerifierFailure(title, node, instruction)
 
-    def instruction(self, index: int) -> dis.Instruction:
-        return self.bc_list[index // 2]
+    def instruction(self, index: int) -> Optional[dis.Instruction]:
+        return self.bc_dict.get(index,None)
 
     def opname(self, index: int) -> str:
-        return self.instruction(index).opname
+        i=self.instruction(index)
+        if i is None:
+            return "CACHE"
+        return i.opname
 
     extra_node_types=()
     if sys.version_info >= (3,12):
