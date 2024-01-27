@@ -156,15 +156,18 @@ class PositionNodeFinder(object):
                 typ=typ,
             )
 
-        self.result = self.fix_result(self.result, self.instruction(lasti))
+        instruction = self.instruction(lasti)
+        assert instruction is not None
 
-        self.known_issues(self.result, self.instruction(lasti))
+        self.result = self.fix_result(self.result, instruction)
+
+        self.known_issues(self.result, instruction)
 
         self.test_for_decorator(self.result, lasti)
 
         # verify
         if self.decorator is None:
-            self.verify(self.result, self.instruction(lasti))
+            self.verify(self.result, instruction)
         else: 
             assert_(self.decorator in self.result.decorator_list)
 
@@ -875,7 +878,10 @@ class PositionNodeFinder(object):
             *extra_node_types,
         ),
     ) -> EnhancedAST:
-        position = self.instruction(index).positions
+        instruction = self.instruction(index)
+        assert instruction is not None
+
+        position = instruction.positions
         assert position is not None and position.lineno is not None
 
         return only(
