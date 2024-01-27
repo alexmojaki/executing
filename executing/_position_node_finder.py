@@ -355,6 +355,14 @@ class PositionNodeFinder(object):
         ):
             raise KnownIssue("exception generation maps to condition")
 
+        if sys.version_info >= (3, 13):
+            if instruction.opname in (
+                "STORE_FAST_STORE_FAST",
+                "STORE_FAST_LOAD_FAST",
+                "LOAD_FAST_LOAD_FAST",
+            ):
+                raise KnownIssue(f"can not map {instruction.opname} to two ast nodes")
+
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
         if inst.opname not in (
@@ -771,15 +779,6 @@ class PositionNodeFinder(object):
             ):
                 return
 
-            if inst_match(
-                ("STORE_FAST_STORE_FAST", "STORE_FAST_LOAD_FAST", "LOAD_FAST_LOAD_FAST")
-            ):
-                # TODO: the problem here is that STORE_FAST_STORE_FAST should map to two ast.Name nodes,
-                # but the position refers only to the first ast.Name node
-                import pytest
-
-                pytest.skip()
-                return
 
         # old verifier
 

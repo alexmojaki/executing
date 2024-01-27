@@ -1026,6 +1026,11 @@ class TestFiles:
                         # type alias names have no associated bytecode
                         continue
 
+                if sys.version_info >= (3, 13):
+                    if isinstance(node, ast.Name):
+                        # STORE_FAST_STORE_FAST is generated from two ast nodes, and can not be mapped back
+                        continue
+
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
