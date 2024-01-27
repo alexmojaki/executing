@@ -771,7 +771,13 @@ class PositionNodeFinder(object):
                 return
 
             if inst_match("LOAD_FAST") and node_match(
-                (ast.FunctionDef, ast.ClassDef, ast.TypeAlias, ast.Lambda)
+                (
+                    ast.FunctionDef,
+                    ast.ClassDef,
+                    ast.TypeAlias,
+                    ast.Lambda,
+                    ast.AsyncFunctionDef,
+                )
             ):
                 # closures
                 # TODO: better check that this is actualy a closure for a scope of a type variable
