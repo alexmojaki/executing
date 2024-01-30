@@ -1023,6 +1023,24 @@ class TestFiles:
                         # type alias names have no associated bytecode
                         continue
 
+                if sys.version_info >= (3, 13):
+                    if isinstance(node, ast.Name):
+                        # STORE_FAST_STORE_FAST is generated from two ast nodes, and can not be mapped back
+                        continue
+
+                    if (
+                        isinstance(node, ast.UnaryOp)
+                        and isinstance(node.op, ast.Not)
+                        and (
+                            isinstance(node.operand, ast.UnaryOp)
+                            and isinstance(node.operand.op, ast.Not)
+                            or isinstance(node.parent, ast.UnaryOp)
+                            and isinstance(node.parent.op, ast.Not)
+                        )
+                    ):
+                        # `not not x` is optimized to a single TO_BOOL
+                        continue
+
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
@@ -1167,6 +1185,10 @@ class TestFiles:
                         "BUILD_STRING",
                         "CALL",
                     )
+                )
+                or (
+                    sys.version_info >= (3, 13)
+                    and inst.opname in ("STORE_FAST_STORE_FAST", "STORE_FAST_LOAD_FAST")
                 )
             ):
                 continue

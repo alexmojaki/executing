@@ -72,7 +72,7 @@ def mangled_name(node: EnhancedAST) -> str:
 
 @lru_cache(128) # pragma: no mutate
 def get_instructions(code: CodeType) -> list[dis.Instruction]:
-    return list(dis.get_instructions(code, show_caches=True))
+    return list(dis.get_instructions(code))
 
 
 types_cmp_issue_fix = (
@@ -114,7 +114,7 @@ class PositionNodeFinder(object):
     """
 
     def __init__(self, frame: FrameType, stmts: Set[EnhancedAST], tree: ast.Module, lasti: int, source: Source):
-        self.bc_list = get_instructions(frame.f_code)
+        self.bc_dict={bc.offset:bc for bc in get_instructions(frame.f_code) }
 
         self.source = source
         self.decorator: Optional[EnhancedAST] = None
@@ -141,7 +141,7 @@ class PositionNodeFinder(object):
                 # we ignore here the start position and try to find the ast-node just by end position and expected node type
                 # This is save, because there can only be one attribute ending at a specific point in the source code.
                 typ = (ast.Attribute,)
-            elif self.opname(lasti) == "CALL":
+            elif self.opname(lasti) in ("CALL", "CALL_KW"):
                 # A CALL instruction can be a method call, in which case the lineno and col_offset gets changed by the compiler.
                 # Therefore we ignoring here this attributes and searchnig for a Call-node only by end_col_offset and end_lineno.
                 # This is save, because there can only be one method ending at a specific point in the source code.
@@ -156,13 +156,16 @@ class PositionNodeFinder(object):
                 typ=typ,
             )
 
-        self.known_issues(self.result, self.instruction(lasti))
+        instruction = self.instruction(lasti)
+        assert instruction is not None
+
+        self.known_issues(self.result, instruction)
 
         self.test_for_decorator(self.result, lasti)
 
         # verify
         if self.decorator is None:
-            self.verify(self.result, self.instruction(lasti))
+            self.verify(self.result, instruction)
         else: 
             assert_(self.decorator in self.result.decorator_list)
 
@@ -323,6 +326,28 @@ class PositionNodeFinder(object):
             and sys.version_info >= (3, 11, 2)
         ):
             raise KnownIssue("exception generation maps to condition")
+
+        if sys.version_info >= (3, 13):
+            if instruction.opname in (
+                "STORE_FAST_STORE_FAST",
+                "STORE_FAST_LOAD_FAST",
+                "LOAD_FAST_LOAD_FAST",
+            ):
+                raise KnownIssue(f"can not map {instruction.opname} to two ast nodes")
+
+            if instruction.opname == "LOAD_FAST" and instruction.argval == "__class__":
+                raise KnownIssue(
+                    f"loading of __class__ is accociated with a random node at the end of a class"
+                )
+
+            if (
+                instruction.opname == "COMPARE_OP"
+                and isinstance(node, ast.UnaryOp)
+                and isinstance(node.op, ast.Not)
+            ):
+                # work around for 
+                # https://github.com/python/cpython/issues/114671
+                self.result = node.operand
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
@@ -703,6 +728,50 @@ class PositionNodeFinder(object):
             if node_match(ast.FormattedValue) and inst_match("FORMAT_VALUE"):
                 return
 
+        if sys.version_info >= (3, 13):
+            if (
+                node_match(ast.FunctionDef)
+                and inst_match("LOAD_CONST")
+                and node.name == instruction.argval.co_name
+            ):
+                return
+
+            if inst_match("NOP"):
+                return
+
+            if inst_match("TO_BOOL") and node_match(ast.BoolOp):
+                return
+
+            if inst_match("CALL_KW") and node_match((ast.Call, ast.ClassDef)):
+                return
+
+            if inst_match("LOAD_FAST", argval=".type_params"):
+                return
+
+            if inst_match("LOAD_FAST", argval="__classdict__"):
+                return
+
+            if inst_match("LOAD_FAST") and node_match(
+                (
+                    ast.FunctionDef,
+                    ast.ClassDef,
+                    ast.TypeAlias,
+                    ast.TypeVar,
+                    ast.Lambda,
+                    ast.AsyncFunctionDef,
+                )
+            ):
+                # closures
+                # TODO: better check that this is actualy a closure for a scope of a type variable
+                return
+
+            if (
+                inst_match("LOAD_FAST")
+                and node_match(ast.TypeAlias)
+                and node.name.id == instruction.argval
+            ):
+                return
+
 
         # old verifier
 
@@ -771,11 +840,14 @@ class PositionNodeFinder(object):
 
         raise VerifierFailure(title, node, instruction)
 
-    def instruction(self, index: int) -> dis.Instruction:
-        return self.bc_list[index // 2]
+    def instruction(self, index: int) -> Optional[dis.Instruction]:
+        return self.bc_dict.get(index,None)
 
     def opname(self, index: int) -> str:
-        return self.instruction(index).opname
+        i=self.instruction(index)
+        if i is None:
+            return "CACHE"
+        return i.opname
 
     extra_node_types=()
     if sys.version_info >= (3,12):
@@ -798,7 +870,10 @@ class PositionNodeFinder(object):
             *extra_node_types,
         ),
     ) -> EnhancedAST:
-        position = self.instruction(index).positions
+        instruction = self.instruction(index)
+        assert instruction is not None
+
+        position = instruction.positions
         assert position is not None and position.lineno is not None
 
         return only(
