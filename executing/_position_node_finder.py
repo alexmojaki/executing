@@ -784,6 +784,7 @@ class PositionNodeFinder(object):
                     ast.FunctionDef,
                     ast.ClassDef,
                     ast.TypeAlias,
+                    ast.TypeVar,
                     ast.Lambda,
                     ast.AsyncFunctionDef,
                 )
