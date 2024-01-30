@@ -368,6 +368,15 @@ class PositionNodeFinder(object):
                     f"loading of __class__ is accociated with a random node at the end of a class"
                 )
 
+            if (
+                instruction.opname == "COMPARE_OP"
+                and isinstance(node, ast.UnaryOp)
+                and isinstance(node.op, ast.Not)
+            ):
+                # work around for 
+                # https://github.com/python/cpython/issues/114671
+                self.result = node.operand
+
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
         if inst.opname not in (
