@@ -56,7 +56,7 @@ TESTING = 0
 
 class NotOneValueFound(Exception):
     def __init__(self,msg,values=[]):
-        # type: (str, Sequence) -> None
+        # type: (str, Sized) -> None
         self.values=values
         super(NotOneValueFound,self).__init__(msg)
 

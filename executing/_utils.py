@@ -2,8 +2,8 @@
 import ast
 import sys
 import dis
-from typing import cast
-
+from typing import cast, Any,Iterator
+import types
 
 
 def assert_(condition, message=""):
@@ -17,52 +17,12 @@ def assert_(condition, message=""):
         raise AssertionError(str(message))
 
 
-if sys.version_info >= (3, 4):
-    # noinspection PyUnresolvedReferences
-    _get_instructions = dis.get_instructions
-    from dis import Instruction as _Instruction
-    
-    class Instruction(_Instruction):
-        lineno = None  # type: int
-else:
-    from collections import namedtuple
+# noinspection PyUnresolvedReferences
+_get_instructions = dis.get_instructions
+from dis import Instruction as _Instruction
 
-    class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):
-        lineno = None # type: int
-
-    from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts, hasname
-
-    # Based on dis.disassemble from 2.7
-    # Left as similar as possible for easy diff
-
-    def _get_instructions(co):
-        # type: (types.CodeType) -> Iterator[Instruction]
-        code = co.co_code
-        linestarts = dict(findlinestarts(co))
-        n = len(code)
-        i = 0
-        extended_arg = 0
-        while i < n:
-            offset = i
-            c = code[i]
-            op = ord(c)
-            lineno = linestarts.get(i)
-            argval = None
-            i = i + 1
-            if op >= HAVE_ARGUMENT:
-                oparg = ord(code[i]) + ord(code[i + 1]) * 256 + extended_arg
-                extended_arg = 0
-                i = i + 2
-                if op == EXTENDED_ARG:
-                    extended_arg = oparg * 65536
-
-                if op in hasconst:
-                    argval = co.co_consts[oparg]
-                elif op in hasname:
-                    argval = co.co_names[oparg]
-                elif opname[op] == 'LOAD_FAST':
-                    argval = co.co_varnames[oparg]
-            yield Instruction(offset, argval, opname[op], lineno)
+class Instruction(_Instruction):
+    lineno = None  # type: int
 
 def get_instructions(co):
     # type: (types.CodeType) -> Iterator[EnhancedInstruction]
@@ -101,9 +61,7 @@ def mangled_name(node):
         The mangled name of `node`
     """
 
-    function_class_types=(ast.FunctionDef, ast.ClassDef)
-    if sys.version_info>=(3,):
-        function_class_types+=(ast.AsyncFunctionDef,)
+    function_class_types =( ast.FunctionDef, ast.ClassDef,ast.AsyncFunctionDef )
 
     if isinstance(node, ast.Attribute):
         name = node.attr
