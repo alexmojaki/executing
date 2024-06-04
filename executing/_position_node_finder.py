@@ -800,6 +800,10 @@ class PositionNodeFinder(object):
             ):
                 return
 
+            if inst_match("STORE_NAME",argval="__static_attributes__"):
+                # the node is the first node in the body
+                return
+
 
         # old verifier
 

@@ -1355,6 +1355,9 @@ class TestFiles:
                 ):
                     continue
 
+                if (sys.version_info>=(3,13) and inst.opname=="STORE_NAME" and inst.argval in ("__firstlineno__","__static_attributes__")):
+                    continue
+
                 # report more information for debugging
                 print("mapping failed")
 
