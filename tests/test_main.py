@@ -1244,6 +1244,7 @@ class TestFiles:
 
                 print("\ninstruction: " + str(e.instruction))
                 print("\nnode: " + ast.dump(e.node, include_attributes=True))
+                print("parent node:",type(e.node.parent).__name__)
 
                 with open(source.filename) as sourcefile:
                     source_code = sourcefile.read()

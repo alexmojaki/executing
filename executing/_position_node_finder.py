@@ -804,6 +804,9 @@ class PositionNodeFinder(object):
                 # the node is the first node in the body
                 return
 
+            if inst_match("LOAD_FAST") and isinstance(node.parent,ast.TypeVar):
+                return
+
 
         # old verifier
 
