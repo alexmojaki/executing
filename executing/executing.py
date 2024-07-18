@@ -42,6 +42,7 @@ from threading import RLock
 from tokenize import detect_encoding
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 from ._utils import mangled_name,assert_, EnhancedAST,EnhancedInstruction,Instruction,get_instructions
+from ._exceptions import KnownIssue
 
 if TYPE_CHECKING:  # pragma: no cover
     from asttokens import ASTTokens, ASTText
@@ -563,7 +564,7 @@ class SentinelNodeFinder(object):
             typ = ast.Attribute
             extra_filter = lambda e:mangled_name(e) == instruction.argval 
         else:
-            raise RuntimeError(op_name)
+            raise KnownIssue("can not map "+op_name)
 
 
         with lock:

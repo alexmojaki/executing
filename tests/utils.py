@@ -4,6 +4,7 @@ import inspect
 from collections import namedtuple
 
 import executing.executing
+from executing._exceptions import KnownIssue
 
 from executing.executing import mangled_name, Instruction
 try:
@@ -149,7 +150,7 @@ class Tester(object):
         else:
             try:
                 self.get_node(None)
-            except RuntimeError:
+            except KnownIssue:
                 return False
             assert 0
 
