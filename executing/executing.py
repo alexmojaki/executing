@@ -642,14 +642,12 @@ class SentinelNodeFinder(object):
         # inserts JUMP_IF_NOT_DEBUG instructions in bytecode
         # If they're not present in our compiled instructions,
         # ignore them in the original bytecode
-        if not any(
+        if any(inst.opname == "JUMP_IF_NOT_DEBUG" for inst in result):
+            if not any(
                 inst.opname == "JUMP_IF_NOT_DEBUG"
                 for inst in self.compile_instructions()
-        ):
-            result = [
-                inst for inst in result
-                if inst.opname != "JUMP_IF_NOT_DEBUG"
-            ]
+            ):
+                result = [inst for inst in result if inst.opname != "JUMP_IF_NOT_DEBUG"]
 
         return result
 
