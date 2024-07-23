@@ -40,8 +40,9 @@ from operator import attrgetter
 from pathlib import Path
 from threading import RLock
 from tokenize import detect_encoding
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, \
-    Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
+from ._utils import mangled_name,assert_, EnhancedAST,EnhancedInstruction,Instruction,get_instructions
+from ._exceptions import KnownIssue
 
 if TYPE_CHECKING:  # pragma: no cover
     from asttokens import ASTTokens, ASTText
@@ -52,51 +53,11 @@ function_node_types = (ast.FunctionDef, ast.AsyncFunctionDef) # type: Tuple[Type
 
 cache = lru_cache(maxsize=None)
 
-# Type class used to expand out the definition of AST to include fields added by this library
-# It's not actually used for anything other than type checking though!
-class EnhancedAST(ast.AST):
-    parent = None  # type: EnhancedAST
-
-
-class Instruction(dis.Instruction):
-    lineno = None  # type: int
-
-
-# Type class used to expand out the definition of AST to include fields added by this library
-# It's not actually used for anything other than type checking though!
-class EnhancedInstruction(Instruction):
-    _copied = None # type: bool
-
-
-
-def assert_(condition, message=""):
-    # type: (Any, str) -> None
-    """
-    Like an assert statement, but unaffected by -O
-    :param condition: value that is expected to be truthy
-    :type message: Any
-    """
-    if not condition:
-        raise AssertionError(str(message))
-
-
-def get_instructions(co):
-    # type: (types.CodeType) -> Iterator[EnhancedInstruction]
-    lineno = co.co_firstlineno
-    for inst in dis.get_instructions(co):
-        inst = cast(EnhancedInstruction, inst)
-        lineno = inst.starts_line or lineno
-        assert_(lineno)
-        inst.lineno = lineno
-        yield inst
-
-
 TESTING = 0
-
 
 class NotOneValueFound(Exception):
     def __init__(self,msg,values=[]):
-        # type: (str, Sequence) -> None
+        # type: (str, Sized) -> None
         self.values=values
         super(NotOneValueFound,self).__init__(msg)
 
@@ -107,11 +68,15 @@ def only(it):
     # type: (Iterable[T]) -> T
     if isinstance(it, Sized):
         if len(it) != 1:
-            raise NotOneValueFound('Expected one value, found %s' % len(it))
+            raise NotOneValueFound('Expected one value, found %s' % len(it),it)
         # noinspection PyTypeChecker
         return list(it)[0]
 
-    lst = tuple(islice(it, 2))
+    if TESTING:
+        lst=tuple(it)
+    else:
+        lst = tuple(islice(it, 2))
+
     if len(lst) == 0:
         raise NotOneValueFound('Expected one value, found 0')
     if len(lst) > 1:
@@ -582,11 +547,12 @@ class SentinelNodeFinder(object):
         elif op_name in ('LOAD_ATTR', 'LOAD_METHOD', 'LOOKUP_METHOD'):
             typ = ast.Attribute
             ctx = ast.Load
-            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+            extra_filter = lambda e:mangled_name(e) == instruction.argval 
         elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
             typ = ast.Name
             ctx = ast.Load
-            extra_filter = lambda e: e.id == instruction.argval
+            if sys.version_info[0] == 3 or instruction.argval:
+                extra_filter =lambda e:mangled_name(e) == instruction.argval 
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
             extra_filter = lambda e: len(e.ops) == 1
@@ -596,9 +562,10 @@ class SentinelNodeFinder(object):
         elif op_name.startswith('STORE_ATTR'):
             ctx = ast.Store
             typ = ast.Attribute
-            extra_filter = lambda e: attr_names_match(e.attr, instruction.argval)
+            extra_filter = lambda e:mangled_name(e) == instruction.argval 
         else:
-            raise RuntimeError(op_name)
+            raise KnownIssue("can not map "+op_name)
+
 
         with lock:
             exprs = {
@@ -610,6 +577,7 @@ class SentinelNodeFinder(object):
                 if extra_filter(node)
                 if statement_containing_node(node) == stmt
             }
+
 
             if ctx == ast.Store:
                 # No special bytecode tricks here.
@@ -674,14 +642,12 @@ class SentinelNodeFinder(object):
         # inserts JUMP_IF_NOT_DEBUG instructions in bytecode
         # If they're not present in our compiled instructions,
         # ignore them in the original bytecode
-        if not any(
+        if any(inst.opname == "JUMP_IF_NOT_DEBUG" for inst in result):
+            if not any(
                 inst.opname == "JUMP_IF_NOT_DEBUG"
                 for inst in self.compile_instructions()
-        ):
-            result = [
-                inst for inst in result
-                if inst.opname != "JUMP_IF_NOT_DEBUG"
-            ]
+            ):
+                result = [inst for inst in result if inst.opname != "JUMP_IF_NOT_DEBUG"]
 
         return result
 
@@ -1126,19 +1092,6 @@ def find_node_ipython(frame, lasti, stmts, source):
             pass
     return decorator, node
 
-
-def attr_names_match(attr, argval):
-    # type: (str, str) -> bool
-    """
-    Checks that the user-visible attr (from ast) can correspond to
-    the argval in the bytecode, i.e. the real attribute fetched internally,
-    which may be mangled for private attributes.
-    """
-    if attr == argval:
-        return True
-    if not attr.startswith("__"):
-        return False
-    return bool(re.match(r"^_\w+%s$" % attr, argval))
 
 
 def node_linenos(node):

@@ -4,8 +4,9 @@ import inspect
 from collections import namedtuple
 
 import executing.executing
+from executing._exceptions import KnownIssue
 
-from executing.executing import attr_names_match, Instruction
+from executing.executing import mangled_name, Instruction
 try:
     from dis import Instruction as DisInstruction
 except ImportError:
@@ -104,7 +105,7 @@ class Tester(object):
             assert name == "_{self.__class__.__name__}{node.attr}".format(self=self, node=node)
         else:
             assert name == node.attr
-        assert attr_names_match(node.attr, name)
+        assert mangled_name(node) == name
         return self
 
     def __delattr__(self, name):
@@ -149,7 +150,7 @@ class Tester(object):
         else:
             try:
                 self.get_node(None)
-            except RuntimeError:
+            except KnownIssue:
                 return False
             assert 0
 

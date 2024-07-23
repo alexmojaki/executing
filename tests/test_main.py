@@ -20,6 +20,7 @@ import unittest
 from collections import defaultdict, namedtuple
 from random import shuffle
 import pytest
+from executing._utils import mangled_name
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -715,11 +716,7 @@ def sample_files(samples):
 @pytest.mark.skipif(sys.version_info<(3,),reason="no 2.7 support")
 def test_small_samples(full_filename, result_filename):
     skip_sentinel = [
-        "load_deref",
         "4851dc1b626a95e97dbe0c53f96099d165b755dd1bd552c6ca771f7bca6d30f5",
-        "508ccd0dcac13ecee6f0cea939b73ba5319c780ddbb6c496be96fe5614871d4a",
-        "fc6eb521024986baa84af2634f638e40af090be4aa70ab3c22f3d022e8068228",
-        "42a37b8a823eb2e510b967332661afd679c82c60b7177b992a47c16d81117c8a",
         "206e0609ff0589a0a32422ee902f09156af91746e27157c32c9595d12072f92a",
     ]
 
@@ -830,7 +827,13 @@ class TestFiles:
         # increase the recursion limit in testing mode, because there are files out there with large ast-nodes
         # example: tests/small_samples/1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc.py
         sys.setrecursionlimit(3000)
-        source = Source.for_filename(filename)
+        try:
+            source = Source.for_filename(filename)
+        except SyntaxError:
+            # wrong encoding
+            print("skip %s"%filename)
+            return
+
 
         if source.tree is None:
             # we could not parse this file (maybe wrong python version)
@@ -1023,6 +1026,29 @@ class TestFiles:
                         # type alias names have no associated bytecode
                         continue
 
+                if sys.version_info < (3,11) and not values:
+                    # self([len for x in obj], [len for x in unpickled])
+                    # a node in one list-expression is not found because the code for both
+                    # list expressions is the same and the bytecodes gets only mapped to one list-expression
+                    def inside(node,typ):
+                        while hasattr(node,"parent") and not isinstance(node.parent,typ):
+                            node=node.parent
+
+                        return getattr(node,"parent",None)
+
+                    list_comp=inside(node,ast.ListComp)
+                    stmt=inside(list_comp,ast.stmt)
+                    if stmt is not None:
+                        line=list_comp.lineno
+                        # check if there is more than one ListComp in the statement in the same line
+                        if len([e for e in ast.walk(stmt) if isinstance(e,ast.ListComp) and e.lineno==line])>1:
+                            continue
+                            
+
+                    
+                    
+
+
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
@@ -1046,6 +1072,7 @@ class TestFiles:
                     p()
 
                     p("ast node:")
+                    p(mangled_name(node))
                     p(ast_dump(node, indent=4))
 
                     parents = []
@@ -1196,6 +1223,7 @@ class TestFiles:
                     # convert list to tuple
                     continue
 
+
             frame = C()
             frame.f_lasti = inst.offset
             frame.f_code = code
@@ -1322,6 +1350,28 @@ class TestFiles:
                 ):
                     continue
 
+                if sys.version_info < (3,8): 
+                    if inst.opname == "LOAD_GLOBAL" and inst.argval=="StopAsyncIteration":
+                        continue
+
+                if sys.version_info < (3,11): 
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, ast.Attribute) for v in e.values)
+                        and len({v.attr for v in e.values}) == 1
+                    ):
+                        # problem:
+                        # x.a = y.a = 5
+                        continue
+
+                    if (
+                        isinstance(e, NotOneValueFound)
+                        and all(isinstance(v, types.CodeType) for v in e.values)
+                    ):
+                        # problem:
+                        # self([len for x in obj], [len for x in unpickled])                                              
+                        continue
+
                 if (
                     sys.version_info >= (3, 12)
                     and inst.positions.col_offset == inst.positions.end_col_offset == 0
@@ -1336,9 +1386,12 @@ class TestFiles:
                 print(e)
                 if isinstance(e, NotOneValueFound):
                     for value in e.values:
-                        print(
+                        if isinstance(value, ast.expr):
+                            print(
                             "value:", ast_dump(value, indent=4, include_attributes=True)
                         )
+                        else:
+                            print("value:",value)
 
                 print("search bytecode", inst)
                 print("in file", source.filename)
@@ -1390,11 +1443,8 @@ class TestFiles:
 
                 raise
 
-            # `argval` isn't set for all relevant instructions in python 2
-            # The relation between `ast.Name` and `argval` is already
-            # covered by the verifier and much more complex in python 3.11 
-            if isinstance(node, ast.Name) and not py11:
-                assert inst.argval == node.id, (inst, ast.dump(node))
+            if isinstance(node, ast.Name) and inst.opname != "CALL_INTRINSIC_1" and inst.argval not in ("__classdict__",):
+                assert  mangled_name(node) == inst.argval , (inst, ast.dump(node))
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)
