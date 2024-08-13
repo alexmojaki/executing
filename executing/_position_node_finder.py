@@ -371,6 +371,7 @@ class PositionNodeFinder(object):
             if (
                 instruction.opname == "COMPARE_OP"
                 and isinstance(node, ast.UnaryOp)
+                and isinstance(node.operand,ast.Compare)
                 and isinstance(node.op, ast.Not)
             ):
                 # work around for 
@@ -790,7 +791,7 @@ class PositionNodeFinder(object):
                 )
             ):
                 # closures
-                # TODO: better check that this is actualy a closure for a scope of a type variable
+                # TODO: better check that this is actualy a closure variable
                 return
 
             if (
