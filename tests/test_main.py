@@ -1213,10 +1213,10 @@ class TestFiles:
                     continue
 
                 if (
-                    inst.opname == "STORE_NAME"
+                    inst.opname in ("STORE_NAME", "STORE_DEREF")
                     and hasattr(inst, "positions")
                     and inst.positions.col_offset == inst.positions.end_col_offset == 0
-                    and inst.argval in ("__module__", "__qualname__")
+                    and inst.argval in ("__module__", "__qualname__", "__firstlineno__")
                 ):
                     continue
 
