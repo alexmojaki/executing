@@ -156,6 +156,8 @@ class PositionNodeFinder(object):
                 typ=typ,
             )
 
+        self.result = self.fix_result(self.result, self.instruction(lasti))
+
         self.known_issues(self.result, self.instruction(lasti))
 
         self.test_for_decorator(self.result, lasti)
@@ -212,6 +214,31 @@ class PositionNodeFinder(object):
 
                 if sys.version_info < (3, 12):
                     index += 4
+
+    def fix_result(
+        self, node: EnhancedAST, instruction: dis.Instruction
+    ) -> EnhancedAST:
+        if (
+            sys.version_info >= (3, 12, 5)
+            and instruction.opname in ("GET_ITER", "FOR_ITER")
+            and isinstance(node, ast.For)
+        ):
+            # node positions have changed in 3.13
+            # https://github.com/python/cpython/issues/93691#event-13151024246
+            # `for` calls __iter__ and __next__ during execution, the calling
+            # expression of these calls was the ast.For node since cpython 3.11 (see test_iter).
+            # cpython 3.13 changed this to the `iter` node of the loop, to make tracebacks easier to read.
+            # This keeps backward compatibility with older executing versions.
+
+            # there are also cases like:
+            #
+            # for a in iter(l): pass
+            #
+            # where `iter(l)` would be otherwise the resulting node for the `iter()` call and the __iter__ call of the for implementation.
+            # keeping the old behaviour makes it possible to distinguish both cases.
+
+            return self.result.parent
+        return node
 
     def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
         if instruction.opname in ("COMPARE_OP", "IS_OP", "CONTAINS_OP") and isinstance(
