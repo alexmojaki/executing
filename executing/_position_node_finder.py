@@ -221,13 +221,14 @@ class PositionNodeFinder(object):
         if (
             sys.version_info >= (3, 12, 5)
             and instruction.opname in ("GET_ITER", "FOR_ITER")
-            and isinstance(node, ast.For)
+            and isinstance(node.parent, ast.For)
+            and node is node.parent.iter
         ):
-            # node positions have changed in 3.13
-            # https://github.com/python/cpython/issues/93691#event-13151024246
+            # node positions have changed in 3.12.5
+            # https://github.com/python/cpython/issues/93691
             # `for` calls __iter__ and __next__ during execution, the calling
             # expression of these calls was the ast.For node since cpython 3.11 (see test_iter).
-            # cpython 3.13 changed this to the `iter` node of the loop, to make tracebacks easier to read.
+            # cpython 3.12.5 changed this to the `iter` node of the loop, to make tracebacks easier to read.
             # This keeps backward compatibility with older executing versions.
 
             # there are also cases like:
@@ -237,7 +238,7 @@ class PositionNodeFinder(object):
             # where `iter(l)` would be otherwise the resulting node for the `iter()` call and the __iter__ call of the for implementation.
             # keeping the old behaviour makes it possible to distinguish both cases.
 
-            return self.result.parent
+            return node.parent
         return node
 
     def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
