@@ -758,12 +758,6 @@ class PositionNodeFinder(object):
                 return
 
         if sys.version_info >= (3, 13):
-            if (
-                node_match(ast.FunctionDef)
-                and inst_match("LOAD_CONST")
-                and node.name == instruction.argval.co_name
-            ):
-                return
 
             if inst_match("NOP"):
                 return
