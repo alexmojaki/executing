@@ -364,8 +364,14 @@ class PositionNodeFinder(object):
                 raise KnownIssue(f"can not map {instruction.opname} to two ast nodes")
 
             if instruction.opname == "LOAD_FAST" and instruction.argval == "__class__":
+                # example:
+                #   class T:
+                #       def a():
+                #           super()
+                #       some_node  # <- there is a LOAD_FAST for this node because we use super()
+
                 raise KnownIssue(
-                    f"loading of __class__ is accociated with a random node at the end of a class"
+                    f"loading of __class__ is accociated with a random node at the end of a class if you use super()"
                 )
 
             if (
@@ -784,8 +790,9 @@ class PositionNodeFinder(object):
                     ast.AsyncFunctionDef,
                 )
             ):
-                # closures
-                # TODO: better check that this is actualy a closure variable
+                # These are loads for closure variables.
+                # It is difficult to check that this is actually closure variable, see:
+                # https://github.com/alexmojaki/executing/pull/80#discussion_r1716027317
                 return
 
             if (
