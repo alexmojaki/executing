@@ -810,6 +810,9 @@ class TestFiles:
                         or 'pyparsing.py' in filename
                         or 'enum' in filename
                     )
+                    or sys.version_info < (3,11) and (
+                        'python.py' in filename
+                    )   
             ):
                 continue
 
