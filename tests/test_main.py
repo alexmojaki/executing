@@ -833,7 +833,14 @@ class TestFiles:
         # increase the recursion limit in testing mode, because there are files out there with large ast-nodes
         # example: tests/small_samples/1656dc52edd2385921104de7bb255ca369713f4b8c034ebeba5cf946058109bc.py
         sys.setrecursionlimit(3000)
-        source = Source.for_filename(filename)
+        try:
+            source = Source.for_filename(filename)
+        except RecursionError:
+            if sys.version_info>=(3,13):
+                # sys.setrecursionlimit has no effect for cpython 3.13
+                pytest.skip("cpython has a hard recursion limit")
+            else:
+                raise
 
         if source.tree is None:
             # we could not parse this file (maybe wrong python version)
@@ -1026,6 +1033,24 @@ class TestFiles:
                         # type alias names have no associated bytecode
                         continue
 
+                if sys.version_info >= (3, 13):
+                    if isinstance(node, ast.Name):
+                        # STORE_FAST_STORE_FAST is generated from two ast nodes, and can not be mapped back
+                        continue
+
+                    if (
+                        isinstance(node, ast.UnaryOp)
+                        and isinstance(node.op, ast.Not)
+                        and (
+                            isinstance(node.operand, ast.UnaryOp)
+                            and isinstance(node.operand.op, ast.Not)
+                            or isinstance(node.parent, ast.UnaryOp)
+                            and isinstance(node.parent.op, ast.Not)
+                        )
+                    ):
+                        # `not not x` is optimized to a single TO_BOOL
+                        continue
+
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
                 elif sys.version_info >= (3, 9) and in_finally(node):
@@ -1171,6 +1196,10 @@ class TestFiles:
                         "CALL",
                     )
                 )
+                or (
+                    sys.version_info >= (3, 13)
+                    and inst.opname in ("STORE_FAST_STORE_FAST", "STORE_FAST_LOAD_FAST")
+                )
             ):
                 continue
 
@@ -1184,10 +1213,10 @@ class TestFiles:
                     continue
 
                 if (
-                    inst.opname == "STORE_NAME"
+                    inst.opname in ("STORE_NAME", "STORE_DEREF")
                     and hasattr(inst, "positions")
                     and inst.positions.col_offset == inst.positions.end_col_offset == 0
-                    and inst.argval in ("__module__", "__qualname__")
+                    and inst.argval in ("__module__", "__qualname__", "__firstlineno__")
                 ):
                     continue
 
@@ -1222,6 +1251,7 @@ class TestFiles:
 
                 print("\ninstruction: " + str(e.instruction))
                 print("\nnode: " + ast.dump(e.node, include_attributes=True))
+                print("parent node:",type(e.node.parent).__name__)
 
                 with open(source.filename) as sourcefile:
                     source_code = sourcefile.read()
@@ -1331,6 +1361,9 @@ class TestFiles:
                     and inst.argval
                     in ("__type_params__", ".type_params", "__classdict__")
                 ):
+                    continue
+
+                if (sys.version_info>=(3,13) and inst.opname=="STORE_NAME" and inst.argval in ("__firstlineno__","__static_attributes__")):
                     continue
 
                 # report more information for debugging
