@@ -18,6 +18,7 @@ from rich.progress import Progress, track
 from rich.syntax import Syntax
 from rich.console import Console
 import argparse
+import ast
 
 last_samples_dir = Path(__file__).parent / "last_samples"
 last_samples_dir.mkdir(exist_ok=True)
@@ -63,6 +64,11 @@ def test_file(filename: Path):
             delattr(Source, cache_name)
 
     test = TestFiles()
+    try:
+        ast.parse(code)
+    except (RecursionError,SyntaxError):
+        return True
+
     try:
         with open(os.devnull, "w") as dev_null:
             with contextlib.redirect_stderr(dev_null):
@@ -122,9 +128,6 @@ def main():
                     break_file.unlink()
                     sys.exit(0)
 
-                if time.time() > end_time:
-                    print("Timeout")
-                    sys.exit(0)
 
                 if not result:
                     print(f"{filename} is failing the tests -> minimize\n")

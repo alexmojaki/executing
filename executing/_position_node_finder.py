@@ -242,6 +242,21 @@ class PositionNodeFinder(object):
             # keeping the old behaviour makes it possible to distinguish both cases.
 
             return node.parent
+
+        if (
+            sys.version_info >= (3, 12, 6)
+            and instruction.opname in ("GET_ITER", "FOR_ITER")
+            and isinstance(
+                node.parent.parent,
+                (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp),
+            )
+            and isinstance(node.parent,ast.comprehension)
+            and node is node.parent.iter
+        ):
+            # same as above but only for comprehensions, see:
+            # https://github.com/python/cpython/issues/123142
+
+            return node.parent.parent
         return node
 
     def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
