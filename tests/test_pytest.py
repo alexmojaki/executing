@@ -215,7 +215,7 @@ if sys.version_info >= (3, 11):
                         # STORE_NAME(_Test__subc11)
 
                         name = instruction.argval
-                        if name in ("__module__", "__qualname__", "__name__"):
+                        if name in ("__module__", "__qualname__", "__name__","__static_attributes__","__firstlineno__"):
                             continue
 
                         yield name
