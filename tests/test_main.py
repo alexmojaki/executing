@@ -925,11 +925,10 @@ class TestFiles:
                     if is_literal(node):
                         continue
 
-                    if len(values) == 0 and is_deadcode(node):
-                        continue
 
                     if isinstance(node,ast.Name) and node.id=="__debug__":
                         continue
+
                 else:
                     # x (is/is not) None
                     none_comparison = (
@@ -1008,8 +1007,6 @@ class TestFiles:
                         # "%50s"%(a,) is missing an BUILD_STRING instruction which normally maps to BinOp
                         continue
 
-                    if len(values)==0 and is_deadcode(node):
-                        continue
 
                     if (
                         isinstance(node, ast.Name)
@@ -1017,6 +1014,7 @@ class TestFiles:
                         and node.id == "__classcell__"
                     ):
                         continue
+
 
                 if sys.version_info >= (3, 12):
                     if (
@@ -1050,6 +1048,11 @@ class TestFiles:
                     ):
                         # `not not x` is optimized to a single TO_BOOL
                         continue
+
+
+                # the deadcode check has to be the last check because it is expensive
+                if len(values)==0 and is_deadcode(node):
+                    continue
 
                 if sys.version_info >= (3, 10):
                     correct = len(values) >= 1
