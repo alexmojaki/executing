@@ -609,6 +609,11 @@ class TestStuff(unittest.TestCase):
             assert {i: i for i in iter_test(ast.DictComp)} == {1: 1, 2: 2}
             assert list(i for i in iter_test(ast.GeneratorExp)) == [1, 2]
 
+            assert [i for j in [0] for i in iter_test(ast.ListComp)] == [1, 2]
+            assert {i for j in [0] for i in iter_test(ast.SetComp)} == {1, 2}
+            assert {i: i for j in [0] for i in iter_test(ast.DictComp)} == {1: 1, 2: 2}
+            assert list(i for j in [0] for i in iter_test(ast.GeneratorExp)) == [1, 2]
+
             for i in iter_test(ast.For):
                 assert i in (1, 2)
 
