@@ -6,6 +6,7 @@ import sys
 from time import sleep
 
 import asttokens
+from executing._pytest_utils import is_pytest_compatible
 import pytest
 from littleutils import SimpleNamespace
 
@@ -123,6 +124,10 @@ def check_manual_linecache(filename):
 
 def test_exception_catching():
     frame = inspect.currentframe()
+
+    if is_pytest_compatible():
+        assert isinstance(Source.executing(frame).node,ast.Call)
+        return 
 
     executing.executing.TESTING = True  # this is already the case in all other tests
     # Sanity check that this operation usually raises an exception.
