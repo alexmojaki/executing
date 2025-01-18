@@ -5,6 +5,7 @@ from types import CodeType, FrameType
 from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
 from ._exceptions import KnownIssue, VerifierFailure
+from ._utils import mangled_name
 
 from functools import lru_cache
 
@@ -23,51 +24,6 @@ def parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
 def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     yield node
     yield from parents(node)
-
-
-def mangled_name(node: EnhancedAST) -> str:
-    """
-
-    Parameters:
-        node: the node which should be mangled
-        name: the name of the node
-
-    Returns:
-        The mangled name of `node`
-    """
-    if isinstance(node, ast.Attribute):
-        name = node.attr
-    elif isinstance(node, ast.Name):
-        name = node.id
-    elif isinstance(node, (ast.alias)):
-        name = node.asname or node.name.split(".")[0]
-    elif isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
-        name = node.name
-    elif isinstance(node, ast.ExceptHandler):
-        assert node.name
-        name = node.name
-    elif sys.version_info >= (3,12) and isinstance(node,ast.TypeVar):
-        name=node.name
-    else:
-        raise TypeError("no node to mangle for type "+repr(type(node)))
-
-    if name.startswith("__") and not name.endswith("__"):
-
-        parent,child=node.parent,node
-
-        while not (isinstance(parent,ast.ClassDef) and child not in parent.bases):
-            if not hasattr(parent,"parent"):
-                break # pragma: no mutate
-
-            parent,child=parent.parent,parent
-        else:
-            class_name=parent.name.lstrip("_")
-            if class_name!="":
-                return "_" + class_name + name
-
-            
-
-    return name
 
 
 @lru_cache(128) # pragma: no mutate
