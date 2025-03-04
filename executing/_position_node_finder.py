@@ -71,6 +71,7 @@ class PositionNodeFinder(object):
 
     def __init__(self, frame: FrameType, stmts: Set[EnhancedAST], tree: ast.Module, lasti: int, source: Source):
         self.bc_dict={bc.offset:bc for bc in get_instructions(frame.f_code) }
+        self.frame=frame
 
         self.source = source
         self.decorator: Optional[EnhancedAST] = None
@@ -258,6 +259,17 @@ class PositionNodeFinder(object):
             # handle positions changes for __enter__
             return node.parent.parent
 
+        if sys.version_info >= (3, 14) and instruction.opname == "CALL":
+            before = self.instruction_before(instruction)
+            if (
+                before is not None
+                and before.opname == "LOAD_SPECIAL"
+                and before.argrepr in ("__enter__","__aenter__")
+                and before.positions == instruction.positions
+                and isinstance(node.parent, ast.withitem)
+                and node is node.parent.context_expr
+            ):
+                return node.parent.parent
         return node
 
     def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
@@ -399,6 +411,26 @@ class PositionNodeFinder(object):
                 # work around for 
                 # https://github.com/python/cpython/issues/114671
                 self.result = node.operand
+
+        if sys.version_info >= (3,14):
+            # if isinstance(node.parent,ast.withitem) and instruction.opname == "CALL" and not isinstance(self.result,ast.Call):
+            #     self.result = node.parent.parent
+
+            # if isinstance(node.parent,ast.withitem) and instruction.opname == "WITH_EXCEPT_START":
+            #     self.result = node.parent.parent
+
+            if self.frame.f_code.co_name=="__annotate__" and isinstance(node,(ast.FunctionDef,ast.Import,ast.AsyncFunctionDef,ast.AnnAssign,ast.TypeAlias)):
+                raise KnownIssue("some opcodes in the annotation are just bound specific nodes")
+
+            if isinstance(node,(ast.TypeAlias)) and  self.frame.f_code.co_name==node.name.id :
+                raise KnownIssue("some opcodes in the annotation are just bound TypeAlias")
+
+            if isinstance(node.parent,(ast.TypeVar)) and  self.frame.f_code.co_name==node.parent.name:
+                raise KnownIssue("some opcodes in the annotation are just bound TypeAlias")
+
+            if instruction.opname == "STORE_NAME" and instruction.argrepr == "__annotate__":
+                raise KnownIssue("just a store of the annotation")
+
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
