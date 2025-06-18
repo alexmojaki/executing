@@ -1367,6 +1367,17 @@ class TestFiles:
                 if (sys.version_info>=(3,13) and inst.opname=="STORE_NAME" and inst.argval in ("__firstlineno__","__static_attributes__")):
                     continue
 
+                if (sys.version_info>=(3,14) and inst.opname=="STORE_NAME" and inst.argval in ("__annotate_func__","__classdictcell__")):
+                    continue
+
+                if (
+                    sys.version_info >= (3, 14)
+                    and inst.positions.col_offset == inst.positions.end_col_offset == 0
+                    and code.co_name == "__annotate__"
+                ):
+                    continue
+
+
                 # report more information for debugging
                 print("mapping failed")
 
