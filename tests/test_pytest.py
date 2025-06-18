@@ -199,6 +199,7 @@ def test_mangled_name():
                         "LOAD_GLOBAL",
                         "STORE_FAST",
                         "LOAD_FAST",
+                        "LOAD_FAST_BORROW",
                         "LOAD_ATTR",
                         "STORE_ATTR",
                     ):

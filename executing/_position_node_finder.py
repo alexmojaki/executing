@@ -351,6 +351,7 @@ class PositionNodeFinder(object):
             if (instruction.opname, instruction.argval) in [
                 ("LOAD_DEREF", "__class__"),
                 ("LOAD_FAST", first_arg),
+                ("LOAD_FAST_BORROW", first_arg),
                 ("LOAD_DEREF", first_arg),
             ]:
                 raise KnownIssue("super optimization")
@@ -391,7 +392,7 @@ class PositionNodeFinder(object):
             ):
                 raise KnownIssue(f"can not map {instruction.opname} to two ast nodes")
 
-            if instruction.opname == "LOAD_FAST" and instruction.argval == "__class__":
+            if instruction.opname in ("LOAD_FAST","LOAD_FAST_BORROW") and instruction.argval == "__class__":
                 # example:
                 #   class T:
                 #       def a():
@@ -539,7 +540,7 @@ class PositionNodeFinder(object):
             # call to context.__exit__
             return
 
-        if inst_match(("CALL", "LOAD_FAST")) and node_match(
+        if inst_match(("CALL", "LOAD_FAST","LOAD_FAST_BORROW")) and node_match(
             (ast.ListComp, ast.GeneratorExp, ast.SetComp, ast.DictComp)
         ):
             # call to the generator function
@@ -682,6 +683,7 @@ class PositionNodeFinder(object):
                 "LOAD_NAME",
                 "LOAD_FAST",
                 "LOAD_FAST_CHECK",
+                "LOAD_FAST_BORROW",
                 "LOAD_GLOBAL",
                 "LOAD_DEREF",
                 "LOAD_FROM_DICT_OR_DEREF",
@@ -796,6 +798,10 @@ class PositionNodeFinder(object):
                 if inst_match("LOAD_FAST",argval=".kwdefaults"):
                     return
 
+                if sys.version_info >= (3, 14):
+                    if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW",argval=(".defaults",".kwdefaults")):
+                        return
+
             if inst_match("STORE_NAME", argval="__classdictcell__"):
                 # this is a general thing
                 return
@@ -829,7 +835,7 @@ class PositionNodeFinder(object):
             if inst_match("LOAD_FAST", argval="__classdict__"):
                 return
 
-            if inst_match("LOAD_FAST") and node_match(
+            if inst_match(("LOAD_FAST","LOAD_FAST_BORROW")) and node_match(
                 (
                     ast.FunctionDef,
                     ast.ClassDef,
@@ -855,11 +861,15 @@ class PositionNodeFinder(object):
                 # the node is the first node in the body
                 return
 
-            if inst_match("LOAD_FAST") and isinstance(node.parent,ast.TypeVar):
+            if inst_match(("LOAD_FAST","LOAD_FAST_BORROW")) and isinstance(node.parent,ast.TypeVar):
                 return
 
         if sys.version_info >= (3, 14):
             if inst_match("BINARY_OP",argrepr="[]") and node_match(ast.Subscript):
+                return
+            if inst_match("LOAD_FAST_BORROW", argval="__classdict__"):
+                return
+            if inst_match(("STORE_NAME","LOAD_NAME"), argval="__conditional_annotations__"):
                 return
 
         # old verifier
