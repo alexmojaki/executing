@@ -645,11 +645,12 @@ class PositionNodeFinder(object):
             if inst_match("COMPARE_OP", argval="==") and node_match(ast.MatchValue):
                 return
 
-        if inst_match("BINARY_OP") and node_match(
-            ast.AugAssign, op=op_type_map[instruction.argrepr.removesuffix("=")]
-        ):
-            # a+=5
-            return
+        if inst_match("BINARY_OP"):
+            arg=instruction.argrepr.removesuffix("=")
+
+            if arg!="[]" and node_match( ast.AugAssign, op=op_type_map[arg]):
+                # a+=5
+                return
 
         if node_match(ast.Attribute, ctx=ast.Del) and inst_match(
             "DELETE_ATTR", argval=mangled_name(node)
@@ -857,6 +858,9 @@ class PositionNodeFinder(object):
             if inst_match("LOAD_FAST") and isinstance(node.parent,ast.TypeVar):
                 return
 
+        if sys.version_info >= (3, 14):
+            if inst_match("BINARY_OP",argrepr="[]") and node_match(ast.Subscript):
+                return
 
         # old verifier
 
