@@ -875,6 +875,9 @@ class PositionNodeFinder(object):
             if inst_match(("STORE_NAME","LOAD_NAME"), argval="__conditional_annotations__"):
                 return
 
+            if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and node_match(ast.Name) and node.id in instruction.argval:
+                return
+
         # old verifier
 
         typ: Type = type(None)
