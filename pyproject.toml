@@ -15,3 +15,6 @@ warn_redundant_casts=true
 [[tool.mypy.overrides]]
 module = "astroid"
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+python_functions = "test_"
