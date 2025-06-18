@@ -1,0 +1,1 @@
+all((something for num in nums))

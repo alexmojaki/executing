@@ -432,6 +432,9 @@ class PositionNodeFinder(object):
             if instruction.opname == "STORE_NAME" and instruction.argrepr == "__annotate__":
                 raise KnownIssue("just a store of the annotation")
 
+            if instruction.opname == "IS_OP" and isinstance(node,ast.Name):
+                raise KnownIssue("part of a check that a name like all is a builtin")
+
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
