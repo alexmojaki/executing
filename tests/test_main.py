@@ -1367,7 +1367,10 @@ class TestFiles:
                 if (sys.version_info>=(3,13) and inst.opname=="STORE_NAME" and inst.argval in ("__firstlineno__","__static_attributes__")):
                     continue
 
-                if (sys.version_info>=(3,14) and inst.opname=="STORE_NAME" and inst.argval in ("__annotate_func__","__classdictcell__")):
+                if (sys.version_info>=(3,14) and inst.opname=="STORE_NAME" and inst.argval in ("__annotate_func__","__classdictcell__","__classcell__")):
+                    continue
+
+                if (sys.version_info>=(3,14) and inst.opname=="LOAD_FAST_BORROW" and inst.argval in ("__class__",)):
                     continue
 
                 if (
