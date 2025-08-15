@@ -420,7 +420,7 @@ class PositionNodeFinder(object):
             # if isinstance(node.parent,ast.withitem) and instruction.opname == "WITH_EXCEPT_START":
             #     self.result = node.parent.parent
 
-            if self.frame.f_code.co_name=="__annotate__" and isinstance(node,(ast.FunctionDef,ast.Import,ast.AsyncFunctionDef,ast.AnnAssign,ast.TypeAlias)):
+            if self.frame.f_code.co_name=="__annotate__" and isinstance(node,(ast.FunctionDef,ast.Import,ast.AsyncFunctionDef,ast.AnnAssign,ast.TypeAlias,ast.Constant)):
                 raise KnownIssue("some opcodes in the annotation are just bound specific nodes")
 
             if isinstance(node,(ast.TypeAlias)) and  self.frame.f_code.co_name==node.name.id :
