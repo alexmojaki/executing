@@ -426,6 +426,17 @@ class PositionNodeFinder(object):
             # if isinstance(node.parent,ast.withitem) and instruction.opname == "WITH_EXCEPT_START":
             #     self.result = node.parent.parent
 
+            last_offset=list(self.bc_dict.keys())[-1]
+
+            if (
+                self.frame.f_code.co_name=="__annotate__" 
+                and self.instruction(2).opname=="LOAD_FAST_BORROW"
+                and self.instruction(2).argval=="format" 
+                and not (20 < instruction.offset <last_offset-4)
+            ):
+                # https://github.com/python/cpython/issues/135700
+                raise KnownIssue("synthetic opcodes in annotations are just bound to the first node")
+
             if self.frame.f_code.co_name=="__annotate__" and isinstance(node,(ast.FunctionDef,ast.Import,ast.AsyncFunctionDef,ast.AnnAssign,ast.TypeAlias,ast.Constant)):
                 raise KnownIssue("some opcodes in the annotation are just bound specific nodes")
 
