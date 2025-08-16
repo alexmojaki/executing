@@ -767,7 +767,7 @@ class PositionNodeFinder(object):
                 if(
                     inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEALIAS")
                     or inst_match(
-                        ("STORE_NAME", "STORE_FAST", "STORE_DEREF"), argrepr=node.name.id
+                        ("STORE_NAME", "STORE_FAST", "STORE_DEREF","STORE_GLOBAL"), argrepr=node.name.id
                     )
                     or inst_match("CALL")
                 ):
