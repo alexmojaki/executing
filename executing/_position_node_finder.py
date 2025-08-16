@@ -8,6 +8,7 @@ from ._exceptions import KnownIssue, VerifierFailure
 from ._utils import mangled_name
 
 from functools import lru_cache
+import itertools
 
 # the code in this module can use all python>=3.11 features
 
@@ -428,6 +429,9 @@ class PositionNodeFinder(object):
 
             last_offset=list(self.bc_dict.keys())[-1]
 
+            if self.is_synthetic_annotation_code(instruction.offset):
+                raise KnownIssue("synthetic code")
+
             if (
                 self.frame.f_code.co_name=="__annotate__" 
                 and self.instruction(2).opname=="LOAD_FAST_BORROW"
@@ -443,15 +447,35 @@ class PositionNodeFinder(object):
             if isinstance(node,(ast.TypeAlias)) and  self.frame.f_code.co_name==node.name.id :
                 raise KnownIssue("some opcodes in the annotation are just bound TypeAlias")
 
-            if isinstance(node.parent,(ast.TypeVar)) and  self.frame.f_code.co_name==node.parent.name:
-                raise KnownIssue("some opcodes in the annotation are just bound TypeAlias")
-
             if instruction.opname == "STORE_NAME" and instruction.argrepr == "__annotate__":
                 raise KnownIssue("just a store of the annotation")
 
             if instruction.opname == "IS_OP" and isinstance(node,ast.Name):
                 raise KnownIssue("part of a check that a name like all is a builtin")
 
+    def is_synthetic_code(self,offset):
+        if sys.version_info >=(3,14):
+            header=[inst.opname for inst in itertools.islice(self.bc_dict.values(),8)]
+
+            if len(header)==8:
+
+                if header[0]=="COPY_FREE_VARS":
+                    del header[0]
+                else:
+                    del header[7]
+
+                if header==[
+                    "RESUME",
+                    "LOAD_FAST_BORROW",
+                    "LOAD_SMALL_INT",
+                    "COMPARE_OP",
+                    "POP_JUMP_IF_FALSE",
+                    "NOT_TAKEN",
+                    "LOAD_COMMON_CONSTANT",
+                ] and offset <= 16:
+                    return True
+
+        return False
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:

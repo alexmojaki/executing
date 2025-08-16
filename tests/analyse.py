@@ -110,8 +110,8 @@ def inspect(bc):
     for i in dis.get_instructions(bc, show_caches=True):
 
         if (
-            i.positions.lineno is not None
-            and i.positions.lineno <= end
+            i.positions.lineno is None
+            or i.positions.lineno <= end
             and start <= i.positions.end_lineno
         ):
             if first:
