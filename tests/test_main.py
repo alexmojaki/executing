@@ -1370,13 +1370,9 @@ class TestFiles:
                 if (sys.version_info>=(3,14) and inst.opname=="STORE_NAME" and inst.argval in ("__annotate_func__","__classdictcell__","__classcell__")):
                     continue
 
-                if (sys.version_info>=(3,14) and inst.opname=="LOAD_FAST_BORROW" and inst.argval in ("__class__",)):
-                    continue
-
                 if (
                     sys.version_info >= (3, 14)
                     and inst.positions.col_offset == inst.positions.end_col_offset == 0
-                    and code.co_name == "__annotate__"
                 ):
                     continue
 
