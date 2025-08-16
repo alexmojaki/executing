@@ -707,8 +707,11 @@ class PositionNodeFinder(object):
                 "LOAD_GLOBAL",
                 "LOAD_DEREF",
                 "LOAD_FROM_DICT_OR_DEREF",
+                "LOAD_FAST_BORROW_LOAD_FAST_BORROW",
             ),
-            argval=mangled_name(node),
+        ) and (
+            mangled_name(node) in instruction.argval if isinstance(instruction.argval,tuple)
+            else instruction.argval == mangled_name(node)
         ):
             return
 
