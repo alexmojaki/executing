@@ -270,6 +270,12 @@ class PositionNodeFinder(object):
                 and node is node.parent.context_expr
             ):
                 return node.parent.parent
+
+        if sys.version_info >= (3, 14) and isinstance(node, ast.UnaryOp) and isinstance(node.op,ast.Not) and instruction.opname !="UNARY_NOT":
+            # fix for https://github.com/python/cpython/issues/137843
+            return node.operand
+
+
         return node
 
     def known_issues(self, node: EnhancedAST, instruction: dis.Instruction) -> None:
@@ -701,7 +707,7 @@ class PositionNodeFinder(object):
             return
 
         if node_match(ast.Constant) and inst_match(
-            "LOAD_CONST", argval=cast(ast.Constant, node).value
+            ("LOAD_CONST","LOAD_SMALL_INT"), argval=cast(ast.Constant, node).value
         ):
             return
 
