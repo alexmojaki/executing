@@ -30,7 +30,10 @@ and maps every bytecode to the node found by executing.
 
 filename = pathlib.Path(sys.argv[1])
 
-if ":" in sys.argv[2]:
+if len(sys.argv)<3:
+    start=0
+    end=100
+elif ":" in sys.argv[2]:
     start, end = sys.argv[2].split(":")
     start = int(start)
     end = int(end)

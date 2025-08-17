@@ -441,6 +441,9 @@ class PositionNodeFinder(object):
                 # https://github.com/python/cpython/issues/135700
                 raise KnownIssue("synthetic opcodes in annotations are just bound to the first node")
 
+            if self.frame.f_code.co_name=="__annotate__" and instruction.opname=="STORE_SUBSCR":
+                raise KnownIssue("synthetic code to store annotation")
+
             if self.frame.f_code.co_name=="__annotate__" and isinstance(node,(ast.FunctionDef,ast.Import,ast.AsyncFunctionDef,ast.AnnAssign,ast.TypeAlias,ast.Constant)):
                 raise KnownIssue("some opcodes in the annotation are just bound specific nodes")
 
@@ -455,7 +458,7 @@ class PositionNodeFinder(object):
 
 
 
-    def is_synthetic_code(self,offset):
+    def is_synthetic_annotation_code(self,offset:int)->bool:
         if sys.version_info >=(3,14):
             header=[inst.opname for inst in itertools.islice(self.bc_dict.values(),8)]
 
