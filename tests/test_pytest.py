@@ -3,6 +3,7 @@ import inspect
 import linecache
 import os
 import sys
+import dis
 from time import sleep
 
 import asttokens
@@ -14,7 +15,9 @@ import executing.executing
 from executing import Source, NotOneValueFound
 from executing._exceptions import KnownIssue
 from executing.executing import is_ipython_cell_code, is_rewritten_by_pytest
-from executing._utils import get_instructions
+from executing._utils import get_instructions, mangled_name
+
+from textwrap import indent
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -154,16 +157,7 @@ ex = Source.executing(frame)
     assert ex.source.text == fake_text
 
 
-from executing._utils import mangled_name
-import dis
 
-if sys.version_info < (3,):
-    def indent(s,prefix):
-        return prefix + s.replace("\n","\n"+prefix)
-else:
-    from textwrap import indent
-
-@pytest.mark.skipif(sys.version_info < (3,), reason="argval of some Instructions is None")
 def test_mangled_name():
         def result(*code_levels):
             code = ""
@@ -178,15 +172,14 @@ def test_mangled_name():
 
 
             ast_types=(
-                        ast.Name,
-                        ast.Attribute,
-                        ast.alias,
-                        ast.FunctionDef,
-                        ast.ClassDef,
-                        ast.ExceptHandler,
-                    )
-            if sys.version_info>=(3,):
-                ast_types+=(                        ast.AsyncFunctionDef,)
+                ast.Name,
+                ast.Attribute,
+                ast.alias,
+                ast.FunctionDef,
+                ast.ClassDef,
+                ast.ExceptHandler,
+                ast.AsyncFunctionDef,
+            )
 
             tree_names = {
                 mangled_name(n)
@@ -217,7 +210,7 @@ def test_mangled_name():
                         # IMPORT_FROM(_Test__submodule11c)
                         # STORE_NAME(_Test__subc11)
 
-                        if instruction.opname=="LOAD_ATTR" and before is not None  and before.opname == "IMPORT_NAME":
+                        if instruction.opname == "LOAD_ATTR" and before is not None and before.opname == "IMPORT_NAME":
                             continue
 
                         name = instruction.argval

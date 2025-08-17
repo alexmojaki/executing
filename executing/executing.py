@@ -545,8 +545,7 @@ class SentinelNodeFinder(object):
         elif op_name in ('LOAD_NAME', 'LOAD_GLOBAL', 'LOAD_FAST', 'LOAD_DEREF', 'LOAD_CLASSDEREF'):
             typ = ast.Name
             ctx = ast.Load
-            if sys.version_info[0] == 3 or instruction.argval:
-                extra_filter =lambda e:mangled_name(e) == instruction.argval 
+            extra_filter = lambda e:mangled_name(e) == instruction.argval 
         elif op_name in ('COMPARE_OP', 'IS_OP', 'CONTAINS_OP'):
             typ = ast.Compare
             extra_filter = lambda e: len(e.ops) == 1
@@ -571,10 +570,6 @@ class SentinelNodeFinder(object):
                 if extra_filter(node)
                 if statement_containing_node(node) == stmt
             }
-
-            print(instruction)
-
-            print(exprs)
 
             if ctx == ast.Store:
                 # No special bytecode tricks here.
