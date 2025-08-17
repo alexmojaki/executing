@@ -453,6 +453,8 @@ class PositionNodeFinder(object):
             if instruction.opname == "IS_OP" and isinstance(node,ast.Name):
                 raise KnownIssue("part of a check that a name like all is a builtin")
 
+
+
     def is_synthetic_code(self,offset):
         if sys.version_info >=(3,14):
             header=[inst.opname for inst in itertools.islice(self.bc_dict.values(),8)]
@@ -920,6 +922,9 @@ class PositionNodeFinder(object):
                 return
 
             if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and node_match(ast.Name) and node.id in instruction.argval:
+                return
+
+            if inst_match("CALL_INTRINSIC_2",argrepr="INTRINSIC_SET_TYPEPARAM_DEFAULT") and node_match((ast.TypeVar,ast.ParamSpec,ast.TypeVarTuple)):
                 return
 
         # old verifier
