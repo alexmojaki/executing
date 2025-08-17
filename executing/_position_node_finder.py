@@ -916,6 +916,9 @@ class PositionNodeFinder(object):
             if inst_match(("LOAD_FAST","LOAD_FAST_BORROW")) and isinstance(node.parent,ast.TypeVar):
                 return
 
+            if inst_match("CALL_INTRINSIC_2",argrepr="INTRINSIC_SET_TYPEPARAM_DEFAULT") and node_match((ast.TypeVar,ast.ParamSpec,ast.TypeVarTuple)):
+                return
+
         if sys.version_info >= (3, 14):
             if inst_match("BINARY_OP",argrepr="[]") and node_match(ast.Subscript):
                 return
@@ -927,8 +930,6 @@ class PositionNodeFinder(object):
             if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and node_match(ast.Name) and node.id in instruction.argval:
                 return
 
-            if inst_match("CALL_INTRINSIC_2",argrepr="INTRINSIC_SET_TYPEPARAM_DEFAULT") and node_match((ast.TypeVar,ast.ParamSpec,ast.TypeVarTuple)):
-                return
 
         # old verifier
 
