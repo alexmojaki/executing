@@ -421,11 +421,6 @@ class PositionNodeFinder(object):
                 self.result = node.operand
 
         if sys.version_info >= (3,14):
-            # if isinstance(node.parent,ast.withitem) and instruction.opname == "CALL" and not isinstance(self.result,ast.Call):
-            #     self.result = node.parent.parent
-
-            # if isinstance(node.parent,ast.withitem) and instruction.opname == "WITH_EXCEPT_START":
-            #     self.result = node.parent.parent
 
             last_offset=list(self.bc_dict.keys())[-1]
 
@@ -454,7 +449,7 @@ class PositionNodeFinder(object):
                 raise KnownIssue("just a store of the annotation")
 
             if instruction.opname == "IS_OP" and isinstance(node,ast.Name):
-                raise KnownIssue("part of a check that a name like all is a builtin")
+                raise KnownIssue("part of a check that a name like `all` is a builtin")
 
 
 
