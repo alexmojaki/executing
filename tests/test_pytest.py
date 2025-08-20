@@ -192,7 +192,6 @@ def test_mangled_name():
             }
 
             def collect_names(code):
-                before=None
                 for instruction in get_instructions(code):
                     if instruction.opname in (
                         "STORE_NAME",
@@ -210,15 +209,11 @@ def test_mangled_name():
                         # IMPORT_FROM(_Test__submodule11c)
                         # STORE_NAME(_Test__subc11)
 
-                        if instruction.opname == "LOAD_ATTR" and before is not None and before.opname == "IMPORT_NAME":
-                            continue
-
                         name = instruction.argval
                         if name in ("__module__", "__qualname__", "__name__","__static_attributes__","__firstlineno__"):
                             continue
 
                         yield name
-                    before=instruction
 
                 for const in code.co_consts:
                     if isinstance(const, type(code)):
