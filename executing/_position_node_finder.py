@@ -439,7 +439,7 @@ class PositionNodeFinder(object):
             if self.frame.f_code.co_name=="__annotate__" and instruction.opname=="STORE_SUBSCR":
                 raise KnownIssue("synthetic code to store annotation")
 
-            if self.frame.f_code.co_name=="__annotate__" and isinstance(node,(ast.FunctionDef,ast.Import,ast.AsyncFunctionDef,ast.AnnAssign,ast.TypeAlias,ast.Constant)):
+            if self.frame.f_code.co_name=="__annotate__" and isinstance(node,ast.AnnAssign):
                 raise KnownIssue("some opcodes in the annotation are just bound specific nodes")
 
             if isinstance(node,(ast.TypeAlias)) and  self.frame.f_code.co_name==node.name.id :
