@@ -422,25 +422,21 @@ class PositionNodeFinder(object):
 
         if sys.version_info >= (3,14):
 
-            last_offset=list(self.bc_dict.keys())[-1]
 
-            if self.is_synthetic_annotation_code(instruction.offset):
-                raise KnownIssue("synthetic code")
+            if header_length := self.annotation_header_size():
 
-            if (
-                self.frame.f_code.co_name=="__annotate__" 
-                and self.instruction(2).opname=="LOAD_FAST_BORROW"
-                and self.instruction(2).argval=="format" 
-                and not (20 < instruction.offset <last_offset-4)
-            ):
-                # https://github.com/python/cpython/issues/135700
-                raise KnownIssue("synthetic opcodes in annotations are just bound to the first node")
+                last_offset=list(self.bc_dict.keys())[-1]
+                if (
+                    not (header_length*2 < instruction.offset <last_offset-4)
+                ):
+                    # https://github.com/python/cpython/issues/135700
+                    raise KnownIssue("synthetic opcodes in annotations are just bound to the first node")
 
-            if self.frame.f_code.co_name=="__annotate__" and instruction.opname=="STORE_SUBSCR":
-                raise KnownIssue("synthetic code to store annotation")
+                if self.frame.f_code.co_name=="__annotate__" and instruction.opname=="STORE_SUBSCR":
+                    raise KnownIssue("synthetic code to store annotation")
 
-            if self.frame.f_code.co_name=="__annotate__" and isinstance(node,ast.AnnAssign):
-                raise KnownIssue("some opcodes in the annotation are just bound specific nodes")
+                if self.frame.f_code.co_name=="__annotate__" and isinstance(node,ast.AnnAssign):
+                    raise KnownIssue("some opcodes in the annotation are just bound specific nodes")
 
             if isinstance(node,(ast.TypeAlias)) and  self.frame.f_code.co_name==node.name.id :
                 raise KnownIssue("some opcodes in the annotation are just bound TypeAlias")
@@ -453,16 +449,17 @@ class PositionNodeFinder(object):
 
 
 
-    def is_synthetic_annotation_code(self,offset:int)->bool:
+    def annotation_header_size(self)->int:
         if sys.version_info >=(3,14):
             header=[inst.opname for inst in itertools.islice(self.bc_dict.values(),8)]
 
             if len(header)==8:
-
-                if header[0]=="COPY_FREE_VARS":
+                if header[0] in ("COPY_FREE_VARS","MAKE_CELL"):
                     del header[0]
+                    header_size=8
                 else:
                     del header[7]
+                    header_size=7
 
                 if header==[
                     "RESUME",
@@ -472,10 +469,10 @@ class PositionNodeFinder(object):
                     "POP_JUMP_IF_FALSE",
                     "NOT_TAKEN",
                     "LOAD_COMMON_CONSTANT",
-                ] and offset <= 16:
-                    return True
+                ]:
+                    return header_size
 
-        return False
+        return 0
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:

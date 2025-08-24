@@ -1,0 +1,1 @@
+type unique_name_0[T] = [lambda: T for T in T]
