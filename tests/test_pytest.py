@@ -199,6 +199,7 @@ def test_mangled_name():
                         "LOAD_GLOBAL",
                         "STORE_FAST",
                         "LOAD_FAST",
+                        "LOAD_FAST_BORROW",
                         "LOAD_ATTR",
                         "STORE_ATTR",
                     ):
@@ -210,7 +211,7 @@ def test_mangled_name():
                         # STORE_NAME(_Test__subc11)
 
                         name = instruction.argval
-                        if name in ("__module__", "__qualname__", "__name__","__static_attributes__","__firstlineno__"):
+                        if name in ("__module__", "__qualname__", "__name__","__static_attributes__","__firstlineno__","__classdict__","__classdictcell__"):
                             continue
 
                         yield name

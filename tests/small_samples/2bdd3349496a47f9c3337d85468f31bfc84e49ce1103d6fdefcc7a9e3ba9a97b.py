@@ -1,0 +1,2 @@
+class FunctionProfile:
+    ncalls: str

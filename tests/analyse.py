@@ -30,7 +30,10 @@ and maps every bytecode to the node found by executing.
 
 filename = pathlib.Path(sys.argv[1])
 
-if ":" in sys.argv[2]:
+if len(sys.argv)<3:
+    start=0
+    end=100
+elif ":" in sys.argv[2]:
     start, end = sys.argv[2].split(":")
     start = int(start)
     end = int(end)
@@ -110,8 +113,8 @@ def inspect(bc):
     for i in dis.get_instructions(bc, show_caches=True):
 
         if (
-            i.positions.lineno is not None
-            and i.positions.lineno <= end
+            i.positions.lineno is None
+            or i.positions.lineno <= end
             and start <= i.positions.end_lineno
         ):
             if first:
