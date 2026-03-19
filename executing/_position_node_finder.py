@@ -386,6 +386,7 @@ class PositionNodeFinder(object):
         if (
             instruction.opname == "CALL"
             and not isinstance(node,ast.Call)
+            and not isinstance(node, (ast.ListComp, ast.GeneratorExp, ast.SetComp, ast.DictComp))
             and any(isinstance(p, ast.Assert) for p in parents(node))
             and sys.version_info >= (3, 11, 2)
         ):
@@ -920,6 +921,17 @@ class PositionNodeFinder(object):
                 return
 
             if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and node_match(ast.Name) and node.id in instruction.argval:
+                return
+
+        if sys.version_info >= (3, 15):
+            if (
+                inst_match(("LOAD_FAST", "LOAD_FAST_BORROW"), argval=".0")
+                and isinstance(node.parent, ast.comprehension)
+                and node is node.parent.iter
+            ):
+                # In Python 3.15, the LOAD_FAST/LOAD_FAST_BORROW .0 instruction
+                # (which loads the hidden iterator parameter in comprehensions/generator
+                # expressions) has source positions that match the iterator expression
                 return
 
 

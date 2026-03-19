@@ -1442,7 +1442,12 @@ class TestFiles:
                 if isinstance(inst.argval,tuple):
                     assert  mangled_name(node) in inst.argval 
                 else:
-                    assert  mangled_name(node) == inst.argval 
+                    # In Python 3.15, LOAD_FAST/LOAD_FAST_BORROW .0 (the hidden iterator parameter)
+                    # can be mapped to the iterator expression Name node in comprehensions
+                    if sys.version_info >= (3, 15) and inst.opname in ("LOAD_FAST", "LOAD_FAST_BORROW") and inst.argval == ".0":
+                        assert isinstance(node.parent, ast.comprehension) and node is node.parent.iter
+                    else:
+                        assert  mangled_name(node) == inst.argval
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)
