@@ -274,7 +274,7 @@ class PositionNodeFinder(object):
 
         if sys.version_info >= (3, 14) and isinstance(node, ast.UnaryOp) and isinstance(node.op,ast.Not) and instruction.opname !="UNARY_NOT":
             # fix for https://github.com/python/cpython/issues/137843
-            return node.operand
+            return cast(EnhancedAST, node.operand)
 
 
         return node
@@ -418,7 +418,7 @@ class PositionNodeFinder(object):
             ):
                 # work around for 
                 # https://github.com/python/cpython/issues/114671
-                self.result = node.operand
+                self.result = cast(EnhancedAST, node.operand)
 
         if sys.version_info >= (3,14):
 
@@ -787,14 +787,14 @@ class PositionNodeFinder(object):
 
             if node_match(ast.TypeVarTuple) and (
                 inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEVARTUPLE")
-                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=node.name)
+                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=cast(ast.TypeVarTuple, node).name)
             ):
                 return
 
             if node_match(ast.ParamSpec) and (
                 inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_PARAMSPEC")
 
-                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=node.name)):
+                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=cast(ast.ParamSpec, node).name)):
                 return
 
 
@@ -802,14 +802,14 @@ class PositionNodeFinder(object):
                 if(
                     inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEALIAS")
                     or inst_match(
-                        ("STORE_NAME", "STORE_FAST", "STORE_DEREF","STORE_GLOBAL"), argrepr=node.name.id
+                        ("STORE_NAME", "STORE_FAST", "STORE_DEREF","STORE_GLOBAL"), argrepr=cast(ast.TypeAlias, node).name.id
                     )
                     or inst_match("CALL")
                 ):
                     return
 
 
-            if node_match(ast.ClassDef) and node.type_params:
+            if node_match(ast.ClassDef) and cast(ast.ClassDef, node).type_params:
                 if inst_match(
                     ("STORE_DEREF", "LOAD_DEREF", "LOAD_FROM_DICT_OR_DEREF"),
                     argrepr=".type_params",
@@ -827,7 +827,7 @@ class PositionNodeFinder(object):
                 if inst_match("LOAD_DEREF",argval="__classdict__"):
                     return
 
-            if node_match((ast.FunctionDef,ast.AsyncFunctionDef)) and node.type_params:
+            if node_match((ast.FunctionDef,ast.AsyncFunctionDef)) and cast(Union[ast.FunctionDef, ast.AsyncFunctionDef], node).type_params:
                 if inst_match("CALL"):
                     return
 
@@ -897,7 +897,7 @@ class PositionNodeFinder(object):
             if (
                 inst_match("LOAD_FAST")
                 and node_match(ast.TypeAlias)
-                and node.name.id == instruction.argval
+                and cast(ast.TypeAlias, node).name.id == instruction.argval
             ):
                 return
 
@@ -919,7 +919,7 @@ class PositionNodeFinder(object):
             if inst_match(("STORE_NAME","LOAD_NAME"), argval="__conditional_annotations__"):
                 return
 
-            if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and node_match(ast.Name) and node.id in instruction.argval:
+            if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and node_match(ast.Name) and cast(ast.Name, node).id in instruction.argval:
                 return
 
 
@@ -1004,7 +1004,7 @@ class PositionNodeFinder(object):
             return "CACHE"
         return i.opname
 
-    extra_node_types=()
+    extra_node_types: Tuple[Type[Any], ...] = ()
     if sys.version_info >= (3,12):
         extra_node_types = (ast.type_param,)
 

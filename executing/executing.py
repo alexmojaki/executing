@@ -155,7 +155,7 @@ class Source(object):
 
         def get_lines():
             # type: () -> List[str]
-            return linecache.getlines(cast(str, filename), module_globals)
+            return linecache.getlines(filename, module_globals)
 
         # Save the current linecache entry, then ensure the cache is up to date.
         entry = linecache.cache.get(filename) # type: ignore[attr-defined]
@@ -483,7 +483,7 @@ def is_rewritten_by_pytest(code):
 
 
 class SentinelNodeFinder(object):
-    result = None # type: EnhancedAST
+    result = None # type: Optional[EnhancedAST]
 
     def __init__(self, frame, stmts, tree, lasti, source):
         # type: (types.FrameType, Set[EnhancedAST], ast.Module, int, Source) -> None
@@ -658,9 +658,9 @@ class SentinelNodeFinder(object):
             assert setter is not None
             # noinspection PyArgumentList
             replacement = ast.BinOp(
-                left=expr,
+                left=cast(ast.expr,expr),
                 op=ast.Pow(),
-                right=ast.Str(s=sentinel),
+                right=ast.Constant(sentinel),
             )
             ast.fix_missing_locations(replacement)
             setter(replacement)
