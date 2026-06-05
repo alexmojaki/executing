@@ -785,31 +785,31 @@ class PositionNodeFinder(object):
             ):
                 return
 
-            if node_match(ast.TypeVarTuple) and (
+            if isinstance(node,ast.TypeVarTuple) and (
                 inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEVARTUPLE")
-                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=cast(ast.TypeVarTuple, node).name)
+                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=node.name)
             ):
                 return
 
-            if node_match(ast.ParamSpec) and (
+            if isinstance(node,ast.ParamSpec) and (
                 inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_PARAMSPEC")
 
-                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=cast(ast.ParamSpec, node).name)):
+                or inst_match(("STORE_FAST", "STORE_DEREF"), argrepr=node.name)):
                 return
 
 
-            if node_match(ast.TypeAlias):
+            if isinstance(node,ast.TypeAlias):
                 if(
                     inst_match("CALL_INTRINSIC_1", argrepr="INTRINSIC_TYPEALIAS")
                     or inst_match(
-                        ("STORE_NAME", "STORE_FAST", "STORE_DEREF","STORE_GLOBAL"), argrepr=cast(ast.TypeAlias, node).name.id
+                        ("STORE_NAME", "STORE_FAST", "STORE_DEREF","STORE_GLOBAL"), argrepr=node.name.id
                     )
                     or inst_match("CALL")
                 ):
                     return
 
 
-            if node_match(ast.ClassDef) and cast(ast.ClassDef, node).type_params:
+            if isinstance(node,ast.ClassDef) and node.type_params:
                 if inst_match(
                     ("STORE_DEREF", "LOAD_DEREF", "LOAD_FROM_DICT_OR_DEREF"),
                     argrepr=".type_params",
@@ -827,7 +827,7 @@ class PositionNodeFinder(object):
                 if inst_match("LOAD_DEREF",argval="__classdict__"):
                     return
 
-            if node_match((ast.FunctionDef,ast.AsyncFunctionDef)) and cast(Union[ast.FunctionDef, ast.AsyncFunctionDef], node).type_params:
+            if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)) and  node.type_params:
                 if inst_match("CALL"):
                     return
 
@@ -896,8 +896,8 @@ class PositionNodeFinder(object):
 
             if (
                 inst_match("LOAD_FAST")
-                and node_match(ast.TypeAlias)
-                and cast(ast.TypeAlias, node).name.id == instruction.argval
+                and isinstance(node,ast.TypeAlias)
+                and node.name.id == instruction.argval
             ):
                 return
 
@@ -919,7 +919,7 @@ class PositionNodeFinder(object):
             if inst_match(("STORE_NAME","LOAD_NAME"), argval="__conditional_annotations__"):
                 return
 
-            if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and node_match(ast.Name) and cast(ast.Name, node).id in instruction.argval:
+            if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and isinstance(node,ast.Name) and node.id in instruction.argval:
                 return
 
 

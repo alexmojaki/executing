@@ -31,6 +31,7 @@ Repository = "https://github.com/alexmojaki/executing"
 
 [project.optional-dependencies]
 tests = [
+    "pysource-minimize>=0.10.1",
 	"asttokens>=2.1.0",
 	"ipython",
 	"pytest",
