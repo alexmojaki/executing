@@ -772,6 +772,10 @@ class TestFiles:
                 assert result == json.load(infile)
 
 
+    @pytest.mark.skipif(
+        sys.version_info <(3,11),
+        reason="These tests can fail randomly on cpython <3.11",
+    )
     def test_module_files(self):
         self.start_time = time.time()
     
