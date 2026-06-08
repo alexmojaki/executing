@@ -14,8 +14,7 @@ class VerifierFailure(Exception):
     Executing.node gets set to None in this case.
     """
 
-    def __init__(self, title, node, instruction):
-        # type: (object, object, object) -> None
+    def __init__(self, title: object, node: object, instruction: object) -> None:
         self.node = node
         self.instruction = instruction
 
