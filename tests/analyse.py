@@ -30,9 +30,9 @@ and maps every bytecode to the node found by executing.
 
 filename = pathlib.Path(sys.argv[1])
 
-if len(sys.argv)<3:
-    start=0
-    end=100
+if len(sys.argv) < 3:
+    start = 0
+    end = 100
 elif ":" in sys.argv[2]:
     start, end = sys.argv[2].split(":")
     start = int(start)
@@ -72,7 +72,6 @@ def inspect_opcode(bytecode, index, lineno):
     if ex.decorator:
         result += " @%s" % ex.decorator
     return result
-        
 
 
 import rich.syntax
@@ -100,18 +99,16 @@ def inspect(bc):
         title_style="blue",
         title_justify="left",
     )
-    
+
     table.add_column("offset", justify="right")
     table.add_column("start")
     table.add_column("end")
     table.add_column("instruction")
     table.add_column("ast-node")
 
-
-    highlighter=ReprHighlighter()
+    highlighter = ReprHighlighter()
 
     for i in dis.get_instructions(bc, show_caches=True):
-
         if (
             i.positions.lineno is None
             or i.positions.lineno <= end
@@ -119,7 +116,6 @@ def inspect(bc):
         ):
             if first:
                 first = False
-
 
             ex = inspect_opcode(bc, i.offset, i.positions.lineno)
 
@@ -129,8 +125,8 @@ def inspect(bc):
                 "%s:%s" % (i.positions.end_lineno, i.positions.end_col_offset),
                 highlighter("%s(%s)" % (i.opname, i.argrepr)),
                 ex,
-                style="on grey19" if i.opname=="CACHE" else "on grey30"
-                #**({"style":"on white" } if i.opname=="CACHE" else {})
+                style="on grey19" if i.opname == "CACHE" else "on grey30",
+                # **({"style":"on white" } if i.opname=="CACHE" else {})
             )
 
     if first == False:

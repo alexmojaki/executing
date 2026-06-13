@@ -14,7 +14,6 @@ executing.executing.TESTING = 1
 if not is_pytest_compatible():
     original_find_spec = rewrite.AssertionRewritingHook.find_spec
 
-
     def find_spec(
         self,
         name: str,
@@ -25,6 +24,5 @@ if not is_pytest_compatible():
         if name == "tests.test_main":
             return None
         return original_find_spec(self, name, path, target)
-
 
     rewrite.AssertionRewritingHook.find_spec = find_spec

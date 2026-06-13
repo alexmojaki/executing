@@ -7,7 +7,8 @@ from executing import only
 from tests.utils import nested_codes
 
 pytestmark = pytest.mark.skipif(
-    sys.version_info < (3, 14), reason="requires compiler-generated annotation functions"
+    sys.version_info < (3, 14),
+    reason="requires compiler-generated annotation functions",
 )
 
 
@@ -26,7 +27,8 @@ def test_annotation_header_ends_at_body(source, name):
     from executing._position_node_finder import annotation_header_end
 
     code = only(
-        code for code in nested_codes(compile(source, "<test>", "exec"))
+        code
+        for code in nested_codes(compile(source, "<test>", "exec"))
         if code.co_name == name
     )
     instructions = list(dis.get_instructions(code))
