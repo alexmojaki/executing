@@ -7,8 +7,7 @@ import types
 
 
 
-def assert_(condition, message=""):
-    # type: (Any, str) -> None
+def assert_(condition: Any, message: str = "") -> None:
     """
     Like an assert statement, but unaffected by -O
     :param condition: value that is expected to be truthy
@@ -29,15 +28,14 @@ else:
     from collections import namedtuple
 
     class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):
-        lineno = None # type: int
+        lineno: int
 
     from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts, hasname
 
     # Based on dis.disassemble from 2.7
     # Left as similar as possible for easy diff
 
-    def _get_instructions(co):
-        # type: (types.CodeType) -> Iterator[Instruction]
+    def _get_instructions(co: types.CodeType) -> Iterator[Instruction]:
         code = co.co_code
         linestarts = dict(findlinestarts(co))
         n = len(code)
@@ -65,15 +63,6 @@ else:
                     argval = co.co_varnames[oparg]
             yield Instruction(offset, argval, opname[op], lineno)
 
-def get_instructions(co):
-    # type: (types.CodeType) -> Iterator[EnhancedInstruction]
-    lineno = co.co_firstlineno
-    for inst in _get_instructions(co):
-        inst = cast(EnhancedInstruction, inst)
-        lineno = inst.starts_line or lineno
-        assert_(lineno)
-        inst.lineno = lineno
-        yield inst
 
 
 # Type class used to expand out the definition of AST to include fields added by this library
@@ -88,10 +77,17 @@ class EnhancedInstruction(Instruction):
 
 
 
+def get_instructions(co: types.CodeType) -> Iterator[EnhancedInstruction]:
+    lineno = co.co_firstlineno
+    for inst in _get_instructions(co):
+        inst = cast(EnhancedInstruction, inst)
+        lineno = inst.starts_line or lineno
+        assert_(lineno)
+        inst.lineno = lineno
+        yield inst
 
 
-def mangled_name(node):
-    # type: (EnhancedAST) -> str
+def mangled_name(node: EnhancedAST) -> str:
     """
 
     Parameters:
