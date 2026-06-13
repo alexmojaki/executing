@@ -2,7 +2,7 @@
 import ast
 import sys
 import dis
-from typing import cast, Any,Iterator
+from typing import Optional, cast, Any, Iterator
 import types
 
 
@@ -24,7 +24,7 @@ if sys.version_info >= (3, 4):
     from dis import Instruction as _Instruction
     
     class Instruction(_Instruction):
-        lineno = None  # type: int
+        lineno: int
 else:
     from collections import namedtuple
 
@@ -79,12 +79,12 @@ def get_instructions(co):
 # Type class used to expand out the definition of AST to include fields added by this library
 # It's not actually used for anything other than type checking though!
 class EnhancedAST(ast.AST):
-    parent = None  # type: EnhancedAST
+    parent:"EnhancedAST"
 
 # Type class used to expand out the definition of AST to include fields added by this library
 # It's not actually used for anything other than type checking though!
 class EnhancedInstruction(Instruction):
-    _copied = None # type: bool
+    _copied :bool
 
 
 
@@ -121,6 +121,9 @@ def mangled_name(node):
         raise TypeError("no node to mangle")
 
     if name.startswith("__") and not name.endswith("__"):
+
+        parent:EnhancedAST
+        child:EnhancedAST
 
         parent,child=node.parent,node
 
