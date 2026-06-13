@@ -71,3 +71,11 @@ relative_files = true
 include = ["executing/executing.py"]
 parallel = true
 branch = true
+
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.ruff.format]
+exclude = ["tests/samples/**", "tests/small_samples/**"]
+
