@@ -1050,6 +1050,20 @@ class TestFiles:
                         # `not not x` is optimized to a single TO_BOOL
                         continue
 
+                if sys.version_info >= (3, 15):
+                    if (
+                        isinstance(node, ast.Compare)
+                        and len(node.ops) == 1
+                        and any(
+                            isinstance(c, ast.Constant) and isinstance(c.value, int)
+                            for c in node.comparators
+                        )
+                    ):
+                        # In Python 3.15, comparisons with integer literals use
+                        # LOAD_SMALL_INT which is not tracked by check_code,
+                        # causing the Compare node to have no associated instructions.
+                        continue
+
 
                 # the deadcode check has to be the last check because it is expensive
                 if len(values)==0 and is_deadcode(node):
@@ -1078,7 +1092,10 @@ class TestFiles:
                     p()
 
                     p("ast node:")
-                    p(mangled_name(node))
+                    try:
+                        p(mangled_name(node))
+                    except TypeError:
+                        p(ast_dump(node))
                     p(ast_dump(node, indent=4))
 
                     parents = []
