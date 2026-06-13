@@ -40,15 +40,13 @@ from operator import attrgetter
 from pathlib import Path
 from threading import RLock
 from tokenize import detect_encoding
-from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 from ._utils import mangled_name,assert_, EnhancedAST,EnhancedInstruction,Instruction,get_instructions
 
 
-try:
+if TYPE_CHECKING:
     from asttokens import ASTTokens, ASTText
     from asttokens.asttokens import ASTTextBase
-except ImportError:
-    pass
 
 
 function_node_types: Tuple[Type, ...] = (ast.FunctionDef, ast.AsyncFunctionDef)
@@ -58,7 +56,7 @@ cache = lru_cache(maxsize=None)
 TESTING = 0
 
 class NotOneValueFound(Exception):
-    def __init__(self,msg: str,values: Sequence = []) -> None:
+    def __init__(self,msg: str,values: Sequence = ()) -> None:
         self.values=values
         super(NotOneValueFound,self).__init__(msg)
 

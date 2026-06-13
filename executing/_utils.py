@@ -28,7 +28,7 @@ else:
     from collections import namedtuple
 
     class Instruction(namedtuple('Instruction', 'offset argval opname starts_line')):
-        lineno: int = None
+        lineno: int
 
     from dis import HAVE_ARGUMENT, EXTENDED_ARG, hasconst, opname, findlinestarts, hasname
 
