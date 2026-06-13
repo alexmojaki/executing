@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
+from __future__ import annotations
 import __future__
 import ast
 import dis
@@ -40,18 +40,15 @@ from operator import attrgetter
 from pathlib import Path
 from threading import RLock
 from tokenize import detect_encoding
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
+from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Sized, Tuple, Type, TypeVar, Union, cast
 from ._utils import mangled_name,assert_, EnhancedAST,EnhancedInstruction,Instruction,get_instructions
 
 
 try:
     from asttokens import ASTTokens, ASTText
     from asttokens.asttokens import ASTTextBase
-    asttokens_support=True
 except ImportError:
-    asttokens_support=False
-
-
+    pass
 
 
 function_node_types: Tuple[Type, ...] = (ast.FunctionDef, ast.AsyncFunctionDef)
@@ -119,9 +116,8 @@ class Source(object):
         self._nodes_by_line = defaultdict(list)
         self.tree = None
         self._qualnames = {}
-        if asttokens_support:
-            self._asttokens: Optional[ASTTokens] = None
-            self._asttext: Optional[ASTText] = None
+        self._asttokens: Optional[ASTTokens] = None
+        self._asttext: Optional[ASTText] = None
 
         try:
             self.tree = ast.parse(self.text, filename=filename)
@@ -139,7 +135,7 @@ class Source(object):
             self._qualnames = visitor.qualnames
 
     @classmethod
-    def for_frame(cls, frame: types.FrameType, use_cache: bool = True) -> "Source":
+    def for_frame(cls, frame: types.FrameType, use_cache: bool = True) -> Source:
         """
         Returns the `Source` object corresponding to the file the frame is executing in.
         """
@@ -151,7 +147,7 @@ class Source(object):
         filename: Union[str, Path],
         module_globals: Optional[Dict[str, Any]] = None,
         use_cache: bool = True,  # noqa no longer used
-    ) -> "Source":
+    ) -> Source:
         if isinstance(filename, Path):
             filename = str(filename)
 
@@ -173,7 +169,7 @@ class Source(object):
         return cls._for_filename_and_lines(filename, tuple(lines))
 
     @classmethod
-    def _for_filename_and_lines(cls, filename: str, lines: Sequence[str]) -> "Source":
+    def _for_filename_and_lines(cls, filename: str, lines: Sequence[str]) -> Source:
         source_cache: Dict[Tuple[str, Sequence[str]], Source] = cls._class_local('__source_cache_with_lines', {})
         try:
             return source_cache[(filename, lines)]
@@ -188,7 +184,7 @@ class Source(object):
         linecache.lazycache(frame.f_code.co_filename, frame.f_globals)
 
     @classmethod
-    def executing(cls, frame_or_tb: Union[types.TracebackType, types.FrameType]) -> "Executing":
+    def executing(cls, frame_or_tb: Union[types.TracebackType, types.FrameType]) -> Executing:
         """
         Returns an `Executing` object representing the operation
         currently executing in the given frame or traceback object.
@@ -275,42 +271,41 @@ class Source(object):
             self._nodes_by_line[lineno]
         }
 
-    if asttokens_support:
-        def asttext(self) -> ASTText:
-            """
-            Returns an ASTText object for getting the source of specific AST nodes.
+    def asttext(self) -> ASTText:
+        """
+        Returns an ASTText object for getting the source of specific AST nodes.
 
-            See http://asttokens.readthedocs.io/en/latest/api-index.html
-            """
-            from asttokens import ASTText  # must be installed separately
+        See http://asttokens.readthedocs.io/en/latest/api-index.html
+        """
+        from asttokens import ASTText  # must be installed separately
 
-            if self._asttext is None:
-                self._asttext = ASTText(self.text, tree=self.tree, filename=self.filename)
+        if self._asttext is None:
+            self._asttext = ASTText(self.text, tree=self.tree, filename=self.filename)
 
-            return self._asttext
+        return self._asttext
 
-        def asttokens(self) -> ASTTokens:
-            """
-            Returns an ASTTokens object for getting the source of specific AST nodes.
+    def asttokens(self) -> ASTTokens:
+        """
+        Returns an ASTTokens object for getting the source of specific AST nodes.
 
-            See http://asttokens.readthedocs.io/en/latest/api-index.html
-            """
-            import asttokens  # must be installed separately
+        See http://asttokens.readthedocs.io/en/latest/api-index.html
+        """
+        import asttokens  # must be installed separately
 
-            if self._asttokens is None:
-                if hasattr(asttokens, 'ASTText'):
-                    self._asttokens = self.asttext().asttokens
-                else:  # pragma: no cover
-                    self._asttokens = asttokens.ASTTokens(self.text, tree=self.tree, filename=self.filename)
-            return self._asttokens
-
-        def _asttext_base(self) -> ASTTextBase:
-            import asttokens  # must be installed separately
-
+        if self._asttokens is None:
             if hasattr(asttokens, 'ASTText'):
-                return self.asttext()
+                self._asttokens = self.asttext().asttokens
             else:  # pragma: no cover
-                return self.asttokens()
+                self._asttokens = asttokens.ASTTokens(self.text, tree=self.tree, filename=self.filename)
+        return self._asttokens
+
+    def _asttext_base(self) -> ASTTextBase:
+        import asttokens  # must be installed separately
+
+        if hasattr(asttokens, 'ASTText'):
+            return self.asttext()
+        else:  # pragma: no cover
+            return self.asttokens()
 
     @staticmethod
     def decode_source(source: Union[str, bytes]) -> str:
