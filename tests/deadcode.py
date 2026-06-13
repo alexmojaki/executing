@@ -58,7 +58,6 @@ class DeadcodeTransformer(ast.NodeTransformer):
                     )
 
                 else:
-
                     return ast.Subscript(
                         value=ast.Tuple(
                             elts=[node, constant(sentinel)],
@@ -82,10 +81,14 @@ def is_deadcode(node):
     if isinstance(node, ast.ExceptHandler):
         node = node.body[0]
 
-    if sys.version_info >= (3,8) and isinstance(node.parent, ast.NamedExpr) and node.parent.target is node:
+    if (
+        sys.version_info >= (3, 8)
+        and isinstance(node.parent, ast.NamedExpr)
+        and node.parent.target is node
+    ):
         node = node.parent
 
-    if sys.version_info >= (3,12) and isinstance(node.parent,ast.TypeAlias):
+    if sys.version_info >= (3, 12) and isinstance(node.parent, ast.TypeAlias):
         node = node.parent
 
     if (

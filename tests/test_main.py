@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from .utils import tester, subscript_item, in_finally, start_position, end_position
 
-PYPY = 'pypy' in sys.version.lower()
+PYPY = "pypy" in sys.version.lower()
 
 from executing import Source, only, NotOneValueFound
 from executing.executing import NodeFinder, get_instructions, function_node_types
@@ -36,6 +36,7 @@ if eval("0"):
 if sys.version_info[:2] == (3, 9):
     # https://github.com/alexmojaki/executing/pull/71#issuecomment-1723634310
     import asttokens.util
+
     asttokens.util.fstring_positions_work = lambda: True
 
 
@@ -51,7 +52,6 @@ def ast_dump(*args, **kwargs):
 
 
 class TestStuff(unittest.TestCase):
-
     # noinspection PyTrailingSemicolon
     def test_semicolons(self):
         # fmt: off
@@ -241,7 +241,7 @@ class TestStuff(unittest.TestCase):
         # fmt: on
 
     def test_indirect_call(self):
-        dict(x=tester)['x'](tester)(3, check_func=False)
+        dict(x=tester)["x"](tester)(3, check_func=False)
 
     def test_compound_statements(self):
         with self.assertRaises(TypeError):
@@ -330,14 +330,14 @@ class TestStuff(unittest.TestCase):
                 else:
                     self.assertNotEqual(decoded, source)
 
-        check(u'# coding=utf8\né', 'utf8')
-        check(u'# coding=gbk\né', 'gbk')
+        check("# coding=utf8\né", "utf8")
+        check("# coding=gbk\né", "gbk")
 
-        check(u'# coding=utf8\né', 'gbk', exception=UnicodeDecodeError)
-        check(u'# coding=gbk\né', 'utf8', matches=False)
+        check("# coding=utf8\né", "gbk", exception=UnicodeDecodeError)
+        check("# coding=gbk\né", "utf8", matches=False)
 
-        check(u'é', 'utf8')
-        check(u'é', 'gbk', exception=SyntaxError)
+        check("é", "utf8")
+        check("é", "gbk", exception=SyntaxError)
 
     def test_multiline_strings(self):
         # fmt: off
@@ -387,8 +387,10 @@ class TestStuff(unittest.TestCase):
         # fmt: on
 
     def test_multiple_statements_on_one_line(self):
-        if tester(1): tester(2)
-        for _ in tester([1, 2]): tester(3)
+        if tester(1):
+            tester(2)
+        for _ in tester([1, 2]):
+            tester(3)
 
     def assert_qualname(self, func, qn, check_actual_qualname=True):
         qualname = Source.for_filename(__file__).code_qualname(func.__code__)
@@ -398,23 +400,27 @@ class TestStuff(unittest.TestCase):
         self.assertTrue(qn.endswith(func.__name__))
 
     def test_qualname(self):
-        self.assert_qualname(C.f, 'C.f')
-        self.assert_qualname(C.D.g, 'C.D.g')
-        self.assert_qualname(f, 'f')
-        self.assert_qualname(f(), 'f.<locals>.g')
-        self.assert_qualname(C.D.h(), 'C.D.h.<locals>.i.<locals>.j')
-        self.assert_qualname(lamb, '<lambda>')
+        self.assert_qualname(C.f, "C.f")
+        self.assert_qualname(C.D.g, "C.D.g")
+        self.assert_qualname(f, "f")
+        self.assert_qualname(f(), "f.<locals>.g")
+        self.assert_qualname(C.D.h(), "C.D.h.<locals>.i.<locals>.j")
+        self.assert_qualname(lamb, "<lambda>")
         foo = lambda_maker()
-        self.assert_qualname(foo, 'lambda_maker.<locals>.foo')
-        self.assert_qualname(foo.x, 'lambda_maker.<locals>.<lambda>')
-        self.assert_qualname(foo(), 'lambda_maker.<locals>.foo.<locals>.<lambda>')
-        self.assert_qualname(foo()(), 'lambda_maker.<locals>.foo.<locals>.<lambda>', check_actual_qualname=False)
+        self.assert_qualname(foo, "lambda_maker.<locals>.foo")
+        self.assert_qualname(foo.x, "lambda_maker.<locals>.<lambda>")
+        self.assert_qualname(foo(), "lambda_maker.<locals>.foo.<locals>.<lambda>")
+        self.assert_qualname(
+            foo()(),
+            "lambda_maker.<locals>.foo.<locals>.<lambda>",
+            check_actual_qualname=False,
+        )
 
     def test_extended_arg(self):
-        source = 'tester(6)\n%s\ntester(9)' % list(range(66000))
+        source = "tester(6)\n%s\ntester(9)" % list(range(66000))
         _, filename = tempfile.mkstemp()
-        code = compile(source, filename, 'exec')
-        with open(filename, 'w') as outfile:
+        code = compile(source, filename, "exec")
+        with open(filename, "w") as outfile:
             outfile.write(source)
         exec(code)
 
@@ -428,15 +434,18 @@ class TestStuff(unittest.TestCase):
                     only(gen)
 
     def test_invalid_python(self):
-        path = os.path.join(os.path.dirname(__file__), 'not_code.txt', )
+        path = os.path.join(
+            os.path.dirname(__file__),
+            "not_code.txt",
+        )
         source = Source.for_filename(path)
         self.assertIsNone(source.tree)
 
     def test_executing_methods(self):
         frame = inspect.currentframe()
         executing = Source.executing(frame)
-        self.assertEqual(executing.code_qualname(), 'TestStuff.test_executing_methods')
-        text = 'Source.executing(frame)'
+        self.assertEqual(executing.code_qualname(), "TestStuff.test_executing_methods")
+        text = "Source.executing(frame)"
         self.assertEqual(executing.text(), text)
         start, end = executing.text_range()
         self.assertEqual(executing.source.text[start:end], text)
@@ -522,11 +531,11 @@ class TestStuff(unittest.TestCase):
 
     def test_call_things(self):
         # call things which are no methods or functions
-        if sys.version_info >= (3,11):
+        if sys.version_info >= (3, 11):
             tester[5](5)
             tester.some[5](5)
 
-            (tester+tester)(2)
+            (tester + tester)(2)
 
             tester(tester)(5)
             tester.some(tester)(5)
@@ -544,9 +553,9 @@ class TestStuff(unittest.TestCase):
         _, filename = tempfile.mkstemp()
 
         def check(x):
-            source = 'tester(6)\n%s\ntester(9)' % list(range(x))
-            code = compile(source, filename, 'exec')
-            with open(filename, 'w') as outfile:
+            source = "tester(6)\n%s\ntester(9)" % list(range(x))
+            code = compile(source, filename, "exec")
+            with open(filename, "w") as outfile:
                 outfile.write(source)
             exec(code, globals(), locals())
 
@@ -617,7 +626,6 @@ class TestStuff(unittest.TestCase):
         assert next(iter(iter_test(ast.Call))) == 1
 
         if sys.version_info >= (3, 11):
-
             assert [i for i in iter_test(ast.ListComp)] == [1, 2]
             assert {i for i in iter_test(ast.SetComp)} == {1, 2}
             assert {i: i for i in iter_test(ast.DictComp)} == {1: 1, 2: 2}
@@ -655,7 +663,7 @@ class TimeOut(Exception):
 
 def dump_source(source, start, end, context=4, file=None):
     if file is None:
-        file= sys.stdout
+        file = sys.stdout
 
     print("source code:", file=file)
     start = max(start.lineno - 5, 0)
@@ -663,7 +671,6 @@ def dump_source(source, start, end, context=4, file=None):
     for line in source.splitlines()[start : end.lineno + 5]:
         print("%s: %s" % (str(num).rjust(4), line), file=file)
         num += 1
-
 
 
 def is_annotation(node):
@@ -699,12 +706,10 @@ def is_annotation(node):
             and x.parent.value == None
         ):
             return True
-        
+
         x = x.parent
 
     return False
-
-
 
 
 def sample_files(samples):
@@ -714,7 +719,7 @@ def sample_files(samples):
     for filename in os.listdir(samples_dir):
         full_filename = os.path.join(samples_dir, filename)
         if filename.endswith(".py"):
-            stem=filename[:-3]
+            stem = filename[:-3]
         else:
             continue
 
@@ -731,7 +736,7 @@ def sample_files(samples):
 @pytest.mark.parametrize(
     "full_filename,result_filename", list(sample_files("small_samples"))
 )
-@pytest.mark.skipif(sys.version_info<(3,),reason="no 2.7 support")
+@pytest.mark.skipif(sys.version_info < (3,), reason="no 2.7 support")
 def test_small_samples(full_filename, result_filename):
     skip_sentinel = [
         "4851dc1b626a95e97dbe0c53f96099d165b755dd1bd552c6ca771f7bca6d30f5",
@@ -766,37 +771,35 @@ def test_small_samples(full_filename, result_filename):
     TestFiles().check_filename(full_filename, check_names=True)
 
 
-
-
 @pytest.mark.skipif(
     not os.getenv("EXECUTING_SLOW_TESTS"),
     reason="These tests are very slow, enable them explicitly",
 )
 class TestFiles:
-
-    @pytest.mark.parametrize("full_filename,result_filename", list(sample_files("samples")))
+    @pytest.mark.parametrize(
+        "full_filename,result_filename", list(sample_files("samples"))
+    )
     def test_sample_files(self, full_filename, result_filename):
 
         self.start_time = time.time()
 
         result = self.check_filename(full_filename, check_names=True)
 
-        if os.getenv('FIX_EXECUTING_TESTS'):
-            with open(result_filename, 'w') as outfile:
+        if os.getenv("FIX_EXECUTING_TESTS"):
+            with open(result_filename, "w") as outfile:
                 json.dump(result, outfile, indent=4, sort_keys=True)
             return
         else:
             with open(result_filename, "r") as infile:
                 assert result == json.load(infile)
 
-
     @pytest.mark.skipif(
-        sys.version_info <(3,11),
+        sys.version_info < (3, 11),
         reason="These tests can fail randomly on cpython <3.11",
     )
     def test_module_files(self):
         self.start_time = time.time()
-    
+
         modules = list(sys.modules.values())
         shuffle(modules)
         for module in modules:
@@ -806,32 +809,35 @@ class TestFiles:
                 continue
 
             except AttributeError as error:
-                if str(error)== "'_SixMetaPathImporter' object has no attribute '_path'":
+                if (
+                    str(error)
+                    == "'_SixMetaPathImporter' object has no attribute '_path'"
+                ):
                     # work around for https://github.com/benjaminp/six/issues/376
                     continue
                 raise
-    
+
             if not filename:
                 continue
-    
+
             filename = os.path.abspath(filename)
-    
+
             if (
-                    # The sentinel actually appearing in code messes things up
-                    'executing' in filename
-                    # because of: {t[0] for t in lines2} - {t[0] for t in lines1}
-                    or 'pytester.py' in filename
-                    # A file that's particularly slow
-                    or 'errorcodes.py' in filename
-                    # Contains unreachable code which pypy removes
-                    or PYPY and (
-                        'sysconfig.py' in filename
-                        or 'pyparsing.py' in filename
-                        or 'enum' in filename
-                    )
-                    or sys.version_info < (3,11) and (
-                        'python.py' in filename
-                    )   
+                # The sentinel actually appearing in code messes things up
+                "executing" in filename
+                # because of: {t[0] for t in lines2} - {t[0] for t in lines1}
+                or "pytester.py" in filename
+                # A file that's particularly slow
+                or "errorcodes.py" in filename
+                # Contains unreachable code which pypy removes
+                or PYPY
+                and (
+                    "sysconfig.py" in filename
+                    or "pyparsing.py" in filename
+                    or "enum" in filename
+                )
+                or sys.version_info < (3, 11)
+                and ("python.py" in filename)
             ):
                 continue
 
@@ -840,12 +846,10 @@ class TestFiles:
                 if PYPY and "__debug__" in source_text:
                     continue
 
-    
             try:
                 self.check_filename(filename, check_names=False)
             except TimeOut:
                 print("Time's up")
-
 
     def check_filename(self, filename, check_names):
 
@@ -855,7 +859,7 @@ class TestFiles:
         try:
             source = Source.for_filename(filename)
         except RecursionError:
-            if sys.version_info>=(3,13):
+            if sys.version_info >= (3, 13):
                 # sys.setrecursionlimit has no effect for cpython 3.13
                 pytest.skip("cpython has a hard recursion limit")
             else:
@@ -863,28 +867,32 @@ class TestFiles:
 
         if source.tree is None:
             # we could not parse this file (maybe wrong python version)
-            print("skip %s"%filename)
+            print("skip %s" % filename)
             return
 
-        print("check %s"%filename)
-
+        print("check %s" % filename)
 
         nodes = defaultdict(list)
         decorators = defaultdict(list)
         expected_decorators = {}
         for node in ast.walk(source.tree):
-            if isinstance(node, (
+            if isinstance(
+                node,
+                (
                     (ast.Name,) * check_names,
                     ast.UnaryOp,
                     ast.BinOp,
                     ast.Subscript,
                     ast.Call,
                     ast.Compare,
-                    ast.Attribute
-            )):
+                    ast.Attribute,
+                ),
+            ):
                 nodes[node] = []
             elif isinstance(node, (ast.ClassDef, function_node_types)):
-                expected_decorators[(node.lineno, node.name)] = node.decorator_list[::-1]
+                expected_decorators[(node.lineno, node.name)] = node.decorator_list[
+                    ::-1
+                ]
                 decorators[(node.lineno, node.name)] = []
 
         try:
@@ -896,7 +904,7 @@ class TestFiles:
             return
         except RecursionError:
             print("skip %s" % filename)
-            return 
+            return
 
         if sys.version_info < (3, 11):
             for subcode, qualname in find_qualnames(code):
@@ -906,10 +914,9 @@ class TestFiles:
 
         result = list(self.check_code(code, nodes, decorators, check_names=check_names))
 
-        if not re.search(r'^\s*if 0(:| and )', source.text, re.MULTILINE):
+        if not re.search(r"^\s*if 0(:| and )", source.text, re.MULTILINE):
             for node, values in nodes.items():
-
-                # skip some cases cases 
+                # skip some cases cases
                 if sys.version_info < (3, 11):
                     if is_unary_not(node):
                         continue
@@ -918,14 +925,14 @@ class TestFiles:
                         if is_annotation(node):
                             continue
 
-                    ctx = getattr(node, 'ctx', None)
+                    ctx = getattr(node, "ctx", None)
                     if isinstance(ctx, ast.Store):
                         # Assignment to attributes and subscripts is less magical
                         # but can also fail fairly easily, so we can't guarantee
                         # that every node can be identified with some instruction.
                         continue
 
-                    if isinstance(ctx, (ast.Del, getattr(ast, 'Param', ()))):
+                    if isinstance(ctx, (ast.Del, getattr(ast, "Param", ()))):
                         assert not values, [ast.dump(node), values]
                         continue
 
@@ -944,8 +951,7 @@ class TestFiles:
                     if is_literal(node):
                         continue
 
-
-                    if isinstance(node,ast.Name) and node.id=="__debug__":
+                    if isinstance(node, ast.Name) and node.id == "__debug__":
                         continue
 
                 else:
@@ -977,25 +983,38 @@ class TestFiles:
                         ):
                             first_node = first_node.parent
 
+                        if (
+                            isinstance(
+                                first_node.parent,
+                                (ast.If, ast.Assert, ast.While, ast.IfExp),
+                            )
+                            and first_node is first_node.parent.test
+                        ):
+                            continue
+                        if (
+                            isinstance(first_node.parent, (ast.match_case))
+                            and first_node is first_node.parent.guard
+                        ):
+                            continue
+                        if isinstance(first_node.parent, (ast.BoolOp, ast.Return)):
+                            continue
+                        if (
+                            isinstance(first_node.parent, (ast.comprehension))
+                            and first_node in first_node.parent.ifs
+                        ):
+                            continue
+                        if (
+                            isinstance(first_node.parent, (ast.comprehension))
+                            and first_node in first_node.parent.ifs
+                        ):
+                            continue
 
-
-                        if isinstance(first_node.parent,(ast.If,ast.Assert,ast.While,ast.IfExp)) and first_node is first_node.parent.test:
-                            continue
-                        if isinstance(first_node.parent,(ast.match_case)) and first_node is first_node.parent.guard:
-                            continue
-                        if isinstance(first_node.parent,(ast.BoolOp,ast.Return)):
-                            continue
-                        if isinstance(first_node.parent,(ast.comprehension)) and first_node in first_node.parent.ifs:
-                            continue
-                        if isinstance(first_node.parent,(ast.comprehension)) and first_node in first_node.parent.ifs:
-                            continue
-                        
                     if (
                         isinstance(node, ast.UnaryOp)
                         and isinstance(node.op, ast.Not)
                         and isinstance(node.operand, ast.Compare)
                         and len(node.operand.ops) == 1
-                        and isinstance(node.operand.ops[0], (ast.In,ast.Is))
+                        and isinstance(node.operand.ops[0], (ast.In, ast.Is))
                     ):
                         # `not a in l` the not becomes part of the comparison
                         continue
@@ -1006,7 +1025,7 @@ class TestFiles:
                     if is_literal(node) and not isinstance(node, ast.Constant):
                         continue
 
-                    if isinstance(node,ast.Name) and node.id=="__debug__":
+                    if isinstance(node, ast.Name) and node.id == "__debug__":
                         continue
 
                     if isinstance(node, ast.Compare) and len(node.comparators) > 1:
@@ -1026,14 +1045,12 @@ class TestFiles:
                         # "%50s"%(a,) is missing an BUILD_STRING instruction which normally maps to BinOp
                         continue
 
-
                     if (
                         isinstance(node, ast.Name)
                         and isinstance(node.ctx, ast.Store)
                         and node.id == "__classcell__"
                     ):
                         continue
-
 
                 if sys.version_info >= (3, 12):
                     if (
@@ -1068,9 +1085,8 @@ class TestFiles:
                         # `not not x` is optimized to a single TO_BOOL
                         continue
 
-
                 # the deadcode check has to be the last check because it is expensive
-                if len(values)==0 and is_deadcode(node):
+                if len(values) == 0 and is_deadcode(node):
                     continue
 
                 if sys.version_info >= (3, 10):
@@ -1084,7 +1100,6 @@ class TestFiles:
 
                     def p(*args):
                         print(*args, file=sys.stderr)
-
 
                     p("node without associated Bytecode")
                     p("in file:", filename)
@@ -1106,8 +1121,7 @@ class TestFiles:
                         parents.append(parent)
                     p("parents:", parents)
 
-
-                    if sys.version_info >= (3,8):
+                    if sys.version_info >= (3, 8):
                         p(
                             "node range:",
                             "lineno=%s" % node.lineno,
@@ -1116,7 +1130,7 @@ class TestFiles:
                             "end_col_offset=%s" % node.end_col_offset,
                         )
                     else:
-                        p("line:",node.lineno)
+                        p("line:", node.lineno)
 
                     dump_source(
                         source.text,
@@ -1129,13 +1143,11 @@ class TestFiles:
                     if sys.version_info >= (3, 11):
                         p("all bytecodes in this range:")
 
-
                         bc = compile(source.text, filename, "exec")
 
                         def inspect(bc):
                             first = True
                             for i in dis.get_instructions(bc):
-
                                 if (
                                     i.positions.lineno is not None
                                     and i.positions.lineno <= node.end_lineno
@@ -1246,8 +1258,11 @@ class TestFiles:
                 if inst.positions.lineno == None:
                     continue
 
-            if sys.version_info >= (3,12):
-                if inst.opname == "CALL_INTRINSIC_1" and inst.argrepr=='INTRINSIC_LIST_TO_TUPLE':
+            if sys.version_info >= (3, 12):
+                if (
+                    inst.opname == "CALL_INTRINSIC_1"
+                    and inst.argrepr == "INTRINSIC_LIST_TO_TUPLE"
+                ):
                     # convert list to tuple
                     continue
 
@@ -1267,14 +1282,13 @@ class TestFiles:
                 continue
 
             except VerifierFailure as e:
-
                 print("VerifierFailure:")
 
                 print(e)
 
                 print("\ninstruction: " + str(e.instruction))
                 print("\nnode: " + ast.dump(e.node, include_attributes=True))
-                print("parent node:",type(e.node.parent).__name__)
+                print("parent node:", type(e.node.parent).__name__)
 
                 with open(source.filename) as sourcefile:
                     source_code = sourcefile.read()
@@ -1306,7 +1320,6 @@ class TestFiles:
 
             except Exception as e:
                 # continue for every case where this can be an known issue
-
 
                 if py11:
                     exact_options = []
@@ -1361,12 +1374,14 @@ class TestFiles:
                 # Attributes which appear ambiguously in modules:
                 #   op1.sign, op2.sign = (0, 0)
                 #   nm_tpl.__annotations__ = nm_tpl.__new__.__annotations__ = types
-                if not py11 and inst.opname == 'STORE_ATTR' and inst.argval in [
-                    'sign', '__annotations__', '__deprecated__'
-                ]:
+                if (
+                    not py11
+                    and inst.opname == "STORE_ATTR"
+                    and inst.argval in ["sign", "__annotations__", "__deprecated__"]
+                ):
                     continue
 
-                if inst.opname == 'LOAD_FAST' and inst.argval == '.0':
+                if inst.opname == "LOAD_FAST" and inst.argval == ".0":
                     continue
 
                 if inst.argval == "AssertionError":
@@ -1386,10 +1401,19 @@ class TestFiles:
                 ):
                     continue
 
-                if (sys.version_info>=(3,13) and inst.opname=="STORE_NAME" and inst.argval in ("__firstlineno__","__static_attributes__")):
+                if (
+                    sys.version_info >= (3, 13)
+                    and inst.opname == "STORE_NAME"
+                    and inst.argval in ("__firstlineno__", "__static_attributes__")
+                ):
                     continue
 
-                if (sys.version_info>=(3,14) and inst.opname=="STORE_NAME" and inst.argval in ("__annotate_func__","__classdictcell__","__classcell__")):
+                if (
+                    sys.version_info >= (3, 14)
+                    and inst.opname == "STORE_NAME"
+                    and inst.argval
+                    in ("__annotate_func__", "__classdictcell__", "__classcell__")
+                ):
                     continue
 
                 if (
@@ -1397,7 +1421,6 @@ class TestFiles:
                     and inst.positions.col_offset == inst.positions.end_col_offset == 0
                 ):
                     continue
-
 
                 # report more information for debugging
                 print("mapping failed")
@@ -1418,9 +1441,7 @@ class TestFiles:
                     with open(source.filename) as sourcefile:
                         source_code = sourcefile.read()
 
-                    dump_source(
-                        source_code, start_position(inst), end_position(inst)
-                    )
+                    dump_source(source_code, start_position(inst), end_position(inst))
 
                     options = []
                     for node in ast.walk(ast.parse(source_code)):
@@ -1440,7 +1461,6 @@ class TestFiles:
                             node.end_col_offset - node.col_offset,
                         ),
                     ):
-
                         if (node.end_lineno - node.lineno) > (
                             inst.positions.end_lineno - inst.positions.lineno
                         ) * 4:
@@ -1459,12 +1479,17 @@ class TestFiles:
 
                 raise
 
-            if isinstance(node, ast.Name) and inst.opname != "CALL_INTRINSIC_1" and inst.argval not in ("__classdict__","__classdictcell__","__static_attributes__"):
+            if (
+                isinstance(node, ast.Name)
+                and inst.opname != "CALL_INTRINSIC_1"
+                and inst.argval
+                not in ("__classdict__", "__classdictcell__", "__static_attributes__")
+            ):
                 # CALL_INTRINSIC_1 and some special names are excuded here because they are generated by cpython for some synthetic code
-                if isinstance(inst.argval,tuple):
-                    assert  mangled_name(node) in inst.argval 
+                if isinstance(inst.argval, tuple):
+                    assert mangled_name(node) in inst.argval
                 else:
-                    assert  mangled_name(node) == inst.argval 
+                    assert mangled_name(node) == inst.argval
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)
@@ -1476,7 +1501,9 @@ class TestFiles:
         # do not use code.co_consts because they can contain deadcode https://github.com/python/cpython/issues/96833
         for inst in instructions:
             if isinstance(inst.argval, type(code)):
-                for x in self.check_code(inst.argval, nodes, decorators, check_names=check_names):
+                for x in self.check_code(
+                    inst.argval, nodes, decorators, check_names=check_names
+                ):
                     yield x
 
 
@@ -1507,7 +1534,7 @@ def is_literal(node):
         else:
             return is_literal(subscript_item(node))
 
-    if isinstance(node,ast.Tuple):
+    if isinstance(node, ast.Tuple):
         # pub_fields=(b"x" * 32,) * 2,
         # generates on const element in the bytecode
         return all(is_literal(e) for e in node.elts)
@@ -1526,6 +1553,7 @@ def is_pattern(node):
         else:
             return False
     return True
+
 
 class C(object):
     @staticmethod
@@ -1608,6 +1636,5 @@ def find_qualnames(code, prefix=""):
             yield x
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

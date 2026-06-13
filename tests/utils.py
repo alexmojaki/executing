@@ -6,6 +6,7 @@ from collections import namedtuple
 import executing.executing
 
 from executing.executing import mangled_name, Instruction
+
 try:
     from dis import Instruction as DisInstruction
 except ImportError:
@@ -15,7 +16,8 @@ executing.executing.TESTING = 1
 
 from executing import Source
 
-non_existing_argument=object()
+non_existing_argument = object()
+
 
 class Tester(object):
     def __init__(self):
@@ -44,7 +46,7 @@ class Tester(object):
     def check(self, node, value):
         frame = inspect.currentframe().f_back.f_back
         result = eval(
-            compile(ast.Expression(node), frame.f_code.co_filename, 'eval'),
+            compile(ast.Expression(node), frame.f_code.co_filename, "eval"),
             frame.f_globals,
             frame.f_locals,
         )
@@ -58,7 +60,7 @@ class Tester(object):
         else:
             call = ex.node
             if arg is non_existing_argument:
-                assert len(call.args)==0
+                assert len(call.args) == 0
             else:
                 self.check(call.args[0], arg)
 
@@ -76,7 +78,7 @@ class Tester(object):
             return arg
 
     def __getattr__(self, item):
-        parent_frame=inspect.currentframe().f_back
+        parent_frame = inspect.currentframe().f_back
 
         # pytest is accessing tester to check if it is a test function
         if "_pytest" not in parent_frame.f_code.co_filename:
@@ -93,15 +95,17 @@ class Tester(object):
         return self
 
     def __setattr__(self, name, value):
-        if name in ('decorators', '__name__'):
+        if name in ("decorators", "__name__"):
             super(Tester, self).__setattr__(name, value)
             return
 
         node = self.get_node(ast.Attribute)
         self.check(node.value, self)
-        if node.attr.startswith('__'):
+        if node.attr.startswith("__"):
             # Account for Python's name mangling of private attributes.
-            assert name == "_{self.__class__.__name__}{node.attr}".format(self=self, node=node)
+            assert name == "_{self.__class__.__name__}{node.attr}".format(
+                self=self, node=node
+            )
         else:
             assert name == node.attr
         assert mangled_name(node) == name
@@ -174,7 +178,7 @@ def subscript_item(node):
 
 
 def in_finally(node):
-    while hasattr(node, 'parent'):
+    while hasattr(node, "parent"):
         if isinstance(node.parent, ast.Try) and node in node.parent.finalbody:
             return True
         node = node.parent
@@ -189,11 +193,13 @@ def start_position(obj):
     returns the start source position as a (lineno,col_offset) tuple.
     obj can be ast.AST or Instruction.
     """
-    if isinstance(obj, Instruction) or (DisInstruction is not None and isinstance(obj, DisInstruction)):
+    if isinstance(obj, Instruction) or (
+        DisInstruction is not None and isinstance(obj, DisInstruction)
+    ):
         obj = obj.positions
 
-    if isinstance(obj,ast.Module):
-        obj=obj.body[0]
+    if isinstance(obj, ast.Module):
+        obj = obj.body[0]
 
     return SourcePosition(obj.lineno, obj.col_offset)
 
@@ -206,10 +212,12 @@ def end_position(obj):
     if sys.version_info < (3, 8):
         return start_position(obj)
 
-    if isinstance(obj, Instruction) or (DisInstruction is not None and isinstance(obj, DisInstruction)):
+    if isinstance(obj, Instruction) or (
+        DisInstruction is not None and isinstance(obj, DisInstruction)
+    ):
         obj = obj.positions
 
-    if isinstance(obj,ast.Module):
-        obj=obj.body[-1]
+    if isinstance(obj, ast.Module):
+        obj = obj.body[-1]
 
     return SourcePosition(obj.end_lineno, obj.end_col_offset)
