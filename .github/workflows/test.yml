@@ -8,6 +8,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  formatting:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
+    - name: Ruff format check
+      run: |
+        uvx pre-commit run ruff-format --all-files --show-diff-on-failure
+
   test:
     runs-on: ubuntu-24.04
     strategy:

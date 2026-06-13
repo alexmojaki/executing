@@ -54,7 +54,7 @@ class TestStuff(unittest.TestCase):
 
     # noinspection PyTrailingSemicolon
     def test_semicolons(self):
-        # @formatter:off
+        # fmt: off
         tester(1); tester(2); tester(3)
         tester(9
                ); tester(
@@ -63,9 +63,10 @@ class TestStuff(unittest.TestCase):
         ); tester(33); tester([4,
                                5, 6, [
                                 7]])
-        # @formatter:on
+        # fmt: on
 
     def test_decorator(self):
+        # fmt: off
         @empty_decorator  # 0
         @decorator_with_args(tester('123'), x=int())  # 1
         @tester(list(tuple([1, 2])))  # 2!
@@ -143,6 +144,7 @@ class TestStuff(unittest.TestCase):
 
         Foo().foo()
         tester.check_decorators([3, 1, 0, 2, 0])
+        # fmt: on
 
     def not_found_prior_311(self):
         if sys.version_info >= (3, 11):
@@ -153,6 +155,7 @@ class TestStuff(unittest.TestCase):
             return self.assertRaises(NotOneValueFound)
 
     def test_setattr(self):
+        # fmt: off
         tester.x = 1
         tester.y, tester.z = tester.foo, tester.bar = tester.spam = 1, 2
 
@@ -168,8 +171,10 @@ class TestStuff(unittest.TestCase):
 
         with self.not_found_prior_311():
             tester.a, tester.a = 1, 2
+        # fmt: on
 
     def test_setitem(self):
+        # fmt: off
         tester['x'] = 1
         tester[:2] = 3
         tester['a'], tester.b = 8, 9
@@ -179,8 +184,10 @@ class TestStuff(unittest.TestCase):
 
         with self.not_found_prior_311():
             tester['a'], tester['b'] = 1, 2
+        # fmt: on
 
     def test_comprehensions(self):
+        # fmt: off
         # Comprehensions can be separated if they contain different names
         str([{tester(x) for x in [1]}, {tester(y) for y in [1]}])
         # or are on different lines
@@ -195,8 +202,10 @@ class TestStuff(unittest.TestCase):
         else:
             with self.assertRaises(NotOneValueFound):
                 str([{tester(x) for x in [1]}, {tester(x) for x in [2]}])
+        # fmt: on
 
     def test_lambda(self):
+        # fmt: off
         self.assertEqual(
             (lambda x: (tester(x), tester(x)))(tester(3)),
             (3, 3),
@@ -206,10 +215,11 @@ class TestStuff(unittest.TestCase):
             (lambda: [tester(x) for x in tester([1, 2])])(),
             [1, 2],
         )
+        # fmt: on
 
     def test_closures_and_nested_comprehensions(self):
         x = 1
-        # @formatter:off
+        # fmt: off
         str({tester(a+x): {tester(b+x): {tester(c+x) for c in tester([1, 2])} for b in tester([3, 4])} for a in tester([5, 6])})
 
         def foo():
@@ -228,7 +238,7 @@ class TestStuff(unittest.TestCase):
             bar()
 
         foo()
-        # @formatter:on
+        # fmt: on
 
     def test_indirect_call(self):
         dict(x=tester)['x'](tester)(3, check_func=False)
@@ -330,6 +340,7 @@ class TestStuff(unittest.TestCase):
         check(u'é', 'gbk', exception=SyntaxError)
 
     def test_multiline_strings(self):
+        # fmt: off
         tester('a')
         tester('''
             ab''')
@@ -373,6 +384,7 @@ class TestStuff(unittest.TestCase):
                 '''
             ]
         )
+        # fmt: on
 
     def test_multiple_statements_on_one_line(self):
         if tester(1): tester(2)
@@ -435,6 +447,7 @@ class TestStuff(unittest.TestCase):
         str((c.x.x, c.x.y, c.y.x, c.y.y, c.x.asd, c.y.qwe))
 
     def test_store_attr_multiline(self):
+        # fmt: off
         if sys.version_info >= (3,11):
             tester.x \
             .y = 1
@@ -469,8 +482,10 @@ class TestStuff(unittest.TestCase):
          .
         y
        ) = 4
+        # fmt: on
 
     def test_del_attr_multiline(self):
+        # fmt: off
         if sys.version_info >= (3,11):
             del tester.x \
             .y
@@ -483,8 +498,10 @@ class TestStuff(unittest.TestCase):
 
             del tester. \
             x.y
+        # fmt: on
 
     def test_method_call_multiline(self):
+        # fmt: off
         if sys.version_info >= (3,11):
             tester.method(
                 tester,
@@ -501,6 +518,7 @@ class TestStuff(unittest.TestCase):
             assert 5== tester.a\
                     (tester).\
                     b(5)
+        # fmt: on
 
     def test_call_things(self):
         # call things which are no methods or functions
