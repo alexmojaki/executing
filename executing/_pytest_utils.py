@@ -1,10 +1,8 @@
 import sys
 
 
-
 def is_pytest_compatible() -> bool:
-    """ returns true if executing can be used for expressions inside assert statements which are rewritten by pytest
-    """
+    """returns true if executing can be used for expressions inside assert statements which are rewritten by pytest"""
     if sys.version_info < (3, 11):
         return False
 

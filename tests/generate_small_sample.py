@@ -66,7 +66,7 @@ def test_file(filename: Path):
     test = TestFiles()
     try:
         ast.parse(code)
-    except (RecursionError,SyntaxError):
+    except (RecursionError, SyntaxError):
         return True
 
     try:
@@ -106,7 +106,6 @@ def main():
     console.print()
 
     with Progress() as progress:
-
         task_collect = progress.add_task(description="collect files ...", total=None)
 
         with get_context("spawn").Pool(maxtasksperchild=100) as p:
@@ -122,12 +121,10 @@ def main():
             for result, filename in progress.track(
                 p.imap_unordered(map_file, files), task_id=task_collect
             ):
-
                 break_file = Path(__file__).parent / "break_generate"
                 if break_file.exists():
                     break_file.unlink()
                     sys.exit(0)
-
 
                 if not result:
                     print(f"{filename} is failing the tests -> minimize\n")

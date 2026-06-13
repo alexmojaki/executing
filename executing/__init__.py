@@ -8,13 +8,15 @@ Get information about what a frame is currently doing. Typical usage:
 """
 
 from collections import namedtuple
-_VersionInfo = namedtuple('_VersionInfo', ('major', 'minor', 'micro'))
+
+_VersionInfo = namedtuple("_VersionInfo", ("major", "minor", "micro"))
 from .executing import Source, Executing, only, NotOneValueFound, cache, future_flags
 
 from ._pytest_utils import is_pytest_compatible
 
 try:
-    from .version import __version__ # type: ignore[import]
+    from .version import __version__  # type: ignore[import]
+
     if "dev" in __version__:
         raise ValueError
 except Exception:
@@ -22,7 +24,7 @@ except Exception:
     __version__ = "???"
     __version_info__ = _VersionInfo(-1, -1, -1)
 else:
-    __version_info__ = _VersionInfo(*map(int, __version__.split('.')))
+    __version_info__ = _VersionInfo(*map(int, __version__.split(".")))
 
 
-__all__ = ["Source","is_pytest_compatible"]
+__all__ = ["Source", "is_pytest_compatible"]
