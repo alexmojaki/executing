@@ -273,39 +273,44 @@ class PositionNodeFinder(object):
             ):
                 return node.parent.parent
 
-        if sys.version_info >= (3, 15) and instruction.opname in (
-            "CALL", "WITH_EXCEPT_START", "LOAD_SPECIAL"
-        ):
+        if (sys.version_info >= (3, 15) and instruction.opname ==
+         "LOAD_SPECIAL"
+         and instruction.argrepr in ("__enter__","__exit__")):
             # In Python 3.15, __exit__ CALL, WITH_EXCEPT_START, and LOAD_SPECIAL
             # positions match the context manager expression or sub-expression.
             # Walk up the AST to find withitem context_expr.
-            n = node
-            with_node = None
-            ctx_is_call = False
-            while True:
-                p = getattr(n, 'parent', None)
-                if p is None:
-                    break
-                if isinstance(p, ast.withitem) and n is p.context_expr:
-                    with_node = p.parent
-                    ctx_is_call = isinstance(n, ast.Call)
-                    break
-                n = p
+            print(instruction.argrepr)
+            assert isinstance(node.parent,ast.withitem)
 
-            if with_node is not None:
-                if (
-                    instruction.opname == "WITH_EXCEPT_START"
-                    or not ctx_is_call
-                    or (
-                        instruction.opname == "LOAD_SPECIAL"
-                        and instruction.argrepr in ("__exit__", "__aexit__")
-                    )
-                ):
-                    # Redirect to the With node: this instruction is from the
-                    # with-statement's exit path, not the context manager call itself.
-                    return with_node
-                # For Call context managers with CALL instruction: the extended
-                # 3.12.6 check (LOAD_COMMON_CONSTANT/LOAD_CONST before CALL) handles it.
+            #return node.parent.parent
+
+            # n = node
+            # with_node = None
+            # ctx_is_call = False
+            # while True:
+            #     p = getattr(n, 'parent', None)
+            #     if p is None:
+            #         break
+            #     if isinstance(p, ast.withitem) and n is p.context_expr:
+            #         with_node = p.parent
+            #         ctx_is_call = isinstance(n, ast.Call)
+            #         break
+            #     n = p
+
+            # if with_node is not None:
+            #     if (
+            #         instruction.opname == "WITH_EXCEPT_START"
+            #         or not ctx_is_call
+            #         or (
+            #             instruction.opname == "LOAD_SPECIAL"
+            #             and instruction.argrepr in ("__exit__", "__aexit__")
+            #         )
+            #     ):
+            #         # Redirect to the With node: this instruction is from the
+            #         # with-statement's exit path, not the context manager call itself.
+            #         return with_node
+            #     # For Call context managers with CALL instruction: the extended
+            #     # 3.12.6 check (LOAD_COMMON_CONSTANT/LOAD_CONST before CALL) handles it.
 
         if sys.version_info >= (3, 14) and isinstance(node, ast.UnaryOp) and isinstance(node.op,ast.Not) and instruction.opname !="UNARY_NOT":
             # fix for https://github.com/python/cpython/issues/137843
