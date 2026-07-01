@@ -220,7 +220,8 @@ class PositionNodeFinder(object):
             before = self.instruction_before(instruction)
             if (
                 before is not None
-                and before.opname == "LOAD_CONST"
+                and before.opname in ("LOAD_CONST", "LOAD_COMMON_CONSTANT")
+                and before.argval is None
                 and before.positions == instruction.positions
                 and isinstance(node.parent, ast.withitem)
                 and node is node.parent.context_expr
@@ -271,6 +272,45 @@ class PositionNodeFinder(object):
                 and node is node.parent.context_expr
             ):
                 return node.parent.parent
+
+        if (sys.version_info >= (3, 15) and instruction.opname ==
+         "LOAD_SPECIAL"
+         and instruction.argrepr in ("__enter__","__exit__")):
+            # In Python 3.15, __exit__ CALL, WITH_EXCEPT_START, and LOAD_SPECIAL
+            # positions match the context manager expression or sub-expression.
+            # Walk up the AST to find withitem context_expr.
+            print(instruction.argrepr)
+            assert isinstance(node.parent,ast.withitem)
+
+            #return node.parent.parent
+
+            # n = node
+            # with_node = None
+            # ctx_is_call = False
+            # while True:
+            #     p = getattr(n, 'parent', None)
+            #     if p is None:
+            #         break
+            #     if isinstance(p, ast.withitem) and n is p.context_expr:
+            #         with_node = p.parent
+            #         ctx_is_call = isinstance(n, ast.Call)
+            #         break
+            #     n = p
+
+            # if with_node is not None:
+            #     if (
+            #         instruction.opname == "WITH_EXCEPT_START"
+            #         or not ctx_is_call
+            #         or (
+            #             instruction.opname == "LOAD_SPECIAL"
+            #             and instruction.argrepr in ("__exit__", "__aexit__")
+            #         )
+            #     ):
+            #         # Redirect to the With node: this instruction is from the
+            #         # with-statement's exit path, not the context manager call itself.
+            #         return with_node
+            #     # For Call context managers with CALL instruction: the extended
+            #     # 3.12.6 check (LOAD_COMMON_CONSTANT/LOAD_CONST before CALL) handles it.
 
         if sys.version_info >= (3, 14) and isinstance(node, ast.UnaryOp) and isinstance(node.op,ast.Not) and instruction.opname !="UNARY_NOT":
             # fix for https://github.com/python/cpython/issues/137843
@@ -386,6 +426,7 @@ class PositionNodeFinder(object):
         if (
             instruction.opname == "CALL"
             and not isinstance(node,ast.Call)
+            and not isinstance(node, (ast.ListComp, ast.GeneratorExp, ast.SetComp, ast.DictComp))
             and any(isinstance(p, ast.Assert) for p in parents(node))
             and sys.version_info >= (3, 11, 2)
         ):
@@ -920,6 +961,17 @@ class PositionNodeFinder(object):
                 return
 
             if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and isinstance(node,ast.Name) and node.id in instruction.argval:
+                return
+
+        if sys.version_info >= (3, 15):
+            if (
+                inst_match(("LOAD_FAST", "LOAD_FAST_BORROW"), argval=".0")
+                and isinstance(node.parent, ast.comprehension)
+                and node is node.parent.iter
+            ):
+                # In Python 3.15, the LOAD_FAST/LOAD_FAST_BORROW .0 instruction
+                # (which loads the hidden iterator parameter in comprehensions/generator
+                # expressions) has source positions that match the iterator expression
                 return
 
 
