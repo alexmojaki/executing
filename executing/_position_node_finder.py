@@ -1,6 +1,7 @@
 import ast
 import sys
 import dis
+from inspect import CO_VARARGS, CO_VARKEYWORDS
 from types import CodeType, FrameType
 from typing import Any, Callable, Iterator, Optional, Sequence, Set, Tuple, Type, Union, cast
 from .executing import EnhancedAST, NotOneValueFound, Source, only, function_node_types, assert_
@@ -220,7 +221,8 @@ class PositionNodeFinder(object):
             before = self.instruction_before(instruction)
             if (
                 before is not None
-                and before.opname == "LOAD_CONST"
+                and before.opname in ("LOAD_CONST", "LOAD_COMMON_CONSTANT")
+                and before.argval is None
                 and before.positions == instruction.positions
                 and isinstance(node.parent, ast.withitem)
                 and node is node.parent.context_expr
@@ -386,6 +388,7 @@ class PositionNodeFinder(object):
         if (
             instruction.opname == "CALL"
             and not isinstance(node,ast.Call)
+            and not isinstance(node, (ast.ListComp, ast.GeneratorExp, ast.SetComp, ast.DictComp))
             and any(isinstance(p, ast.Assert) for p in parents(node))
             and sys.version_info >= (3, 11, 2)
         ):
@@ -423,11 +426,11 @@ class PositionNodeFinder(object):
         if sys.version_info >= (3,14):
 
 
-            if header_length := self.annotation_header_size():
+            if (header_end := self.annotation_header_end()) is not None:
 
                 last_offset=list(self.bc_dict.keys())[-1]
                 if (
-                    not (header_length*2 < instruction.offset <last_offset-4)
+                    not (header_end <= instruction.offset <last_offset-4)
                 ):
                     # https://github.com/python/cpython/issues/135700
                     raise KnownIssue("synthetic opcodes in annotations are just bound to the first node")
@@ -449,30 +452,54 @@ class PositionNodeFinder(object):
 
 
 
-    def annotation_header_size(self)->int:
-        if sys.version_info >=(3,14):
-            header=[inst.opname for inst in itertools.islice(self.bc_dict.values(),8)]
+    def annotation_header_end(self) -> Optional[int]:
+        """Return the first body offset after a compiler-generated format check."""
+        if sys.version_info < (3, 14):
+            return None
 
-            if len(header)==8:
-                if header[0] in ("COPY_FREE_VARS","MAKE_CELL"):
-                    del header[0]
-                    header_size=8
-                else:
-                    del header[7]
-                    header_size=7
+        code = self.frame.f_code
+        if (
+            code.co_argcount != 1
+            or code.co_posonlyargcount != 1
+            or code.co_kwonlyargcount != 0
+            or code.co_flags & (CO_VARARGS | CO_VARKEYWORDS)
+            or code.co_varnames[0] not in ("format", ".format")
+        ):
+            return None
 
-                if header==[
-                    "RESUME",
-                    "LOAD_FAST_BORROW",
-                    "LOAD_SMALL_INT",
-                    "COMPARE_OP",
-                    "POP_JUMP_IF_FALSE",
-                    "NOT_TAKEN",
-                    "LOAD_COMMON_CONSTANT",
-                ]:
-                    return header_size
+        instructions = itertools.dropwhile(
+            lambda inst: inst.opname in ("COPY_FREE_VARS", "MAKE_CELL"),
+            self.bc_dict.values(),
+        )
+        header = list(itertools.islice(instructions, 8))
+        if [inst.opname for inst in header] != [
+            "RESUME",
+            "LOAD_FAST_BORROW",
+            "LOAD_SMALL_INT",
+            "COMPARE_OP",
+            "POP_JUMP_IF_FALSE",
+            "NOT_TAKEN",
+            "LOAD_COMMON_CONSTANT",
+            "RAISE_VARARGS",
+        ]:
+            return None
 
-        return 0
+        # Opcode names alone also match ordinary comparisons. Check the full
+        # `if format > 2: raise NotImplementedError` compiler prologue.
+        # In 3.14 LOAD_COMMON_CONSTANT.argval is an index, so use argrepr.
+        body_offset = header[7].offset + 2
+        if (
+            header[0].arg != 0
+            or header[1].argval != code.co_varnames[0]
+            or header[2].argval != 2
+            or header[3].argval != ">"
+            or header[4].argval != body_offset
+            or header[6].argrepr != "NotImplementedError"
+            or header[7].arg != 1
+        ):
+            return None
+
+        return body_offset
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:
@@ -920,6 +947,17 @@ class PositionNodeFinder(object):
                 return
 
             if inst_match("LOAD_FAST_BORROW_LOAD_FAST_BORROW") and isinstance(node,ast.Name) and node.id in instruction.argval:
+                return
+
+        if sys.version_info >= (3, 15):
+            if (
+                inst_match(("LOAD_FAST", "LOAD_FAST_BORROW"), argval=".0")
+                and isinstance(node.parent, ast.comprehension)
+                and node is node.parent.iter
+            ):
+                # In Python 3.15, the LOAD_FAST/LOAD_FAST_BORROW .0 instruction
+                # (which loads the hidden iterator parameter in comprehensions/generator
+                # expressions) has source positions that match the iterator expression
                 return
 
 
