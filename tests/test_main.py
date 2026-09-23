@@ -1050,7 +1050,6 @@ class TestFiles:
                         # `not not x` is optimized to a single TO_BOOL
                         continue
 
-
                 # the deadcode check has to be the last check because it is expensive
                 if len(values)==0 and is_deadcode(node):
                     continue
@@ -1078,7 +1077,10 @@ class TestFiles:
                     p()
 
                     p("ast node:")
-                    p(mangled_name(node))
+                    try:
+                        p(mangled_name(node))
+                    except TypeError:
+                        p(ast_dump(node))
                     p(ast_dump(node, indent=4))
 
                     parents = []
@@ -1380,6 +1382,27 @@ class TestFiles:
                 ):
                     continue
 
+                if (
+                    sys.version_info[:2] == (3, 15)
+                    and inst.opname == "COMPARE_OP"
+                    and inst.argval == "=="
+                    and isinstance(e, NotOneValueFound)
+                    and str(e) == "Expected one value, found 0"
+                    and any(
+                        isinstance(option, ast.MatchValue)
+                        and isinstance(option.value, ast.Constant)
+                        and start_position(option.value)
+                        > start_position(option)
+                        and end_position(option.value) == end_position(option)
+                        and ast.get_source_segment(source.text, option).startswith("+")
+                        for option in exact_options
+                    )
+                ):
+                    # Python 3.15 omits the UnaryOp for `case +0`, leaving no
+                    # expression at the COMPARE_OP's full source span.
+                    # https://github.com/python/cpython/issues/152708
+                    continue
+
 
                 # report more information for debugging
                 print("mapping failed")
@@ -1446,7 +1469,12 @@ class TestFiles:
                 if isinstance(inst.argval,tuple):
                     assert  mangled_name(node) in inst.argval 
                 else:
-                    assert  mangled_name(node) == inst.argval 
+                    # In Python 3.15, LOAD_FAST/LOAD_FAST_BORROW .0 (the hidden iterator parameter)
+                    # can be mapped to the iterator expression Name node in comprehensions
+                    if sys.version_info >= (3, 15) and inst.opname in ("LOAD_FAST", "LOAD_FAST_BORROW") and inst.argval == ".0":
+                        assert isinstance(node.parent, ast.comprehension) and node is node.parent.iter
+                    else:
+                        assert  mangled_name(node) == inst.argval
 
             if ex.decorator:
                 decorators[(node.lineno, node.name)].append(ex.decorator)
@@ -1592,4 +1620,3 @@ def find_qualnames(code, prefix=""):
 
 if __name__ == '__main__':
     unittest.main()
-
