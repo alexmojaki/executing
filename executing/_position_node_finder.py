@@ -28,9 +28,59 @@ def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     yield from parents(node)
 
 
-@lru_cache(128) # pragma: no mutate
-def get_instructions(code: CodeType) -> list[dis.Instruction]:
-    return list(dis.get_instructions(code))
+@lru_cache(128)  # pragma: no mutate
+def get_instructions(code: CodeType) -> dict[int, dis.Instruction]:
+    return {bc.offset: bc for bc in dis.get_instructions(code)}
+
+
+@lru_cache(128)  # pragma: no mutate
+def annotation_header_end(code: CodeType) -> Optional[int]:
+    """Return the first body offset after a compiler-generated format check."""
+    if sys.version_info < (3, 14):
+        return None
+
+    if (
+        code.co_argcount != 1
+        or code.co_posonlyargcount != 1
+        or code.co_kwonlyargcount != 0
+        or code.co_flags & (CO_VARARGS | CO_VARKEYWORDS)
+        or code.co_varnames[0] not in ("format", ".format")
+    ):
+        return None
+
+    instructions = itertools.dropwhile(
+        lambda inst: inst.opname in ("COPY_FREE_VARS", "MAKE_CELL"),
+        get_instructions(code).values(),
+    )
+    header = list(itertools.islice(instructions, 8))
+    if [inst.opname for inst in header] != [
+        "RESUME",
+        "LOAD_FAST_BORROW",
+        "LOAD_SMALL_INT",
+        "COMPARE_OP",
+        "POP_JUMP_IF_FALSE",
+        "NOT_TAKEN",
+        "LOAD_COMMON_CONSTANT",
+        "RAISE_VARARGS",
+    ]:
+        return None
+
+    # Opcode names alone also match ordinary comparisons. Check the full
+    # `if format > 2: raise NotImplementedError` compiler prologue.
+    # In 3.14 LOAD_COMMON_CONSTANT.argval is an index, so use argrepr.
+    body_offset = header[7].offset + 2
+    if (
+        header[0].arg != 0
+        or header[1].argval != code.co_varnames[0]
+        or header[2].argval != 2
+        or header[3].argval != ">"
+        or header[4].argval != body_offset
+        or header[6].argrepr != "NotImplementedError"
+        or header[7].arg != 1
+    ):
+        return None
+
+    return body_offset
 
 
 types_cmp_issue_fix = (
@@ -72,7 +122,7 @@ class PositionNodeFinder(object):
     """
 
     def __init__(self, frame: FrameType, stmts: Set[EnhancedAST], tree: ast.Module, lasti: int, source: Source):
-        self.bc_dict={bc.offset:bc for bc in get_instructions(frame.f_code) }
+        self.bc_dict = get_instructions(frame.f_code)
         self.frame=frame
 
         self.source = source
@@ -424,9 +474,7 @@ class PositionNodeFinder(object):
                 self.result = cast(EnhancedAST, node.operand)
 
         if sys.version_info >= (3,14):
-
-
-            if (header_end := self.annotation_header_end()) is not None:
+            if (header_end := annotation_header_end(self.frame.f_code)) is not None:
 
                 last_offset=list(self.bc_dict.keys())[-1]
                 if (
@@ -449,57 +497,6 @@ class PositionNodeFinder(object):
 
             if instruction.opname == "IS_OP" and isinstance(node,ast.Name):
                 raise KnownIssue("part of a check that a name like `all` is a builtin")
-
-
-
-    def annotation_header_end(self) -> Optional[int]:
-        """Return the first body offset after a compiler-generated format check."""
-        if sys.version_info < (3, 14):
-            return None
-
-        code = self.frame.f_code
-        if (
-            code.co_argcount != 1
-            or code.co_posonlyargcount != 1
-            or code.co_kwonlyargcount != 0
-            or code.co_flags & (CO_VARARGS | CO_VARKEYWORDS)
-            or code.co_varnames[0] not in ("format", ".format")
-        ):
-            return None
-
-        instructions = itertools.dropwhile(
-            lambda inst: inst.opname in ("COPY_FREE_VARS", "MAKE_CELL"),
-            self.bc_dict.values(),
-        )
-        header = list(itertools.islice(instructions, 8))
-        if [inst.opname for inst in header] != [
-            "RESUME",
-            "LOAD_FAST_BORROW",
-            "LOAD_SMALL_INT",
-            "COMPARE_OP",
-            "POP_JUMP_IF_FALSE",
-            "NOT_TAKEN",
-            "LOAD_COMMON_CONSTANT",
-            "RAISE_VARARGS",
-        ]:
-            return None
-
-        # Opcode names alone also match ordinary comparisons. Check the full
-        # `if format > 2: raise NotImplementedError` compiler prologue.
-        # In 3.14 LOAD_COMMON_CONSTANT.argval is an index, so use argrepr.
-        body_offset = header[7].offset + 2
-        if (
-            header[0].arg != 0
-            or header[1].argval != code.co_varnames[0]
-            or header[2].argval != 2
-            or header[3].argval != ">"
-            or header[4].argval != body_offset
-            or header[6].argrepr != "NotImplementedError"
-            or header[7].arg != 1
-        ):
-            return None
-
-        return body_offset
 
     @staticmethod
     def is_except_cleanup(inst: dis.Instruction, node: EnhancedAST) -> bool:

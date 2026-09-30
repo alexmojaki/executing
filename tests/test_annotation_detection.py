@@ -32,18 +32,14 @@ def nested_codes(code):
     ],
 )
 def test_annotation_header_ends_at_body(source, name):
-    from executing._position_node_finder import PositionNodeFinder
+    from executing._position_node_finder import annotation_header_end
 
     code = next(
         code for code in nested_codes(compile(source, "<test>", "exec"))
         if code.co_name == name
     )
     instructions = list(dis.get_instructions(code))
-    finder = PositionNodeFinder.__new__(PositionNodeFinder)
-    finder.frame = types.SimpleNamespace(f_code=code)
-    finder.bc_dict = {inst.offset: inst for inst in instructions}
-
-    end = finder.annotation_header_end()
+    end = annotation_header_end(code)
     raise_index = next(
         i for i, inst in enumerate(instructions) if inst.opname == "RAISE_VARARGS"
     )
