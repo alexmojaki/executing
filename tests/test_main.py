@@ -15,11 +15,13 @@ import unittest
 from collections import defaultdict, namedtuple
 from random import shuffle
 import pytest
+
+from executing._position_node_finder import annotation_header_end
 from executing._utils import mangled_name
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from .utils import tester, subscript_item, in_finally, start_position, end_position
+from .utils import tester, subscript_item, in_finally, start_position, end_position, nested_codes
 
 PYPY = 'pypy' in sys.version.lower()
 
@@ -1616,6 +1618,61 @@ def find_qualnames(code, prefix=""):
             subcode, qualname + ("." if is_class else ".<locals>.")
         ):
             yield x
+
+
+@pytest.mark.parametrize(
+    "source, name",
+    [
+        ("x: int", "__annotate__"),
+        ("def f(x: int) -> str: pass", "__annotate__"),
+        ("class C:\n    x: int", "__annotate__"),
+        ("type Alias = list[int]", "Alias"),
+        ("def f[T: int](x: T): pass", "T"),
+        ("def f[T: int](x: T): pass", "__annotate__"),
+    ],
+)
+def test_annotation_header_ends_at_body(source, name):
+    code = only(
+        code for code in nested_codes(compile(source, "<test>", "exec"))
+        if code.co_name == name
+    )
+    end = annotation_header_end(code)
+    if sys.version_info < (3, 14):
+        assert end is None
+        return
+
+    instructions = list(dis.get_instructions(code))
+    raise_index = only(
+        i for i, inst in enumerate(instructions) if inst.opname == "RAISE_VARARGS"
+    )
+    assert end == instructions[raise_index + 1].offset
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "def callback(number):\n    0 if number == 0 else 0",
+        "def callback(format, /):\n    0 if format == 0 else 0",
+        "def callback(format, /):\n    0 if format > 2 else 0",
+        "def callback(format, /):\n    if format == 2: raise NotImplementedError",
+        "def callback(format, /):\n    if format > 1: raise NotImplementedError",
+        "def callback(format, /):\n    if format > 2: raise ValueError",
+    ],
+)
+def test_ordinary_comparison_is_not_annotation_code(tmp_path, source):
+    filename = tmp_path / "comparison.py"
+    filename.write_text(source)
+    code = only(nested_codes(compile(source, str(filename), "exec")))
+    comparison = only(
+        inst for inst in dis.get_instructions(code) if inst.opname == "COMPARE_OP"
+    )
+    frame = types.SimpleNamespace(
+        f_code=code,
+        f_lasti=comparison.offset,
+        f_lineno=comparison.positions.lineno,
+        f_globals={},
+    )
+    assert isinstance(Source.executing(frame).node, ast.Compare)
 
 
 if __name__ == '__main__':
