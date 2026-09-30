@@ -1639,7 +1639,7 @@ def test_ordinary_comparison_is_not_annotation_code(tmp_path, source):
     frame = types.SimpleNamespace(
         f_code=code,
         f_lasti=comparison.offset,
-        f_lineno=comparison.positions.lineno,
+        f_lineno=2,
         f_globals={},
     )
     assert isinstance(Source.executing(frame).node, ast.Compare)
