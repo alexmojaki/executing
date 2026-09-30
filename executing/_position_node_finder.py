@@ -35,10 +35,31 @@ def get_instructions(code: CodeType) -> dict[int, dis.Instruction]:
 
 @lru_cache(128)  # pragma: no mutate
 def annotation_header_end(code: CodeType) -> Optional[int]:
-    """Return the first body offset after a compiler-generated format check."""
+    """Return the bytecode offset after a recognized annotation header.
+
+    Python 3.14+ generates functions to evaluate deferred annotations,
+    type aliases and type parameter bounds. Their header checks the
+    requested annotation format before evaluating the user's expression.
+    For example, ``x: int`` generates code equivalent to:
+
+        def __annotate__(format, /):
+            if format > 2:               # compiler-generated header
+                raise NotImplementedError
+            return {"x": int}            # body starts here
+
+    The header has no corresponding user-written AST node, but its source
+    positions can overlap the first annotation. The caller uses the returned
+    offset to exclude this synthetic bytecode from node mapping.
+
+    Return None if the signature or bytecode does not match the known
+    header. Match the structure rather than the function name, since these
+    generated functions are not all named ``__annotate__``.
+    """
     if sys.version_info < (3, 14):
         return None
 
+    # Generated evaluators take one positional-only format argument;
+    # its internal name can be either `format` or `.format`.
     if (
         code.co_argcount != 1
         or code.co_posonlyargcount != 1
@@ -48,6 +69,7 @@ def annotation_header_end(code: CodeType) -> Optional[int]:
     ):
         return None
 
+    # Closure setup may precede RESUME when annotations use captured names.
     instructions = itertools.dropwhile(
         lambda inst: inst.opname in ("COPY_FREE_VARS", "MAKE_CELL"),
         get_instructions(code).values(),
@@ -68,6 +90,8 @@ def annotation_header_end(code: CodeType) -> Optional[int]:
     # Opcode names alone also match ordinary comparisons. Check the full
     # `if format > 2: raise NotImplementedError` compiler prologue.
     # In 3.14 LOAD_COMMON_CONSTANT.argval is an index, so use argrepr.
+    # RAISE_VARARGS occupies one two-byte instruction. The false branch
+    # must jump immediately past it to begin evaluating the annotation.
     body_offset = header[7].offset + 2
     if (
         header[0].arg != 0
