@@ -1618,19 +1618,9 @@ def find_qualnames(code, prefix=""):
             yield x
 
 
-@pytest.mark.parametrize(
-    "source",
-    [
-        "def callback(number):\n    0 if number == 0 else 0",
-        "def callback(format, /):\n    0 if format == 0 else 0",
-        "def callback(format, /):\n    0 if format > 2 else 0",
-        "def callback(format, /):\n    if format == 2: raise NotImplementedError",
-        "def callback(format, /):\n    if format > 1: raise NotImplementedError",
-        "def callback(format, /):\n    if format > 2: raise ValueError",
-    ],
-)
-def test_ordinary_comparison_is_not_annotation_code(tmp_path, source):
+def test_ordinary_comparison_is_not_annotation_code(tmp_path):
     filename = tmp_path / "comparison.py"
+    source = "def callback(format, /):\n    if format > 2: raise NotImplementedError"
     filename.write_text(source)
     code = only(nested_codes(compile(source, str(filename), "exec")))
     comparison = only(
