@@ -1,0 +1,34 @@
+tests/test_annotation_detection.py
+  s_df26d67277333d::t_0688036e66d382 42
+  s_df26d67277333d::t_ef65a35baf8171 35
+executing/_position_node_finder.py
+  s_df26d67277333d::t_ad4271c6fcd45c 32
+  s_df26d67277333d::t_a490dc4f7ed76a 38-52,54-83
+  s_df26d67277333d::t_e9bd241a2df8af 477
+  s_df26d67277333d::t_15f74e04bca643 53
+  s_df26d67277333d::t_db6e9629c98750 125
+  s_df26d67277333d::t_4282899d31e3a1 31,36
+  s_df26d67277333d::t_8ad56c28ed2fe0 37
+  s_df26d67277333d::t_298fc73eecec94 33-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d2bacc9fcebae878fda10b00fa2b5c54448d2a23",
+  "prompts": {},
+  "humans": {
+    "h_d9dd17644dded9": {
+      "author": "Alex Hall <alex.mojaki@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_df26d67277333d": {
+      "agent_id": {
+        "tool": "github-copilot-jetbrains",
+        "id": "1790780876340",
+        "model": "unknown"
+      },
+      "human_author": "Alex Hall <alex.mojaki@gmail.com>"
+    }
+  }
+}
