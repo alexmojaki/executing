@@ -5,8 +5,7 @@ import types
 
 import pytest
 
-from executing import Source
-
+from executing import Source, only
 
 pytestmark = pytest.mark.skipif(
     sys.version_info < (3, 14), reason="requires compiler-generated annotation functions"
@@ -34,13 +33,13 @@ def nested_codes(code):
 def test_annotation_header_ends_at_body(source, name):
     from executing._position_node_finder import annotation_header_end
 
-    code = next(
+    code = only(
         code for code in nested_codes(compile(source, "<test>", "exec"))
         if code.co_name == name
     )
     instructions = list(dis.get_instructions(code))
     end = annotation_header_end(code)
-    raise_index = next(
+    raise_index = only(
         i for i, inst in enumerate(instructions) if inst.opname == "RAISE_VARARGS"
     )
     assert end == instructions[raise_index + 1].offset
@@ -63,8 +62,8 @@ def test_ordinary_comparison_is_not_annotation_code(tmp_path, source, monkeypatc
     monkeypatch.setattr(executing.executing, "TESTING", True)
     filename = tmp_path / "comparison.py"
     filename.write_text(source)
-    code = next(nested_codes(compile(source, str(filename), "exec")))
-    comparison = next(
+    code = only(nested_codes(compile(source, str(filename), "exec")))
+    comparison = only(
         inst for inst in dis.get_instructions(code) if inst.opname == "COMPARE_OP"
     )
     frame = types.SimpleNamespace(
