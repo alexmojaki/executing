@@ -1,0 +1,32 @@
+tests/test_main.py
+  s_df26d67277333d::t_0fceda5c74297d 1623-1639,1645-1649
+  s_df26d67277333d::t_adf38445612192 1651-1675
+  h_d9dd17644dded9 18-19,24,1640-1644
+  s_df26d67277333d::t_44f9b40c5d6a63 1650
+  s_df26d67277333d::t_98937ed78a7db0 1676-1677
+tests/utils.py
+  s_df26d67277333d::t_ac3729018269a1 220-223
+  h_d9dd17644dded9 4,219
+  h_d9dd17644dded9 217-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "332fb3f08ba775d43f6192918fbeb66fa05c8f9b",
+  "prompts": {},
+  "humans": {
+    "h_d9dd17644dded9": {
+      "author": "Alex Hall <alex.mojaki@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_df26d67277333d": {
+      "agent_id": {
+        "tool": "github-copilot-jetbrains",
+        "id": "1790780876340",
+        "model": "unknown"
+      },
+      "human_author": "Alex Hall <alex.mojaki@gmail.com>"
+    }
+  }
+}
