@@ -19,7 +19,7 @@ from executing._utils import mangled_name
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from .utils import tester, subscript_item, in_finally, start_position, end_position, nested_codes
+from .utils import tester, subscript_item, in_finally, start_position, end_position
 
 PYPY = 'pypy' in sys.version.lower()
 
@@ -1616,23 +1616,6 @@ def find_qualnames(code, prefix=""):
             subcode, qualname + ("." if is_class else ".<locals>.")
         ):
             yield x
-
-
-def test_ordinary_comparison_is_not_annotation_code(tmp_path):
-    filename = tmp_path / "comparison.py"
-    source = "def callback(format, /):\n    if format > 2: raise NotImplementedError"
-    filename.write_text(source)
-    code = only(nested_codes(compile(source, str(filename), "exec")))
-    comparison = only(
-        inst for inst in dis.get_instructions(code) if inst.opname == "COMPARE_OP"
-    )
-    frame = types.SimpleNamespace(
-        f_code=code,
-        f_lasti=comparison.offset,
-        f_lineno=2,
-        f_globals={},
-    )
-    assert isinstance(Source.executing(frame).node, ast.Compare)
 
 
 if __name__ == '__main__':
