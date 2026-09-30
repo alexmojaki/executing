@@ -1,0 +1,26 @@
+tests/test_annotation_detection.py
+  s_df26d67277333d::t_d54325196e903c 66
+  h_d9dd17644dded9 8,36,42
+  s_df26d67277333d::t_5ac6855d8ed387 65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "064a1fb46f7e900fade0f216cce1f865b8ea0969",
+  "prompts": {},
+  "humans": {
+    "h_d9dd17644dded9": {
+      "author": "Alex Hall <alex.mojaki@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_df26d67277333d": {
+      "agent_id": {
+        "tool": "github-copilot-jetbrains",
+        "id": "1790780876340",
+        "model": "unknown"
+      },
+      "human_author": "Alex Hall <alex.mojaki@gmail.com>"
+    }
+  }
+}
