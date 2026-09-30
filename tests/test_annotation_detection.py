@@ -56,10 +56,7 @@ def test_annotation_header_ends_at_body(source, name):
         "def callback(format, /):\n    if format > 2: raise ValueError",
     ],
 )
-def test_ordinary_comparison_is_not_annotation_code(tmp_path, source, monkeypatch):
-    import executing.executing
-
-    monkeypatch.setattr(executing.executing, "TESTING", True)
+def test_ordinary_comparison_is_not_annotation_code(tmp_path, source):
     filename = tmp_path / "comparison.py"
     filename.write_text(source)
     code = only(nested_codes(compile(source, str(filename), "exec")))

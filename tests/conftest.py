@@ -1,10 +1,15 @@
-
-
-from typing import Optional, Sequence, Union
-from executing._pytest_utils import is_pytest_compatible
-import _pytest.assertion.rewrite as rewrite
 import importlib.machinery
 import types
+from typing import Optional, Sequence, Union
+
+import _pytest.assertion.rewrite as rewrite
+
+import executing.executing
+from executing._pytest_utils import is_pytest_compatible
+
+
+executing.executing.TESTING = 1
+
 
 if not is_pytest_compatible():
     original_find_spec = rewrite.AssertionRewritingHook.find_spec
