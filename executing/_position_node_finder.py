@@ -33,7 +33,7 @@ def get_instructions(code: CodeType) -> dict[int, dis.Instruction]:
     return {bc.offset: bc for bc in dis.get_instructions(code)}
 
 
-@lru_cache(128)  # pragma: no mutate
+@lru_cache(128)
 def annotation_header_end(code: CodeType) -> Optional[int]:
     """Return the bytecode offset after a recognized annotation header.
 
