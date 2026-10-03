@@ -1382,28 +1382,6 @@ class TestFiles:
                 ):
                     continue
 
-                if (
-                    sys.version_info[:2] == (3, 15)
-                    and inst.opname == "COMPARE_OP"
-                    and inst.argval == "=="
-                    and isinstance(e, NotOneValueFound)
-                    and str(e) == "Expected one value, found 0"
-                    and any(
-                        isinstance(option, ast.MatchValue)
-                        and isinstance(option.value, ast.Constant)
-                        and start_position(option.value)
-                        > start_position(option)
-                        and end_position(option.value) == end_position(option)
-                        and ast.get_source_segment(source.text, option).startswith("+")
-                        for option in exact_options
-                    )
-                ):
-                    # Python 3.15 omits the UnaryOp for `case +0`, leaving no
-                    # expression at the COMPARE_OP's full source span.
-                    # https://github.com/python/cpython/issues/152708
-                    continue
-
-
                 # report more information for debugging
                 print("mapping failed")
 
