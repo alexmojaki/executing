@@ -1,0 +1,37 @@
+import dis
+import sys
+
+import pytest
+
+from executing import only
+from tests.utils import nested_codes
+
+pytestmark = pytest.mark.skipif(
+    sys.version_info < (3, 14), reason="requires compiler-generated annotation functions"
+)
+
+
+@pytest.mark.parametrize(
+    "source, name",
+    [
+        ("x: int", "__annotate__"),
+        ("def f(x: int) -> str: pass", "__annotate__"),
+        ("class C:\n    x: int", "__annotate__"),
+        ("type Alias = list[int]", "Alias"),
+        ("def f[T: int](x: T): pass", "T"),
+        ("def f[T: int](x: T): pass", "__annotate__"),
+    ],
+)
+def test_annotation_header_ends_at_body(source, name):
+    from executing._position_node_finder import annotation_header_end
+
+    code = only(
+        code for code in nested_codes(compile(source, "<test>", "exec"))
+        if code.co_name == name
+    )
+    instructions = list(dis.get_instructions(code))
+    end = annotation_header_end(code)
+    raise_index = only(
+        i for i, inst in enumerate(instructions) if inst.opname == "RAISE_VARARGS"
+    )
+    assert end == instructions[raise_index + 1].offset
