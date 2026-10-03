@@ -12,14 +12,15 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11', '3.12' ,'3.13' ,3.14-dev]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
 
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - name: Install dependencies
       run: |
         python --version
@@ -31,7 +32,7 @@ jobs:
         pip install mypy==1.14.1
         python -m mypy executing --exclude=executing/_position_node_finder.py
       # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
-      if: ${{ !contains(fromJson('["pypy-3.6", "3.11","3.12","3.13","3.14-dev"]'), matrix.python-version) }}
+      if: ${{ !contains(fromJson('["pypy-3.6", "3.11","3.12","3.13","3.14","3.15"]'), matrix.python-version) }}
       # pypy < 3.8 very doesn't work
     - name: Mypy testing (3.11)
       run: |
