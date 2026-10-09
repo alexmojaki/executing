@@ -1,6 +1,7 @@
 import sys
 import ast
 import inspect
+import types
 from collections import namedtuple
 
 import executing.executing
@@ -213,3 +214,10 @@ def end_position(obj):
         obj=obj.body[-1]
 
     return SourcePosition(obj.end_lineno, obj.end_col_offset)
+
+
+def nested_codes(code: types.CodeType):
+    for const in code.co_consts:
+        if isinstance(const, types.CodeType):
+            yield const
+            yield from nested_codes(const)
