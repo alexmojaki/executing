@@ -53,6 +53,20 @@ tox -e mutmut
 
 You should have a clean git working directory, because mutmut changes files.
 
+## pre-commit (ruff)
+
+Run ruff checks/formatting with pre-commit:
+
+```sh
+pre-commit run --all-files
+```
+
+Install the hook locally:
+
+```sh
+pre-commit install
+```
+
 
 
 
