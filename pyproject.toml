@@ -69,7 +69,7 @@ python_functions = "test_"
 
 [tool.coverage.run]
 relative_files = true
-include = ["executing/executing.py"]
+source = ["executing"]
 parallel = true
 branch = true
 
