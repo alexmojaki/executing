@@ -13,6 +13,11 @@ def test_coverage_includes_package(tmp_path):
     script.write_text("import executing\n", encoding="utf-8")
     data_file = tmp_path / ".coverage"
     env = dict(os.environ, COVERAGE_FILE=str(data_file))
+    # The temporary script must import the checkout, not a non-editable install.
+    pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = str(ROOT)
+    if pythonpath:
+        env["PYTHONPATH"] += os.pathsep + pythonpath
     # Keep this measurement independent of an outer coverage run.
     env.pop("COVERAGE_PROCESS_START", None)
     env.pop("COVERAGE_PROCESS_CONFIG", None)
