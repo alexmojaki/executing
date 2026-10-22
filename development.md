@@ -17,6 +17,26 @@ env EXECUTING_SLOW_TESTS=1 tox -e py311 -- --sw
 ~~~
 
 
+## Coverage
+
+After installing the test dependencies with `pip install -e '.[tests]'`, run
+coverage from the repository root:
+
+```sh
+export COVERAGE_PROCESS_START="$PWD/pyproject.toml"
+EXECUTING_SLOW_TESTS=1 coverage run -m pytest tests
+coverage combine
+coverage report -m
+coverage html
+```
+
+Open `htmlcov/index.html` for the local report. The shared configuration measures
+the whole `executing` package, including modules not imported on the current
+Python version, without including test samples or dependencies. The subprocess
+startup configuration and `coverage combine` include measurements from child
+processes as well. Run `coverage erase` before starting a fresh measurement if
+there is coverage data left over from an earlier run.
+
 ## generate_small_sample
 
 `tox -e genererate_small_sample` can be used to:

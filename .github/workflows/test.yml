@@ -57,7 +57,7 @@ jobs:
         EXECUTING_SLOW_TESTS: 1
       run: |
         # COVERAGE_PROCESS_START defines the path to the coverage config for coverage-enable-subprocess
-        export COVERAGE_PROCESS_START=${GITHUB_WORKSPACE}/setup.cfg
+        export COVERAGE_PROCESS_START=${GITHUB_WORKSPACE}/pyproject.toml
         coverage run -m pytest tests
         # combine the coverage of all subprocesses
         coverage combine
