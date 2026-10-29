@@ -466,8 +466,16 @@ class QualnameVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.AST) -> None:
         assert isinstance(node, ast.ClassDef)
         self.add_qualname(node)
-        self.generic_visit(node)
+        outside_class: List[ast.AST] = list(node.decorator_list)
+        outside_class.extend(node.bases)
+        outside_class.extend(node.keywords)
+        # Leave the class body and type parameters in their existing scope.
+        for child in ast.iter_child_nodes(node):
+            if child not in outside_class:
+                self.visit(child)
         self.stack.pop()
+        for child in outside_class:
+            self.visit(child)
 
 
 future_flags = sum(
