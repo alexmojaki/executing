@@ -64,6 +64,10 @@ or:
 executing.Source.for_frame(frame).code_qualname(frame.f_code)
 ```
 
+For a lambda created in a generator expression, the qualified name includes
+its generator scope, such as `<genexpr>.<lambda>` on CPython. Lambdas in the outermost
+iterable expression retain the enclosing scope.
+
 ### The `Source` class
 
 Everything goes through the `Source` class. Only one instance of the class is created for each filename. Subclassing it to add more attributes on creation or methods is recommended. The classmethods such as `executing` will respect this. See the source code and docstrings for more detail.
