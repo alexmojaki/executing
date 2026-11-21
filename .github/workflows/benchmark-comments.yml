@@ -1,0 +1,75 @@
+name: Benchmark comments
+
+on:
+  workflow_run:
+    workflows: [Benchmarks]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  configuration:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      pythons: ${{ steps.config.outputs.pythons }}
+    steps:
+      # Read the benchmark run's configuration as data; never check out PR code.
+      - uses: actions/download-artifact@v4
+        with:
+          name: asv-configuration
+          path: benchmark-config
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - id: config
+        name: Read benchmark Python versions
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+
+          with open('benchmark-config/asv.conf.json') as config:
+              pythons = json.load(config)['pythons']
+          if not isinstance(pythons, list) or not pythons or not all(
+              isinstance(version, str) and version for version in pythons
+          ):
+              raise ValueError('ASV pythons must be a nonempty list of version strings')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              print('pythons=' + json.dumps(pythons), file=output)
+          PY
+
+  comment:
+    needs: configuration
+    name: Compare Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(needs.configuration.outputs.pythons) }}
+    steps:
+      # This trusted workflow reads result artifacts; it never checks out PR code.
+      - uses: actions/download-artifact@v4
+        with:
+          name: asv-results-py${{ matrix.python-version }}
+          path: results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - uses: HaoZeke/asv-perch@3910616093eb463672fec90a2011ff71bfdff071 # v1.2.2
+        with:
+          github-token: ${{ github.token }}
+          comparison-text-file: results/comparison.txt
+          metadata-file: results/metadata.txt
+          pr-sha: ${{ github.event.workflow_run.head_sha }}
+          label-before: Merge base
+          label-after: PR
+          runner-info: ubuntu-24.04 / Python ${{ matrix.python-version }}
+          comment-marker: '<!-- executing-asv-benchmarks-py${{ matrix.python-version }} -->'
+          auto-draft-on-regression: 'false'

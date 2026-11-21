@@ -117,3 +117,6 @@ venv.bak/
 # testing tools
 /done.db
 /tests/last_samples/
+
+# ASV environments, measurements, and generated reports
+/.asv/

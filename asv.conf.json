@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "project": "executing",
+  "project_url": "https://github.com/alexmojaki/executing",
+  "repo": ".",
+  "dvcs": "git",
+  "branches": ["master", "HEAD"],
+  "show_commit_url": "https://github.com/alexmojaki/executing/commit/",
+  "environment_type": "virtualenv",
+  "pythons": ["3.10", "3.11", "3.15"],
+  "matrix": {"asttokens": ["3.0.2"], "asv-runner": ["0.3.1"]},
+  "build_command": ["python -m pip wheel --no-deps -w {build_cache_dir} {build_dir}"],
+  "benchmark_dir": "benchmarks/asv_benchmarks",
+  "env_dir": ".asv/env",
+  "results_dir": ".asv/results",
+  "html_dir": ".asv/html"
+}
