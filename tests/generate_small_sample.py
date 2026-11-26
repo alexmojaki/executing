@@ -6,7 +6,6 @@ from pysource_minimize import minimize
 import sys
 import textwrap
 import os
-import linecache
 from executing import Source
 from multiprocessing import get_context
 import tempfile
@@ -58,10 +57,7 @@ def test_file(filename: Path):
 
     # Clear caches to avoid accumulating too much data in memory.
     # This is usually not a problem for executing, but this usage scenario is different
-    linecache.clearcache()
-    for cache_name in ("__source_cache_with_lines", "__executing_cache"):
-        if hasattr(Source, cache_name):
-            delattr(Source, cache_name)
+    Source._clear_caches()
 
     test = TestFiles()
     try:

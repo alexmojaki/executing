@@ -284,6 +284,28 @@ class Source(object):
         setattr(cls, name, result)
         return result
 
+    @classmethod
+    def _clear_caches(cls, *, execution_cache_only: bool = False) -> None:
+        """Clear this class's lookup caches and shared metadata/source-text caches.
+
+        With execution_cache_only=True, retain sources, linecache, and metadata.
+        Existing Source objects are not modified.
+        """
+        cls._class_local("__executing_cache", {}).clear()
+        if execution_cache_only:
+            return
+
+        cls._class_local("__source_cache_with_lines", {}).clear()
+        linecache.clearcache()
+        cls.statements_at_line.cache_clear()
+        statement_containing_node.cache_clear()
+
+        if sys.version_info >= (3, 11):
+            from . import _position_node_finder
+
+            _position_node_finder.get_instructions.cache_clear()
+            _position_node_finder.annotation_header_end.cache_clear()
+
     @cache
     def statements_at_line(self, lineno: int) -> Set[EnhancedAST]:
         """
