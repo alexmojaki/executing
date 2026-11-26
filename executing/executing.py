@@ -238,12 +238,13 @@ class Source(object):
             lasti = frame.f_lasti
 
         code = frame.f_code
-        key = (code, id(code), lasti)
-        executing_cache: Dict[Tuple[types.CodeType, int, int], Any] = cls._class_local(
-            "__executing_cache", {}
+        key = (id(code), lasti)
+        executing_cache: Dict[Tuple[int, int], Tuple[types.CodeType, Any]] = (
+            cls._class_local("__executing_cache", {})
         )
 
-        args = executing_cache.get(key)
+        entry = executing_cache.get(key)
+        args = entry[1] if entry is not None else None
         if not args:
             node = stmts = decorator = None
             source = cls.for_frame(frame)
@@ -269,7 +270,10 @@ class Source(object):
                     if TESTING:
                         raise
 
-            executing_cache[key] = args = source, node, stmts, decorator
+            args = source, node, stmts, decorator
+            # Retain code so its id cannot be reused while this entry is cached.
+            # Keeping it in the value avoids hashing the code object on lookup.
+            executing_cache[key] = (code, args)
 
         return Executing(frame, *args)
 
@@ -280,9 +284,11 @@ class Source(object):
         (as opposed to subclasses), setting default if necessary
         """
         # classes have a mappingproxy preventing us from using setdefault
-        result = cls.__dict__.get(name, default)
-        setattr(cls, name, result)
-        return result
+        try:
+            return cls.__dict__[name]
+        except KeyError:
+            setattr(cls, name, default)
+            return default
 
     @cache
     def statements_at_line(self, lineno: int) -> Set[EnhancedAST]:
