@@ -196,21 +196,7 @@ CASES = {
 
 def clear_lookup_caches(source_cls, *, execution_cache_only=False):
     if not execution_cache_only:
-        # Older reset helpers did not clear Python's source-text cache.
         linecache.clearcache()
-    clear = getattr(source_cls, "_clear_caches", None)
-    if clear is not None:
-        if not execution_cache_only:
-            clear()
-        elif "execution_cache_only" in clear.__func__.__code__.co_varnames:
-            # Full signature inspection perturbs the following short lookup timing.
-            clear(execution_cache_only=True)
-        else:
-            # Older revisions used a shorter keyword for this reset mode.
-            clear(execution_only=True)
-        return
-
-    # Historical revisions do not have Source._clear_caches().
     source_cls._class_local("__executing_cache", {}).clear()
     if execution_cache_only:
         return
