@@ -211,6 +211,13 @@ class PositionNodeFinder(object):
         while self.opname(lasti) == "CACHE":
             lasti -= 2
 
+        instruction = self.instruction(lasti)
+        assert instruction is not None
+        if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
+            # This compiler-generated store can have a range that matches no AST
+            # node, so recognize it before attempting source-position lookup.
+            raise KnownIssue("store __classcell__")
+
         try:
             # try to map with all match_positions
             self.result = self.find_node(lasti)
@@ -375,12 +382,19 @@ class PositionNodeFinder(object):
                         and parent.name == instruction.argval
                     ):
                         return parent
-            if isinstance(node, ast.Assign) and instruction.opname == "STORE_FAST":
+            if isinstance(node, ast.Assign) and instruction.opname in (
+                "STORE_FAST",
+                "STORE_DEREF",
+                "STORE_NAME",
+                "STORE_GLOBAL",
+            ):
                 targets = [
                     n
                     for target in node.targets
                     for n in ast.walk(target)
-                    if isinstance(n, ast.Name) and n.id == instruction.argval
+                    if isinstance(n, ast.Name)
+                    and isinstance(n.ctx, ast.Store)
+                    and mangled_name(cast(EnhancedAST, n)) == instruction.argval
                 ]
                 if len(targets) == 1:
                     return cast(EnhancedAST, targets[0])
@@ -577,23 +591,6 @@ class PositionNodeFinder(object):
             raise KnownIssue(
                 "exeption cleanup does not belong to the last node in a except block"
             )
-
-        if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
-            # handle stores to __classcell__ as KnownIssue,
-            # because they get complicated if they are used in `if` or `for` loops
-            # example:
-            #
-            # class X:
-            #     # ... something
-            #     if some_condition:
-            #         def method(self):
-            #             super()
-            #
-            # The `STORE_NAME` instruction gets mapped to the `ast.If` node,
-            # because it is the last element in the class.
-            # This last element could be anything and gets dificult to verify.
-
-            raise KnownIssue("store __classcell__")
 
         if (
             instruction.opname == "CALL"

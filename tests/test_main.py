@@ -824,7 +824,10 @@ class TestFiles:
 
             if (
                 # The sentinel actually appearing in code messes things up
-                "executing" in filename
+                filename.startswith(os.path.dirname(os.path.dirname(__file__)) + os.sep)
+                or filename.startswith(
+                    os.path.dirname(inspect.getfile(Source)) + os.sep
+                )
                 # because of: {t[0] for t in lines2} - {t[0] for t in lines1}
                 or "pytester.py" in filename
                 # A file that's particularly slow
