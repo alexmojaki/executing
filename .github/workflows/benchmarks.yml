@@ -1,0 +1,100 @@
+name: Benchmarks
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benchmarks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  configuration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      pythons: ${{ steps.config.outputs.pythons }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - id: config
+        name: Read benchmark Python versions
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+
+          with open('asv.conf.json') as config:
+              pythons = json.load(config)['pythons']
+          if not isinstance(pythons, list) or not pythons or not all(
+              isinstance(version, str) and version for version in pythons
+          ):
+              raise ValueError('ASV pythons must be a nonempty list of version strings')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              print('pythons=' + json.dumps(pythons), file=output)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: asv-configuration
+          path: asv.conf.json
+          if-no-files-found: error
+          retention-days: 14
+
+  benchmark:
+    needs: configuration
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(needs.configuration.outputs.pythons) }}
+    env:
+      TARGET_SHA: ${{ github.event.pull_request.base.sha }}
+      PR_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Determine merge base
+        run: |
+          BASE_SHA=$(git merge-base "$TARGET_SHA" "$PR_SHA")
+          printf 'BASE_SHA=%s\n' "$BASE_SHA" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.14'
+      - name: Benchmark merge base and PR on the same runner
+        env:
+          BENCHMARK_PYTHON: ${{ matrix.python-version }}
+        run: |
+          mkdir -p .asv/results
+          printf '%s\n%s\n' "$BASE_SHA" "$PR_SHA" > .asv/commits.txt
+          printf 'base_sha=%s\npr_sha=%s\n' "$BASE_SHA" "$PR_SHA" > .asv/results/metadata.txt
+          uv run --locked --group benchmarks asv machine --yes --machine github-actions
+          uv run --locked --group benchmarks asv run HASHFILE:.asv/commits.txt --python "$BENCHMARK_PYTHON" --machine github-actions --record-samples --interleave-rounds --show-stderr
+      - name: Compare results
+        # Exit code 1 means regressions were detected; still publish the comparison.
+        run: |
+          uv run --locked --group benchmarks asv-spyglass compare \
+            .asv/results/*/"${BASE_SHA:0:8}"*.json .asv/results/*/"${PR_SHA:0:8}"*.json .asv/results/benchmarks.json \
+            --label-before 'Merge base' --label-after PR > .asv/results/comparison.txt || true
+          if [ ! -s .asv/results/comparison.txt ]; then
+            echo "::error::asv-spyglass compare produced no output"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: asv-results-py${{ matrix.python-version }}
+          path: .asv/results/
+          if-no-files-found: error
+          retention-days: 14
