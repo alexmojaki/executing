@@ -681,7 +681,7 @@ class SentinelNodeFinder(object):
         # inserts JUMP_IF_NOT_DEBUG instructions in bytecode
         # If they're not present in our compiled instructions,
         # ignore them in the original bytecode
-        if not any(
+        if any(inst.opname == "JUMP_IF_NOT_DEBUG" for inst in result) and not any(
             inst.opname == "JUMP_IF_NOT_DEBUG" for inst in self.compile_instructions()
         ):
             result = [inst for inst in result if inst.opname != "JUMP_IF_NOT_DEBUG"]
@@ -817,7 +817,7 @@ class SentinelNodeFinder(object):
         # Don't use get_original_clean_instructions
         # because we need the actual instructions including
         # EXTENDED_ARG
-        instructions = list(get_instructions(self.code))
+        instructions = get_instructions(self.code)
         index = only(i for i, inst in enumerate(instructions) if inst.offset == lasti)
 
         while True:

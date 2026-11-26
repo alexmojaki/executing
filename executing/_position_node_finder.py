@@ -24,7 +24,7 @@ from .executing import (
     assert_,
 )
 from ._exceptions import KnownIssue, VerifierFailure
-from ._utils import mangled_name
+from ._utils import mangled_name, CodeCache
 
 from functools import lru_cache
 import itertools
@@ -46,7 +46,7 @@ def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
     yield from parents(node)
 
 
-@lru_cache(128)  # pragma: no mutate
+@CodeCache
 def get_instructions(code: CodeType) -> dict[int, dis.Instruction]:
     return {bc.offset: bc for bc in dis.get_instructions(code)}
 
