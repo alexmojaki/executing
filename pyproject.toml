@@ -48,7 +48,7 @@ benchmarks = [
     "asv-runner==0.3.1",
     "asv-spyglass==0.3.1",
     "asttokens==3.0.2",
-    "virtualenv==20.35.4",
+    "virtualenv==21.14.13",
 ]
 
 [tool.uv.dependency-groups]
