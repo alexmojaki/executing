@@ -1,8 +1,21 @@
 import ast
 import sys
 import dis
-from typing import Optional, cast, Any, Iterator
+from typing import (
+    Optional,
+    cast,
+    Any,
+    Callable,
+    Generic,
+    Iterator,
+    List,
+    Tuple,
+    TypeVar,
+)
 import types
+from collections import OrderedDict
+from threading import RLock
+from functools import update_wrapper
 
 
 def assert_(condition: Any, message: str = "") -> None:
@@ -81,14 +94,51 @@ class EnhancedInstruction(Instruction):
     _copied: bool
 
 
-def get_instructions(co: types.CodeType) -> Iterator[EnhancedInstruction]:
+T = TypeVar("T")
+
+
+class CodeCache(Generic[T]):
+    """Cache a function of one code object by identity, retaining at most 128 results."""
+
+    def __init__(self, function: Callable[[types.CodeType], T]) -> None:
+        self._function = function
+        self._entries: OrderedDict[int, Tuple[types.CodeType, T]] = OrderedDict()
+        self._lock = RLock()
+        update_wrapper(self, function)
+
+    def __call__(self, code: types.CodeType) -> T:
+        key = id(code)
+        with self._lock:
+            entry = self._entries.get(key)
+            if entry is not None:
+                self._entries.move_to_end(key)
+                return entry[1]
+
+        result = self._function(code)
+        with self._lock:
+            # Retaining the code object prevents reuse of its id while cached.
+            self._entries[key] = code, result
+            self._entries.move_to_end(key)
+            if len(self._entries) > 128:
+                self._entries.popitem(last=False)
+        return result
+
+    def cache_clear(self) -> None:
+        with self._lock:
+            self._entries.clear()
+
+
+@CodeCache
+def get_instructions(co: types.CodeType) -> List[EnhancedInstruction]:
     lineno = co.co_firstlineno
+    instructions = []
     for inst in _get_instructions(co):
         inst = cast(EnhancedInstruction, inst)
         lineno = inst.starts_line or lineno
         assert_(lineno)
         inst.lineno = lineno
-        yield inst
+        instructions.append(inst)
+    return instructions
 
 
 def mangled_name(node: EnhancedAST) -> str:

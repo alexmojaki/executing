@@ -8,6 +8,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from executing import Source
+from executing import _utils
 from executing.executing import statement_containing_node
 
 
@@ -201,6 +202,9 @@ def clear_lookup_caches(source_cls, *, execution_cache_only=False):
     if execution_cache_only:
         return
     source_cls._class_local("__source_cache_with_lines", {}).clear()
+    cache_clear = getattr(_utils.get_instructions, "cache_clear", None)
+    if cache_clear is not None:
+        cache_clear()
     source_cls.statements_at_line.cache_clear()
     statement_containing_node.cache_clear()
 
