@@ -1,6 +1,10 @@
 import gc
 import linecache
+import os
+import subprocess
+import sys
 import weakref
+from pathlib import Path
 
 import pytest
 
@@ -40,8 +44,10 @@ def test_full_reset_rebuilds_lookups_and_keeps_existing_results_usable(source_cl
     assert rebuilt.code_qualname() == first.code_qualname() == qualname
 
 
-def test_full_reset_releases_objects_retained_only_by_caches(source_cls, tmp_path):
-    filename = tmp_path / "lookup.py"
+def _check_cache_objects_released(filename):
+    class LocalSource(Source):
+        pass
+
     text = "def run():\n    1 / 0\n"
     filename.write_text(text)
 
@@ -51,7 +57,7 @@ def test_full_reset_releases_objects_retained_only_by_caches(source_cls, tmp_pat
         try:
             namespace["run"]()
         except ZeroDivisionError as exc:
-            result = source_cls.executing(exc.__traceback__.tb_next)
+            result = LocalSource.executing(exc.__traceback__.tb_next)
         assert result.text() == "1 / 0"
         return (
             weakref.ref(result.source),
@@ -62,10 +68,31 @@ def test_full_reset_releases_objects_retained_only_by_caches(source_cls, tmp_pat
     gc.collect()
     assert all(reference() is not None for reference in references)
 
-    source_cls._clear_caches()
+    LocalSource._clear_caches()
     gc.collect()
 
     assert all(reference() is None for reference in references)
+
+
+def test_full_reset_releases_objects_retained_only_by_caches(tmp_path):
+    # Coverage retains code objects independently of executing's caches. Run
+    # this lifetime check without instrumentation, including subprocess startup.
+    env = os.environ.copy()
+    env.pop("COVERAGE_PROCESS_START", None)
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import sys\n"
+            "from pathlib import Path\n"
+            "from tests.test_cache_reset import _check_cache_objects_released\n"
+            "_check_cache_objects_released(Path(sys.argv[1]))\n",
+            str(tmp_path / "lookup.py"),
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        env=env,
+        check=True,
+    )
 
 
 def test_execution_only_reset_repeats_source_lookup(source_cls, monkeypatch):
