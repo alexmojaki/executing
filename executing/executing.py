@@ -373,6 +373,15 @@ class Source(object):
         of both lambdas)
         """
         assert_(code.co_filename == self.filename)
+        if (
+            sys.implementation.name == "pypy"
+            and sys.version_info >= (3, 12)
+            and code.co_name == "<lambda>"
+        ):
+            # PyPy gives lambdas in generic class headers the class's qualname.
+            qualname: str = getattr(code, "co_qualname")
+            if not qualname.endswith("<lambda>"):
+                return qualname
         return self._qualnames.get((code.co_name, code.co_firstlineno), code.co_name)
 
 
