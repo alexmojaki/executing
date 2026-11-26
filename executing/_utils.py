@@ -84,6 +84,16 @@ class EnhancedInstruction(Instruction):
 def get_instructions(co: types.CodeType) -> Iterator[EnhancedInstruction]:
     lineno = co.co_firstlineno
     for inst in _get_instructions(co):
+        if sys.version_info >= (3, 11):
+            arg = inst.arg
+            if (
+                sys.implementation.name == "pypy"
+                and inst.opcode in dis.hasfree
+                and arg is not None
+            ):
+                # PyPy still indexes cells and free variables separately from locals.
+                name = (co.co_cellvars + co.co_freevars)[arg]
+                inst = inst._replace(argval=name, argrepr=name)
         inst = cast(EnhancedInstruction, inst)
         lineno = inst.starts_line or lineno
         assert_(lineno)

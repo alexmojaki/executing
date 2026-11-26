@@ -24,12 +24,41 @@ from .executing import (
     assert_,
 )
 from ._exceptions import KnownIssue, VerifierFailure
-from ._utils import mangled_name
+from ._utils import mangled_name, get_instructions as iter_instructions
 
 from functools import lru_cache
 import itertools
 
 # the code in this module can use all python>=3.11 features
+
+PYPY = sys.implementation.name == "pypy"
+
+_CALL_OPS = (
+    "CALL",
+    "CALL_KW",
+    "CALL_FUNCTION",
+    "CALL_FUNCTION_KW",
+    "CALL_METHOD",
+    "CALL_METHOD_KW",
+    "CALL_FUNCTION_EX",
+)
+
+# PyPy retains the individual arithmetic opcodes instead of BINARY_OP.
+_BINARY_OPS = {
+    "POWER": ast.Pow,
+    "MULTIPLY": ast.Mult,
+    "MATRIX_MULTIPLY": ast.MatMult,
+    "FLOOR_DIVIDE": ast.FloorDiv,
+    "TRUE_DIVIDE": ast.Div,
+    "MODULO": ast.Mod,
+    "ADD": ast.Add,
+    "SUBTRACT": ast.Sub,
+    "LSHIFT": ast.LShift,
+    "RSHIFT": ast.RShift,
+    "AND": ast.BitAnd,
+    "XOR": ast.BitXor,
+    "OR": ast.BitOr,
+}
 
 
 def parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
@@ -48,7 +77,8 @@ def node_and_parents(node: EnhancedAST) -> Iterator[EnhancedAST]:
 
 @lru_cache(128)  # pragma: no mutate
 def get_instructions(code: CodeType) -> dict[int, dis.Instruction]:
-    return {bc.offset: bc for bc in dis.get_instructions(code)}
+    instructions = iter_instructions(code) if PYPY else dis.get_instructions(code)
+    return {bc.offset: bc for bc in instructions}
 
 
 @lru_cache(128)
@@ -181,6 +211,13 @@ class PositionNodeFinder(object):
         while self.opname(lasti) == "CACHE":
             lasti -= 2
 
+        instruction = self.instruction(lasti)
+        assert instruction is not None
+        if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
+            # This compiler-generated store can have a range that matches no AST
+            # node, so recognize it before attempting source-position lookup.
+            raise KnownIssue("store __classcell__")
+
         try:
             # try to map with all match_positions
             self.result = self.find_node(lasti)
@@ -190,6 +227,7 @@ class PositionNodeFinder(object):
             # this can only be associated by using all positions
             if self.opname(lasti) in (
                 "LOAD_METHOD",
+                "LOOKUP_METHOD",
                 "LOAD_ATTR",
                 "STORE_ATTR",
                 "DELETE_ATTR",
@@ -199,7 +237,7 @@ class PositionNodeFinder(object):
                 # we ignore here the start position and try to find the ast-node just by end position and expected node type
                 # This is save, because there can only be one attribute ending at a specific point in the source code.
                 typ = (ast.Attribute,)
-            elif self.opname(lasti) in ("CALL", "CALL_KW"):
+            elif self.opname(lasti) in _CALL_OPS:
                 # A CALL instruction can be a method call, in which case the lineno and col_offset gets changed by the compiler.
                 # Therefore we ignoring here this attributes and searchnig for a Call-node only by end_col_offset and end_lineno.
                 # This is save, because there can only be one method ending at a specific point in the source code.
@@ -255,8 +293,12 @@ class PositionNodeFinder(object):
                 # index+x  STORE_*     the ast-node of this instruction points to the decorated thing
 
                 if not (
-                    (self.opname(index - 4) == "PRECALL" or sys.version_info >= (3, 12))
-                    and self.opname(index) == "CALL"
+                    (
+                        PYPY
+                        or self.opname(index - 4) == "PRECALL"
+                        or sys.version_info >= (3, 12)
+                    )
+                    and self.opname(index) in ("CALL", "CALL_FUNCTION")
                 ):  # pragma: no mutate
                     break  # pragma: no mutate
 
@@ -273,12 +315,90 @@ class PositionNodeFinder(object):
                     self.decorator = node
                     return
 
-                if sys.version_info < (3, 12):
+                if not PYPY and sys.version_info < (3, 12):
                     index += 4
 
     def fix_result(
         self, node: EnhancedAST, instruction: dis.Instruction
     ) -> EnhancedAST:
+        if PYPY:
+            # PyPy sometimes reuses the preceding expression's range for
+            # compiler-generated calls, stores and augmented assignments.
+            if instruction.opname == "CALL_FUNCTION":
+                before = self.instruction_before(instruction)
+                if (
+                    isinstance(node.parent, ast.comprehension)
+                    and node is node.parent.iter
+                    and before is not None
+                    and before.opname in ("GET_ITER", "GET_AITER")
+                ):
+                    return node.parent.parent
+                if (
+                    isinstance(node.parent, ast.withitem)
+                    and node is node.parent.context_expr
+                ):
+                    if before is not None and before.opname == "DUP_TOP":
+                        return node.parent.parent
+                if (
+                    sys.version_info >= (3, 12)
+                    and isinstance(node, ast.Constant)
+                    and isinstance(node.parent, ast.arguments)
+                ):
+                    definition = node.parent.parent
+                    if (
+                        isinstance(definition, (ast.FunctionDef, ast.AsyncFunctionDef))
+                        and definition.type_params
+                    ):
+                        return definition
+            if (
+                sys.version_info >= (3, 12)
+                and instruction.opname == "STORE_ATTR"
+                and instruction.argval == "__type_params__"
+                and not isinstance(node, ast.Attribute)
+            ):
+                generic_definition = next(
+                    (
+                        n
+                        for n in node_and_parents(node)
+                        if isinstance(
+                            n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+                        )
+                    ),
+                    None,
+                )
+                if generic_definition is not None and generic_definition.type_params:
+                    return generic_definition
+            if isinstance(node, ast.AugAssign) and (
+                instruction.opname.startswith(("LOAD_", "STORE_"))
+                or instruction.opname == "BINARY_SUBSCR"
+            ):
+                return cast(EnhancedAST, node.target)
+            if isinstance(node.parent, ast.arguments) and instruction.opname.startswith(
+                "STORE_"
+            ):
+                for parent in parents(node):
+                    if (
+                        isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef))
+                        and parent.name == instruction.argval
+                    ):
+                        return parent
+            if isinstance(node, ast.Assign) and instruction.opname in (
+                "STORE_FAST",
+                "STORE_DEREF",
+                "STORE_NAME",
+                "STORE_GLOBAL",
+            ):
+                targets = [
+                    n
+                    for target in node.targets
+                    for n in ast.walk(target)
+                    if isinstance(n, ast.Name)
+                    and isinstance(n.ctx, ast.Store)
+                    and mangled_name(cast(EnhancedAST, n)) == instruction.argval
+                ]
+                if len(targets) == 1:
+                    return cast(EnhancedAST, targets[0])
+
         if (
             sys.version_info >= (3, 12, 5)
             and instruction.opname in ("GET_ITER", "FOR_ITER")
@@ -472,23 +592,6 @@ class PositionNodeFinder(object):
                 "exeption cleanup does not belong to the last node in a except block"
             )
 
-        if instruction.opname == "STORE_NAME" and instruction.argval == "__classcell__":
-            # handle stores to __classcell__ as KnownIssue,
-            # because they get complicated if they are used in `if` or `for` loops
-            # example:
-            #
-            # class X:
-            #     # ... something
-            #     if some_condition:
-            #         def method(self):
-            #             super()
-            #
-            # The `STORE_NAME` instruction gets mapped to the `ast.If` node,
-            # because it is the last element in the class.
-            # This last element could be anything and gets dificult to verify.
-
-            raise KnownIssue("store __classcell__")
-
         if (
             instruction.opname == "CALL"
             and not isinstance(node, ast.Call)
@@ -673,14 +776,30 @@ class PositionNodeFinder(object):
                 for k, v in kwargs.items()
             )
 
+        if (
+            PYPY
+            and inst_match("LOAD_GLOBAL", argval="StopAsyncIteration")
+            and node_match(ast.GeneratorExp)
+        ):
+            raise KnownIssue("PyPy asynchronous generator cleanup")
+
+        if (
+            PYPY
+            and sys.version_info >= (3, 12)
+            and inst_match("STORE_ATTR", argval="__type_params__")
+            and isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+            and node.type_params
+        ):
+            return
+
         if op_name == "CACHE":
             return
 
-        if inst_match("CALL") and node_match((ast.With, ast.AsyncWith)):
+        if inst_match(_CALL_OPS) and node_match((ast.With, ast.AsyncWith)):
             # call to context.__exit__
             return
 
-        if inst_match(("CALL", "LOAD_FAST", "LOAD_FAST_BORROW")) and node_match(
+        if inst_match((*_CALL_OPS, "LOAD_FAST", "LOAD_FAST_BORROW")) and node_match(
             (ast.ListComp, ast.GeneratorExp, ast.SetComp, ast.DictComp)
         ):
             # call to the generator function
@@ -693,9 +812,7 @@ class PositionNodeFinder(object):
         ):
             return
 
-        if inst_match(("CALL", "CALL_FUNCTION_EX")) and node_match(
-            (ast.ClassDef, ast.Call)
-        ):
+        if inst_match(_CALL_OPS) and node_match((ast.ClassDef, ast.Call)):
             return
 
         if inst_match(("COMPARE_OP", "IS_OP", "CONTAINS_OP")) and node_match(
@@ -724,9 +841,9 @@ class PositionNodeFinder(object):
             # data: int
             return
 
-        if inst_match(("DELETE_NAME", "DELETE_FAST")) and node_match(
-            ast.Name, id=instruction.argval, ctx=ast.Del
-        ):
+        if inst_match(
+            ("DELETE_NAME", "DELETE_FAST", "DELETE_DEREF", "DELETE_GLOBAL")
+        ) and node_match(ast.Name, id=instruction.argval, ctx=ast.Del):
             return
 
         if inst_match("BUILD_STRING") and (
@@ -794,6 +911,11 @@ class PositionNodeFinder(object):
             if arg != "[]" and node_match(ast.AugAssign, op=op_type_map[arg]):
                 # a+=5
                 return
+
+        if op_name.startswith("INPLACE_") and node_match(
+            ast.AugAssign, op=_BINARY_OPS.get(op_name[8:], type(None))
+        ):
+            return
 
         if node_match(ast.Attribute, ctx=ast.Del) and inst_match(
             "DELETE_ATTR", argval=mangled_name(node)
@@ -912,7 +1034,7 @@ class PositionNodeFinder(object):
                         ("STORE_NAME", "STORE_FAST", "STORE_DEREF", "STORE_GLOBAL"),
                         argrepr=node.name.id,
                     )
-                    or inst_match("CALL")
+                    or inst_match(("CALL", "CALL_FUNCTION"))
                 ):
                     return
 
@@ -938,7 +1060,7 @@ class PositionNodeFinder(object):
                 isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
                 and node.type_params
             ):
-                if inst_match("CALL"):
+                if inst_match(("CALL", "CALL_FUNCTION")):
                     return
 
                 if inst_match(
@@ -1064,7 +1186,11 @@ class PositionNodeFinder(object):
             ctx = ast.Load
         elif op_name.startswith("BINARY_"):
             typ = ast.BinOp
-            op_type = op_type_map[instruction.argrepr]
+            op_type = (
+                op_type_map[instruction.argrepr]
+                if op_name == "BINARY_OP"
+                else _BINARY_OPS.get(op_name[7:], type(None))
+            )
             extra_filter = lambda e: isinstance(cast(ast.BinOp, e).op, op_type)
         elif op_name.startswith("UNARY_"):
             typ = ast.UnaryOp
@@ -1165,7 +1291,28 @@ class PositionNodeFinder(object):
         assert instruction is not None
 
         position = instruction.positions
-        assert position is not None and position.lineno is not None
+        assert position is not None
+        if PYPY and any(
+            getattr(position, attr) is None
+            for attr in ("lineno", "end_lineno", "col_offset", "end_col_offset")
+        ):
+            raise KnownIssue("PyPy instruction without a source range")
+        assert position.lineno is not None
+
+        if (
+            PYPY
+            and instruction.opname in ("CALL_METHOD", "CALL_METHOD_KW")
+            and any(issubclass(ast.Call, t) for t in typ)
+        ):
+            # PyPy's method-call range covers the method name, not the call.
+            attribute = self.find_node(
+                index, ("end_lineno", "end_col_offset"), (ast.Attribute,)
+            )
+            if (
+                isinstance(attribute.parent, ast.Call)
+                and attribute.parent.func is attribute
+            ):
+                return attribute.parent
 
         return only(
             cast(EnhancedAST, node)

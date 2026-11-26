@@ -824,7 +824,10 @@ class TestFiles:
 
             if (
                 # The sentinel actually appearing in code messes things up
-                "executing" in filename
+                filename.startswith(os.path.dirname(os.path.dirname(__file__)) + os.sep)
+                or filename.startswith(
+                    os.path.dirname(inspect.getfile(Source)) + os.sep
+                )
                 # because of: {t[0] for t in lines2} - {t[0] for t in lines1}
                 or "pytester.py" in filename
                 # A file that's particularly slow
@@ -916,6 +919,13 @@ class TestFiles:
 
         if not re.search(r"^\s*if 0(:| and )", source.text, re.MULTILINE):
             for node, values in nodes.items():
+                # PyPy omits source columns that do not fit in its position table.
+                if (
+                    PYPY
+                    and sys.version_info >= (3, 11)
+                    and (node.col_offset >= 255 or node.end_col_offset >= 255)
+                ):
+                    continue
                 # skip some cases cases
                 if sys.version_info < (3, 11):
                     if is_unary_not(node):
@@ -1153,6 +1163,7 @@ class TestFiles:
                             for i in dis.get_instructions(bc):
                                 if (
                                     i.positions.lineno is not None
+                                    and i.positions.end_lineno is not None
                                     and i.positions.lineno <= node.end_lineno
                                     and node.lineno <= i.positions.end_lineno
                                 ):

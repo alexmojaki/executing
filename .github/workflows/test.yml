@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14', '3.15', 'pypy-3.11', 'pypy-3.12']
 
     steps:
     - uses: actions/checkout@v2
@@ -42,8 +42,7 @@ jobs:
         pip install mypy==1.14.1
         python -m mypy executing --exclude=executing/_position_node_finder.py
       # fromJson because https://github.community/t/passing-an-array-literal-to-contains-function-causes-syntax-error/17213/3
-      if: ${{ !contains(fromJson('["pypy-3.6", "3.11","3.12","3.13","3.14","3.15"]'), matrix.python-version) }}
-      # pypy < 3.8 very doesn't work
+      if: ${{ contains(fromJson('["3.8", "3.9", "3.10"]'), matrix.python-version) }}
     - name: Mypy testing (3.11 and 3.15)
       run: |
         pip install mypy==2.1.0
