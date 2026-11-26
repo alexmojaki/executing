@@ -463,6 +463,23 @@ class QualnameVisitor(ast.NodeVisitor):
         assert isinstance(node, ast.Lambda)
         self.visit_FunctionDef(node, "<lambda>")
 
+    def visit_GeneratorExp(self, node: ast.GeneratorExp) -> None:
+        # The outermost iterable is evaluated in the enclosing scope.
+        self.visit(node.generators[0].iter)
+        self.stack.append("<genexpr>")
+        if sys.implementation.name == "pypy":
+            self.stack.append("<locals>")
+        self.visit(node.elt)
+        for index, generator in enumerate(node.generators):
+            self.visit(generator.target)
+            if index:
+                self.visit(generator.iter)
+            for condition in generator.ifs:
+                self.visit(condition)
+        if sys.implementation.name == "pypy":
+            self.stack.pop()
+        self.stack.pop()
+
     def visit_ClassDef(self, node: ast.AST) -> None:
         assert isinstance(node, ast.ClassDef)
         self.add_qualname(node)
